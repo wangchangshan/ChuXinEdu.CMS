@@ -1,0 +1,26 @@
+# --
+.vscode
+
+# -- ChuXinEdu.CMS.Server
+ChuXinEdu.CMS.Server/bin
+ChuXinEdu.CMS.Server/obj
+ChuXinEdu.CMS.Server/package-lock.json
+ChuXinEdu.CMS.Server/package.lock.json
+
+# -- ChuXinEdu.CMS.WEB
+ChuXinEdu.CMS.WEB/.DS_Store
+ChuXinEdu.CMS.WEB/node_modules/
+ChuXinEdu.CMS.WEB/dist/
+ChuXinEdu.CMS.WEB/npm-debug.log*
+ChuXinEdu.CMS.WEB/yarn-debug.log*
+ChuXinEdu.CMS.WEB/yarn-error.log*
+ChuXinEdu.CMS.WEB/package-lock.json
+ChuXinEdu.CMS.WEB/package.lock.json
+
+# Editor directories and files
+ChuXinEdu.CMS.WEB/.idea
+ChuXinEdu.CMS.WEB/.vscode
+ChuXinEdu.CMS.WEB/*.suo
+ChuXinEdu.CMS.WEB/*.ntvs*
+ChuXinEdu.CMS.WEB/*.njsproj
+ChuXinEdu.CMS.WEB/*.sln
