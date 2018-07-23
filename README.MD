@@ -124,6 +124,8 @@ E:\mynewproject> git clone https://github.com/wangchangshan/ChuXinEdu.CMS.git
 ```bash
 E:\mynewproject\ChuXinEdu.CMS> cd ChuXinEdu.CMS.WEB
 
+E:\mynewproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB > npm install vue-cli -g
+
 ##下载依赖包，生成node_modules目录
 E:\mynewproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB > npm install --save-dev
 ```
