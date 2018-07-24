@@ -5,7 +5,7 @@
                 <div class="manager_tip">
                     <span class="title">初心教育后台管理系统</span>
                 </div>
-                <el-form v-bind:model="loginForm" v-bind:rules="rules" class="login_form">
+                <el-form :model="loginForm" :rules="rules" ref="loginForm" class="login_form">
                     <el-form-item prop="username">
                         <span class="fa-tips"><i class="fa fa-user"></i></span>
                         <el-input class="area" type="text" placeholder="用户名" v-model="loginForm.username"></el-input>
@@ -15,7 +15,7 @@
                         <el-input class="area" type="password" placeholder="密码" v-model="loginForm.password"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="submitForm(loginForm)" class="submit_btn">登陆</el-button>
+                        <el-button type="primary" @click="submitForm(loginForm)" class="submit_btn">登录</el-button>
                     </el-form-item>
                     <div class="tiparea">
                         <p class="wxtip">温馨提示：</p>
@@ -29,7 +29,8 @@
 </template>
 
 <script>
-    import {axios, localDB} from '@/utils/' 
+    import { axios, localDB, menuHelper } from '@/utils/' 
+    import { mapActions, mapGetters, mapState } from 'vuex'
 
     export default {
         data(){
@@ -47,16 +48,23 @@
                         { required: true, message: '请输入密码', trigger: 'blur'}
                     ]
                 },
-                showLogin: false
+                showLogin: false,
+                ip: ''
             }
         },
         mounted(){
             this.showLogin = true;
         },
+        computed: {
+            ...mapGetters(['getMenuItems', 'getRouterLoadedStatus'])
+        },
         methods: {
-            submitForm(loginForm) {
-                this.$message.error("test");
-                //alert('1');
+            ...mapActions(['addMenu', 'loadRouters']),
+            showMessage(type, message) {
+                this.$message({
+                    type: type,
+                    message: message
+                })
             },
             generateMenu() {
                 const leftMenu = [
@@ -73,6 +81,84 @@
                             ]
                     }
                 ];
+
+                var myLocalDB = new localDB('MENU_');
+                myLocalDB.set('leftMenu', leftMenu);
+
+                if(!this.getRouterLoadedStatus) { // 首次进来为false,改变其状态为true
+                    const routers = menuHelper.generateRoutersFromMenu();
+                    this.loadRouters(leftMenu);
+                    const asyncRouterMap = [
+                        {
+                            path: '/404',
+                            name: '404',
+                            hidden: true,
+                            component: require('@/page/404.vue')
+                        },
+                        {
+                            path: '/index',
+                            name: '',
+                            hidden: true,
+                            component: require('@/layout/home.vue'),
+                            redirect: '/index',
+                            children: routers
+                        }
+                    ];
+
+                    this.$router.addRoutes(asyncRouterMap);
+                    this.loadRouters();
+                }
+
+                this.$router.push('/studentList');
+                this.showMessage('success', '登录成功')
+            },
+            submitForm(loginForm) {
+                this.$refs[loginForm].validate((valid) => {
+                    if(valid) {
+                        let userInfo = this.loginForm;
+                        let userData = Object.assign(userInfo, this.ip);
+                        // axios({
+                        //     type: 'get',
+                        //     path: '/api/user/login',
+                        //     data: userData, // 需要加密处理
+                        //     fn: data => {
+                        //         if(data.status == 1){
+                        //             this.generateMenu(); // 模拟动态生成菜单并定位到index
+                        //             this.$store.dispatch('initLeftMenu');
+                        //         } else {
+                        //             this.$message.error("登陆失败请重试");
+                        //         }
+                        //     }
+                        // })
+                        this.saveUserInfo(); // 存入缓存，用于显示用户名
+                        this.generateMenu(); // 模拟动态生成菜单并定位到index
+                        this.$store.dispatch('initLeftMenu');                        
+                    } else {
+                        this.$notify.error({
+                            title: '错误',
+                            message: '请输入正确的用户名密码',
+                            offset: 100
+                        });
+                        return false;
+                    }
+                });
+            },           
+            getIP(){
+                axios({
+                    type: 'get',
+                    path: 'http://httpbin.org/ip',
+                    data: '',
+                    fn: data => {
+                        this.ip = data.origin;
+                    }
+                })
+            },
+            saveUserInfo(){
+                const userinfo = {
+                    username: this.loginForm.username
+                }
+                var myLocalDB = new localDB('USER_');
+                myLocalDB.set('userInfo', userinfo);
             }
         }
     }

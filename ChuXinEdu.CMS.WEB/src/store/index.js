@@ -3,10 +3,12 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-import menu from './menu/index'
+import user from './user/index'
+import menu  from './menu/index'
 
 export default new Vuex.Store({
     modules: {
+        user,
         menu
     }
 });
