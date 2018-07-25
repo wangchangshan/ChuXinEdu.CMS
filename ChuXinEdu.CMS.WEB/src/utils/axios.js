@@ -2,7 +2,7 @@ import Vue from 'vue'
 import axios from 'axios'
 import vueAxios from 'vue-axios'
 
-Vue.use(axios, vueAxios)
+Vue.use(vueAxios, axios)
 
 /**
  * 封装axios的通用请求

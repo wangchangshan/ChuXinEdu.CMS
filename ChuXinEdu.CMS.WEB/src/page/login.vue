@@ -29,7 +29,7 @@
 </template>
 
 <script>
-    import { axios, localDB, menuHelper } from '@/utils/' 
+    import { axios, LocalDB, menuHelper } from '@/utils/index' 
     import { mapActions, mapGetters, mapState } from 'vuex'
 
     export default {
@@ -82,11 +82,10 @@
                     }
                 ];
 
-                var myLocalDB = new localDB('MENU_');
-                myLocalDB.set('leftMenu', leftMenu);
+                LocalDB.instance('MENU_').setValue('leftMenu',leftMenu);
 
                 if(!this.getRouterLoadedStatus) { // 首次进来为false,改变其状态为true
-                    const routers = menuHelper.generateRoutersFromMenu();
+                    const routers = menuHelper.generateRoutesFromMenu();
                     this.loadRouters(leftMenu);
                     const asyncRouterMap = [
                         {
@@ -113,10 +112,11 @@
                 this.showMessage('success', '登录成功')
             },
             submitForm(loginForm) {
-                this.$refs[loginForm].validate((valid) => {
+                this.$refs.loginForm.validate((valid) => {
                     if(valid) {
                         let userInfo = this.loginForm;
                         let userData = Object.assign(userInfo, this.ip);
+                        console.log('userData: ' + userData);
                         // axios({
                         //     type: 'get',
                         //     path: '/api/user/login',
@@ -130,9 +130,11 @@
                         //         }
                         //     }
                         // })
-                        this.saveUserInfo(); // 存入缓存，用于显示用户名
+                        console.log(1);
+                        this.saveUserInfo(); // 存入缓存，用于显示用户名                     
+                        console.log(2);
                         this.generateMenu(); // 模拟动态生成菜单并定位到index
-                        this.$store.dispatch('initLeftMenu');                        
+                        this.$store.dispatch('initLeftMenu');   
                     } else {
                         this.$notify.error({
                             title: '错误',
@@ -157,8 +159,7 @@
                 const userinfo = {
                     username: this.loginForm.username
                 }
-                var myLocalDB = new localDB('USER_');
-                myLocalDB.set('userInfo', userinfo);
+                LocalDB.instance('USER_').setValue('userInfo', userinfo);
             }
         }
     }

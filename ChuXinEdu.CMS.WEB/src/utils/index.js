@@ -1,9 +1,9 @@
 import axios from './axios'
-import localDB from './localDB'
-import  * as menuHelper from './menuHelper'
+import { LocalDB } from './localDB'
+import { menuHelper } from './menuHelper'
 
 export {
     axios,
-    localDB,
+    LocalDB,
     menuHelper
 }
