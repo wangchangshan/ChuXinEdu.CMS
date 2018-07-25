@@ -9,8 +9,8 @@ export class LocalDB {
         this.prefix = prefix;
         this.timeSign = timeSign;
         this.status = {
-            SUCCESS: 0,
-            FAILURE: 1,
+            SUCCESS: 1,
+            FAILURE: 0,
             OVERFLOW: 2,
             TIMEOUT: 3
         };

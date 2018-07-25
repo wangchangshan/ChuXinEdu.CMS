@@ -55,7 +55,7 @@
 </template>
 
 <script>
-    import { localDB } from '@/utils/' 
+    import { LocalDB } from '@/utils/' 
     export default {
         name: "head-nav",
         data(){
@@ -64,9 +64,7 @@
             }
         },
         created(){
-            var myLocalDB = new localDB('USER_');
-            this.userinfo = myLocalDB.get('userInfo');
-            
+            this.userinfo = LocalDB.instance('USER_').getValue('userInfo');
         },
         methods: {
             logout(){
