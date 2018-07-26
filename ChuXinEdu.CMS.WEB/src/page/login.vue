@@ -85,7 +85,7 @@
                 LocalDB.instance('MENU_').setValue('leftMenu',leftMenu);
 
                 if(!this.getRouterLoadedStatus) { // 首次进来为false,改变其状态为true
-                    const routers = menuHelper.generateRoutesFromMenu();
+                    const routers = menuHelper.generateRoutesFromMenu(leftMenu);
                     this.loadRouters(leftMenu);
                     const asyncRouterMap = [
                         {
@@ -108,7 +108,7 @@
                     this.loadRouters();
                 }
 
-                this.$router.push('/studentList');
+                this.$router.push('/index');
                 this.showMessage('success', '登录成功')
             },
             submitForm(loginForm) {
@@ -116,7 +116,6 @@
                     if(valid) {
                         let userInfo = this.loginForm;
                         let userData = Object.assign(userInfo, this.ip);
-                        console.log('userData: ' + userData);
                         // axios({
                         //     type: 'get',
                         //     path: '/api/user/login',
@@ -130,9 +129,7 @@
                         //         }
                         //     }
                         // })
-                        console.log(1);
-                        this.saveUserInfo(); // 存入缓存，用于显示用户名                     
-                        console.log(2);
+                        this.saveUserInfo(); // 存入缓存，用于显示用户名     
                         this.generateMenu(); // 模拟动态生成菜单并定位到index
                         this.$store.dispatch('initLeftMenu');   
                     } else {

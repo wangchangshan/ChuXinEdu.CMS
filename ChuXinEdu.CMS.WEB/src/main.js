@@ -11,7 +11,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.css'
 
 Vue.use(ElementUI)
-debugger
+//debugger
 var strUserInfo = LocalDB.instance('USER_').getValue('menuData').value;
 var menuData = '';
 if(strUserInfo) {
@@ -33,6 +33,29 @@ if(menuData) {
     ];
     router.addRoutes(asyncRouterMap);
 }
+
+router.beforeEach((to, from, next) => {
+    // 定位到首页时， 清空缓存数据
+    if(to.path === '/') {
+        LocalDB.instance('USER_').remove('userinfo');
+        LocalDB.instance('MENU_').remove('leftMenu');
+        store.commit('ADD_MENU', []);
+    }
+
+    // 判断是否有用户登录的记录
+    let userinfo = JSON.parse(LocalDB.instance('USER_').getValue('userinfo').value);
+    // 没有用户信息，route.path不是定位到登录页面的,直接跳登录页面。
+    if(!userinfo && to.path !== '/') {
+        next({ path: '/' });
+    } else {
+        // 有用户信息和路由名称的，直接跳要路由的页面。
+        if(to.name) {
+            next();
+        } else {
+            next({ path: '/404' })
+        }
+    }
+});
 
 Vue.config.productionTip = false
 
