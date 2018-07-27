@@ -3,9 +3,9 @@
         <head-nav></head-nav>
         <div class="left-fixed-right-auto">
             <left-menu></left-menu>
-            <div class="content_page" :style="{'margin-left': $store.state.menuItems.sidebar.width,
-                                                'width': $store.state.page.win_content.width+'px',
-                                                'height': $store.state.page.win_content.height+'px'}">
+            <div class="content_page" :style="{'margin-left': $store.state.menu.sidebar.width,
+                                                'width': $store.state.page.win_content.width + 'px',
+                                                'height': $store.state.page.win_content.height + 'px'}">
                 <div class="content">
                     <bread></bread>
                     <!--页面渲染入口-->
@@ -41,8 +41,8 @@
             setSize() {
                 //lib_$-->$,window的宽,高的获取是没有问题的。
                 this.win_size = {
-                    height:document.body.clientHeight-73,
-                    width:document.body.clientWidth-183
+                    height:document.body.clientHeight - 73,
+                    width:document.body.clientWidth - 183
                 }
                 //将content部分的宽高，存入store中，
                 this.$store.dispatch('set_win_content',this.win_size); //触发动作，content部分的宽高也随即改变。

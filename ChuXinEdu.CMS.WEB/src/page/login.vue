@@ -31,13 +31,15 @@
 <script>
     import { axios, LocalDB, menuHelper } from '@/utils/index' 
     import { mapActions, mapGetters, mapState } from 'vuex'
+    import NotFound from '@/page/404'
+    import Home from '@/layout/home'
 
     export default {
         data(){
             return {
                 loginForm: {
-                    username: '',
-                    password: ''
+                    username: 'admin',
+                    password: '123456'
                 },
                 rules: {
                     username: [
@@ -69,47 +71,40 @@
             generateMenu() {
                 const leftMenu = [
                     {
-                        path: '/index', name: '首页', component: 'index', icon: 'fa-server', noDropdown: true,
-                            children: [
-                                { path: '/index', name: '首页', component: 'index'}
-                            ]
+                        path: '/index', name: '首页', component: 'index', icon: 'fa-server', noDropdown: true
                     },
                     {
-                        path: '/studentList', name: '学生列表', component: 'studentList', icon: 'fa-user', noDropdown: true,
-                            children: [
-                                { path: './studentList', name: '学生列表', component: 'studentList'}
-                            ]
+                        path: '/studentList', name: '学生列表', component: 'studentList', icon: 'fa-user', noDropdown: true
                     }
                 ];
 
                 LocalDB.instance('MENU_').setValue('leftMenu',leftMenu);
-
+                this.addMenu(leftMenu);
                 if(!this.getRouterLoadedStatus) { // 首次进来为false,改变其状态为true
                     const routers = menuHelper.generateRoutesFromMenu(leftMenu);
-                    this.loadRouters(leftMenu);
                     const asyncRouterMap = [
                         {
                             path: '/404',
                             name: '404',
                             hidden: true,
-                            component: require('@/page/404.vue')
+                            component: NotFound //require('@/page/404.vue')  //不能使用require 无法加载component,
                         },
                         {
-                            path: '/index',
+                            path: '/layout',
                             name: '',
                             hidden: true,
-                            component: require('@/layout/home.vue'),
+                            component: Home, //require('@/layout/home.vue'), //不能使用require 无法加载component,
                             redirect: '/index',
                             children: routers
                         }
                     ];
-
+                        
                     this.$router.addRoutes(asyncRouterMap);
                     this.loadRouters();
                 }
 
-                this.$router.push('/index');
                 this.showMessage('success', '登录成功')
+                this.$router.push('layout');
             },
             submitForm(loginForm) {
                 this.$refs.loginForm.validate((valid) => {

@@ -1,34 +1,36 @@
 <template>
     <el-row class="menu_page">
         <el-col>
-            <el-menu mode="vertical" theme="dark" class="el-menu-vertical-demo" 
+            <el-menu mode="vertical" class="el-menu-vertical-demo" 
                 background-color="#324057" text-color="#fff" active-text-color="#42b983">
                 <template v-for="(item) in $store.state.menu.menuItems" v-if="item.hidden !== true">
-                    <el-submenu v-if="item.children && !item.noDropdpwn && item.children.length > 0" :index="item.path" :key="item.path"> 
-                        <template slot="title">
-                            <i :class="'fa fa-margin ' + item.icon"></i>
-                            <span slot="title">{{item.name}}</span>
-                        </template>
-                        <router-link v-for="(citem) in item.children" :to="citem.path" :key="citem.path">
-                            <el-menu-item :index="citem.path">
-                                <span slot="title"> {{citem.name}} </span>
-                            </el-menu-item>
-                        </router-link>
-                    </el-submenu>
-
-                    <router-link v-bind:to="item.path" :key="item.path">
-                        <el-submenu class="dropItem" v-if="item.children && item.noDropdown && item.children.length > 0"  :index="item.path">
-                            <template solt="title">
-                                <i :class="'fa fa-margin' + item.icon" @mouseover="showDropdown"></i>
-                                <span :class="{'hiddenDropname':$store.state.menuItems.isDropname}" slot="title">{{item.name}}</span>
-                            </template>
-
-                            <router-link :to="item.path">
-                                <el-menu-item :index="item.children[0].path" :class="{'hiddenDropdown':!$store.state.menu.isDropname}">
-                                     <span slot="title">{{item.children[0].name}}</span>
+                        <!-- 拥有二级菜单 -->
+                        <el-submenu v-if="item.children && !item.noDropdpwn && item.children.length > 0" :index="item.path" :key="item.path" class="dropItem"> 
+                                <template slot="title">
+                                    <i :class="'fa fa-margin ' + item.icon"></i>
+                                    <span slot="title">{{item.name}}</span>
+                                </template>
+                            <router-link v-for="(citem) in item.children" :to="citem.path" :key="citem.path">
+                                <el-menu-item :index="citem.path">
+                                    <span slot="title"> {{citem.name}} </span>
                                 </el-menu-item>
                             </router-link>
                         </el-submenu>
+
+                    <!-- 没有二级菜单 -->
+                    <router-link v-bind:to="item.path" :key="item.path">
+                        <el-menu-item v-if="item.noDropdown" :index="item.path">
+                                <template solt="title">
+                                    <i :class="'fa fa-margin ' + item.icon" @mouseover="showDropdown"></i>
+                                    <span :class="{'hiddenDropname':$store.state.menu.menuItems.isHidMenuName}" slot="title">{{item.name}}</span>
+                                </template>
+
+                            <!-- <router-link :to="item.path">
+                                <el-menu-item :index="item.children[0].path" :class="{'hiddenDropdown':!$store.state.menu.isDropname}">
+                                     <span slot="title">{{item.children[0].name}}</span>
+                                </el-menu-item>
+                            </router-link> -->
+                        </el-menu-item>
                     </router-link>
                 </template>
             </el-menu>

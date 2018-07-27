@@ -20,15 +20,15 @@ if(strUserInfo) {
 if(menuData) {
     store.commit('ADD_MENU', menuData);  // ?? commit or dispatch ,将缓存数据注入到store中
     const routes = menuHelper.generateRoutesFromMenu(menuData)  //根据菜单生成的路由信息
-
+    debugger
     const asyncRouterMap = [
         {
-            path: '/index',
-            name:'',
-            hidden   : true,
-            component: require('@/layout/home.vue'),
-            redirect: '/index',
-            children:routes
+            path        :   '/index',
+            name        :   '',
+            hidden      :   true,
+            component   :   require('@/layout/home.vue'),
+            redirect    :   '/index',
+            children    :   routes
         }
     ];
     router.addRoutes(asyncRouterMap);
@@ -43,7 +43,7 @@ router.beforeEach((to, from, next) => {
     }
 
     // 判断是否有用户登录的记录
-    let userinfo = JSON.parse(LocalDB.instance('USER_').getValue('userinfo').value);
+    let userinfo = JSON.parse(LocalDB.instance('USER_').getValue('userInfo').value);
     // 没有用户信息，route.path不是定位到登录页面的,直接跳登录页面。
     if(!userinfo && to.path !== '/') {
         next({ path: '/' });
@@ -52,7 +52,7 @@ router.beforeEach((to, from, next) => {
         if(to.name) {
             next();
         } else {
-            next({ path: '/404' })
+           // next({ path: '/404' })
         }
     }
 });

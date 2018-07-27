@@ -1,7 +1,9 @@
 const menuType = {
-    ADD_MENU        :   'ADD_MENU',         // 添加菜单
-    LOAD_ROUTERS    :   'LOAD_ROUTERS',    // 加载路由
-    INIT_LEFT_MENU  :   'INIT_LEFT_MENU',   // 初始化左侧菜单
+    ADD_MENU            :   'ADD_MENU',         // 添加菜单
+    LOAD_ROUTERS        :   'LOAD_ROUTERS',    // 加载路由
+    INIT_LEFT_MENU      :   'INIT_LEFT_MENU',   // 初始化左侧菜单
+    SET_LEFT_COLLAPSE   :   'SET_LEFT_COLLAPSE', // 改变左边菜单的收缩宽度
+    DISPLAY_MENU_NAME   :   'DISPLAY_MENU_NAME',   // 收缩时，用于隐藏菜单名称
 }
 
 const state = {
@@ -10,7 +12,9 @@ const state = {
     sidebar: {
         opened: true,
         width: '180px'
-    }
+    },
+    isCollapse: false,
+    isHidMenuName: false
 }
 
 const getters = {
@@ -38,13 +42,19 @@ const mutations = {
             opened: true,
             width: '180px'
         }
+    },
+    [menuType.SET_LEFT_COLLAPSE] (state) {
+        state.isCollapse = !state.isCollapse;
+    },
+    [menuType.DISPLAY_MENU_NAME] (state) {
+        state.isHidMenuName = !state.isHidMenuName;
     }
 }
 
 const actions = {
     addMenu:({ commit }, menuItems) => {
         if(menuItems.length > 0) {
-            commit(menuType.ADD_MENU, menuitems);
+            commit(menuType.ADD_MENU, menuItems);
         }
     },
     loadRouters:({ commit }) => {
@@ -52,7 +62,13 @@ const actions = {
     },
     initLeftMenu:({ commit }) => {
         commit(menuType.INIT_LEFT_MENU);
-    }
+    },
+    setMenuCollapse:({ commit }) => {  
+       commit(menuType.SET_LEFT_COLLAPSE)  
+    },
+    setMenuNameDispaly:({ commit }) => {  
+       commit(menuType.DISPLAY_MENU_NAME)  
+    },
 }
 
 export default {

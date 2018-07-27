@@ -9,21 +9,21 @@
                 <img src="../../static/image/avatar.png" class="avatar" alt="">
                 <div class="welcome">
                     <p class="name comename">欢迎</p>
-                    <p class="name avatarname">{{userinfo.username}}</p>
+                    <p class="name avatarname">Admin</p>
                 </div>
                 <span class="username">
-                    <el-dropdown trigger="click">
+                    <el-dropdown trigger="click" @command='setDialogInfo'>
                         <span class="el-dropdown-link">
                             <i class="el-icon-caret-bottom el-icon--right"></i>
                         </span>
-                        <el-dropdown-menu>
-                            <el-dropdown-item>修改信息</el-dropdown-item>
-                            <el-dropdown-item>修改密码</el-dropdown-item>
-                            <el-dropdown-item>退出</el-dropdown-item>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item command='info'>修改信息</el-dropdown-item>
+                            <el-dropdown-item command='pwd'>修改密码</el-dropdown-item>
+                            <el-dropdown-item command='exit'>退出</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </span>
-                 <i class="fa fa-sign-out logout"></i>
+                 <i class="fa fa-sign-out logout" @click="logout"></i>
             </div>
             <div class="notify-row">
                 <ul class="top-menu">
@@ -71,7 +71,23 @@
                 this.$router.push('/');
             },
             showInfoList(){
-                this.$router.push('/'); // '/infoModify'
+                //this.$router.push('/'); // '/infoModify'
+            },
+            setDialogInfo(cmdItem) {
+                if(!cmdItem) {
+                    this.$message('菜单选项缺少command属性');
+                    return;
+                }
+                switch (cmdItem) {
+                    case 'info':
+                        break;
+                    case 'pwd':
+                        this.showInfoList();
+                        break;
+                    case 'exit':
+                        this.logout();
+                        break;
+                }
             }
         }
     }
@@ -168,7 +184,7 @@
         float: left;
         margin-right: 20px;
     }
-    ul.rop-menu > li > a {
+    ul.top-menu > li > a {
         color: #3bc5ff;
         font-size: 16px;
         border-radius: 4px;
