@@ -75,7 +75,29 @@
                     },
                     {
                         path: '/studentList', name: '学生列表', component: 'studentList', icon: 'fa-user', noDropdown: true
-                    }
+                    },
+                    {
+                        path:'1',name:'信息管理',component:'content',icon:'fa-asterisk',
+						children:[
+							{
+                                path:'/sysInfoShow',name:'个人信息',component:'sysInfoShow'
+                            },
+							{
+                                path:'/sysInfoModify',name:'修改信息',component:'sysInfoModify'
+                            }
+						]
+                    },
+                    {
+                        path:'2',name:'课程管理',component:'content',icon:'fa-asterisk',
+						children:[
+							{
+                                path:'/sysInfoShow',name:'课程安排',component:'sysInfoShow'
+                            },
+							{
+                                path:'/sysInfoModify',name:'上课历史',component:'sysInfoModify'
+                            }
+						]
+					},
                 ];
 
                 LocalDB.instance('MENU_').setValue('leftMenu',leftMenu);
