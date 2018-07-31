@@ -11,9 +11,10 @@ const menuHelper = {
 
             if (component && component !== 'content') {
                 //componentNew = require('@/page/' + menuData[i].component + '.vue')
-                componentNew = lazyLoading(menuData[i].component)
+                componentNew = lazyLoading.loadPageComponent(menuData[i].component)
             } else {
                 //componentNew = require('@/layout/' + menuData[i].component + '.vue')
+                componentNew = lazyLoading.loadLayoutComponent(menuData[i].component)
             }
 
             menuobj['component'] = componentNew

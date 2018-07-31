@@ -76,11 +76,6 @@
     .el-submenu .el-menu-item{
         min-width:180px;
     }
-    // .el-menu{
-    //     .el-menu-item{
-    //         // padding-left:40px !important;
-    //     }
-    //  }
  
     .hiddenDropdown,
     .hiddenDropname{

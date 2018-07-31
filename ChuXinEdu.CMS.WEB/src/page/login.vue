@@ -73,20 +73,20 @@
                     {
                         path: '/index', name: '首页', component: 'index', icon: 'fa-server', noDropdown: true
                     },
+                    // {
+                    //     path: '/studentList', name: '学生列表', component: 'studentList', icon: 'fa-user', noDropdown: true
+                    // },
                     {
-                        path: '/studentList', name: '学生列表', component: 'studentList', icon: 'fa-user', noDropdown: true
-                    },
-                    {
-                        path:'1',name:'信息管理',component:'content',icon:'fa-asterisk',
+                        path:'3',name:'学生信息',component:'content',icon:'fa-user',
 						children:[
 							{
-                                path:'/sysInfoShow',name:'个人信息',component:'sysInfoShow'
+                                path:'/studentAdd',name:'新增学生',component:'studentAdd'
                             },
 							{
-                                path:'/sysInfoModify',name:'修改信息',component:'sysInfoModify'
+                                path:'/studentList',name:'学生列表',component:'studentList'
                             }
 						]
-                    },
+					},
                     {
                         path:'2',name:'课程管理',component:'content',icon:'fa-asterisk',
 						children:[
@@ -97,12 +97,34 @@
                                 path:'/sysInfoModify',name:'上课历史',component:'sysInfoModify'
                             }
 						]
+                    },
+                    {
+                        path:'4',name:'活动组织',component:'content',icon:'fa-asterisk',
+						children:[
+							{
+                                path:'/activityAdd',name:'新的策划',component:'activityAdd'
+                            },
+							{
+                                path:'/activityList',name:'活动列表',component:'activityList'
+                            }
+						]
 					},
+                    {
+                        path:'1',name:'系统管理',component:'content',icon:'fa-asterisk',
+						children:[
+							{
+                                path:'/sysInfoShow',name:'个人信息',component:'sysInfoShow'
+                            },
+							{
+                                path:'/sysInfoModify',name:'修改信息',component:'sysInfoModify'
+                            }
+						]
+                    },
                 ];
 
                 LocalDB.instance('MENU_').setValue('leftMenu',leftMenu);
                 this.addMenu(leftMenu);
-                if(!this.getRouterLoadedStatus) { // 首次进来为false,改变其状态为true
+                if(true) { // !this.getRouterLoadedStatus 首次进来为false,改变其状态为true
                     const routers = menuHelper.generateRoutesFromMenu(leftMenu);
                     const asyncRouterMap = [
                         {

@@ -42,7 +42,7 @@
                         </a>
                     </li>
                      <li class="li-badge">
-                        <a href='#/index'>
+                        <a href='#/notifyBirthday'>
                             <el-badge :value="34" class="item three">
                                 <i class="fa fa-bell-o"></i>
                             </el-badge>

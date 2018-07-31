@@ -7,26 +7,29 @@ import router from './router'
 import store from './store/index'
 import ElementUI from 'element-ui'
 import {LocalDB, menuHelper} from './utils/index'
+import Home from '@/layout/home'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.css'
 
 Vue.use(ElementUI)
-//debugger
-var strUserInfo = LocalDB.instance('USER_').getValue('menuData').value;
+
+/**
+ * 如果用户刷新页面,导致存入vuex中的菜单数据清空,需要从缓存获取;
+ */
+var strMenuData = LocalDB.instance('MENU_').getValue('leftMenu').value;
 var menuData = '';
-if(strUserInfo) {
-    menuData = JSON.parse(strUserInfo)
+if(strMenuData) {
+    menuData = JSON.parse(strMenuData)
 } 
 if(menuData) {
     store.commit('ADD_MENU', menuData);  // ?? commit or dispatch ,将缓存数据注入到store中
     const routes = menuHelper.generateRoutesFromMenu(menuData)  //根据菜单生成的路由信息
-    debugger
     const asyncRouterMap = [
         {
             path        :   '/index',
             name        :   '',
             hidden      :   true,
-            component   :   require('@/layout/home.vue'),
+            component   :   Home,
             redirect    :   '/index',
             children    :   routes
         }
