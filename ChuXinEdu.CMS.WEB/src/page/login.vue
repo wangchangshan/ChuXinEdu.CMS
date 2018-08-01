@@ -84,6 +84,9 @@
                             },
 							{
                                 path:'/studentList',name:'学生列表',component:'studentList'
+                            },
+                            {
+                                path:'/studentCourseSchedule',name:'学生排课表',component:'studentCourseSchedule'
                             }
 						]
 					},

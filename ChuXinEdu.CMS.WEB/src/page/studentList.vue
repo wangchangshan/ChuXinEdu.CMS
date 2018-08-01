@@ -34,7 +34,7 @@
                 </el-table-column>                
                 <el-table-column prop="student_courses" label="学习课程" align='left' min-width="150">
                     <template slot-scope="scope">
-                        <el-tag :type="courseTag(item.course)" v-for="item in scope.row.student_courses" :key="item.course" >
+                        <el-tag :type="courseTag(item.course)" v-for="item in scope.row.student_courses" :key="item.course" :disable-transitions="false">
                             {{item.course}}
                         </el-tag>
                     </template> 

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-cloak>
     <router-view/>
   </div>
 </template>
@@ -13,4 +13,8 @@ export default {
 <style lang="less">
     @import './style/cover/element-ui';//修正element-ui的自定义样式
     @import './style/base/common';//修正element-ui的自定义样式
+    
+    [v-cloak] {
+        display: none !important;
+    }
 </style>

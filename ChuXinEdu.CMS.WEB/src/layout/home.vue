@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="home" v-cloak>
         <head-nav></head-nav>
         <div class="left-fixed-right-auto">
             <left-menu></left-menu>
@@ -71,5 +71,8 @@
      .content{
        width:100%;
        height:100%;
+    }
+    [v-cloak] {
+        display: none !important;
     }
 </style>
