@@ -85,14 +85,14 @@
 							{
                                 path:'/studentList',name:'学生列表',component:'studentList'
                             },
-                            {
-                                path:'/studentCourseSchedule',name:'学生排课表',component:'studentCourseSchedule'
-                            }
 						]
 					},
                     {
                         path:'2',name:'课程管理',component:'content',icon:'fa-asterisk',
-						children:[
+						children:[                            
+                            {
+                                path:'/courseArrangMain',name:'学生排课',component:'courseArrangMain'
+                            },
 							{
                                 path:'/sysInfoShow',name:'课程安排',component:'sysInfoShow'
                             },
