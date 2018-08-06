@@ -60,7 +60,7 @@
                                     </el-popover>
 
                                     <a class="student-item-right">
-                                        <el-tag type="success" size="mini">国画10节</el-tag>
+                                        <el-tag type="success" size="mini">国画4节</el-tag>
                                     </a>
                                 </li>
                                 <li>
@@ -135,17 +135,49 @@
         </el-col> -->
     </el-row>
    
-    <el-dialog title="选择学生" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false">
-        <el-table :data="selectStudentDialog.studentList">
-            <el-table-column property="student_name" label="姓名" width="100"></el-table-column>
-            <el-table-column property="student_course" label="课程类别"></el-table-column>
-            <el-table-column property="student_course_remain_count" label="剩余课时数"></el-table-column>
-             <el-table-column property="student_selected_course_count" label="选择课时数">
+    <el-dialog title="选择学生 [星期一 16:00-17:30]" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false">
+        <el-table :data="selectStudentDialog.studentList"  max-height="400" @selection-change="handleStudentSelectionChange">
+            <el-table-column type="selection" width="30"></el-table-column>
+            <el-table-column property="student_code" label="学号" width="100"></el-table-column>
+            <el-table-column property="student_name" label="姓名" width="90"></el-table-column>
+            <el-table-column property="student_course" label="课程类别" width="120" align='center'></el-table-column>
+            <el-table-column property="student_course_remain_count" label="剩余课时数" align='center' width="100"></el-table-column>
+             <el-table-column property="student_selected_course_count" label="选择课时数" min-width="200">
                  <template slot-scope="scope">
-                        <el-input-number v-model="scope.row.student_selected_course_count" :min="1" :max="80" label="描述文字"></el-input-number>
+                        <el-input-number v-model="scope.row.student_selected_course_count" :min="1" :max="scope.row.student_course_remain_count" label="描述文字" size="small"></el-input-number>
                     </template> 
              </el-table-column>
         </el-table>
+        <div class="footer-botton-area">
+            <el-button @click="submitStudents()" type="success">确定</el-button>
+            <el-button @click="selectStudentDialog.isShow = false">取消</el-button>
+        </div>
+    </el-dialog>
+
+    <el-dialog title="学生排课列表 李世民 星期一 16:00-17:30" :visible.sync="editStudentDialog.isShow" :modal-append-to-body="false">
+        <el-table :data="editStudentDialog.studentList"  max-height="400" @selection-change="handleStudentSelectionChange">
+            <el-table-column type="selection" width="30"></el-table-column>
+            <el-table-column property="course_date" label="上课日期" width="100"></el-table-column>
+            <el-table-column property="course_type" label="课程类别" width="120" align='center'></el-table-column>
+            <el-table-column property="course_status" label="状态" width="120" align='center'>
+                 <template slot-scope="scope">
+                        <el-tag :disable-transitions="false">
+                            {{scope.row.course_status}}
+                        </el-tag>
+                    </template> 
+            </el-table-column>
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="300">
+                <template slot-scope='scope'>                    
+                    <el-button type="warning" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>请假顺延</el-button>
+                    <el-button type="primary" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>调课</el-button>
+                    <el-button type="danger" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="footer-botton-area">
+            <el-button type="success">确定</el-button>
+            <el-button @click="editStudentDialog.isShow = false">取消</el-button>
+        </div>
     </el-dialog>
 </div>
 </template>
@@ -159,10 +191,57 @@ export default {
             selectStudentDialog:{
                 isShow: false,
                 studentList: [{
+                    student_code: "200808001",
                     student_name:"段延庆",
                     student_course:"书法",
                     student_course_remain_count:20,
                     student_selected_course_count:20
+                },
+                {
+                    student_code: "200808001",
+                    student_name:"段延庆",
+                    student_course:"书法",
+                    student_course_remain_count:20,
+                    student_selected_course_count:20
+                },
+                {
+                    student_code: "200808001",
+                    student_name:"段延庆",
+                    student_course:"书法",
+                    student_course_remain_count:20,
+                    student_selected_course_count:20
+                },
+                {
+                    student_code: "200808001",
+                    student_name:"段延庆",
+                    student_course:"书法",
+                    student_course_remain_count:20,
+                    student_selected_course_count:20
+                }],
+                selectedStudents: []
+            },
+            editStudentDialog:{
+                isShow: false,
+                student_code: '',
+                studentList: [{
+                    course_date: "2008-08-06",
+                    course_type: "国画",
+                    course_status: "已上课"
+                },
+                {
+                    course_date: "2008-08-13",
+                    course_type: "国画",
+                    course_status: "请假"
+                },
+                {
+                    course_date: "2008-08-20",
+                    course_type: "国画",
+                    course_status: "待上课"
+                },
+                {
+                    course_date: "2008-08-27",
+                    course_type: "国画",
+                    course_status: "待上课"
                 }]
             }
         }
@@ -189,7 +268,17 @@ export default {
             alert("待开发")
         },
         showStudentCourseList() {
-            alert('显示当前学生当前时间段的所有课程列表')
+            //alert('显示当前学生当前时间段的所有课程列表')
+            this.editStudentDialog.isShow = true;
+        },
+        handleStudentSelectionChange(allItems){
+            this.selectStudentDialog.selectedStudents = allItems;
+        },
+        submitStudents(){
+            alert("待开发")
+        },
+        removeCurrentCourse(){
+            alert("待开发")
         }
     }
 }
@@ -250,6 +339,17 @@ export default {
                 margin-bottom: 6px;
             }
         }
+    }
+}
+
+.footer-botton-area{
+    width: 100%;
+    height: 25px;
+    margin-right: 20px;
+    margin-top: 10px;
+    .el-button{
+        float: right;
+        margin-right: 10px
     }
 }
 </style>
