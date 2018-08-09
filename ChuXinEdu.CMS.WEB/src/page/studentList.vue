@@ -10,7 +10,7 @@
                 </el-form-item>
 
                 <el-form-item class="btnRight">
-                    <el-button type="primary" icon="view" @click='addStudent()'>添加</el-button>
+                    <el-button type="primary" icon="el-icon-plus" @click='addStudent()'>添加</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -154,7 +154,7 @@
                     student_name: ''
                 },
                 loading:false,
-                tableHeight:this.$store.state.page.win_content.height-128,   
+                tableHeight: this.$store.state.page.win_content.height-128,   
                 search_form_rules:{
                     student_name: [{
                         required: false,

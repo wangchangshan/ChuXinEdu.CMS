@@ -128,11 +128,14 @@
                 <p class="title">星期日</p>
             </div>
         </el-col>
-        <!-- <el-col :span="2">
+        <el-col :span="3">
             <div class="week-panel">
-                <p class="title">按钮以及待排课学生信息区域</p>
+                <p class="title">按钮区域</p>
+                <el-button type="success"  size="mini">假期安排</el-button>
+                 <el-date-picker type="dates" v-model="holidays" placeholder="选择放假日期">
+                </el-date-picker>
             </div>
-        </el-col> -->
+        </el-col>
     </el-row>
    
     <el-dialog title="选择学生 [星期一 16:00-17:30]" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false">
@@ -142,11 +145,17 @@
             <el-table-column property="student_name" label="姓名" width="90"></el-table-column>
             <el-table-column property="student_course" label="课程类别" width="120" align='center'></el-table-column>
             <el-table-column property="student_course_remain_count" label="剩余课时数" align='center' width="100"></el-table-column>
-             <el-table-column property="student_selected_course_count" label="选择课时数" min-width="200">
-                 <template slot-scope="scope">
-                        <el-input-number v-model="scope.row.student_selected_course_count" :min="1" :max="scope.row.student_course_remain_count" label="描述文字" size="small"></el-input-number>
-                    </template> 
-             </el-table-column>
+            <el-table-column property="student_selected_course_count" label="选择课时数" min-width="100">
+                <template slot-scope="scope">
+                    <el-input-number v-model="scope.row.student_selected_course_count" :min="1" :max="scope.row.student_course_remain_count" label="描述文字" size="small"></el-input-number>
+                </template> 
+            </el-table-column>
+            <el-table-column property="first_start_date" label="开始上课日期" min-width="200">
+                <template slot-scope="scope">
+                    <el-date-picker v-model="scope.row.first_start_date" type="date" size="small" placeholder="选择日期" :picker-options="selectStudentDialog.pickerStartDateOptions">
+                    </el-date-picker> 
+                </template>
+            </el-table-column>
         </el-table>
         <div class="footer-botton-area">
             <el-button @click="submitStudents()" type="success">确定</el-button>
@@ -187,6 +196,7 @@ export default {
     data() {
         return {
             testContent: '',
+            holidays:[],
             active_titles_Monday: ['1', '2'],
             selectStudentDialog:{
                 isShow: false,
@@ -195,30 +205,39 @@ export default {
                     student_name:"段延庆",
                     student_course:"书法",
                     student_course_remain_count:20,
-                    student_selected_course_count:20
+                    student_selected_course_count:20,
+                    first_start_date:''
                 },
                 {
                     student_code: "200808001",
                     student_name:"段延庆",
                     student_course:"书法",
                     student_course_remain_count:20,
-                    student_selected_course_count:20
+                    student_selected_course_count:20,
+                    first_start_date:''
                 },
                 {
                     student_code: "200808001",
                     student_name:"段延庆",
                     student_course:"书法",
                     student_course_remain_count:20,
-                    student_selected_course_count:20
+                    student_selected_course_count:20,
+                    first_start_date:''
                 },
                 {
                     student_code: "200808001",
                     student_name:"段延庆",
                     student_course:"书法",
                     student_course_remain_count:20,
-                    student_selected_course_count:20
+                    student_selected_course_count:20,
+                    first_start_date:''
                 }],
-                selectedStudents: []
+                selectedStudents: [],
+                pickerStartDateOptions: {
+                    disabledDate(time) {
+                        return time.getDay() !== 1
+                    }
+                }
             },
             editStudentDialog:{
                 isShow: false,

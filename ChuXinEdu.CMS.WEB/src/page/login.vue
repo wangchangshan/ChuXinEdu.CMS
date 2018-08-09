@@ -89,12 +89,15 @@
 					},
                     {
                         path:'2',name:'课程管理',component:'content',icon:'fa-asterisk',
-						children:[                            
+						children:[  
+							{
+                                path:'/coursePackageList',name:'课程套餐',component:'coursePackageList'
+                            },                         
                             {
-                                path:'/courseArrangMain',name:'学生排课',component:'courseArrangMain'
+                                path:'/courseArrangMain',name:'排课安排',component:'courseArrangMain'
                             },
 							{
-                                path:'/sysInfoShow',name:'课程安排',component:'sysInfoShow'
+                                path:'/courseAttendanceBook',name:'待签到',component:'courseAttendanceBook'
                             },
 							{
                                 path:'/sysInfoModify',name:'上课历史',component:'sysInfoModify'

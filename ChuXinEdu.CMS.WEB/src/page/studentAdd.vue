@@ -34,6 +34,9 @@
                     <el-form-item prop="student_address" label="家庭地址">
                         <el-input v-model="studentBaseInfo.student_address"></el-input>
                     </el-form-item>
+                    <el-form-item prop="student_introduce" label="介绍人">
+                        <el-input v-model="studentBaseInfo.student_phone"></el-input>
+                    </el-form-item>
                     <el-form-item label="备注">
                         <el-input type="textarea" v-model="studentBaseInfo.student_remark"></el-input>
                     </el-form-item>
@@ -117,6 +120,7 @@ export default {
                 student_identity_card_num: "",
                 student_phone: "",
                 student_address: "",
+                student_introduce: "",
                 student_remark: "",
                 student_register_date: ""
             },
