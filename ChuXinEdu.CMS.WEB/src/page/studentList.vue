@@ -46,7 +46,7 @@
                 </el-table-column>
                 <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
                     <template slot-scope='scope'>
-                        <el-button type="warning" icon='edit' size="small" @click='editStudent(scope.row)'>编辑</el-button>
+                        <!-- <el-button type="warning" icon='edit' size="small" @click='editStudent(scope.row)'>编辑</el-button> -->
                         <el-button type="success" icon='edit' size="small" @click='showStudentDetail(scope.row.student_code)'>查看详细</el-button>
                     </template>
                 </el-table-column>
@@ -211,9 +211,6 @@
             addStudent() {
                 this.dialog.title = '新增学生';
                 this.dialog.show  = true;
-            },
-            editStudent() {
-                alert('待开发')
             },
             showStudentDetail(){
                 alert('待开发')

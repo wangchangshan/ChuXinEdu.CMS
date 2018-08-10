@@ -39,6 +39,7 @@ if(menuData) {
 
 router.beforeEach((to, from, next) => {
     // 定位到首页时， 清空缓存数据
+    //debugger
     if(to.path === '/') {
         LocalDB.instance('USER_').remove('userinfo');
         LocalDB.instance('MENU_').remove('leftMenu');
@@ -52,11 +53,12 @@ router.beforeEach((to, from, next) => {
         next({ path: '/' });
     } else {
         // 有用户信息和路由名称的，直接跳要路由的页面。
-        if(to.name) {
-            next();
-        } else {
-           // next({ path: '/404' })
-        }
+        next();
+        // if(to.name) {
+        //     next();
+        // } else {
+        //    // next({ path: '/404' })
+        // }
     }
 });
 

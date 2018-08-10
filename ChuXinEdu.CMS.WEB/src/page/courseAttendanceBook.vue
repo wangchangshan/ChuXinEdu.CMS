@@ -60,11 +60,14 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="作品描述">
-                        <el-input></el-input>
+                       <el-input v-model="signInDialog.studentCourseInfo.img_desc"></el-input>
+                    </el-form-item>
+                    <el-form-item label="作品花费课时">
+                        <el-input v-model="signInDialog.studentCourseInfo.img_cost"></el-input>
                     </el-form-item>
                     <el-form-item label="作品上传">
                         <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handleImgPreview" :on-remove="handleImgRemove" list-type="picture">
-                            <el-button size="small" type="primary">点击上传</el-button>
+                            <el-button size="mini" type="primary">点击上传</el-button>
                         </el-upload>
                     </el-form-item>
                     <el-form-item  class="text_right">
@@ -152,12 +155,14 @@
                     formLabelWidth: '120px',
                     width: '400px',
                     studentCourseInfo:{
-                        student_code: '201807001',
-                        student_name: '杨子铭',
-                        student_course_date: '2018-09-09',
-                        student_course_time: '17:30-19:00',     
-                        student_course_content:'国画',
+                        student_code: '',
+                        student_name: '',
+                        student_course_date: '',
+                        student_course_time: '',     
+                        student_course_content:'',
                         course_teacher_code:'',
+                        img_desc: '',
+                        img_cost: ''
                     },
                     studentCourseInfoRules:{
 
