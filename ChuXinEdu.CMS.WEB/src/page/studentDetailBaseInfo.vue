@@ -1,5 +1,5 @@
 <template>
-    <div>tttt</div>
+    <div>student base info</div>
 </template>
 
 <script>
