@@ -6,16 +6,23 @@
             <student-base-info v-if="activeLabelCode === 'baseinfo'"></student-base-info>
             包括：个人基础信息、课程报名信息、缴费信息。
         </el-tab-pane>
-        <el-tab-pane :name="'plan'">
-            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>学习计划</span> 包括：课程安排（？） 个人课程表
-        </el-tab-pane>
         <el-tab-pane :name="'history'">
             <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>课程记录</span> 
             <!-- 包括：历史上课记录列表 （请假、签到等） -->
-            <student-course-history v-if="activeLabelCode === 'history'" v-bind:student_code="'200808001'" v-bind:student_name="'旺季'"></student-course-history>
+            <keep-alive>
+                <student-course-history v-if="activeLabelCode === 'history'" v-bind:student_code="'200808001'" v-bind:student_name="'王暄'"></student-course-history>
+            </keep-alive>
         </el-tab-pane>
         <el-tab-pane :name="'achievement'">
-            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>作品展示</span> 以卡片形式展示作品
+            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>作品展示</span> 
+            <keep-alive>
+                <student-achievements v-if="activeLabelCode === 'achievement'" v-bind:student_code="'200808001'" v-bind:student_name="'王暄'"></student-achievements>
+            </keep-alive>
+        </el-tab-pane>
+        
+        <el-tab-pane :name="'plan'">
+            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>学习计划</span> 
+            略
         </el-tab-pane>
         <el-tab-pane :name="'otherinfo'">
             <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>其他信息</span> 生日礼物？
@@ -30,6 +37,8 @@
 <script>
 import studentDetailBaseInfo from '@/page/studentDetailBaseInfo'
 import studentDetailCourseHistory from '@/page/studentDetailCourseHistory'
+import studentDetailAchievements from '@/page/studentDetailAchievements'
+
 
 export default {
     data() {
@@ -59,7 +68,8 @@ export default {
     },
     components: {
         "student-base-info" : studentDetailBaseInfo,
-        "student-course-history" : studentDetailCourseHistory
+        "student-course-history" : studentDetailCourseHistory,
+        "student-achievements":studentDetailAchievements
 
     },
     methods: {

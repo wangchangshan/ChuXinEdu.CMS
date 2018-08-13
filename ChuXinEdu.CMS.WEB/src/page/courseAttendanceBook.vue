@@ -41,7 +41,6 @@
 
         <el-dialog :title="signInDialog.title" :visible.sync="signInDialog.show" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
             <div class="form">
-
                 <el-form ref="studentCourseInfo" :model="signInDialog.studentCourseInfo" :rules="signInDialog.studentCourseInfoRules" :label-width="signInDialog.formLabelWidth" :label-position='signInDialog.labelPosition' size="mini" style="margin:10px;width:auto;" label-suffix='：'>
                     <el-form-item label="姓名">
                         {{signInDialog.studentCourseInfo.student_name}}
