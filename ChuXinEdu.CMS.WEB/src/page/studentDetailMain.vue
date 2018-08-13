@@ -16,7 +16,12 @@
         <el-tab-pane :name="'achievement'">
             <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>作品展示</span> 
             <keep-alive>
-                <student-achievements v-if="activeLabelCode === 'achievement'" v-bind:student_code="'200808001'" v-bind:student_name="'王暄'"></student-achievements>
+                <student-achievements 
+                    v-if="activeLabelCode === 'achievement'" 
+                    v-bind:student_code="'200808001'" 
+                    v-bind:student_name="'王暄'" 
+                    v-bind:style="{height: pageHeight}">
+                </student-achievements>
             </keep-alive>
         </el-tab-pane>
         
@@ -43,28 +48,12 @@ import studentDetailAchievements from '@/page/studentDetailAchievements'
 export default {
     data() {
         return {
+            pageHeight: '500px',//this.$store.state.page.win_content.height,  
             activeLabelCode: 'baseinfo'
         }
     },
     created() {
-        //this.$router.addRoutes(asyncRouterMap);
-        // this.$router.addRoutes([{
-        //     path: '/studentDetailMain',
-        //     // 在/foo下设置一个子路由
-        //     children: [
-        //         {
-        //             path: '/baseInfo',
-        //                 // 当匹配到/foo/bar时，会在Foo's <router-view>内渲染
-        //                 // 一个Bar组件
-        //             component: studentDetailBaseInfo
-        //         },{
-        //             path: '/historyCourseList',
-        //                 // Baz也是一样，不同之处是匹配的路由会是/foo/baz
-        //             component: studentDetailCourseHistory
-        //         }]
-        //     }
-        // ])
-
+        console.log('pageHeight ： '+ this.pageHeight);
     },
     components: {
         "student-base-info" : studentDetailBaseInfo,

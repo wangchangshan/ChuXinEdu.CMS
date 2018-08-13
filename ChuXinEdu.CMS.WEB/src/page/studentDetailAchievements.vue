@@ -2,48 +2,40 @@
 <div class="fallcontain">
     <el-row type="flex" class="row-bg" justify="space-around">
         <el-col :span="7">
-            <el-card :body-style="{ padding: '0px' }">
-                <img src="../../static/image/test.jpg" class="image">
+            <el-card v-for="achievement in achievementList1" 
+                :key="achievement.achievement_code" :body-style="{ padding: '0px' }" style="margin-bottom:5px">
+                <img :src="achievement.achievement_path" class="image">
                 <div style="padding: 14px;">
-                    <span>动物——老虎</span>
+                    <span>{{achievement.achievement_desc}}</span>
                     <div class="bottom clearfix">
-                        <time class="time">{{ currentDate }}</time>
-                        <el-rate v-model="achievementRate" :allow-half = "true" class="right"></el-rate>
-                    </div>
-                </div>
-            </el-card>
-            <div style="height:5px"></div>
-            <el-card :body-style="{ padding: '0px' }">
-                <img src="../../static/image/test2.jpg" class="image">
-                <div style="padding: 14px;">
-                    <span>老鼠的早餐</span>
-                    <div class="bottom clearfix">
-                        <time class="time">{{ currentDate }}</time>
-                        <el-rate v-model="achievementRate" :allow-half = "true" class="right"></el-rate>
+                        <time class="time">{{ achievement.achievement_date }}</time>
+                        <el-rate v-model="achievement.achievement_rate" :allow-half = "true" class="right"></el-rate>
                     </div>
                 </div>
             </el-card>
         </el-col>
         <el-col :span="7">
-            <el-card :body-style="{ padding: '0px' }">
-                <img src="../../static/image/test2.jpg" class="image">
+            <el-card v-for="achievement in achievementList2" 
+                :key="achievement.achievement_code" :body-style="{ padding: '0px' }">
+                <img :src="achievement.achievement_path" class="image">
                 <div style="padding: 14px;">
-                    <span>老鼠的早餐</span>
+                    <span>{{achievement.achievement_desc}}</span>
                     <div class="bottom clearfix">
-                        <time class="time">{{ currentDate }}</time>
-                        <el-rate v-model="achievementRate" :allow-half = "true" class="right"></el-rate>
+                        <time class="time">{{ achievement.achievement_date }}</time>
+                        <el-rate v-model="achievement.achievement_rate" :allow-half = "true" class="right"></el-rate>
                     </div>
                 </div>
             </el-card>
         </el-col>
         <el-col :span="7">
-            <el-card :body-style="{ padding: '0px' }">
-                <img src="../../static/image/test3.jpg" class="image">
+            <el-card v-for="achievement in achievementList3" 
+                :key="achievement.achievement_code" :body-style="{ padding: '0px' }">
+                <img :src="achievement.achievement_path" class="image">
                 <div style="padding: 14px;">
-                    <span>小幅山水画</span>
+                    <span>{{achievement.achievement_desc}}</span>
                     <div class="bottom clearfix">
-                        <time class="time">{{ currentDate }}</time>
-                        <el-rate v-model="achievementRate" :allow-half = "true" class="right"></el-rate>
+                        <time class="time">{{ achievement.achievement_date }}</time>
+                        <el-rate v-model="achievement.achievement_rate" :allow-half = "true" class="right"></el-rate>
                     </div>
                 </div>
             </el-card>
@@ -56,21 +48,54 @@
 export default {
     data(){
         return {
-            currentDate: '2018-08-07',
-            achievementRate: null, 
+            achievementList1:[],
+            achievementList2:[],
+            achievementList3:[],
             achievementList:[{
-                achievementRate:'',
+                achievement_code: '1',
+                achievement_path:'../../static/image/test.jpg',
+                achievement_desc:'动物——老虎',
+                achievement_date:'2018-08-07',
+                achievement_rate:null,
             },{
-                achievementRate:'',
-            }]
+                achievement_code: '2',
+                achievement_path:'../../static/image/test2.jpg',
+                achievement_desc:'老鼠的早餐',
+                achievement_date:'2018-08-07',
+                achievement_rate:null,
+            },{
+                achievement_code: '3',
+                achievement_path:'../../static/image/test3.jpg',
+                achievement_desc:'小幅山水画',
+                achievement_date:'2018-08-07',
+                achievement_rate:null,
+            },{
+                achievement_code: '4',
+                achievement_path:'../../static/image/test3.jpg',
+                achievement_desc:'小幅山水画',
+                achievement_date:'2018-08-07',
+                achievement_rate:null,
+            }], 
         }
+    },
+    created(){
+        this.achievementList.forEach((item, index) => {
+            if((index + 1) % 3 === 1){
+                this.achievementList1.push(item);
+            }
+            else if((index + 1) % 3 === 2){
+                this.achievementList2.push(item);
+            }
+            else {
+                this.achievementList3.push(item);
+            }
+        });
     }
 }
 </script>
 
 <style lang="less" scoped>
 .fallcontain{
-    height: 100%;
     overflow-y: auto;
 }
 
