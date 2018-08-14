@@ -56,13 +56,13 @@ export default {
                 achievement_path:'../../static/image/test.jpg',
                 achievement_desc:'动物——老虎',
                 achievement_date:'2018-08-07',
-                achievement_rate:null,
+                achievement_rate:5,
             },{
                 achievement_code: '2',
                 achievement_path:'../../static/image/test2.jpg',
                 achievement_desc:'老鼠的早餐',
                 achievement_date:'2018-08-07',
-                achievement_rate:null,
+                achievement_rate:4.5,
             },{
                 achievement_code: '3',
                 achievement_path:'../../static/image/test3.jpg',

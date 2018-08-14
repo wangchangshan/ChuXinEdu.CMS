@@ -4,7 +4,6 @@
         <el-tab-pane :name="'baseinfo'">
             <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>基础信息</span>
             <student-base-info v-if="activeLabelCode === 'baseinfo'"></student-base-info>
-            包括：个人基础信息、课程报名信息、缴费信息。
         </el-tab-pane>
         <el-tab-pane :name="'history'">
             <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>课程记录</span> 
@@ -20,7 +19,7 @@
                     v-if="activeLabelCode === 'achievement'" 
                     v-bind:student_code="'200808001'" 
                     v-bind:student_name="'王暄'" 
-                    v-bind:style="{height: pageHeight}">
+                    v-bind:style="{height: pageHeight + 'px'}">
                 </student-achievements>
             </keep-alive>
         </el-tab-pane>
@@ -48,7 +47,7 @@ import studentDetailAchievements from '@/page/studentDetailAchievements'
 export default {
     data() {
         return {
-            pageHeight: '500px',//this.$store.state.page.win_content.height,  
+            pageHeight: this.$store.state.page.win_content.height,  
             activeLabelCode: 'baseinfo'
         }
     },
