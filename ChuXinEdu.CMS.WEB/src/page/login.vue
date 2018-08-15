@@ -164,6 +164,10 @@ export default {
                     component: 'content',
                     icon: 'fa-asterisk',
                     children: [{
+                            path: '/sysDicManager',
+                            name: '字典配置',
+                            component: 'sysDicManager'
+                        },{
                             path: '/sysInfoShow',
                             name: '个人信息',
                             component: 'sysInfoShow'
