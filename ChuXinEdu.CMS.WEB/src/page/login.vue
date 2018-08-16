@@ -94,9 +94,9 @@ export default {
                     icon: 'fa-server',
                     noDropdown: true
                 },
-                // {
-                //     path: '/studentList', name: '学生列表', component: 'studentList', icon: 'fa-user', noDropdown: true
-                // },
+                {
+                    path: '/studentList', name: '学生列表', component: 'studentList', icon: 'fa-user', noDropdown: true
+                },
                 {
                     path: '3',
                     name: '学生信息',
@@ -110,7 +110,7 @@ export default {
                         {
                             path: '/studentList',
                             name: '学生列表',
-                            component: 'studentList'
+                            component: () => import('@/page/studentList')//'studentList'
                         },
                         {
                             path: '/studentDetailMain',
@@ -196,7 +196,7 @@ export default {
                         name: '',
                         hidden: true,
                         component: Home, //require('@/layout/home.vue'), //不能使用require 无法加载component,
-                        redirect: '/index',
+                        redirect: '/studentDetailMain',
                         children: routers
                     }
                 ];

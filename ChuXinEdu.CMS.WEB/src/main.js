@@ -8,10 +8,14 @@ import store from './store/index'
 import ElementUI from 'element-ui'
 import {LocalDB, menuHelper} from './utils/index'
 import Home from '@/layout/home'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.css'
 
 Vue.use(ElementUI)
+
+NProgress.configure({ showSpinner: true })// NProgress Configuration
 
 /**
  * 如果用户刷新页面,导致存入vuex中的菜单数据清空,需要从缓存获取;
@@ -32,12 +36,14 @@ if(menuData) {
             component   :   Home,
             redirect    :   '/index',
             children    :   routes
-        }
+        },
+       // { path: '/studentList', component: () => import('@/page/studentList'), hidden: true },
     ];
     router.addRoutes(asyncRouterMap);
 }
 
 router.beforeEach((to, from, next) => {
+    NProgress.start() // start progress bar
     // 定位到首页时， 清空缓存数据
     //debugger
     if(to.path === '/') {
@@ -51,6 +57,7 @@ router.beforeEach((to, from, next) => {
     // 没有用户信息，route.path不是定位到登录页面的,直接跳登录页面。
     if(!userinfo && to.path !== '/') {
         next({ path: '/' });
+        NProgress.done()
     } else {
         // 有用户信息和路由名称的，直接跳要路由的页面。
         next();
@@ -61,6 +68,10 @@ router.beforeEach((to, from, next) => {
         // }
     }
 });
+
+router.afterEach(() => {
+    NProgress.done() // finish progress bar
+  })
 
 Vue.config.productionTip = false
 

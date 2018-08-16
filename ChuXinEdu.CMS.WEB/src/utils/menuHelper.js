@@ -9,10 +9,12 @@ const menuHelper = {
             const menuobj = menuData[i];
             const component = menuData[i].component;
 
-            if (component && component !== 'content') {
+            if (component && component !== 'content' && typeof component != 'function') {
                 //componentNew = require('@/page/' + menuData[i].component + '.vue')
                 componentNew = lazyLoading.loadPageComponent(menuData[i].component)
-            } else {
+                //componentNew = () => import('@/page/studentList')
+
+            } else if(typeof component != 'function') {
                 //componentNew = require('@/layout/' + menuData[i].component + '.vue')
                 componentNew = lazyLoading.loadLayoutComponent(menuData[i].component)
             }

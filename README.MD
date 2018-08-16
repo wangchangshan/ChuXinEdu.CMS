@@ -49,6 +49,8 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install vuex --save
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install axios --save-dev
 
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install vue-axios --save
+
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install nprogress --save
 ```
 
 ### 6. 修改ChuXinEdu.CMS.WEB项目目录结构如下
