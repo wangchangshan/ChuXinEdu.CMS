@@ -52,7 +52,7 @@ export default {
         }
     },
     created() {
-        console.log('pageHeight ： '+ this.pageHeight);
+        //console.log('pageHeight ： '+ this.pageHeight);
     },
     components: {
         "student-base-info" : studentDetailBaseInfo,

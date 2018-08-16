@@ -5,12 +5,12 @@
                 background-color="#324057" text-color="#fff" active-text-color="#42b983">
                 <template v-for="(item) in $store.state.menu.menuItems" v-if="item.hidden !== true">
                         <!-- 拥有二级菜单 -->
-                        <el-submenu v-if="item.children && !item.noDropdpwn && item.children.length > 0" :index="item.path" :key="item.path" class="dropItem"> 
+                        <el-submenu v-if="item.children && !item.noDropdpwn && item.children.length > 0" :index="item.path" :key="item.key" class="dropItem"> 
                                 <template slot="title">
                                     <i :class="'fa fa-margin ' + item.icon"></i>
                                     <span slot="title">{{item.name}}</span>
                                 </template>
-                            <router-link v-for="(citem) in item.children" :to="citem.path" :key="citem.path">
+                            <router-link v-for="(citem) in item.children" :to="item.path + '/' + citem.path" :key="citem.path">
                                 <el-menu-item :index="citem.path">
                                     <span slot="title"> {{citem.name}} </span>
                                 </el-menu-item>

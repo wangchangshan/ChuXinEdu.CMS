@@ -1,5 +1,5 @@
 <template>
-    <div class="home" v-cloak>
+    <div class="home">
         <head-nav></head-nav>
         <div class="left-fixed-right-auto">
             <left-menu></left-menu>
@@ -9,7 +9,11 @@
                 <div class="content">
                     <bread></bread>
                     <!--页面渲染入口-->
-                    <router-view></router-view>
+                    <transition name="fade-transform" mode="out-in" >
+                        <keep-alive v-cloak>
+                        <router-view ></router-view>
+                        </keep-alive>
+                    </transition>
                 </div>
             </div>
         </div>

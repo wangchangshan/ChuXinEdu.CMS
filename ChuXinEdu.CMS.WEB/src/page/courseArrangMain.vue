@@ -3,7 +3,7 @@
     <el-tabs type="card" @tab-click="handleTabClick">
         <el-tab-pane v-for="room in allRooms" :key="room.code" :label="room.title" :name="room.code">
             <span slot="label" @click="toggleTabs(room.code)"><i class="fa fa-bank"></i>{{room.title}}</span>
-            <!-- {{room.content}} -->
+
             <course-arrange-panel :currentRoomCode="selectedRoomCode"></course-arrange-panel>
             <!-- 
             -->
@@ -23,11 +23,9 @@ export default {
             allRooms: [{
                 title: '1号教室',
                 code: 'room1',
-                content: '1号教室内容'
             },{
                 title: '2号教室',
                 code: 'room2',
-                content: '2号教室内容'
             }],
         }
     },

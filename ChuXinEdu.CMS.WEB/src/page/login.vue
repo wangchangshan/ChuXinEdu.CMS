@@ -94,55 +94,70 @@ export default {
                     icon: 'fa-server',
                     noDropdown: true
                 },
+                // {
+                //     path: '/studentAdd',
+                //     name: '新增学生',
+                //     component: 'studentAdd',
+                //     icon: 'fa-server',
+                //     noDropdown: true
+                // },
+                // {
+                //     path: '/studentList',
+                //     name: '学生列表',
+                //     component: 'studentList',
+                //     icon: 'fa-server',
+                //     noDropdown: true
+                // },
                 {
-                    path: '/studentList', name: '学生列表', component: 'studentList', icon: 'fa-user', noDropdown: true
-                },
-                {
-                    path: '3',
+                    path: '/student',
+                    key: '1',
                     name: '学生信息',
                     component: 'content',
                     icon: 'fa-user',
-                    children: [{
-                            path: '/studentAdd',
+                    children: [
+                        {
+                            path: 'studentAdd',
                             name: '新增学生',
                             component: 'studentAdd'
                         },
                         {
-                            path: '/studentList',
+                            path: 'studentList',
                             name: '学生列表',
-                            component: () => import('@/page/studentList')//'studentList'
+                            component: 'studentList' //() => import('@/page/studentList')
                         },
                         {
-                            path: '/studentDetailMain',
+                            path: 'studentDetailMain',
                             name: '学生详细',
                             component: 'studentDetailMain'
                         },
                     ]
                 },
                 {
-                    path: '2',
+                    path: '/course',
+                    key:'2',
                     name: '课程管理',
                     component: 'content',
                     icon: 'fa-asterisk',
                     children: [{
-                            path: '/coursePackageList',
+                            path: 'coursePackageList',
                             name: '课程套餐',
                             component: 'coursePackageList'
                         },
                         {
-                            path: '/courseArrangMain',
+                            path: 'courseArrangMain',
                             name: '排课安排',
                             component: 'courseArrangMain'
                         },
                         {
-                            path: '/courseAttendanceBook',
+                            path: 'courseAttendanceBook',
                             name: '待签到',
                             component: 'courseAttendanceBook'
                         }
                     ]
                 },
                 {
-                    path: '4',
+                    path: '/4',
+                    key:'3',
                     name: '活动组织',
                     component: 'content',
                     icon: 'fa-asterisk',
@@ -159,7 +174,8 @@ export default {
                     ]
                 },
                 {
-                    path: '1',
+                    path: '/1',
+                    key:'4',
                     name: '系统管理',
                     component: 'content',
                     icon: 'fa-asterisk',
@@ -196,7 +212,7 @@ export default {
                         name: '',
                         hidden: true,
                         component: Home, //require('@/layout/home.vue'), //不能使用require 无法加载component,
-                        redirect: '/studentDetailMain',
+                        redirect: '/student/studentDetailMain',
                         children: routers
                     }
                 ];

@@ -15,7 +15,7 @@ import 'font-awesome/css/font-awesome.css'
 
 Vue.use(ElementUI)
 
-NProgress.configure({ showSpinner: true })// NProgress Configuration
+NProgress.configure({ showSpinner: false })// NProgress Configuration
 
 /**
  * 如果用户刷新页面,导致存入vuex中的菜单数据清空,需要从缓存获取;
@@ -25,7 +25,7 @@ var menuData = '';
 if(strMenuData) {
     menuData = JSON.parse(strMenuData)
 } 
-if(menuData) {
+if(false) { //menuData  存在router会重复的问题 或者退出登录的时候需要清空路由
     store.commit('ADD_MENU', menuData);  // ?? commit or dispatch ,将缓存数据注入到store中
     const routes = menuHelper.generateRoutesFromMenu(menuData)  //根据菜单生成的路由信息
     const asyncRouterMap = [

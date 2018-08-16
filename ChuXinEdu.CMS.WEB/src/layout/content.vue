@@ -8,7 +8,7 @@
 
 <script>
     export default {
-        name: 'content',
+        name: 'page-content',
         data(){
             return {
 
