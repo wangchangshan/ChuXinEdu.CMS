@@ -48,6 +48,7 @@
                     height:document.body.clientHeight - 73,
                     width:document.body.clientWidth - 183
                 }
+                console.log('重新计算页面宽高');
                 //将content部分的宽高，存入store中，
                 this.$store.dispatch('set_win_content',this.win_size); //触发动作，content部分的宽高也随即改变。
             },
