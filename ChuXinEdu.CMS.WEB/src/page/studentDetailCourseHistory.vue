@@ -13,6 +13,8 @@
             </el-table-column>
             <el-table-column prop="course_desc" label="内容简介" align='center' min-width="140">
             </el-table-column>
+            <el-table-column prop="course_type" label="课程标识" align='center' min-width="140">
+            </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="215">
                 <template slot-scope='scope'>
                     <el-button type="warning" size="small" @click='uploadAchievement(scope.row)'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
@@ -72,28 +74,32 @@ export default {
                     student_course_time: '16:00-17:30',
                     student_course_content: '国画',
                     course_teacher_code: '唐得红',
-                    course_desc: '山水画'
+                    course_desc: '山水画',
+                    course_type:'正式'
                 },
                 {
                     student_course_date: '2018-08-09',
                     student_course_time: '17:30-19:00',
                     student_course_content: '国画',
                     course_teacher_code: '唐得红',
-                    course_desc: '山水画'
+                    course_desc: '山水画',
+                    course_type:'正式'
                 },
                 {
                     student_course_date: '2018-08-10',
                     student_course_time: '16:00-17:30',
                     student_course_content: '西画',
                     course_teacher_code: '马朝',
-                    course_desc: '山水画'
+                    course_desc: '山水画',
+                    course_type:'试听'
                 },
                 {
                     student_course_date: '2018-08-11',
                     student_course_time: '16:00-17:30',
                     student_course_content: '西画',
                     course_teacher_code: '马朝',
-                    course_desc: '山水画'
+                    course_desc: '山水画',
+                    course_type:'正式'
                 },
             ],
             dateRowSpanArray: [],

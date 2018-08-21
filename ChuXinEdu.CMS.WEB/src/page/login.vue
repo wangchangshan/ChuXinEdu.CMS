@@ -205,13 +205,13 @@ export default {
                         path: '/404',
                         name: '404',
                         hidden: true,
-                        component: NotFound //require('@/page/404.vue')  //不能使用require 无法加载component,
+                        component: NotFound 
                     },
                     {
                         path: '/layout',
                         name: '',
                         hidden: true,
-                        component: Home, //require('@/layout/home.vue'), //不能使用require 无法加载component,
+                        component: Home,
                         redirect: '/student/studentDetailMain',
                         children: routers
                     }

@@ -39,8 +39,18 @@
                             </ul>
                         </div>
                         <div class="student-list-footer">
-                            <el-button type="danger" @click="removeStudent()" icon="el-icon-delete" size="mini" circle></el-button>
-                            <el-button type="success" @click="addStudent()" icon="el-icon-plus" size="mini" circle></el-button>
+                            <!-- <el-button type="danger" @click="removeStudent()" icon="el-icon-delete" size="mini" circle></el-button> -->
+                            <el-button type="warning" @click="removeStudent()" icon="el-icon-plus" size="mini">试听</el-button>
+                            <el-button type="success" @click="addStudent()" icon="el-icon-plus" size="mini">排课</el-button>
+                            <!-- <el-dropdown size="mini"  @command="handleCommand">
+                                <el-button type="success" icon="el-icon-menu" size="mini">
+                                    操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                </el-button>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item command="正式">添加正式排课</el-dropdown-item>
+                                    <el-dropdown-item command="试听">添加试听</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown> -->
                         </div>
                     </el-collapse-item>
                     <el-collapse-item title="反馈" name="2">
@@ -131,15 +141,15 @@
         <el-col :span="3">
             <div class="week-panel">
                 <p class="title">按钮区域</p>
-                <el-button type="success"  size="mini">假期安排</el-button>
-                 <el-date-picker type="dates" v-model="holidays" placeholder="选择放假日期">
+                <el-button type="success" size="mini">假期安排</el-button>
+                <el-date-picker type="dates" v-model="holidays" placeholder="选择放假日期">
                 </el-date-picker>
             </div>
         </el-col>
     </el-row>
-   
+
     <el-dialog title="选择学生 [星期一 16:00-17:30]" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false">
-        <el-table :data="selectStudentDialog.studentList"  max-height="400" @selection-change="handleStudentSelectionChange">
+        <el-table :data="selectStudentDialog.studentList" max-height="400" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="student_code" label="学号" width="100"></el-table-column>
             <el-table-column property="student_name" label="姓名" width="90"></el-table-column>
@@ -148,12 +158,12 @@
             <el-table-column property="student_selected_course_count" label="选择课时数" min-width="100">
                 <template slot-scope="scope">
                     <el-input-number v-model="scope.row.student_selected_course_count" :min="1" :max="scope.row.student_course_remain_count" label="描述文字" size="small"></el-input-number>
-                </template> 
+                </template>
             </el-table-column>
             <el-table-column property="first_start_date" label="开始上课日期" min-width="200">
                 <template slot-scope="scope">
                     <el-date-picker v-model="scope.row.first_start_date" type="date" size="small" placeholder="选择日期" :picker-options="selectStudentDialog.pickerStartDateOptions">
-                    </el-date-picker> 
+                    </el-date-picker>
                 </template>
             </el-table-column>
         </el-table>
@@ -164,19 +174,19 @@
     </el-dialog>
 
     <el-dialog title="学生排课列表 李世民 星期一 16:00-17:30" :visible.sync="editStudentDialog.isShow" :modal-append-to-body="false">
-        <el-table :data="editStudentDialog.studentList"  max-height="400" @selection-change="handleStudentSelectionChange">
+        <el-table :data="editStudentDialog.studentList" max-height="400" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="course_date" label="上课日期" width="100"></el-table-column>
             <el-table-column property="course_type" label="课程类别" width="120" align='center'></el-table-column>
             <el-table-column property="course_status" label="状态" width="120" align='center'>
-                 <template slot-scope="scope">
-                        <el-tag :disable-transitions="false">
-                            {{scope.row.course_status}}
-                        </el-tag>
-                    </template> 
+                <template slot-scope="scope">
+                    <el-tag :disable-transitions="false">
+                        {{scope.row.course_status}}
+                    </el-tag>
+                </template>
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="300">
-                <template slot-scope='scope'>                    
+                <template slot-scope='scope'>
                     <el-button type="warning" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>请假顺延</el-button>
                     <el-button type="primary" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>调课</el-button>
                     <el-button type="danger" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>删除</el-button>
@@ -196,42 +206,43 @@ export default {
     data() {
         return {
             testContent: '',
-            holidays:[],
+            holidays: [],
             active_titles_Monday: ['1', '2'],
-            selectStudentDialog:{
+            selectStudentDialog: {
                 isShow: false,
                 studentList: [{
-                    student_code: "200808001",
-                    student_name:"段延庆",
-                    student_course:"书法",
-                    student_course_remain_count:20,
-                    student_selected_course_count:20,
-                    first_start_date:''
-                },
-                {
-                    student_code: "200808001",
-                    student_name:"段延庆",
-                    student_course:"书法",
-                    student_course_remain_count:20,
-                    student_selected_course_count:20,
-                    first_start_date:''
-                },
-                {
-                    student_code: "200808001",
-                    student_name:"段延庆",
-                    student_course:"书法",
-                    student_course_remain_count:20,
-                    student_selected_course_count:20,
-                    first_start_date:''
-                },
-                {
-                    student_code: "200808001",
-                    student_name:"段延庆",
-                    student_course:"书法",
-                    student_course_remain_count:20,
-                    student_selected_course_count:20,
-                    first_start_date:''
-                }],
+                        student_code: "200808001",
+                        student_name: "段延庆",
+                        student_course: "书法",
+                        student_course_remain_count: 20,
+                        student_selected_course_count: 20,
+                        first_start_date: ''
+                    },
+                    {
+                        student_code: "200808001",
+                        student_name: "段延庆",
+                        student_course: "书法",
+                        student_course_remain_count: 20,
+                        student_selected_course_count: 20,
+                        first_start_date: ''
+                    },
+                    {
+                        student_code: "200808001",
+                        student_name: "段延庆",
+                        student_course: "书法",
+                        student_course_remain_count: 20,
+                        student_selected_course_count: 20,
+                        first_start_date: ''
+                    },
+                    {
+                        student_code: "200808001",
+                        student_name: "段延庆",
+                        student_course: "书法",
+                        student_course_remain_count: 20,
+                        student_selected_course_count: 20,
+                        first_start_date: ''
+                    }
+                ],
                 selectedStudents: [],
                 pickerStartDateOptions: {
                     disabledDate(time) {
@@ -239,29 +250,30 @@ export default {
                     }
                 }
             },
-            editStudentDialog:{
+            editStudentDialog: {
                 isShow: false,
                 student_code: '',
                 studentList: [{
-                    course_date: "2008-08-06",
-                    course_type: "国画",
-                    course_status: "已上课"
-                },
-                {
-                    course_date: "2008-08-13",
-                    course_type: "国画",
-                    course_status: "请假"
-                },
-                {
-                    course_date: "2008-08-20",
-                    course_type: "国画",
-                    course_status: "待上课"
-                },
-                {
-                    course_date: "2008-08-27",
-                    course_type: "国画",
-                    course_status: "待上课"
-                }]
+                        course_date: "2008-08-06",
+                        course_type: "国画",
+                        course_status: "已上课"
+                    },
+                    {
+                        course_date: "2008-08-13",
+                        course_type: "国画",
+                        course_status: "请假"
+                    },
+                    {
+                        course_date: "2008-08-20",
+                        course_type: "国画",
+                        course_status: "待上课"
+                    },
+                    {
+                        course_date: "2008-08-27",
+                        course_type: "国画",
+                        course_status: "待上课"
+                    }
+                ]
             }
         }
     },
@@ -290,14 +302,20 @@ export default {
             //alert('显示当前学生当前时间段的所有课程列表')
             this.editStudentDialog.isShow = true;
         },
-        handleStudentSelectionChange(allItems){
+        handleStudentSelectionChange(allItems) {
             this.selectStudentDialog.selectedStudents = allItems;
         },
-        submitStudents(){
+        submitStudents() {
             alert("待开发")
         },
-        removeCurrentCourse(){
+        removeCurrentCourse() {
             alert("待开发")
+        },
+        handleCommand(command){
+            //this.$message('click on item ' + command);
+            if(command === '正式'){
+                this.selectStudentDialog.isShow = true;
+            }
         }
     }
 }
@@ -353,7 +371,7 @@ export default {
             }
             .student-list-footer {
                 float: right;
-                margin-right: 20px;
+                margin-right: 15px;
                 margin-top: 6px;
                 margin-bottom: 6px;
             }
@@ -361,12 +379,12 @@ export default {
     }
 }
 
-.footer-botton-area{
+.footer-botton-area {
     width: 100%;
     height: 25px;
     margin-right: 20px;
     margin-top: 10px;
-    .el-button{
+    .el-button {
         float: right;
         margin-right: 10px
     }

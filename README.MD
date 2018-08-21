@@ -131,5 +131,16 @@ E:\mynewproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB > npm install vue-cli -g
 ##下载依赖包，生成node_modules目录
 E:\mynewproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB > npm install --save-dev
 ```
+## Server part
+### 10. 安装依赖包
+#### 10.1 通过nuget.org官网搜索需要的依赖包
+#### 10.2 使用命令安装所需依赖包，注意查看依赖项
+```bash
+## EFcore for mysql
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package MySql.Data --version 8.0.12
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.EntityFrameworkCore --version 2.1.1
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.EntityFrameworkCore.Relational --version 2.1.1
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package MySql.Data.EntityFrameworkCore --version 8.0.12
+```
 
 

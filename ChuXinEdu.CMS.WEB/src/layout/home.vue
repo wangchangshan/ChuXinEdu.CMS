@@ -10,9 +10,7 @@
                     <bread></bread>
                     <!--页面渲染入口-->
                     <transition name="fade-transform" mode="out-in" >
-                        <keep-alive v-cloak>
                         <router-view ></router-view>
-                        </keep-alive>
                     </transition>
                 </div>
             </div>
@@ -76,8 +74,5 @@
      .content{
        width:100%;
        height:100%;
-    }
-    [v-cloak] {
-        display: none !important;
     }
 </style>
