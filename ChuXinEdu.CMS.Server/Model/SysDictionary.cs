@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChuXinEdu.CMS.Server.Model
 {
+    [Table("sys_dictionary")]
     public class SysDictionary
     {
         [Key]

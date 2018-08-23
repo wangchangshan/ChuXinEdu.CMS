@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+//using ChuXinEdu.CMS.Server.Context;
 
 namespace ChuXinEdu.CMS.Server
 {
@@ -25,6 +27,7 @@ namespace ChuXinEdu.CMS.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddDbContext<DictionaryContext>(options => options.UseMySQL(Configuration.GetConnectionString("MySqlConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

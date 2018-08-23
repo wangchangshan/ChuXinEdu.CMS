@@ -135,12 +135,11 @@ E:\mynewproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB > npm install --save-dev
 ### 10. 安装依赖包
 #### 10.1 通过nuget.org官网搜索需要的依赖包
 #### 10.2 使用命令安装所需依赖包，注意查看依赖项
+由于MySql.Data.EntityFrameworkCore无法支持netcore.2.1，因此使用[Pomelo.EntityFrameworkCore.MySql](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql)
 ```bash
-## EFcore for mysql
-D:\myproject\ChuXinEdu.CMS.Server> dotnet add package MySql.Data --version 8.0.12
-D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.EntityFrameworkCore --version 2.1.1
-D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.EntityFrameworkCore.Relational --version 2.1.1
-D:\myproject\ChuXinEdu.CMS.Server> dotnet add package MySql.Data.EntityFrameworkCore --version 8.0.12
+## EFcore for mysql （）
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.AspNetCore.All --version 2.1.2
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Pomelo.EntityFrameworkCore.MySql --version 2.1.1
 ```
 
 
