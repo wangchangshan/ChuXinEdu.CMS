@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-//using ChuXinEdu.CMS.Server.Context;
+using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.BLLService;
 using ChuXinEdu.CMS.Server.Utils;
@@ -31,7 +31,7 @@ namespace ChuXinEdu.CMS.Server
         public void ConfigureServices(IServiceCollection services)
         {
             // mysql 数据连接配置
-            //services.AddDbContext<DictionaryContext>(options => options.UseMySql(Configuration.GetConnectionString("MySqlConnection")));
+            services.AddDbContext<MyDbContext>(options => options.UseMySql(Configuration.GetConnectionString("MySqlConnection")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

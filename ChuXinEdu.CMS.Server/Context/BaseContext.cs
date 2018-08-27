@@ -3,10 +3,10 @@ using System;
 using System.Data;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Extensions;
 using Microsoft.Extensions.Configuration;
 using MySql.Data;
 using MySql.Data.MySqlClient;
-using MySql.Data.MySqlClient.MySqlClientFactory;
 using ChuXinEdu.CMS.Server.Model;
 
 namespace ChuXinEdu.CMS.Server.Context
@@ -15,7 +15,6 @@ namespace ChuXinEdu.CMS.Server.Context
     {
         public BaseContext() : base()
         {
-
         }
         public BaseContext(DbContextOptions<BaseContext> options) : base(options)
         {
@@ -30,12 +29,12 @@ namespace ChuXinEdu.CMS.Server.Context
 				{
 					try
 					{
-						DbProviderFactory factory = DbProviderFactories.GetFactory("MySql.Data.MySqlClient");
+						DbProviderFactory factory = DbProviderFactories.GetFactory(sysContext.Database.GetDbConnection());
 						using (var cmd = CreateCommand(factory, args))
 						{
 							cmd.CommandText = sql;
 							cmd.CommandType = CommandType.Text;
-							cmd.Connection = sysContext.Database.Connection;
+							cmd.Connection = sysContext.Database.GetDbConnection();
 							using (var adapter = factory.CreateDataAdapter())
 							{
 								adapter.SelectCommand = cmd;
@@ -57,7 +56,7 @@ namespace ChuXinEdu.CMS.Server.Context
 			}
 		}
 
-        private static MySqlCommand CreateCommand(DbProviderFactory factory, params object[] args)
+        private static DbCommand CreateCommand(DbProviderFactory factory, params object[] args)
 		{
 			var cmd = factory.CreateCommand();
 			// Construct SQL parameters
