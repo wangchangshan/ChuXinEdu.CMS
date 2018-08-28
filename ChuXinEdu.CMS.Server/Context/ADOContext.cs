@@ -6,34 +6,41 @@ using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Extensions;
 using Microsoft.Extensions.Configuration;
-using MySql.Data;
 using MySql.Data.MySqlClient;
 
 namespace ChuXinEdu.CMS.Server.Context
 {
-    public class MyDbContext : DbContext
+    public class ADOContext : DbContext
     {
-        public MyDbContext(DbContextOptions options)
+        public ADOContext() : base()
+        {
+
+        }
+        public ADOContext(DbContextOptions options)
         : base(options)
         { }
         public static DataTable GetDataTable(string sql, params object[] args)
         {
             try
             {
-                DbProviderFactory factory = DbProviderFactories.GetFactory(sysContext.Database.GetDbConnection());
-                        using (var cmd = CreateCommand(factory, args))
+                using (ADOContext adoContext = new ADOContext())
+                {
+                    DbProviderFactory factory = DbProviderFactories.GetFactory(adoContext.Database.GetDbConnection());
+                    using (var cmd = CreateCommand(factory, args))
+                    {
+                        cmd.CommandText = sql;
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Connection = adoContext.Database.GetDbConnection();
+                        using (var adapter = factory.CreateDataAdapter())
                         {
-                            cmd.CommandText = sql;
-                            cmd.CommandType = CommandType.Text;
-                            cmd.Connection = sysContext.Database.GetDbConnection();
-                            using (var adapter = factory.CreateDataAdapter())
-                            {
-                                adapter.SelectCommand = cmd;
-                                var dt = new DataTable();
-                                adapter.Fill(dt);
-                                return dt;
-                            }
+                            adapter.SelectCommand = cmd;
+                            var dt = new DataTable();
+                            adapter.Fill(dt);
+                            return dt;
                         }
+                    }
+                }
+
             }
             catch (Exception ex)
             {
@@ -66,6 +73,9 @@ namespace ChuXinEdu.CMS.Server.Context
             return cmd;
         }
 
-
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseMySql("server=localhost;database=chuxin;user=cswang;password=123456a?;port=3306;sslmode=none;");
+        }
     }
 }

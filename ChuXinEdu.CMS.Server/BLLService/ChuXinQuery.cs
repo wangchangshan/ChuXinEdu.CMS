@@ -2,10 +2,11 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.Context;
+using ChuXinEdu.CMS.Server.ViewModel;
 
 namespace ChuXinEdu.CMS.Server.BLLService
 {
@@ -21,15 +22,33 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public Student GetStudentByCode(string studentCode)
         {
-            var aa = MyDbContext.GetDataTable("select * from student");
             using (BaseContext context = new BaseContext())
             {
-                //var bb = context.Database.SqlQuery<Student>("select * from student");
-                //var cc = BaseContext.Student.FromSql("");
                 return context.Student.Where(s => s.StudentCode == studentCode).FirstOrDefault();
+            }
+        }
 
+        public StudentDescTest GetStudentDescTest(string studentCode)
+        {
+            // ado
+            DataTable aa = ADOContext.GetDataTable("select * from student");
+            DataTable bb = ADOContext.GetDataTable("select * from student where student_code=@1", studentCode);
+
+            // linq
+            using (BaseContext context = new BaseContext())
+            {
+                var cc = context.Student.Where(s => s.StudentCode == studentCode).FirstOrDefault();
             }
 
+            // raw sql
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentDescTest.FromSql($@"select s.id,s.student_name,s.student_status,d.item_name as student_status_desc 
+                    from student s 
+                    left join sys_dictionary d on  s.student_status = d.item_code and d.type_code = 'student_status' 
+                    where s.student_code = {studentCode}
+                ").FirstOrDefault();
+            }
         }
     }
 }

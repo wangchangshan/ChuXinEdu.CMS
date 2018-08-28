@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using ChuXinEdu.CMS.Server.Model;
+using ChuXinEdu.CMS.Server.ViewModel;
 
 namespace ChuXinEdu.CMS.Server.BLL
 {
@@ -13,5 +14,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         IEnumerable<Student> GetAllStudents();
 
         Student GetStudentByCode(string sutdentCode);
+
+        StudentDescTest GetStudentDescTest(string studentCode);
     }
 }

@@ -31,7 +31,7 @@ namespace ChuXinEdu.CMS.Server
         public void ConfigureServices(IServiceCollection services)
         {
             // mysql 数据连接配置
-            services.AddDbContext<MyDbContext>(options => options.UseMySql(Configuration.GetConnectionString("MySqlConnection")));
+            //services.AddDbContext<ADOContext>(options => options.UseMySql(Configuration.GetConnectionString("MySqlConnection")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

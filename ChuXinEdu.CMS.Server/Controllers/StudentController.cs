@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
+using ChuXinEdu.CMS.Server.ViewModel;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -23,14 +24,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Student>> GetAll()
         {
-            //  /api/student           
-            // Student[] studentAll = null;
-            // using (var context = new BaseContext())
-            // {
-            //     studentAll =  context.Student.ToList().ToArray();
-            // }
-            // return studentAll;
-
+            //  /api/student        
             return _chuxinQuery.GetAllStudents().ToArray();
         }
 
@@ -51,12 +45,28 @@ namespace ChuXinEdu.CMS.Server.Controllers
         //     return item;
         // }
 
-        [HttpGet("{studentcode}", Name="GetStudentByCode")]
-        public Student GetByCode(string studentCode)
-        {
-            Student student = _chuxinQuery.GetStudentByCode(studentCode);
+        // [HttpGet("{studentcode}", Name="GetStudentByCode")]
+        // public Student GetByCode(string studentCode)
+        // {
+        //     //  /api/student/BJ-2018070001
 
-            return student;
+        //     Student student = _chuxinQuery.GetStudentByCode(studentCode);
+
+        //     if(student == null)
+        //     {
+
+        //     }
+        //     return student;
+        // }
+
+        // 数据连接测试
+        [HttpGet("{studentcode}", Name = "GetStudentDescByCode")]
+        public StudentDescTest GetStudentDescByCode(string studentCode)
+        {
+            StudentDescTest studentDesc = _chuxinQuery.GetStudentDescTest(studentCode);
+
+            return studentDesc;
         }
+
     }   
 }
