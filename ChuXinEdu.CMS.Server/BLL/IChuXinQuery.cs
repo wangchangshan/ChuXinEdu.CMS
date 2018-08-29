@@ -13,7 +13,9 @@ namespace ChuXinEdu.CMS.Server.BLL
     {
         IEnumerable<Student> GetAllStudents();
 
-        Student GetStudentByCode(string sutdentCode);
+        IEnumerable<Student> GetStudentsByName(string studentName);
+
+        Student GetStudentBaseByCode(string sutdentCode);
 
         StudentDescTest GetStudentDescTest(string studentCode);
     }

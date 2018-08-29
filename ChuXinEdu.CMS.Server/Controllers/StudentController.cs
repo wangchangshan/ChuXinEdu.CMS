@@ -21,52 +21,80 @@ namespace ChuXinEdu.CMS.Server.Controllers
             _chuxinQuery = chuxinQuery;            
         }
 
+        /// <summary>
+        /// 获取所有学生list GET api/student
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public ActionResult<IEnumerable<Student>> GetAll()
-        {
-            //  /api/student        
-            return _chuxinQuery.GetAllStudents().ToArray();
-        }
+        public IEnumerable<Student> GetALL() => _chuxinQuery.GetAllStudents();
 
-        // [HttpGet("{studentcode}", Name="GetStudentByCode")]
-        // public IEnumerable<Student> GetByCode(string studentCode)
+
+        // /// <summary>
+        // /// 通过学生姓名获取学生list GET api/student/怀远
+        // /// </summary>
+        // /// <returns></returns>
+        // [HttpGet("{studentname}", Name="GetFiltered")]
+        // public IEnumerable<Student> GetFiltered(string studentName)
         // {
-        //     //  /api/student/BJ-2018070001
-        //     List<Student> item = null;
-        //     using (var context = new BaseContext())
-        //     {
-        //         item =  context.Student.Where(s => s.StudentCode == studentCode).ToList();
-        //     }
-
-        //     if(item == null)
-        //     {
-        //         //return NotFound();
-        //     }
-        //     return item;
+        //     return _chuxinQuery.GetStudentsByName(studentName);
         // }
 
-        // [HttpGet("{studentcode}", Name="GetStudentByCode")]
-        // public Student GetByCode(string studentCode)
-        // {
-        //     //  /api/student/BJ-2018070001
-
-        //     Student student = _chuxinQuery.GetStudentByCode(studentCode);
-
-        //     if(student == null)
-        //     {
-
-        //     }
-        //     return student;
-        // }
-
-        // 数据连接测试
-        [HttpGet("{studentcode}", Name = "GetStudentDescByCode")]
-        public StudentDescTest GetStudentDescByCode(string studentCode)
+        /// <summary>
+        /// 获取学生基础信息 GET api/student/BJ-2018070002/baseinfo
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{studentcode}")]
+        [Route("{studentcode}/baseinfo")]
+        public Student GetBaseInfo(string studentCode)
         {
-            StudentDescTest studentDesc = _chuxinQuery.GetStudentDescTest(studentCode);
-
-            return studentDesc;
+            Student student = new Student();
+            student = _chuxinQuery.GetStudentBaseByCode(studentCode);
+            return student;
         }
+
+        /// <summary>
+        /// 获取学生基础信息 GET api/student/BJ-2018070002/history
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{studentcode}")]
+        [Route("{studentcode}/history")]
+        public Student GetHistory(string studentCode)
+        {
+            Student student = new Student();
+            return student;
+        }
+
+
+
+
+        /// <summary>
+        /// 添加新学生 POST api/student
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public void Create([FromBody] string value)
+        {
+        }
+
+        /// <summary>
+        /// 更新学生 PUT api/student/5
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public void Update(int id, [FromBody] string value)
+        {
+        }
+
+
+
+        // // 数据连接测试
+        // [HttpGet("{studentcode}", Name = "GetStudentDescByCode")]
+        // public StudentDescTest GetStudentDescByCode(string studentCode)
+        // {
+        //     StudentDescTest studentDesc = _chuxinQuery.GetStudentDescTest(studentCode);
+
+        //     return studentDesc;
+        // }
 
     }   
 }

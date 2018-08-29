@@ -20,7 +20,15 @@ namespace ChuXinEdu.CMS.Server.BLLService
 			}
         }
 
-        public Student GetStudentByCode(string studentCode)
+        public IEnumerable<Student> GetStudentsByName(string studentName)
+        {
+            using (BaseContext context = new BaseContext())
+			{
+				return context.Student.Where(s => EF.Functions.Like(s.StudentName, "%"+studentName+"%")).ToList();
+			}
+        }
+
+        public Student GetStudentBaseByCode(string studentCode)
         {
             using (BaseContext context = new BaseContext())
             {
