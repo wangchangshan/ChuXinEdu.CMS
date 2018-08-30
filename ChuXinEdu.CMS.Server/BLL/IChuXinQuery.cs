@@ -11,12 +11,16 @@ namespace ChuXinEdu.CMS.Server.BLL
 	/// </summary>
     public interface IChuXinQuery
     {
-        IEnumerable<Student> GetAllStudents();
+        IEnumerable<Student> GetStudentList();
 
         IEnumerable<Student> GetStudentsByName(string studentName);
 
         Student GetStudentBaseByCode(string sutdentCode);
 
+        IEnumerable<Simplify_StudentCourse> GetAllStudentsCourse();
+
+        // 这是一个测试
         StudentDescTest GetStudentDescTest(string studentCode);
+
     }
 }

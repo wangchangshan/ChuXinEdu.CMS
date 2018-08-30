@@ -140,6 +140,8 @@ E:\mynewproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB > npm install --save-dev
 ## EFcore for mysql （）
 D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.AspNetCore.All --version 2.1.2
 D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Pomelo.EntityFrameworkCore.MySql --version 2.1.1
+
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package AutoMapper --version 7.0.1
 ```
 
 

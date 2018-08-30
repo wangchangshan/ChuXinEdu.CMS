@@ -52,12 +52,14 @@ export default function ({
         Vue.axios(options).then((res) => {
             fn(res.data);
         }).catch((err) => {
-            errFn();
-            this.$message({
-                showClose: true,
-                message:    '请求错误：Internal Server Error',
-                type:       'error'
-            });
+            if(typeof errFn === 'function'){
+                errFn();
+            }
+            // this.$message({
+            //     showClose: true,
+            //     message:    '请求错误：Internal Server Error',
+            //     type:       'error'
+            // });
         })
     }
     else{

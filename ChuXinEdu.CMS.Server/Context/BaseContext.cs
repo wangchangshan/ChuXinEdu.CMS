@@ -23,8 +23,10 @@ namespace ChuXinEdu.CMS.Server.Context
 
         }
 
-        // for test
+        // for test  ViewModel与Model之间通过automapp 来映射，不需要写在这里
         public virtual DbSet<StudentDescTest> StudentDescTest { get; set; }
+
+        public virtual DbSet<Simplify_StudentCourse> Simplify_StudentCourse {get; set; }
 
         public virtual DbSet<Student> Student { get; set; }
 

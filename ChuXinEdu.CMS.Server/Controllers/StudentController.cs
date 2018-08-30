@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
@@ -14,11 +15,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
+        private readonly IDicQuery _dicQuery;
         private readonly IChuXinQuery _chuxinQuery;
 
-        public StudentController(IChuXinQuery chuxinQuery)
+        public StudentController(IChuXinQuery chuxinQuery, IDicQuery dicQuery)
         {
-            _chuxinQuery = chuxinQuery;            
+            _chuxinQuery = chuxinQuery;
+            _dicQuery = dicQuery;       
         }
 
         /// <summary>
@@ -26,7 +29,31 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<Student> GetALL() => _chuxinQuery.GetAllStudents();
+        public IEnumerable<StudentListVM> GetStudentList()
+        {
+            //Mapper.CreateMap<Student, StudentListVM>();
+            var config = new MapperConfiguration(cfg => {
+                cfg.CreateMap<Student, StudentListVM>();
+            });
+            IMapper mapper = config.CreateMapper();
+
+
+            IEnumerable<Student> students = _chuxinQuery.GetStudentList();
+            List<StudentListVM> studentVMList = new List<StudentListVM>();
+            IEnumerable<Simplify_StudentCourse> studentsCourseCategory = _chuxinQuery.GetAllStudentsCourse();
+
+            StudentListVM studentVM = null;
+            foreach(Student student in students)
+            {
+                var studentCode = student.StudentCode;
+                studentVM = mapper.Map<Student, StudentListVM>(student);
+                studentVM.CourseCategory = studentsCourseCategory.Where(s => s.StudentCode == studentCode);
+                studentVMList.Add(studentVM);
+            }
+
+            //IEnumerable<Student> student = _chuxinQuery.GetStudentList();
+            return studentVMList;
+        }
 
 
         // /// <summary>

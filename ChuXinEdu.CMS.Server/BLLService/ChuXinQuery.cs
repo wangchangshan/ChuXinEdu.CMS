@@ -12,11 +12,24 @@ namespace ChuXinEdu.CMS.Server.BLLService
 {
     public class ChuXinQuery : IChuXinQuery
     {
-        public IEnumerable<Student> GetAllStudents()
+        public IEnumerable<Student> GetStudentList()
         {
             using (BaseContext context = new BaseContext())
 			{
+                IEnumerable<Student> students = context.Student.ToList();
+
 				return context.Student.ToList();
+			}
+        }
+
+        // 所有学生的课程大类
+        public IEnumerable<Simplify_StudentCourse> GetAllStudentsCourse()
+        {
+            using (BaseContext context = new BaseContext())
+			{
+                return context.Simplify_StudentCourse.FromSql(@"select scp.id,scp.student_code,scp.package_course_category as course_category_code, d.item_name as course_category_name 
+                                        from student_course_package scp 
+                                        left join sys_dictionary d on scp.package_course_category = d.item_code and d.type_code='course_category'").ToList();
 			}
         }
 
