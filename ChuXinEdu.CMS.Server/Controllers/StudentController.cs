@@ -47,7 +47,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 var studentCode = student.StudentCode;
                 studentVM = mapper.Map<Student, StudentListVM>(student);
-                studentVM.CourseCategory = studentsCourseCategory.Where(s => s.StudentCode == studentCode);
+                studentVM.StudentCourseCategory = studentsCourseCategory.Where(s => s.StudentCode == studentCode);
                 studentVMList.Add(studentVM);
             }
 

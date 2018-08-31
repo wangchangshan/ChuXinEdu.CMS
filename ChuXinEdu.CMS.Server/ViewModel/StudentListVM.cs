@@ -39,6 +39,6 @@ namespace ChuXinEdu.CMS.Server.ViewModel
         [Column("student_status")]
         public string StudentStatus { get; set; }
 
-        public virtual IEnumerable<Simplify_StudentCourse> CourseCategory { get;set; }
+        public virtual IEnumerable<Simplify_StudentCourse> StudentCourseCategory { get;set; }
     }
 }
