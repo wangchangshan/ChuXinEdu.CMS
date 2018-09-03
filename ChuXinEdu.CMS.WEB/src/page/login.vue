@@ -145,9 +145,9 @@ export default {
                             component: 'coursePackageList'
                         },
                         {
-                            path: 'courseArrangMain',
+                            path: 'courseArrangeMain',
                             name: '排课安排',
-                            component: 'courseArrangMain'
+                            component: 'courseArrangeMain'
                         },
                         {
                             path: 'courseAttendanceBook',

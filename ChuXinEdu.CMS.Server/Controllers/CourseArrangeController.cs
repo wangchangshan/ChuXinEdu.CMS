@@ -13,58 +13,52 @@ namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentController : ControllerBase
+    public class CourseArrangeController : ControllerBase
     {
         private readonly IDicQuery _dicQuery;
         private readonly IChuXinQuery _chuxinQuery;
 
-        public StudentController(IChuXinQuery chuxinQuery, IDicQuery dicQuery)
+        public CourseArrangeController(IChuXinQuery chuxinQuery, IDicQuery dicQuery)
         {
             _chuxinQuery = chuxinQuery;
             _dicQuery = dicQuery;       
         }
 
         /// <summary>
-        /// 获取所有学生list GET api/student
+        /// 获取排课所有时间段 GET api/coursearrange
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<StudentListVM> GetStudentList(int pageIndex, int pageSize)
+        public IEnumerable<CourseArrangeVM> GetCourseArranged(string templateCode, string roomCode)
         {
-            //Mapper.CreateMap<Student, StudentListVM>();
             var config = new MapperConfiguration(cfg => {
-                cfg.CreateMap<Student, StudentListVM>();
+                cfg.CreateMap<SysCourseArrangeTemplateDetail, CourseArrangeVM>();
             });
             IMapper mapper = config.CreateMapper();
 
+            // 获取每天上课时间段
+            IEnumerable<SysCourseArrangeTemplateDetail> periodsList = _chuxinQuery.GetCourseArrangePeriod(templateCode);
 
-            IEnumerable<Student> students = _chuxinQuery.GetStudentList(pageIndex, pageSize);
-            List<StudentListVM> studentVMList = new List<StudentListVM>();
-            IEnumerable<Simplify_StudentCourse> studentsCourseCategory = _chuxinQuery.GetAllStudentsCourse();
+            // 获取学生选课信息（包含每个时间段）
+            IEnumerable<StudentCourseArrange> studentCourseArrangeList = _chuxinQuery.GetStudentCourseArrage(templateCode, roomCode);
 
-            StudentListVM studentVM = null;
-            foreach(Student student in students)
+            // 定义返回数据
+            List<CourseArrangeVM> courseArrangeVMList = new List<CourseArrangeVM>();
+            CourseArrangeVM courseArrangeVM = null;
+            foreach(SysCourseArrangeTemplateDetail periods in periodsList)
             {
-                var studentCode = student.StudentCode;
-                studentVM = mapper.Map<Student, StudentListVM>(student);
-                studentVM.StudentCourseCategory = studentsCourseCategory.Where(s => s.StudentCode == studentCode);
-                studentVMList.Add(studentVM);
-            }
+                var period = periods.CoursePeriod;
+                var day = periods.CourseWeekDay;
 
-            //IEnumerable<Student> student = _chuxinQuery.GetStudentList();
-            return studentVMList;
+                courseArrangeVM = mapper.Map<SysCourseArrangeTemplateDetail, CourseArrangeVM>(periods);
+                courseArrangeVM.StudentCourseArrangeList = studentCourseArrangeList.Where(s => s.CourseWeekDay == day && s.CoursePeriod == period);
+
+                courseArrangeVMList.Add(courseArrangeVM);
+            }             
+
+            return courseArrangeVMList;
         }
 
-
-        // /// <summary>
-        // /// 通过学生姓名获取学生list GET api/student/怀远
-        // /// </summary>
-        // /// <returns></returns>
-        // [HttpGet("{studentname}", Name="GetFiltered")]
-        // public IEnumerable<Student> GetFiltered(string studentName)
-        // {
-        //     return _chuxinQuery.GetStudentsByName(studentName);
-        // }
 
         /// <summary>
         /// 获取学生基础信息 GET api/student/BJ-2018070002/baseinfo

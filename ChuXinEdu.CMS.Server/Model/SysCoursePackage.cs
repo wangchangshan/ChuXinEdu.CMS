@@ -17,8 +17,11 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("package_name")]
         public string PackageName { get; set; }
 
-        [Column("package_course_category")]
-        public string PackageCourseCategory { get; set; }
+        [Column("package_course_category_code")]
+        public string PackageCourseCategoryCode { get; set; }
+
+        [Column("package_course_category_name")]
+        public string PackageCourseCategoryName { get; set; }
 
         [Column("package_course_count")]
         public int PackageCourseCount { get; set; }

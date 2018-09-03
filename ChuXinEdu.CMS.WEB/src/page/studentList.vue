@@ -56,8 +56,8 @@
         <el-row>
             <el-col :span="24">
                 <div class="pagination">
-                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handleCurrentChange'
-                        @size-change='handleSizeChange'>
+                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handlePageCurrentChange'
+                        @size-change='handlePageSizeChange'>
 
                     </el-pagination>
                 </div>
@@ -129,6 +129,24 @@ export default {
         this.getList();
     },
     methods: {
+        /**
+         * 改变页码和当前页时需要拼装的路径方法
+         * @param {string} field 参数字段名
+         * @param {string} value 参数字段值
+         */
+        setPath(field, value) {
+            var path = this.$route.path,
+                query = Object.assign({}, this.$route.query);
+            if (typeof field === 'object') {
+                query = field;
+            } else {
+                query[field] = value;
+            }
+            this.$router.push({
+                path,
+                query
+            });
+        },
         getList({
             page,
             pageSize,
@@ -136,10 +154,20 @@ export default {
             fun
         } = {}) {
             var _this = this;
+            var query = this.$route.query;
+            this.paginations.current_page_index = page || parseInt(query.page) || 1;
+            this.paginations.page_size  = pageSize || parseInt(query.page_size) || this.paginations.page_size;
+            var data = {
+                pageIndex: this.paginations.current_page_index,
+                pageSize: this.paginations.page_size
+            }
+            if (where) {
+                data = Object.assign(data, where || {});
+            }
             axios({
                 type: 'get',
                 path: '/api/student',
-                data: '',
+                data: data,
                 fn: function (result) {
                     _this.paginations.total = result.length;
                     result.forEach((item) => {
@@ -148,7 +176,6 @@ export default {
                         item.studentRegisterDate = item.studentRegisterDate.split('T')[0];
                     })
                     _this.studentsList = result;
-                    console.log(result);
                     fun && fun();
                 }
             })
@@ -196,11 +223,23 @@ export default {
             }
             return statusDesc;
         },
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
+        handlePageSizeChange(pageSize) {
+            this.getList({
+                pageSize,
+                fun: () => {
+                    this.setPath('page_size', pageSize);
+                }
+            });
+            console.log(`每页 ${pageSize} 条`);
         },
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
+        handlePageCurrentChange(page) {
+            this.getList({
+                page,
+                fun: () => {
+                    this.setPath('page', page);
+                }
+            });
+            //console.log(`当前页: ${page}`);
         },
         addStudent() {
             this.dialog.title = '新增学生';

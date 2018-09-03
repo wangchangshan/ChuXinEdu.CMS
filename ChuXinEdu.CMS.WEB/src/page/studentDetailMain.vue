@@ -2,18 +2,18 @@
 <div class="fillcontain">
     <el-tabs type="card" v-model="activeLabelCode" @tab-click="handleTabClick">
         <el-tab-pane :name="'baseinfo'">
-            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>基础信息</span>
+            <span slot="label"><i class="fa fa-bank"></i>基础信息</span>
             <student-base-info v-if="activeLabelCode === 'baseinfo'"></student-base-info>
         </el-tab-pane>
         <el-tab-pane :name="'history'">
-            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>课程记录</span> 
+            <span slot="label"><i class="fa fa-bank"></i>课程记录</span> 
             <!-- 包括：历史上课记录列表 （请假、签到等） -->
             <keep-alive>
                 <student-course-history v-if="activeLabelCode === 'history'" v-bind:student_code="'200808001'" v-bind:student_name="'王暄'"></student-course-history>
             </keep-alive>
         </el-tab-pane>
         <el-tab-pane :name="'achievement'">
-            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>作品展示</span> 
+            <span slot="label"><i class="fa fa-bank"></i>作品展示</span> 
             <keep-alive>
                 <student-achievements 
                     v-if="activeLabelCode === 'achievement'" 
@@ -25,16 +25,13 @@
         </el-tab-pane>
         
         <el-tab-pane :name="'plan'">
-            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>学习计划</span> 
+            <span slot="label"><i class="fa fa-bank"></i>学习计划</span> 
             略
         </el-tab-pane>
         <el-tab-pane :name="'otherinfo'">
-            <span slot="label" @click="toggleTabs()"><i class="fa fa-bank"></i>其他信息</span> 生日礼物？
+            <span slot="label"><i class="fa fa-bank"></i>其他信息</span> 生日礼物？
         </el-tab-pane>
     </el-tabs>
-    <keep-alive>
-        <router-view></router-view>
-    </keep-alive>
 </div>
 </template>
 
@@ -61,12 +58,8 @@ export default {
 
     },
     methods: {
-        toggleTabs(roomCode) {
-            this.selectedRoomCode = roomCode;
-        },
         handleTabClick() {
             console.log('activeLabelCode: '+ this.activeLabelCode)
-
         },
         handleChange() {
 
