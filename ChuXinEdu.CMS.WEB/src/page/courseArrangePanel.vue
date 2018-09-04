@@ -4,10 +4,10 @@
         <el-col :span="3" v-for="day in coursePeriods" v-bind:key="day.dayCode">
             <div class="week-panel">
                 <p class="title">{{day.dayName}}</p>
-                <el-collapse v-model="active_titles_Monday">
-                    <el-collapse-item v-for="period in day.periods" v-bind:key="period.code" :name="period.code">
+                <el-collapse v-model="day.activePeriods">
+                    <el-collapse-item v-for="period in day.periods" v-bind:key="period.periodCode" :name="period.periodCode">
                         <div slot="title" class="student-list-title">
-                            <a>{{period.name}}</a>
+                            <a>{{period.periodName}}</a>
                             <a class="student-title-right">共{{ period.studentList.length }}人</a>
                         </div>
                         <div class="student-list-content">
@@ -27,8 +27,8 @@
                             </ul>
                         </div>
                         <div class="student-list-footer">
-                            <el-button type="warning" @click="removeStudent()" icon="el-icon-plus" size="mini">试听</el-button>
-                            <el-button type="success" @click="addStudent()" icon="el-icon-plus" size="mini">正式</el-button>
+                            <el-button type="warning" plain @click="removeStudent()" size="mini">试听</el-button>
+                            <el-button type="primary" plain @click="addStudent(day.dayName,period.periodName)" size="mini">正式</el-button>
                         </div>
                     </el-collapse-item>
                 </el-collapse>
@@ -44,19 +44,19 @@
         </el-col> -->
     </el-row>
 
-    <el-dialog title="选择学生 [星期一 16:00-17:30]" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false">
+    <el-dialog :title="selectStudentDialog.title" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false" :width="selectStudentDialog.width">
         <el-table :data="selectStudentDialog.studentList" max-height="400" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
-            <el-table-column property="student_code" label="学号" width="100"></el-table-column>
-            <el-table-column property="student_name" label="姓名" width="90"></el-table-column>
-            <el-table-column property="student_course" label="课程类别" width="120" align='center'></el-table-column>
-            <el-table-column property="student_course_remain_count" label="剩余课时数" align='center' width="100"></el-table-column>
-            <el-table-column property="student_selected_course_count" label="选择课时数" min-width="100">
+            <el-table-column property="studentCode" label="学号" width="120"></el-table-column>
+            <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
+            <el-table-column property="courseCategoryName" label="课程类别" width="80" align='center'></el-table-column>
+            <el-table-column property="flexCourseCount" label="剩余课时数" align='center' width="100"></el-table-column>
+            <el-table-column property="selectedCourseCount" label="选择课时数" min-width="140">
                 <template slot-scope="scope">
-                    <el-input-number v-model="scope.row.student_selected_course_count" :min="1" :max="scope.row.student_course_remain_count" label="描述文字" size="small"></el-input-number>
+                    <el-input-number v-model="scope.row.selectedCourseCount" :min="1" :max="scope.row.flexCourseCount" label="描述文字" size="small"></el-input-number>
                 </template>
             </el-table-column>
-            <el-table-column property="first_start_date" label="开始上课日期" min-width="200">
+            <el-table-column property="firstCourseDate" label="开始上课日期" min-width="210">
                 <template slot-scope="scope">
                     <el-date-picker v-model="scope.row.first_start_date" type="date" size="small" placeholder="选择日期" :picker-options="selectStudentDialog.pickerStartDateOptions">
                     </el-date-picker>
@@ -64,13 +64,13 @@
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            <el-button @click="submitStudents()" type="success">确定</el-button>
-            <el-button @click="selectStudentDialog.isShow = false">取消</el-button>
+            <el-button @click="submitStudents()" type="success" size="small">确定</el-button>
+            <el-button @click="selectStudentDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
 
-    <el-dialog title="学生排课列表 李世民 星期一 16:00-17:30" :visible.sync="editStudentDialog.isShow" :modal-append-to-body="false">
-        <el-table :data="editStudentDialog.studentList" max-height="400" @selection-change="handleStudentSelectionChange">
+    <el-dialog title="学生排课列表  李世民  星期一  16:00-17:30" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false">
+        <el-table :data="studentCourseDialog.courseList" max-height="400" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="course_date" label="上课日期" width="100"></el-table-column>
             <el-table-column property="course_type" label="课程类别" width="120" align='center'></el-table-column>
@@ -90,8 +90,8 @@
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            <el-button type="success">确定</el-button>
-            <el-button @click="editStudentDialog.isShow = false">取消</el-button>
+            <el-button type="success" size="small">确定</el-button>
+            <el-button @click="studentCourseDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
 </div>
@@ -117,95 +117,52 @@ export default {
                         //     periodName: '',
                         //     studentList:[],
                         // },
-                    ]
+                    ],
+                    activePeriods:[]
                 },
                 {
                     dayCode: 'day2',
                     dayName: '星期二',
-                    periods: []
+                    periods: [],
+                    activePeriods:[]
                 },
                 {
                     dayCode: 'day3',
                     dayName: '星期三',
-                    periods: []
+                    periods: [],
+                    activePeriods:[]
                 },
                 {
                     dayCode: 'day4',
                     dayName: '星期四',
-                    periods: []
+                    periods: [],
+                    activePeriods:[]
                 },
                 {
                     dayCode: 'day5',
                     dayName: '星期五',
-                    periods: []
+                    periods: [],
+                    activePeriods:[]
                 },
                 {
                     dayCode: 'day6',
                     dayName: '星期六',
-                    periods: []
+                    periods: [],
+                    activePeriods:[]
                 },
                 {
                     dayCode: 'day7',
                     dayName: '星期日',
-                    periods: []
+                    periods: [],
+                    activePeriods:[]
                 },
             ],
-            // coursePeriods: {
-            //     day1: [],
-            //     day2: [],
-            //     day3: [],
-            //     day4: [],
-            //     day5: [],
-            //     day6: [],
-            //     day7: [],
-            // },
-
             holidays: [],
-            active_period: {
-                day1: [],
-                day2: [],
-                day3: [],
-                day4: [],
-                day5: [],
-                day6: [],
-                day7: [],
-            },
-            active_titles_Monday: ["1", "2"],
             selectStudentDialog: {
+                title: '',
                 isShow: false,
-                studentList: [{
-                        student_code: "200808001",
-                        student_name: "段延庆",
-                        student_course: "书法",
-                        student_course_remain_count: 20,
-                        student_selected_course_count: 20,
-                        first_start_date: ""
-                    },
-                    {
-                        student_code: "200808001",
-                        student_name: "段延庆",
-                        student_course: "书法",
-                        student_course_remain_count: 20,
-                        student_selected_course_count: 20,
-                        first_start_date: ""
-                    },
-                    {
-                        student_code: "200808001",
-                        student_name: "段延庆",
-                        student_course: "书法",
-                        student_course_remain_count: 20,
-                        student_selected_course_count: 20,
-                        first_start_date: ""
-                    },
-                    {
-                        student_code: "200808001",
-                        student_name: "段延庆",
-                        student_course: "书法",
-                        student_course_remain_count: 20,
-                        student_selected_course_count: 20,
-                        first_start_date: ""
-                    }
-                ],
+                width: '850px',
+                studentList: [],
                 selectedStudents: [],
                 pickerStartDateOptions: {
                     disabledDate(time) {
@@ -213,10 +170,11 @@ export default {
                     }
                 }
             },
-            editStudentDialog: {
+            studentCourseDialog: {
+                titile:'',
                 isShow: false,
                 student_code: "",
-                studentList: [{
+                courseList: [{
                         course_date: "2008-08-06",
                         course_type: "国画",
                         course_status: "已上课"
@@ -256,11 +214,12 @@ export default {
                     roomCode: _this.roomCode
                 },
                 fn: function (result) {
-                    console.log(result);
+                    //console.log(result);
                     result.forEach((item) => {
                         // 构造coursePeriods数据
                         for (let day of _this.coursePeriods) {
                             if (day.dayCode === item.courseWeekDay) {
+                                day.activePeriods.push(item.id); //默认展开的时间段
                                 day.periods.push({
                                     periodCode: item.id,
                                     periodName: item.coursePeriod,
@@ -269,12 +228,26 @@ export default {
                                 break;
                             }
                         }
-                        console.log(_this.coursePeriods);
                     })
+                    console.log(_this.coursePeriods);
                 }
             })
         },
-        addStudent() {
+        getPickCourseStudentsList(){
+            var _this = this;
+            axios({
+                type: 'get',
+                path: '/api/student/getstudentstoselectCourse',
+                fn: function (result) {
+                    //console.log(result);
+                    _this.selectStudentDialog.studentList = result;
+                    console.log(_this.selectStudentDialog);
+                }
+            })
+        },
+        addStudent(dayName, periodName) {
+            this.selectStudentDialog.title = '选择学生 ['+dayName+' '+periodName+']';
+            this.getPickCourseStudentsList();
             //alert("添加页面，展示还没有排课，或者没有排完全部课的学生列表。列表中展示学生姓名，（照片？），未排课程类型， 未排课时数目")
             this.selectStudentDialog.isShow = true;
         },
@@ -283,7 +256,7 @@ export default {
         },
         showStudentCourseList() {
             //alert('显示当前学生当前时间段的所有课程列表')
-            this.editStudentDialog.isShow = true;
+            this.studentCourseDialog.isShow = true;
         },
         handleStudentSelectionChange(allItems) {
             this.selectStudentDialog.selectedStudents = allItems;

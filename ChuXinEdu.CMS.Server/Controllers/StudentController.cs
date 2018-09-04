@@ -11,7 +11,7 @@ using ChuXinEdu.CMS.Server.ViewModel;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class StudentController : ControllerBase
     {
@@ -25,7 +25,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取所有学生list GET api/student
+        /// [学生列表] 获取所有学生list GET api/student/getstudentlist
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -51,20 +51,27 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 studentVMList.Add(studentVM);
             }
 
-            //IEnumerable<Student> student = _chuxinQuery.GetStudentList();
             return studentVMList;
         }
 
+        /// <summary>
+        /// [学生排课] 获取待排课学生列表 GET api/student/getstudentstoselectCourse
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<StudentCoursePackage> GetStudentsToSelectCourse()
+        {
+            IEnumerable<StudentCoursePackage>  studentList = _chuxinQuery.GetStudentToSelectCourse();
+            return studentList;
+        }
 
-        // /// <summary>
-        // /// 通过学生姓名获取学生list GET api/student/怀远
-        // /// </summary>
-        // /// <returns></returns>
-        // [HttpGet("{studentname}", Name="GetFiltered")]
-        // public IEnumerable<Student> GetFiltered(string studentName)
-        // {
-        //     return _chuxinQuery.GetStudentsByName(studentName);
-        // }
+
+
+
+
+
+        
+
 
         /// <summary>
         /// 获取学生基础信息 GET api/student/BJ-2018070002/baseinfo

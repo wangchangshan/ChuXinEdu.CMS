@@ -41,11 +41,17 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("package_code")]
         public string PackageCode { get; set; }
 
-        [Column("course_category")]
-        public string CourseCategory { get; set; }
+        [Column("course_category_code")]
+        public string CourseCategoryCode { get; set; }
 
-        [Column("course_folder")]
-        public string CourseFolder { get; set; }
+        [Column("course_category_name")]
+        public string CourseCategoryName { get; set; }
+
+        [Column("course_folder_code")]
+        public string CourseFolderCode { get; set; }
+
+        [Column("course_folder_name")]
+        public string CourseFolderName { get; set; }
 
         [Column("course_subject")]
         public string CourseSubject { get; set; }
@@ -56,7 +62,10 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("activity_id")]
         public int ActivityId { get; set; }
         
-        [Column("attendance_status")]
-        public string AttendanceStatus { get; set; }
+        [Column("attendance_status_code")]
+        public string AttendanceStatusCode { get; set; }
+
+        [Column("attendance_status_name")]
+        public string AttendanceStatusName { get; set; }
     }
 }

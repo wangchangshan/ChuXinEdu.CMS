@@ -28,6 +28,8 @@ namespace ChuXinEdu.CMS.Server.Context
 
         public virtual DbSet<Simplify_StudentCourse> Simplify_StudentCourse {get; set; }
 
+        public virtual DbSet<Simplify_StudentCourseList> Simplify_StudentCourseList {get; set;}
+
         public virtual DbSet<Student> Student { get; set; }
 
         public virtual DbSet<StudentActivity> StudentActivity { get; set; }

@@ -28,9 +28,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.Simplify_StudentCourse.FromSql(@"select scp.id,scp.student_code,scp.package_course_category as course_category_code, d.item_name as course_category_name 
-                                        from student_course_package scp 
-                                        left join sys_dictionary d on scp.package_course_category = d.item_code and d.type_code='course_category'").ToList();
+            //     return context.Simplify_StudentCourse.FromSql(@"select scp.id,scp.student_code,scp.package_course_category as course_category_code, d.item_name as course_category_name 
+            //                             from student_course_package scp 
+            //                             left join sys_dictionary d on scp.package_course_category = d.item_code and d.type_code='course_category'").ToList();
+                return context.Simplify_StudentCourse.FromSql(@"select id,student_code,course_category_code,course_category_name from student_course_package")
+                                                        .ToList();
             }
         }
 
@@ -70,6 +72,27 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 return context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode && s.Classroom == roomCode && s.CourseRestCount > 0)
                                                     .ToList();
+            }
+        }
+
+        public IEnumerable<StudentCoursePackage> GetStudentToSelectCourse()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCoursePackage.Where(s => s.FlexCourseCount > 0)
+                                                    .ToList();
+            }
+        }
+
+        IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode)
+        {
+             using (BaseContext context = new BaseContext())
+            {
+                return context.Simplify_StudentCourseList.FromSql(@"select student_course_id,course_category_name,course_date,attendance_status_code,attendance_status_name 
+                                                                    from student_course_list
+                                                                    where student_code='' and course_week_day='' and course_period=''
+                                                                    order by course_date;")
+                                                                .ToList();
             }
         }
         #endregion

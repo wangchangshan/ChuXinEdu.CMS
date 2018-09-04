@@ -23,14 +23,23 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("package_name")]
         public string PackageName { get; set; }
 
-        [Column("package_course_category")]
-        public string PackageCourseCategory { get; set; }
+        [Column("course_category_code")]
+        public string CourseCategoryCode { get; set; }
 
-        [Column("package_course_folder")]
-        public string PackageCourseFolder { get; set; }
+        [Column("course_category_name")]
+        public string CourseCategoryName { get; set; }
+
+        [Column("course_folder_code")]
+        public string CourseFolderCode { get; set; }
+
+        [Column("course_folder_name")]
+        public string CourseFolderName { get; set; }
 
         [Column("package_course_count")]
-        public int PackageCourseCount { get; set; }
+        public int PackageCourseCount { get; set; }        
+
+        [Column("flex_course_count")]
+        public int FlexCourseCount { get; set; }
 
         [Column("package_price")]
         public decimal PackagePrice { get; set; }

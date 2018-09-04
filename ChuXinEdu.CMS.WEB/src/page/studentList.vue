@@ -166,7 +166,7 @@ export default {
             }
             axios({
                 type: 'get',
-                path: '/api/student',
+                path: '/api/student/getstudentlist',
                 data: data,
                 fn: function (result) {
                     _this.paginations.total = result.length;
