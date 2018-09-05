@@ -11,14 +11,14 @@ using ChuXinEdu.CMS.Server.ViewModel;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CourseController : ControllerBase
     {
         private readonly IDicQuery _dicQuery;
         private readonly IChuXinQuery _chuxinQuery;
 
-        public CourseArrangeController(IChuXinQuery chuxinQuery, IDicQuery dicQuery)
+        public CourseController(IChuXinQuery chuxinQuery, IDicQuery dicQuery)
         {
             _chuxinQuery = chuxinQuery;
             _dicQuery = dicQuery;       
@@ -29,9 +29,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]        
-        public IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode,string coursePeriod)
+        public IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod)
         {
-            return _chuxinQuery.GetArrangedCourseList(studentCode, dayCode, coursePeriod);
+            IEnumerable<Simplify_StudentCourseList> courseList = _chuxinQuery.GetArrangedCourseList(studentCode, dayCode, coursePeriod);
+            return courseList;
         }
     }   
 }

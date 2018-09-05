@@ -84,7 +84,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode)
+        public IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod)
         {
              using (BaseContext context = new BaseContext())
             {

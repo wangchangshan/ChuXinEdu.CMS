@@ -17,7 +17,7 @@
                                         <p>姓名: 李世民</p>
                                         <p>住址: 北京市昌平区</p>
                                         <div slot="reference" class="name-wrapper" style="display:inline">
-                                            <a class="student-item-left" @click="showStudentCourseList()">{{student.studentName}} </a>
+                                            <a class="student-item-left" @click="getStudentCourseList(student.studentCode, day.dayCode, period.periodName)">{{student.studentName}} </a>
                                         </div>
                                     </el-popover>
                                     <a class="student-item-right">
@@ -69,15 +69,15 @@
         </div>
     </el-dialog>
 
-    <el-dialog title="学生排课列表  李世民  星期一  16:00-17:30" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false">
+    <el-dialog title="学生排课列表  李世民  星期一  16:00-17:30" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false" :width="studentCourseDialog.width">
         <el-table :data="studentCourseDialog.courseList" max-height="400" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
-            <el-table-column property="course_date" label="上课日期" width="100"></el-table-column>
-            <el-table-column property="course_type" label="课程类别" width="120" align='center'></el-table-column>
-            <el-table-column property="course_status" label="状态" width="120" align='center'>
+            <el-table-column property="CourseDate" label="上课日期" width="100"></el-table-column>
+            <el-table-column property="CourseCategoryName" label="课程类别" width="120" align='center'></el-table-column>
+            <el-table-column property="attendance_status_code" label="状态" width="120" align='center'>
                 <template slot-scope="scope">
                     <el-tag :disable-transitions="false">
-                        {{scope.row.course_status}}
+                        {{scope.row.AttendanceStatusName}}
                     </el-tag>
                 </template>
             </el-table-column>
@@ -173,6 +173,7 @@ export default {
             studentCourseDialog: {
                 titile:'',
                 isShow: false,
+                width: '750px',
                 student_code: "",
                 courseList: [{
                         course_date: "2008-08-06",
@@ -245,6 +246,26 @@ export default {
                 }
             })
         },
+        
+        getStudentCourseList(studentCode, dayCode, periodName) {
+            // 显示当前学生当前时间段的所有课程列表'
+            var _this = this;
+            axios({
+                type: 'get',
+                path: 'api/course/getarrangedcourselist',
+                data:{
+                    studentCode: studentCode,
+                    dayCode: dayCode,
+                    coursePeriod: periodName
+                },
+                fn: function (result) {
+                    //console.log(result);
+                    _this.studentCourseDialog.courseList = result;
+                    console.log(_this.studentCourseDialog);
+                }
+            })
+            this.studentCourseDialog.isShow = true;
+        },
         addStudent(dayName, periodName) {
             this.selectStudentDialog.title = '选择学生 ['+dayName+' '+periodName+']';
             this.getPickCourseStudentsList();
@@ -253,10 +274,6 @@ export default {
         },
         removeStudent() {
             alert("待开发");
-        },
-        showStudentCourseList() {
-            //alert('显示当前学生当前时间段的所有课程列表')
-            this.studentCourseDialog.isShow = true;
         },
         handleStudentSelectionChange(allItems) {
             this.selectStudentDialog.selectedStudents = allItems;
