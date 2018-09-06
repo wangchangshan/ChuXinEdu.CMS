@@ -11,21 +11,21 @@ using ChuXinEdu.CMS.Server.ViewModel;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CourseArrangeController : ControllerBase
     {
-        private readonly IDicQuery _dicQuery;
+        private readonly IChuXinWorkFlow _chuxinWorkFlow;
         private readonly IChuXinQuery _chuxinQuery;
 
-        public CourseArrangeController(IChuXinQuery chuxinQuery, IDicQuery dicQuery)
+        public CourseArrangeController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow)
         {
             _chuxinQuery = chuxinQuery;
-            _dicQuery = dicQuery;       
+            _chuxinWorkFlow = chuxinWorkFlow;
         }
 
         /// <summary>
-        /// 获取排课所有时间段 GET api/coursearrange
+        /// 获取排课所有时间段 GET api/coursearrange/getcoursearranged
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -57,6 +57,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }             
 
             return courseArrangeVMList;
+        }
+
+        // POST api/coursearrange/postcoursearrange
+        [HttpPost]
+        public string PostCourseArrange([FromBody] CA_C_STUDENTS_MAIN caInfo)
+        {
+            string result = _chuxinWorkFlow.BatchStudentsCourseArrange(caInfo);
+            return result;
         }
     }   
 }

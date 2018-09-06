@@ -88,9 +88,9 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
              using (BaseContext context = new BaseContext())
             {
-                return context.Simplify_StudentCourseList.FromSql(@"select student_course_id,course_category_name,course_date,attendance_status_code,attendance_status_name 
+                return context.Simplify_StudentCourseList.FromSql($@"select student_course_id,course_category_name,course_date,attendance_status_code,attendance_status_name 
                                                                     from student_course_list
-                                                                    where student_code='' and course_week_day='' and course_period=''
+                                                                    where student_code={studentCode} and course_week_day={dayCode} and course_period={coursePeriod}
                                                                     order by course_date;")
                                                                 .ToList();
             }

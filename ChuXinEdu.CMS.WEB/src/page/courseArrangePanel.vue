@@ -17,7 +17,7 @@
                                         <p>姓名: 李世民</p>
                                         <p>住址: 北京市昌平区</p>
                                         <div slot="reference" class="name-wrapper" style="display:inline">
-                                            <a class="student-item-left" @click="getStudentCourseList(student.studentCode, day.dayCode, period.periodName)">{{student.studentName}} </a>
+                                            <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} </a>
                                         </div>
                                     </el-popover>
                                     <a class="student-item-right">
@@ -27,21 +27,33 @@
                             </ul>
                         </div>
                         <div class="student-list-footer">
-                            <el-button type="warning" plain @click="removeStudent()" size="mini">试听</el-button>
-                            <el-button type="primary" plain @click="addStudent(day.dayName,period.periodName)" size="mini">正式</el-button>
+                            <!-- <el-button type="warning" plain @click="removeStudent()" size="mini">试听</el-button> -->
+                            <!-- <el-button  plain circle icon="el-icon-plus"  @click="removeStudent()" size="mini"></el-button> -->
+                            <el-button plain @click="addStudent(day.dayCode, day.dayName,period.periodName)" icon="el-icon-plus" size="mini">添加</el-button>
                         </div>
                     </el-collapse-item>
                 </el-collapse>
             </div>
         </el-col>
-        <!-- <el-col :span="3">
+        <el-col :span="3">
             <div class="week-panel">
-                <p class="title">按钮区域</p>
-                <el-button type="success" size="mini">假期安排</el-button>
-                <el-date-picker type="dates" v-model="holidays" placeholder="选择放假日期">
-                </el-date-picker>
+                <p class="title">其他操作</p>
+                <ul>
+                    <li style="margin-top:10px;margin-left:5px">
+                        <el-button plain icon="el-icon-refresh" type="success" size="mini">刷   新</el-button>
+                    </li>
+                    <li style="margin-top:10px;margin-left:5px">
+                        <el-button plain type="primary" size="mini" @click="showAllPeriod()">全部展开</el-button>
+                    </li>
+                     <li style="margin-top:10px;margin-left:5px">
+                        <el-button plain type="primary" size="mini" @click="closeAllPeriod()">全部折叠</el-button>
+                    </li>
+                </ul>
+                <!-- <el-button type="success" size="mini">假期安排</el-button> -->
+                <!-- <el-date-picker type="dates" v-model="holidays" placeholder="选择放假日期">
+                </el-date-picker> -->
             </div>
-        </el-col> -->
+        </el-col>
     </el-row>
 
     <el-dialog :title="selectStudentDialog.title" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false" :width="selectStudentDialog.width">
@@ -58,26 +70,26 @@
             </el-table-column>
             <el-table-column property="firstCourseDate" label="开始上课日期" min-width="210">
                 <template slot-scope="scope">
-                    <el-date-picker v-model="scope.row.first_start_date" type="date" size="small" placeholder="选择日期" :picker-options="selectStudentDialog.pickerStartDateOptions">
+                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="small" placeholder="选择日期" :picker-options="selectStudentDialog.pickerDateOptions">
                     </el-date-picker>
                 </template>
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            <el-button @click="submitStudents()" type="success" size="small">确定</el-button>
+            <el-button @click="pickStudents()" type="success" size="small">确定</el-button>
             <el-button @click="selectStudentDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
 
-    <el-dialog title="学生排课列表  李世民  星期一  16:00-17:30" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false" :width="studentCourseDialog.width">
+    <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false" :width="studentCourseDialog.width">
         <el-table :data="studentCourseDialog.courseList" max-height="400" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
-            <el-table-column property="CourseDate" label="上课日期" width="100"></el-table-column>
-            <el-table-column property="CourseCategoryName" label="课程类别" width="120" align='center'></el-table-column>
-            <el-table-column property="attendance_status_code" label="状态" width="120" align='center'>
+            <el-table-column property="courseDate" label="上课日期" width="100"></el-table-column>
+            <el-table-column property="courseCategoryName" label="课程类别" width="120" align='center'></el-table-column>
+            <el-table-column property="attendanceStatusCode" label="状态" width="120" align='center'>
                 <template slot-scope="scope">
                     <el-tag :disable-transitions="false">
-                        {{scope.row.AttendanceStatusName}}
+                        {{scope.row.attendanceStatusName}}
                     </el-tag>
                 </template>
             </el-table-column>
@@ -118,84 +130,77 @@ export default {
                         //     studentList:[],
                         // },
                     ],
-                    activePeriods:[]
+                    activePeriods: []
                 },
                 {
                     dayCode: 'day2',
                     dayName: '星期二',
                     periods: [],
-                    activePeriods:[]
+                    activePeriods: []
                 },
                 {
                     dayCode: 'day3',
                     dayName: '星期三',
                     periods: [],
-                    activePeriods:[]
+                    activePeriods: []
                 },
                 {
                     dayCode: 'day4',
                     dayName: '星期四',
                     periods: [],
-                    activePeriods:[]
+                    activePeriods: []
                 },
                 {
                     dayCode: 'day5',
                     dayName: '星期五',
                     periods: [],
-                    activePeriods:[]
+                    activePeriods: []
                 },
                 {
                     dayCode: 'day6',
                     dayName: '星期六',
                     periods: [],
-                    activePeriods:[]
+                    activePeriods: []
                 },
                 {
                     dayCode: 'day7',
                     dayName: '星期日',
                     periods: [],
-                    activePeriods:[]
+                    activePeriods: []
                 },
             ],
+            activePeriods_bak:{
+                day1:[],
+                day2:[],
+                day3:[],
+                day4:[],
+                day5:[],
+                day6:[],
+                day7:[],
+            },
             holidays: [],
             selectStudentDialog: {
                 title: '',
                 isShow: false,
                 width: '850px',
+                curDayCode: '',
+                curPeriodName: '',
                 studentList: [],
                 selectedStudents: [],
-                pickerStartDateOptions: {
-                    disabledDate(time) {
-                        return time.getDay() !== 1;
+                pickerDateOptions: {
+                    disabledDate: (time) => { // 为了this指向 使用箭头函数 
+                    //debugger
+                        var curDay = parseInt(this.selectStudentDialog.curDayCode.replace('day',''));
+                        return time.getDay() !== curDay;
                     }
                 }
             },
             studentCourseDialog: {
-                titile:'',
+                titile: '',
                 isShow: false,
                 width: '750px',
                 student_code: "",
-                courseList: [{
-                        course_date: "2008-08-06",
-                        course_type: "国画",
-                        course_status: "已上课"
-                    },
-                    {
-                        course_date: "2008-08-13",
-                        course_type: "国画",
-                        course_status: "请假"
-                    },
-                    {
-                        course_date: "2008-08-20",
-                        course_type: "国画",
-                        course_status: "待上课"
-                    },
-                    {
-                        course_date: "2008-08-27",
-                        course_type: "国画",
-                        course_status: "待上课"
-                    }
-                ]
+                courseList: []
             }
         };
     },
@@ -203,13 +208,15 @@ export default {
         this.getTemplatePeriod();
     },
     methods: {
+
+        // 排课模板展示信息
         getTemplatePeriod() {
             var _this = this;
             var templateCode = 'at-001';
 
             axios({
                 type: 'get',
-                path: '/api/coursearrange',
+                path: '/api/coursearrange/getcoursearranged',
                 data: {
                     templateCode: templateCode,
                     roomCode: _this.roomCode
@@ -220,6 +227,7 @@ export default {
                         // 构造coursePeriods数据
                         for (let day of _this.coursePeriods) {
                             if (day.dayCode === item.courseWeekDay) {
+                                _this.activePeriods_bak[day.dayCode].push(item.id);
                                 day.activePeriods.push(item.id); //默认展开的时间段
                                 day.periods.push({
                                     periodCode: item.id,
@@ -234,7 +242,18 @@ export default {
                 }
             })
         },
-        getPickCourseStudentsList(){
+
+        // 添加排课学生入口
+        addStudent(dayCode, dayName, periodName) {
+            this.selectStudentDialog.title = '选择学生 [' + dayName + ' ' + periodName + ']';
+            this.selectStudentDialog.curDayCode = dayCode;
+            this.selectStudentDialog.curPeriodName = periodName;
+            this.getPickCourseStudentsList();
+            this.selectStudentDialog.isShow = true;
+        },
+
+        // 待排课学生列表
+        getPickCourseStudentsList() {
             var _this = this;
             axios({
                 type: 'get',
@@ -242,44 +261,107 @@ export default {
                 fn: function (result) {
                     //console.log(result);
                     _this.selectStudentDialog.studentList = result;
-                    console.log(_this.selectStudentDialog);
+                    //console.log(_this.selectStudentDialog);
                 }
             })
         },
-        
-        getStudentCourseList(studentCode, dayCode, periodName) {
-            // 显示当前学生当前时间段的所有课程列表'
+
+        // 提交排课（正式）
+        pickStudents() {
+            if (this.selectStudentDialog.selectedStudents.length === 0) {
+                this.$message({
+                    message: '请至少选择一位学生！',
+                    type: 'warning'
+                });
+                return;
+            }
+            var caInfo = {
+                'templateCode':'at-001',
+                'roomCode': this.roomCode,
+                'DayCode': this.selectStudentDialog.curDayCode,
+                'PeriodName': this.selectStudentDialog.curPeriodName,
+                'StudentList': []
+            }
+            caInfo.StudentList = [];
+            for (let selectedItem of this.selectStudentDialog.selectedStudents) {
+                //debugger
+                if (!selectedItem.selectedCourseCount || !selectedItem.firstCourseDate) {
+                    this.$message({
+                        message: '请填写选中学生的课时数以及上课开始日期！',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                caInfo.StudentList.push({
+                    'StudentCode': selectedItem.studentCode,
+                    'StudentName': selectedItem.studentName,
+                    'PackageCode': selectedItem.packageCode,
+                    'CourseCategoryCode': selectedItem.courseCategoryCode,
+                    'CourseCategoryName': selectedItem.courseCategoryName,
+                    'CourseCount': selectedItem.selectedCourseCount,
+                    'StartDate': selectedItem.firstCourseDate
+                });
+            }
+            //console.log(caInfo);
+            var _this = this;
+            axios({
+                type: 'post',
+                path: '/api/coursearrange/postcoursearrange',
+                data: caInfo,
+                fn: function (result) {
+                    if(result === 200)                  
+                    {
+                        _this.$message({
+                            message: '排课成功！',
+                            type: 'success'
+                        });
+                        _this.selectStudentDialog.isShow = false;
+                    }
+                }
+            })
+            //alert("待开发");
+        },
+
+        // 查看学生已选课程列表
+        getStudentCourseList(studentCode, studentName, dayCode, dayName, periodName) {
             var _this = this;
             axios({
                 type: 'get',
                 path: 'api/course/getarrangedcourselist',
-                data:{
+                data: {
                     studentCode: studentCode,
                     dayCode: dayCode,
                     coursePeriod: periodName
                 },
                 fn: function (result) {
-                    //console.log(result);
+                    result.forEach((item) => {
+                        item.courseDate = item.courseDate.split('T')[0];
+                    })
                     _this.studentCourseDialog.courseList = result;
-                    console.log(_this.studentCourseDialog);
                 }
             })
             this.studentCourseDialog.isShow = true;
+            this.studentCourseDialog.title = "学生排课列表  [" + studentName + "    " + dayName + "    " + periodName + "]";
         },
-        addStudent(dayName, periodName) {
-            this.selectStudentDialog.title = '选择学生 ['+dayName+' '+periodName+']';
-            this.getPickCourseStudentsList();
-            //alert("添加页面，展示还没有排课，或者没有排完全部课的学生列表。列表中展示学生姓名，（照片？），未排课程类型， 未排课时数目")
-            this.selectStudentDialog.isShow = true;
+
+        closeAllPeriod(){
+            for (let day of this.coursePeriods){
+                day.activePeriods = []
+            }
         },
+
+        showAllPeriod(){
+            for (let day of this.coursePeriods){
+                day.activePeriods = this.activePeriods_bak[day.dayCode];
+            }
+        },
+
         removeStudent() {
             alert("待开发");
         },
         handleStudentSelectionChange(allItems) {
+            console.log(allItems);
             this.selectStudentDialog.selectedStudents = allItems;
-        },
-        submitStudents() {
-            alert("待开发");
         },
         removeCurrentCourse() {
             alert("待开发");
