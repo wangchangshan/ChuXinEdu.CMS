@@ -1,6 +1,6 @@
 ## HOW TO INIT THE PROJECT?
 
-### 1. 安装 `.net core SDK` / `node`/ `npm`/ `git`（windows的话需要配置环境变量，在powershell中可以使用git命令）
+### 1. 安装 [mac .net core SDK](https://download.microsoft.com/download/E/8/A/E8AF2EE0-5DDA-4420-A395-D1A50EEFD83E/dotnet-sdk-2.1.401-osx-gs-x64.pkg) / `node`/ `npm`/ `git`（windows的话需要配置环境变量，在powershell中可以使用git命令）
 
 ### 2. 使用命令创建solution 以及webapi项目
 
