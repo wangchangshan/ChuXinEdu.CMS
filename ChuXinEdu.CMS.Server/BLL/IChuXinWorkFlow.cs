@@ -13,5 +13,8 @@ namespace ChuXinEdu.CMS.Server.BLL
     {
         // [排课模块] 批量学生排课
         string BatchStudentsCourseArrange(CA_C_STUDENTS_MAIN caInfo);
+
+        // [排课模块] 学生个人请假
+        string SingleQingJia(int studentCourseId);
     }
 }

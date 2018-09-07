@@ -84,6 +84,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        // 获取学生排课列表
         public IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod)
         {
              using (BaseContext context = new BaseContext())
@@ -91,6 +92,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return context.Simplify_StudentCourseList.FromSql($@"select student_course_id,course_category_name,course_date,attendance_status_code,attendance_status_name 
                                                                     from student_course_list
                                                                     where student_code={studentCode} and course_week_day={dayCode} and course_period={coursePeriod}
+                                                                        and attendance_status_code = '09'
                                                                     order by course_date;")
                                                                 .ToList();
             }

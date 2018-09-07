@@ -59,11 +59,39 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return courseArrangeVMList;
         }
 
-        // POST api/coursearrange/postcoursearrange
+        /// <summary>
+        /// 提交排课信息 POST api/coursearrange/postcoursearrange
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string PostCourseArrange([FromBody] CA_C_STUDENTS_MAIN caInfo)
         {
             string result = _chuxinWorkFlow.BatchStudentsCourseArrange(caInfo);
+            return result;
+        }
+
+        /// <summary>
+        /// 课程个人请假 PUT api/coursearrange/putqingjiasingle
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public string PutQingJiaSingle(dynamic obj)
+        {
+            int studentCourseId = obj.StudentCourseId;
+            string result = _chuxinWorkFlow.SingleQingJia(studentCourseId);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 删除个人课程 PUT api/coursearrange/removeCourse
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public string RemoveCourse(dynamic obj)
+        {
+            string result = "";
+
             return result;
         }
     }   

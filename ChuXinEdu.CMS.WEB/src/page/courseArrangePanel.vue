@@ -70,7 +70,7 @@
             </el-table-column>
             <el-table-column property="firstCourseDate" label="开始上课日期" min-width="210">
                 <template slot-scope="scope">
-                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="small" placeholder="选择日期" :picker-options="selectStudentDialog.pickerDateOptions">
+                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="small" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectStudentDialog.pickerDateOptions">
                     </el-date-picker>
                 </template>
             </el-table-column>
@@ -82,27 +82,20 @@
     </el-dialog>
 
     <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false" :width="studentCourseDialog.width">
-        <el-table :data="studentCourseDialog.courseList" max-height="400" @selection-change="handleStudentSelectionChange">
+        <el-table :data="studentCourseDialog.courseList" max-height="400" @selection-change="handleCourseListChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="courseDate" label="上课日期" width="100"></el-table-column>
             <el-table-column property="courseCategoryName" label="课程类别" width="120" align='center'></el-table-column>
-            <el-table-column property="attendanceStatusCode" label="状态" width="120" align='center'>
-                <template slot-scope="scope">
-                    <el-tag :disable-transitions="false">
-                        {{scope.row.attendanceStatusName}}
-                    </el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="300">
+            <el-table-column property="attendanceStatusName" label="状态" width="120" align='center'></el-table-column>
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="200">
                 <template slot-scope='scope'>
-                    <el-button type="warning" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>请假顺延</el-button>
-                    <el-button type="primary" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>调课</el-button>
-                    <el-button type="danger" icon='edit' size="small" @click='removeCurrentCourse(scope.row)'>删除</el-button>
+                    <el-button plain type="warning" icon='edit' size="small" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
+                    <el-button plain type="danger" icon='edit' size="small" @click='removeCourse(scope.row.studentCourseId)'>删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            <el-button type="success" size="small">确定</el-button>
+            <el-button type="danger" size="small" @click='removeCourseBatch()'>批量删除</el-button>
             <el-button @click="studentCourseDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
@@ -182,24 +175,28 @@ export default {
             selectStudentDialog: {
                 title: '',
                 isShow: false,
-                width: '850px',
+                width: '830px',
                 curDayCode: '',
                 curPeriodName: '',
                 studentList: [],
                 selectedStudents: [],
                 pickerDateOptions: {
+                    firstDayOfWeek: 1,
                     disabledDate: (time) => { // 为了this指向 使用箭头函数 
                     //debugger
                         var curDay = parseInt(this.selectStudentDialog.curDayCode.replace('day',''));
+                        if (curDay === 7){
+                            curDay = 0;
+                        }
                         return time.getDay() !== curDay;
                     }
                 }
             },
             studentCourseDialog: {
-                titile: '',
+                title: '',
                 isShow: false,
-                width: '750px',
-                student_code: "",
+                width: '660px',
+                selectedCourses: [],
                 courseList: []
             }
         };
@@ -359,13 +356,42 @@ export default {
         removeStudent() {
             alert("待开发");
         },
-        handleStudentSelectionChange(allItems) {
-            console.log(allItems);
-            this.selectStudentDialog.selectedStudents = allItems;
+
+        // 选择学生 checkbox
+        handleStudentSelectionChange(allSelectedStudents) {
+            this.selectStudentDialog.selectedStudents = allSelectedStudents;
         },
-        removeCurrentCourse() {
+        // 选择课程 checkbox
+        handleCourseListChange(allSelectedCourses){
+            this.studentCourseDialog.selectedCourses = allSelectedCourses;
+        },
+        // 请假
+        qingJiaCourse(studentCourseId) {
+            var _this = this;
+            axios({
+                type: 'put',
+                path: '/api/coursearrange/putqingjiasingle',
+                data: {StudentCourseId: studentCourseId},
+                fn: function (result) {
+                    if(result === 200)                  
+                    {
+                        _this.$message({
+                            message: '请假成功！',
+                            type: 'success'
+                        });
+                    }
+                }
+            })
+        },
+        // 删除课程
+        removeCourse(studentCourseId) {
             alert("待开发");
         },
+        // 删除课程
+        removeCourseBatch() {
+            alert("待开发");
+        },
+
         handleCommand(command) {
             //this.$message('click on item ' + command);
             if (command === "正式") {
@@ -382,6 +408,7 @@ export default {
     .schedule-area {
         min-width: 1200px;
         overflow-y: auto;
+        overflow-x: hidden;
         .week-panel {
             height: 550px;
             max-height: 600px; // border: 1px solid #dfdfdf;
