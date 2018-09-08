@@ -60,6 +60,30 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 根据时间段获取排课信息，用于局部刷新 GET api/coursearrange/getarrangedinfobyperiod
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<StudentCourseArrange> GetArrangedInfoByPeriod(string templateCode, string roomCode, string dayCode, string periodName)
+        {
+            IEnumerable<StudentCourseArrange> arrangedInfo  = _chuxinQuery.GetArrangedByPeriod(templateCode, roomCode, dayCode, periodName);
+            return arrangedInfo;
+        }
+
+        /// <summary>
+        /// 根据时间段获取排课信息，用于局部刷新 GET api/coursearrange/getholidays
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<SysHoliday> GetHolidays()
+        {
+            IEnumerable<SysHoliday> holidays = _chuxinQuery.GetHolidayList();
+            return holidays;
+        }
+
+
+
+        /// <summary>
         /// 提交排课信息 POST api/coursearrange/postcoursearrange
         /// </summary>
         /// <returns></returns>
@@ -84,15 +108,55 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 删除个人课程 PUT api/coursearrange/removeCourse
+        /// 删除个人课程 PUT api/coursearrange/removecoursesingle
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        public string RemoveCourse(dynamic obj)
+        public string RemoveCourseSingle(dynamic obj)
         {
-            string result = "";
-
+            int studentCourseId = obj.StudentCourseId;
+            string result = _chuxinWorkFlow.SingleRemoveCourse(studentCourseId);
             return result;
+        }
+
+        /// <summary>
+        /// 批量删除个人课程 PUT api/coursearrange/removecoursebatch
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public string RemoveCourseBatch(int[] studentCourseIds)
+        {
+            string result = string.Empty;
+            foreach (int studentCourseId in studentCourseIds)
+            {
+                result = _chuxinWorkFlow.SingleRemoveCourse(studentCourseId);
+                if(result != "200")
+                {
+                    break;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 添加放假日期 POST api/coursearrange/addholidays
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string AddHolidays(string[] days)
+        {
+            string result = string.Empty;
+            
+            return result;
+        }
+
+        /// <summary>
+        /// 删除放假日期 DELETE api/coursearrange/removeholiday
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        public void RemoveHoliday(string day)
+        {
         }
     }   
 }

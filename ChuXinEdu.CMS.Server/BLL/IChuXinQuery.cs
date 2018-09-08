@@ -26,11 +26,20 @@ namespace ChuXinEdu.CMS.Server.BLL
          // 获取学生选课信息（包含每个时间段）
         IEnumerable<StudentCourseArrange> GetStudentCourseArrage(string templateCode, string roomCode);
 
+        // 获取时间段内排课信息
+        IEnumerable<StudentCourseArrange> GetArrangedByPeriod(string templateCode, string roomCode, string dayCode, string periodName);
+
         // 获取待选课学生列表
-        IEnumerable<StudentCoursePackage> GetStudentToSelectCourse();
+        IEnumerable<StudentCoursePackage> GetStudentToSelectCourse(string dayCode, string periodName);
 
         // 获取学生排课列表
         IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod);
+ 
+        // 获取假期列表
+        IEnumerable<SysHoliday> GetHolidayList();
+
+
+
 
         // 这是一个测试
         StudentDescTest GetStudentDescTest(string studentCode);

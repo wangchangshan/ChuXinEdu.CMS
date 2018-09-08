@@ -70,16 +70,26 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode && s.Classroom == roomCode && s.CourseRestCount > 0)
+                return context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode 
+                                                                && s.Classroom == roomCode 
+                                                                && s.CourseRestCount > 0)
+                                                    .OrderBy(s => s.CourseCategoryCode)
                                                     .ToList();
             }
         }
 
-        public IEnumerable<StudentCoursePackage> GetStudentToSelectCourse()
+        public IEnumerable<StudentCoursePackage> GetStudentToSelectCourse(string dayCode, string periodName)
         {
+            // 不显示当前时间段内已经排过课的学生 与模板和教室无关
             using (BaseContext context = new BaseContext())
-            {
-                return context.StudentCoursePackage.Where(s => s.FlexCourseCount > 0)
+            {   
+                return context.StudentCoursePackage.FromSql($@"select scp.* from student_course_package  scp 
+                                                                where not exists(
+                                                                    select 1 from student_course_arrange sca 
+                                                                    where sca.student_code = scp.student_code 
+                                                                    and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
+                                                                    and sca.course_rest_count > 0 
+                                                                )")
                                                     .ToList();
             }
         }
@@ -95,6 +105,34 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                         and attendance_status_code = '09'
                                                                     order by course_date;")
                                                                 .ToList();
+            }
+        }
+
+        
+        // 获取时间段内排课信息
+        public IEnumerable<StudentCourseArrange> GetArrangedByPeriod(string templateCode, string roomCode, string dayCode, string periodName)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode
+                                                                && s.Classroom == roomCode
+                                                                && s.CourseWeekDay == dayCode
+                                                                && s.CoursePeriod == periodName
+                                                                && s.CourseRestCount > 0 )
+                                                    .OrderBy(s => s.CourseCategoryCode)
+                                                    .ToList();
+            }
+        }
+
+        // 获取假期列表
+        public IEnumerable<SysHoliday> GetHolidayList()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                DateTime firstDay = new DateTime(DateTime.Now.Year, 1, 1);
+                return context.SysHoliday.Where( h => h.HolidayDate >= firstDay)
+                                        .OrderBy(h => h.HolidayDate)
+                                        .ToList();
             }
         }
         #endregion

@@ -16,5 +16,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [排课模块] 学生个人请假
         string SingleQingJia(int studentCourseId);
+
+        // [排课模块] 删除学生排课 单节
+        string SingleRemoveCourse(int studentCourseId);
     }
 }

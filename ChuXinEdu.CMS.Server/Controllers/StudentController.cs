@@ -55,13 +55,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// [学生排课] 获取待排课学生列表 GET api/student/getstudentstoselectCourse
+        /// [学生排课] 获取待排课学生列表 GET api/student/getstudentstoselectcourse
+        /// 说明：不显示当前时间段已经选过课程的学生
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<StudentCoursePackage> GetStudentsToSelectCourse()
+        public IEnumerable<StudentCoursePackage> GetStudentsToSelectCourse(string dayCode, string periodName)
         {
-            IEnumerable<StudentCoursePackage>  studentList = _chuxinQuery.GetStudentToSelectCourse();
+            IEnumerable<StudentCoursePackage>  studentList = _chuxinQuery.GetStudentToSelectCourse(dayCode, periodName);
             return studentList;
         }
 

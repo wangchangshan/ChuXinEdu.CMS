@@ -132,5 +132,53 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+
+        public string SingleRemoveCourse(int studentCourseId)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+
+                    // 1. 删除学生课程表内排课记录
+                    var studentCourse = context.StudentCourseList.FirstOrDefault(s => s.StudentCourseId == studentCourseId);
+                    context.StudentCourseList.Remove(studentCourse);
+
+                    // 2. 更新学生排课表 课程 减 1
+                    string studentCode = studentCourse.StudentCode;
+                    string templateCode = studentCourse.ArrangeTemplateCode;
+                    string packageCode = studentCourse.PackageCode;
+                    string dayCode = studentCourse.CourseWeekDay;
+                    string coursePeriod = studentCourse.CoursePeriod;
+                    string roomCode = studentCourse.Classroom;
+
+                    var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode
+                                                                                && s.ArrangeTemplateCode == templateCode
+                                                                                && s.PackageCode == packageCode
+                                                                                && s.CourseWeekDay == dayCode
+                                                                                && s.Classroom == roomCode
+                                                                                && s.CoursePeriod == coursePeriod)
+                                                                        .First();
+                    courseArrange.CourseTotalCount -= 1;
+                    courseArrange.CourseRestCount -= 1;
+
+                    // 3. 更新学生套餐表， 套餐内未排课课时数 加 1
+                    var studentCoursePackage = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
+                                                                                        && s.PackageCode == packageCode)
+                                                                            .First();
+                    studentCoursePackage.FlexCourseCount += 1;
+
+                    // 4. 提交事务
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
     }
 }
