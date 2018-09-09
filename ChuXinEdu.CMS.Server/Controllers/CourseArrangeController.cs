@@ -71,7 +71,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 根据时间段获取排课信息，用于局部刷新 GET api/coursearrange/getholidays
+        /// 根据时间段获取排课信息, GET api/coursearrange/getholidays
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -143,9 +143,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public string AddHolidays(string[] days)
+        public string AddHolidays([FromBody] List<SysHoliday> holidays)
         {
             string result = string.Empty;
+
+            foreach(var holiday in holidays)
+            {
+                result = _chuxinWorkFlow.AddHoliday(holiday);
+            }
             
             return result;
         }
@@ -155,8 +160,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete]
-        public void RemoveHoliday(string day)
+        public string RemoveHoliday(string strDay)
         {
+            string result = string.Empty;
+            result = _chuxinWorkFlow.RemoveHoliday(strDay);
+            return result;
         }
     }   
 }

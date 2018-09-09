@@ -66,7 +66,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                         // 3. 更新student_course_package表中的flex_course_count字段
                         var scp = context.StudentCoursePackage.Where(s => s.StudentCode == student.StudentCode && s.PackageCode == student.PackageCode)
-                                                                .First();
+                                                                .FirstOrDefault();
                         scp.FlexCourseCount = scp.FlexCourseCount - student.CourseCount;
 
                         // 4. 提交事务
@@ -111,14 +111,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                 && s.CourseWeekDay == dayCode
                                                                                 && s.Classroom == roomCode
                                                                                 && s.CoursePeriod == coursePeriod)
-                                                                        .First();
+                                                                        .FirstOrDefault();
                     courseArrange.CourseTotalCount -= 1;
                     courseArrange.CourseRestCount -= 1;
 
                     // 3. 更新学生套餐表， 套餐内未排课课时数 加 1
                     var studentCoursePackage = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
                                                                                         && s.PackageCode == packageCode)
-                                                                            .First();
+                                                                            .FirstOrDefault();
                     studentCoursePackage.FlexCourseCount += 1;
 
                     // 4. 提交事务
@@ -159,14 +159,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                 && s.CourseWeekDay == dayCode
                                                                                 && s.Classroom == roomCode
                                                                                 && s.CoursePeriod == coursePeriod)
-                                                                        .First();
+                                                                        .FirstOrDefault();
                     courseArrange.CourseTotalCount -= 1;
                     courseArrange.CourseRestCount -= 1;
 
                     // 3. 更新学生套餐表， 套餐内未排课课时数 加 1
                     var studentCoursePackage = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
                                                                                         && s.PackageCode == packageCode)
-                                                                            .First();
+                                                                            .FirstOrDefault();
                     studentCoursePackage.FlexCourseCount += 1;
 
                     // 4. 提交事务
@@ -174,6 +174,111 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 }
             }
             catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string AddHoliday(SysHoliday holiday)
+        {
+            string result = "200";
+            try
+            {
+                using(BaseContext context = new BaseContext())
+                {
+                    // 1. 向sys_holiday表中插入数据
+                    context.SysHoliday.Add(holiday);
+
+                    // 2. 更新student_course_list表 修改相关课程状态为统一放假
+                    List<StudentCourseList> studentcourseList = context.StudentCourseList.Where(s => s.CourseDate == holiday.HolidayDate
+                                                                                                    && s.AttendanceStatusCode == "09")
+                                                                                        .ToList();
+                    foreach(var course in studentcourseList)
+                    {
+                        course.AttendanceStatusCode = "03";
+                        course.AttendanceStatusName = "统一放假";
+
+                        string studentCode = course.StudentCode;
+                        string dayCode = course.CourseWeekDay;
+                        string periodName = course.CoursePeriod;
+
+                        // 3. 更新student_course_arrange表 (由于一个时间段内的学生是唯一的 跟模板和套餐没有关系，所以根据学生编码，星期几，时间段过滤即可)
+                        StudentCourseArrange sca = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode
+                                                                                            && s.CourseWeekDay == dayCode
+                                                                                            && s.CoursePeriod == periodName)
+                                                                                .FirstOrDefault();
+                        sca.CourseTotalCount -= 1;
+                        sca.CourseRestCount -=1;
+
+                        // 4. 更新student_course_package表 修改剩余选课课时数目
+                        string packageCode = course.PackageCode;
+                        StudentCoursePackage scp = context.StudentCoursePackage.Where( s => s.StudentCode == studentCode
+                                                                                            && s.PackageCode == packageCode)
+                                                                                .FirstOrDefault();
+                        scp.FlexCourseCount += 1;
+
+                        // 5. 提交事物
+                        //context.SaveChanges();
+                    }
+                    
+                    // 5. 提交事物
+                    context.SaveChanges();
+                }
+            }
+            catch(Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            
+            return result;
+        }
+
+        public string RemoveHoliday(string strDay)
+        {
+            string result = "200";
+            try
+            {
+                DateTime theDay = DateTime.Parse(strDay);
+                using(BaseContext context = new BaseContext())
+                {
+                    // 1. 删除sys_holiday表中的假期记录
+                    var sysHoliday = context.SysHoliday.Where( h => h.HolidayDate == theDay)
+                                                        .FirstOrDefault();
+                    context.Remove(sysHoliday);
+
+                    // 2.更新student_course_list表， 修改状态为待上课
+                    var scl = context.StudentCourseList.Where( s => s.CourseDate == theDay).ToList();
+                    foreach( var course in scl)
+                    {
+                        course.AttendanceStatusCode = "09";
+                        course.AttendanceStatusName = "待上课";
+
+                        // 3. 更新student_course_arrange表 某时间段内排课数+1，剩余待上课数目+1
+                        string studentCode = course.StudentCode;
+                        string dayCode = course.CourseWeekDay;
+                        string periodName = course.CoursePeriod;
+
+                        var sca = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode
+                                                                         && s.CourseWeekDay == dayCode
+                                                                        && s.CoursePeriod == periodName)
+                                                                .FirstOrDefault();
+                        sca.CourseTotalCount += 1;
+                        sca.CourseRestCount += 1;
+
+                        // 4. 更新student_course_package 可供排课的课时数 -1
+                        string packageCode = course.PackageCode;
+                        StudentCoursePackage scp = context.StudentCoursePackage.Where( s => s.StudentCode == studentCode
+                                                                                            && s.PackageCode == packageCode)
+                                                                                .FirstOrDefault();
+                        scp.FlexCourseCount -= 1;
+                        
+                    }
+                }
+            }
+            catch(Exception ex)
             {
                 ex.Message.ToString();
                 result = "500";

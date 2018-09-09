@@ -85,13 +85,15 @@
     <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false" :width="studentCourseDialog.width">
         <el-table :data="studentCourseDialog.courseList" max-height="400" @selection-change="handleCourseListChange">
             <el-table-column type="selection" width="30"></el-table-column>
-            <el-table-column property="courseDate" label="上课日期" width="100"></el-table-column>
+            <el-table-column type="index" :index="indexGernerate" width="30"> </el-table-column>
+            <el-table-column property="courseDate" label="上课日期" width="110"></el-table-column>
             <el-table-column property="courseCategoryName" label="课程类别" width="120" align='center'></el-table-column>
             <el-table-column property="attendanceStatusName" label="状态" width="120" align='center'></el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="200">
+            <el-table-column prop="operation" align='left' label="操作" fixed="right" min-width="200">
                 <template slot-scope='scope'>
-                    <el-button plain type="warning" icon='edit' size="small" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
-                    <el-button plain type="danger" icon='edit' size="small" @click='removeCourse(scope.row.studentCourseId)'>删除</el-button>
+                    <el-button v-if="scope.row.attendanceStatusCode == '09'" plain type="warning" icon='edit' size="small" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
+                    <el-button v-if="scope.row.attendanceStatusCode == '09'"  plain type="danger" icon='edit' size="small" @click='removeCourse(scope.row.studentCourseId)'>删除</el-button>
+                    <el-button v-if="scope.row.attendanceStatusCode == '00'"  plain type="success" icon='edit' size="small" @click='restoreQingJia(scope.row.studentCourseId)'>撤销请假</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -103,11 +105,11 @@
 
     <el-dialog :title="holidayDialog.title" :visible.sync="holidayDialog.isShow" :modal-append-to-body="false" :width="holidayDialog.width">
         <el-table :data="holidayDialog.holidayList" max-height="400" size="mini">
-            <el-table-column type="index" :index="holidayIndexGenerate"> </el-table-column>
+            <el-table-column type="index" :index="indexGernerate" width="35"> </el-table-column>
             <el-table-column property="holidayDate" label="今年放假日期" min-width="120"></el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
                 <template slot-scope='scope'>
-                    <el-button plain type="danger" v-show="scope.row.showDelete" icon='edit' size="mini">删除</el-button>
+                    <el-button plain type="danger" v-show="scope.row.showDelete" @click="removeHoliday(scope.row.holidayDate)" icon='edit' size="mini">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -212,7 +214,7 @@ export default {
             studentCourseDialog: {
                 title: '',
                 isShow: false,
-                width: '660px',
+                width: '650px',
                 curDayCode: '',
                 curPeriodName: '',
                 selectedCourses: [],
@@ -473,6 +475,13 @@ export default {
                 }
             });
         },
+
+        restoreQingJia(){
+            // 日期选择框 格式 fistday
+            // 删除课程后主页面需要刷新。
+            alert('待开发');
+        },
+
         // 删除课程
         removeCourse(studentCourseId) {
             var _this = this;
@@ -554,7 +563,7 @@ export default {
             _this.holidayDialog.isShow = true;
         },
 
-        holidayIndexGenerate(index) {
+        indexGernerate(index) {
             return index + 1;
         },
 
@@ -567,15 +576,39 @@ export default {
                 });
                 return;
             }
+            var listHolidays = [];
+            _this.holidayDialog.newHolidays.forEach(item => {
+                listHolidays.push({
+                    HolidayDate : item
+                });
+            });
             
             axios({
                 type: 'post',
                 path: '/api/coursearrange/addholidays',
-                data: _this.holidayDialog.newHolidays,
+                data: listHolidays,
                 fn: function (result) {
                     if (result === 200) {
                         _this.$message({
                             message: '添加放假日期成功',
+                            type: 'success'
+                        });
+                        _this.holidayDialog.isShow = false;
+                    }
+                }
+            });
+        },
+
+        removeHoliday(day){
+            axios({
+                type: 'delete',
+                path: '/api/coursearrange/removeholiday',
+                data: {strDay: day},
+                fn: function (result) {
+                    console.log("remove holiday result: " + result);
+                    if (result === 200) {
+                        _this.$message({
+                            message: '删除假期成功',
                             type: 'success'
                         });
                         _this.holidayDialog.isShow = false;
