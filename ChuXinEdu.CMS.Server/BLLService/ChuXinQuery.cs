@@ -80,12 +80,38 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return context.StudentCourseArrange.FromSql($@"select id,arrange_template_code,classroom,course_period,course_week_day,student_code,
                                                                     student_name,package_code,course_category_code,course_category_name,
                                                                     course_total_count,course_rest_count,course_type,
-                                                                    uf_IsThisWeekHasCourse(student_code) as is_this_week
+                                                                    uf_IsThisWeekHasCourse(student_code,course_week_day,course_period,classroom) as is_this_week
                                                                 from student_course_arrange
                                                                 where arrange_template_code = {templateCode} and classroom= {roomCode} and course_rest_count > 0
                                                                 order by course_category_code")
                                                             .ToList();
                 
+            }
+        }
+        
+        // 获取时间段内排课信息
+        public IEnumerable<StudentCourseArrange> GetArrangedByPeriod(string templateCode, string roomCode, string dayCode, string periodName)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                // return context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode
+                //                                                 && s.Classroom == roomCode
+                //                                                 && s.CourseWeekDay == dayCode
+                //                                                 && s.CoursePeriod == periodName
+                //                                                 && s.CourseRestCount > 0 )
+                //                                     .OrderBy(s => s.CourseCategoryCode)
+                //                                     .ToList();
+
+                // is_this_week 为是否本周有课
+                return context.StudentCourseArrange.FromSql($@"select id,arrange_template_code,classroom,course_period,course_week_day,student_code,
+                                                                    student_name,package_code,course_category_code,course_category_name,
+                                                                    course_total_count,course_rest_count,course_type,
+                                                                    uf_IsThisWeekHasCourse(student_code,{dayCode},{periodName},{roomCode}) as is_this_week
+                                                                from student_course_arrange
+                                                                where arrange_template_code = {templateCode} and classroom = {roomCode} and course_week_day = {dayCode} and course_period = {periodName} 
+                                                                    and course_rest_count > 0
+                                                                order by course_category_code")
+                                                            .ToList();
             }
         }
 
@@ -116,22 +142,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                         and (attendance_status_code = '00' or attendance_status_code = '03' or attendance_status_code = '09')
                                                                     order by course_date;")
                                                                 .ToList();
-            }
-        }
-
-        
-        // 获取时间段内排课信息
-        public IEnumerable<StudentCourseArrange> GetArrangedByPeriod(string templateCode, string roomCode, string dayCode, string periodName)
-        {
-            using (BaseContext context = new BaseContext())
-            {
-                return context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode
-                                                                && s.Classroom == roomCode
-                                                                && s.CourseWeekDay == dayCode
-                                                                && s.CoursePeriod == periodName
-                                                                && s.CourseRestCount > 0 )
-                                                    .OrderBy(s => s.CourseCategoryCode)
-                                                    .ToList();
             }
         }
 

@@ -18,7 +18,7 @@
                                         <p>住址: 北京市昌平区</p>
                                         <div slot="reference" class="name-wrapper" style="display:inline">
                                             <el-tag :type="courseCategoryTag(student.courseCategoryCode)" size="mini">{{student.courseCategoryName}}</el-tag>
-                                            <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} </a>
+                                            <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o"></i></a>
                                         </div>
                                     </el-popover>
                                     <a class="student-item-right">
@@ -255,7 +255,7 @@ export default {
                     roomCode: _this.roomCode
                 },
                 fn: function (result) {
-                    //console.log(result);
+                    console.log(result);
                     result.forEach((item) => {
                         // 构造coursePeriods数据
                         for (let day of _this.coursePeriods) {
@@ -265,6 +265,7 @@ export default {
                                 day.periods.push({
                                     periodCode: item.id,
                                     periodName: item.coursePeriod,
+                                    thisWeekStudentCount: item.thisWeekStudentCount,
                                     studentList: item.studentCourseArrangeList
                                 });
                                 break;
@@ -291,11 +292,16 @@ export default {
                 },
                 fn: function (result) {
                     //console.log(result);
+                    let count = 0;
+                    result.forEach(item => {
+                        item.isThisWeek == 'Y' ? count ++ : '';
+                    });
                     // 构建局部数据
                     for (let day of _this.coursePeriods) {
                         if (day.dayCode === dayCode) {
                             for (let p of day.periods) {
                                 if (p.periodName === periodName) {
+                                    p.thisWeekStudentCount = count;
                                     p.studentList = result;
                                     break;
                                 }
@@ -760,7 +766,7 @@ export default {
                     color: #f56c6c;
                 }
                 .free{
-                    color: #67c23a;
+                    color: #E6A23C;
                 }
             }
             .student-list-content {
