@@ -51,6 +51,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 var day = periods.CourseWeekDay;
 
                 courseArrangeVM = mapper.Map<SysCourseArrangeTemplateDetail, CourseArrangeVM>(periods);
+                courseArrangeVM.ThisWeekStudentCount = studentCourseArrangeList.Where(s => s.CourseWeekDay == day && s.CoursePeriod == period && s.IsThisWeek == "Y").Count();
                 courseArrangeVM.StudentCourseArrangeList = studentCourseArrangeList.Where(s => s.CourseWeekDay == day && s.CoursePeriod == period);
 
                 courseArrangeVMList.Add(courseArrangeVM);
@@ -103,6 +104,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             int studentCourseId = obj.StudentCourseId;
             string result = _chuxinWorkFlow.SingleQingJia(studentCourseId);
+
+            return result;
+        }
+
+         /// <summary>
+        /// 个人请假撤销 PUT api/coursearrange/putrestoreqingjiasingle
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public string PutRestoreQingJiaSingle(dynamic obj)
+        {
+            int studentCourseId = obj.StudentCourseId;
+            string result = _chuxinWorkFlow.RestoreSingleQingJia(studentCourseId);
 
             return result;
         }

@@ -8,7 +8,7 @@
                     <el-collapse-item v-for="period in day.periods" v-bind:key="period.periodCode" :name="period.periodCode">
                         <div slot="title" class="student-list-title">
                             <a>{{period.periodName}}</a>
-                            <a class="student-title-right">共{{ period.studentList.length }}人</a>
+                            <a class="student-title-right" v-bind:class="{ 'full': period.studentList.length > 6,'free': period.studentList.length <= 6 }"> {{ period.thisWeekStudentCount }}/{{ period.studentList.length }}人</a>
                         </div>
                         <div class="student-list-content">
                             <ul>
@@ -58,7 +58,7 @@
     </el-row>
 
     <el-dialog :title="selectStudentDialog.title" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false" :width="selectStudentDialog.width">
-        <el-table :data="selectStudentDialog.studentList" max-height="400" @selection-change="handleStudentSelectionChange">
+        <el-table :data="selectStudentDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="studentCode" label="学号" width="120"></el-table-column>
             <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
@@ -66,12 +66,12 @@
             <el-table-column property="flexCourseCount" label="可选课时数" align='center' width="90"></el-table-column>
             <el-table-column property="selectedCourseCount" label="选择课时数" min-width="140">
                 <template slot-scope="scope">
-                    <el-input-number v-model="scope.row.selectedCourseCount" :min="1" :max="scope.row.flexCourseCount" label="描述文字" size="small"></el-input-number>
+                    <el-input-number v-model="scope.row.selectedCourseCount" :min="1" :max="scope.row.flexCourseCount" label="描述文字" size="mini"></el-input-number>
                 </template>
             </el-table-column>
             <el-table-column property="firstCourseDate" label="开始上课日期" min-width="210">
                 <template slot-scope="scope">
-                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="small" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectStudentDialog.pickerDateOptions">
+                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectStudentDialog.pickerDateOptions">
                     </el-date-picker>
                 </template>
             </el-table-column>
@@ -83,17 +83,17 @@
     </el-dialog>
 
     <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false" :width="studentCourseDialog.width">
-        <el-table :data="studentCourseDialog.courseList" max-height="400" @selection-change="handleCourseListChange">
-            <el-table-column type="selection" width="30"></el-table-column>
+        <el-table :data="studentCourseDialog.courseList" max-height="400" size="mini" @selection-change="handleCourseListChange">
+            <el-table-column :selectable='courseCheckboxControl' type="selection" width="30"></el-table-column>
             <el-table-column type="index" :index="indexGernerate" width="30"> </el-table-column>
             <el-table-column property="courseDate" label="上课日期" width="110"></el-table-column>
-            <el-table-column property="courseCategoryName" label="课程类别" width="120" align='center'></el-table-column>
-            <el-table-column property="attendanceStatusName" label="状态" width="120" align='center'></el-table-column>
-            <el-table-column prop="operation" align='left' label="操作" fixed="right" min-width="200">
+            <el-table-column property="courseCategoryName" label="课程类别" width="80" align='center'></el-table-column>
+            <el-table-column property="attendanceStatusName" label="状态" width="80" align='center'></el-table-column>
+            <el-table-column prop="operation" align='left' label="操作" fixed="right" width="190">
                 <template slot-scope='scope'>
-                    <el-button v-if="scope.row.attendanceStatusCode == '09'" plain type="warning" icon='edit' size="small" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
-                    <el-button v-if="scope.row.attendanceStatusCode == '09'"  plain type="danger" icon='edit' size="small" @click='removeCourse(scope.row.studentCourseId)'>删除</el-button>
-                    <el-button v-if="scope.row.attendanceStatusCode == '00'"  plain type="success" icon='edit' size="small" @click='restoreQingJia(scope.row.studentCourseId)'>撤销请假</el-button>
+                    <el-button v-if="scope.row.attendanceStatusCode == '09'" plain type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
+                    <el-button v-if="scope.row.attendanceStatusCode == '09'" plain type="danger" icon='edit' size="mini" @click='removeCourse(scope.row.studentCourseId)'>删除</el-button>
+                    <el-button v-if="scope.row.attendanceStatusCode == '00'" plain type="success" icon='edit' size="mini" @click='restoreQingJia(scope.row.studentCourseId)'>撤销请假</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -107,6 +107,7 @@
         <el-table :data="holidayDialog.holidayList" max-height="400" size="mini">
             <el-table-column type="index" :index="indexGernerate" width="35"> </el-table-column>
             <el-table-column property="holidayDate" label="今年放假日期" min-width="120"></el-table-column>
+            <el-table-column property="dayOfWeek" label="星期 ？" min-width="90"></el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
                 <template slot-scope='scope'>
                     <el-button plain type="danger" v-show="scope.row.showDelete" @click="removeHoliday(scope.row.holidayDate)" icon='edit' size="mini">删除</el-button>
@@ -115,7 +116,7 @@
         </el-table>
         <div class="footer-botton-area">
             选择添加放假日期：
-            <el-date-picker type="dates" v-model="holidayDialog.newHolidays" size="small"></el-date-picker>
+            <el-date-picker type="dates" value-format="yyyy-MM-dd" v-model="holidayDialog.newHolidays" :picker-options="holidayDialog.pickerDateOptions" size="small"></el-date-picker>
             <el-button type="success" size="small" @click='submitHolidays()'>确定</el-button>
             <el-button @click="holidayDialog.isShow = false" size="small">取消</el-button>
         </div>
@@ -141,6 +142,7 @@ export default {
                         // {
                         //     periodCode: '',
                         //     periodName: '',
+                        //     thisWeekStudentCount: 'int',
                         //     studentList:[],
                         // },
                     ],
@@ -214,7 +216,7 @@ export default {
             studentCourseDialog: {
                 title: '',
                 isShow: false,
-                width: '650px',
+                width: '600px',
                 curDayCode: '',
                 curPeriodName: '',
                 selectedCourses: [],
@@ -225,7 +227,13 @@ export default {
                 isShow: false,
                 width: '550px',
                 holidayList: [],
-                newHolidays: []
+                newHolidays: [],
+                pickerDateOptions: {
+                    firstDayOfWeek: 1,
+                    disabledDate: (time) => {
+                        return time.getTime() < Date.now();
+                    }
+                }
             },
         };
     },
@@ -271,7 +279,7 @@ export default {
         refreshPeriodInfo(dayCode, periodName) {
             var _this = this;
             var templateCode = 'at-001';
-
+            console.log("开始局部刷新...");
             axios({
                 type: 'get',
                 path: '/api/coursearrange/getarrangedinfobyperiod',
@@ -283,20 +291,18 @@ export default {
                 },
                 fn: function (result) {
                     //console.log(result);
-                    result.forEach((item) => {
-                        // 构建局部数据
-                        for (let day of _this.coursePeriods) {
-                            if (day.dayCode === dayCode) {
-                                for (let p of day.periods) {
-                                    if (p.periodName === periodName) {
-                                        p.studentList = result;
-                                        break;
-                                    }
+                    // 构建局部数据
+                    for (let day of _this.coursePeriods) {
+                        if (day.dayCode === dayCode) {
+                            for (let p of day.periods) {
+                                if (p.periodName === periodName) {
+                                    p.studentList = result;
+                                    break;
                                 }
-                                break;
                             }
+                            break;
                         }
-                    })
+                    }
                 }
             })
         },
@@ -440,9 +446,14 @@ export default {
             }
         },
 
-        removeStudent() {
-            alert("待开发");
-        },
+        courseCheckboxControl(row,index){
+    		if(row.attendanceStatusCode == '09'){
+    			return 1;
+            }
+            else{
+    			return 0;
+    		}
+    	},
 
         // 选择学生 checkbox
         handleStudentSelectionChange(allSelectedStudents) {
@@ -476,10 +487,27 @@ export default {
             });
         },
 
-        restoreQingJia(){
-            // 日期选择框 格式 fistday
-            // 删除课程后主页面需要刷新。
-            alert('待开发');
+        restoreQingJia(studentCourseId) {
+            var _this = this;
+            let dayCode = _this.studentCourseDialog.curDayCode;
+            let periodName = _this.studentCourseDialog.curPeriodName;
+            axios({
+                type: 'put',
+                path: '/api/coursearrange/putrestoreqingjiasingle',
+                data: {
+                    StudentCourseId: studentCourseId
+                },
+                fn: function (result) {
+                    if (result === 200) {
+                        _this.refreshPeriodInfo(dayCode, periodName);
+                        _this.$message({
+                            message: '撤销成功！',
+                            type: 'success'
+                        });
+                        _this.studentCourseDialog.isShow = false;
+                    }
+                }
+            });
         },
 
         // 删除课程
@@ -550,10 +578,9 @@ export default {
                 fn: function (result) {
                     result.forEach(item => {
                         item.holidayDate = item.holidayDate.split('T')[0];
-                        if(item.holidayDate <= today){
+                        if (item.holidayDate <= today) {
                             item.showDelete = false;
-                        }
-                        else{
+                        } else {
                             item.showDelete = true;
                         }
                     });
@@ -569,20 +596,22 @@ export default {
 
         submitHolidays() {
             var _this = this;
-            if(_this.holidayDialog.newHolidays.length == 0){
+            if (_this.holidayDialog.newHolidays.length == 0) {
                 _this.$message({
                     message: '请选择放假日期',
                     type: 'warning'
                 });
                 return;
             }
-            var listHolidays = [];
+            let listHolidays = [];
+            let weekday = '';
             _this.holidayDialog.newHolidays.forEach(item => {
+                weekday = _this.getDayOfWeek(item);
                 listHolidays.push({
-                    HolidayDate : item
+                    HolidayDate: item,
+                    DayOfWeek: weekday
                 });
             });
-            
             axios({
                 type: 'post',
                 path: '/api/coursearrange/addholidays',
@@ -593,17 +622,21 @@ export default {
                             message: '添加放假日期成功',
                             type: 'success'
                         });
+                        _this.refreshAll();
                         _this.holidayDialog.isShow = false;
                     }
                 }
             });
         },
 
-        removeHoliday(day){
+        removeHoliday(day) {
+            var _this = this;
             axios({
                 type: 'delete',
                 path: '/api/coursearrange/removeholiday',
-                data: {strDay: day},
+                data: {
+                    strDay: day
+                },
                 fn: function (result) {
                     console.log("remove holiday result: " + result);
                     if (result === 200) {
@@ -611,6 +644,7 @@ export default {
                             message: '删除假期成功',
                             type: 'success'
                         });
+                        _this.refreshAll();
                         _this.holidayDialog.isShow = false;
                     }
                 }
@@ -631,6 +665,37 @@ export default {
             }
             var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate;
             return currentdate;
+        },
+
+        getDayOfWeek(theDay){
+            let week = '';
+            let code = new Date(theDay).getDay();
+            switch (code) {
+                case 0:
+                    week = '星期日';
+                    break;
+                case 1:
+                    week = '星期一';
+                    break;
+                case 2:
+                    week = '星期二';
+                    break;
+                case 3:
+                    week = '星期三';
+                    break;
+                case 4:
+                    week = '星期四';
+                    break;
+                case 5:
+                    week = '星期五';
+                    break;
+                case 6:
+                    week = '星期六';
+                    break;
+                default:
+                    break;
+            }
+            return week;
         },
 
         // handleCommand(command) {
@@ -688,9 +753,14 @@ export default {
                 padding-left: 5px;
                 font-weight: 600;
                 .student-title-right {
-                    color: red;
                     float: right;
                     padding-right: 3px;
+                }
+                .full{
+                    color: #f56c6c;
+                }
+                .free{
+                    color: #67c23a;
                 }
             }
             .student-list-content {

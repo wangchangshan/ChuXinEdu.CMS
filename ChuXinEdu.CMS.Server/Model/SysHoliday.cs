@@ -13,5 +13,8 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("holiday_date")]
         public DateTime HolidayDate { get; set; }
+
+        [Column("day_of_week")]
+        public string DayOfWeek { get; set; }
     }
 }

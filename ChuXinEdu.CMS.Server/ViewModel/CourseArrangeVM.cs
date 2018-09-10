@@ -18,6 +18,8 @@ namespace ChuXinEdu.CMS.Server.ViewModel
         [Column("course_week_day")]
         public string CourseWeekDay { get; set; }
 
+        public int ThisWeekStudentCount {get; set;}
+
         public virtual IEnumerable<StudentCourseArrange> StudentCourseArrangeList { get;set; }
     }
 }

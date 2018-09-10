@@ -46,5 +46,8 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("course_type")]
         public string CourseType { get; set; }
+
+        [Column("is_this_week")]
+        public string IsThisWeek { get; set; }
     }
 }

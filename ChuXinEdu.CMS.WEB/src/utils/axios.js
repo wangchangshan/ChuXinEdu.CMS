@@ -34,6 +34,7 @@ export default function ({
 
     if(api_flag === true) {
         options[type === 'get' ? 'params' : 'data'] = data;
+        options[type === 'delete' ? 'params' : 'data'] = data;
 
         if(tokenFlag !== true) {
             // 如果后台不会接受headers里面的参数，则打开这个注释，即实现token通过普通参数方式传递
