@@ -85,7 +85,7 @@
     <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false" :width="studentCourseDialog.width">
         <el-table :data="studentCourseDialog.courseList" max-height="400" size="mini" @selection-change="handleCourseListChange">
             <el-table-column :selectable='courseCheckboxControl' type="selection" width="30"></el-table-column>
-            <el-table-column type="index" :index="indexGernerate" width="30"> </el-table-column>
+            <el-table-column type="index" :index="indexGernerate" width="40"> </el-table-column>
             <el-table-column property="courseDate" label="上课日期" width="110"></el-table-column>
             <el-table-column property="courseCategoryName" label="课程类别" width="80" align='center'></el-table-column>
             <el-table-column property="attendanceStatusName" label="状态" width="80" align='center'></el-table-column>
