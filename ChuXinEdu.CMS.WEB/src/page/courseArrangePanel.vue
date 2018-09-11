@@ -102,7 +102,7 @@
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            <el-button @click="pickTempStudent()" type="success" size="small">确定</el-button>
+            <el-button @click="submitStudents_shiting()" type="success" size="small">确定</el-button>
             <el-button @click="selectStudentTempDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
