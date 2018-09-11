@@ -32,6 +32,8 @@ namespace ChuXinEdu.CMS.Server.Context
 
         public virtual DbSet<Student> Student { get; set; }
 
+        public virtual DbSet<StudentTemp> StudentTemp { get; set; }
+
         public virtual DbSet<StudentActivity> StudentActivity { get; set; }
 
         public virtual DbSet<StudentActivityImage> StudentActivityImage { get; set; }

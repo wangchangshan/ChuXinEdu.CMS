@@ -66,6 +66,20 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return studentList;
         }
 
+        /// <summary>
+        /// [学生排课] 获取待试听排课学生列表 GET api/student/gettempstudentstoselectCourse
+        /// 说明：不显示当前时间段已经选过课程的学生
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<StudentTemp> GetTempStudentsToSelectCourse()
+        {
+            IEnumerable<StudentTemp>  studentList = _chuxinQuery.GetTempStudentToSelectCourse();
+            return studentList;
+        }
+
+        
+
 
 
 

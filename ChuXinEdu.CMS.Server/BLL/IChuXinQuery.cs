@@ -32,6 +32,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // 获取待选课学生列表
         IEnumerable<StudentCoursePackage> GetStudentToSelectCourse(string dayCode, string periodName);
 
+        // 获取待试听学生列表
+        IEnumerable<StudentTemp> GetTempStudentToSelectCourse();
+
         // 获取学生排课列表
         IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod);
  

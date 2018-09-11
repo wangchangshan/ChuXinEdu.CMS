@@ -131,6 +131,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<StudentTemp> GetTempStudentToSelectCourse()
+        {
+            using( BaseContext context = new BaseContext())
+            {
+                return context.StudentTemp.Where(s => s.StudentTempStatus == "00").ToList();
+            }
+        }
+
         // 获取学生排课列表
         public IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod)
         {
