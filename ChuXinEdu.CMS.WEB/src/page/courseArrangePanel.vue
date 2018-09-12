@@ -22,8 +22,8 @@
                                         </div>
                                     </el-popover> -->
                                     <div class="name-wrapper" style="display:inline">
-                                        <el-tag :type="courseCategoryTag(student.courseCategoryCode)" size="mini">{{student.courseCategoryName}}</el-tag>
-                                        <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o"></i>&nbsp;<i v-if="student.isThisWeek == 'Y' && student.courseType == '试听'" class="fa fa-headphones"></i></a>
+                                        <el-tag :type="courseFolderTag(student.courseFolderCode)" size="mini">{{student.courseFolderName}}</el-tag>
+                                        <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o" style="margin-right:3px;"></i><i v-if="student.courseType == '试听'" class="fa fa-headphones"></i></a>
                                     </div>
                                     <a class="student-item-right" v-show="setting.isShowRestCourseCount">
                                         {{student.courseRestCount}}节
@@ -939,14 +939,19 @@ export default {
             return week;
         },
 
-        courseCategoryTag(categoryCode) {
+        courseFolderTag(folderCode) {
             let type = '';
-            switch (categoryCode) {
-                case 'meishu':
-                    type = 'success'
+            switch (folderCode) {
+                case 'meishu_00':
+                    type = 'success';
                     break;
-                case 'shufa':
+                case 'meishu_01':
+                    type = '';
+                    break;
+                case 'shufa_00':
                     type = ''
+                    break;
+                default:
                     break;
             }
             return type;
