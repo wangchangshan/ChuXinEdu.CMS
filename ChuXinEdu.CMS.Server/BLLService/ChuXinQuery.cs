@@ -54,7 +54,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #endregion
 
 
-        #region courseArrange
+        #region courseArrange 排课
         public IEnumerable<SysCourseArrangeTemplateDetail> GetCourseArrangePeriod(string templateCode)
         {
             using (BaseContext context = new BaseContext())
@@ -162,6 +162,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return context.SysHoliday.Where( h => h.HolidayDate >= firstDay)
                                         .OrderBy(h => h.HolidayDate)
                                         .ToList();
+            }
+        }
+        #endregion
+
+        #region  待签到
+         // 获取学生排课列表
+        public IEnumerable<StudentCourseList> GetCoursesToSignIn()
+        {
+             using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
+                                                            && s.CourseDate <= DateTime.Now.Date)
+                                                .ToList();
             }
         }
         #endregion

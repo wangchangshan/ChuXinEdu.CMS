@@ -578,8 +578,8 @@ export default {
                     'PackageCode': selectedItem.packageCode,
                     'CourseCategoryCode': selectedItem.courseCategoryCode,
                     'CourseCategoryName': selectedItem.courseCategoryName,
-                    'CourseFolderCode': '',
-                    'CourseFolderName': '',
+                    'CourseFolderCode': selectedItem.courseFolderCode,
+                    'CourseFolderName': selectedItem.courseFolderName,
                     'CourseCount': selectedItem.selectedCourseCount,
                     'StartDate': selectedItem.firstCourseDate
                 });

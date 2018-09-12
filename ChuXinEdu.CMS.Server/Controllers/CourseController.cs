@@ -34,5 +34,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
             IEnumerable<Simplify_StudentCourseList> courseList = _chuxinQuery.GetArrangedCourseList(studentCode, dayCode, coursePeriod);
             return courseList;
         }
+
+        /// <summary>
+        /// 获取学生待签到列表 GET api/course/getattendancelist
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]        
+        public IEnumerable<StudentCourseList> GetAttendanceList()
+        {
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetCoursesToSignIn();
+            return courseList;
+        }
     }   
 }

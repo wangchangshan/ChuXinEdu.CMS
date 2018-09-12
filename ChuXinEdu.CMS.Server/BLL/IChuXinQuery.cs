@@ -41,6 +41,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // 获取假期列表
         IEnumerable<SysHoliday> GetHolidayList();
 
+        // 获取待签到课程列表
+        IEnumerable<StudentCourseList> GetCoursesToSignIn();
+
 
 
 
