@@ -17,6 +17,8 @@ namespace ChuXinEdu.CMS.Server.ViewModel
 
         public string PeriodName { get; set; }
 
+         public string CourseType { get; set; }
+
         public virtual IEnumerable<CA_C_STUDENTS_DETAIL> StudentList { get;set; }
     }
 }

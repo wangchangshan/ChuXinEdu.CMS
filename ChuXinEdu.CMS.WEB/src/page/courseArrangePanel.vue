@@ -13,14 +13,18 @@
                         <div class="student-list-content">
                             <ul>
                                 <li v-for="student in period.studentList" v-bind:key="student.studentCode">
-                                    <el-popover trigger="hover" placement="top">
+                                    <!-- <el-popover trigger="hover" placement="top">
                                         <p>姓名: 测试</p>
                                         <p>住址: 北京市昌平区</p>
                                         <div slot="reference" class="name-wrapper" style="display:inline">
                                             <el-tag :type="courseCategoryTag(student.courseCategoryCode)" size="mini">{{student.courseCategoryName}}</el-tag>
-                                            <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o"></i></a>
+                                            <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o"></i>&nbsp;<i v-if="student.isThisWeek == 'Y' && student.courseType == '试听'" class="fa fa-headphones"></i></a>
                                         </div>
-                                    </el-popover>
+                                    </el-popover> -->
+                                    <div class="name-wrapper" style="display:inline">
+                                        <el-tag :type="courseCategoryTag(student.courseCategoryCode)" size="mini">{{student.courseCategoryName}}</el-tag>
+                                        <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o"></i>&nbsp;<i v-if="student.isThisWeek == 'Y' && student.courseType == '试听'" class="fa fa-headphones"></i></a>
+                                    </div>
                                     <a class="student-item-right" v-show="setting.isShowRestCourseCount">
                                         {{student.courseRestCount}}节
                                     </a>
@@ -59,8 +63,8 @@
         </el-col>
     </el-row>
 
-    <el-dialog :title="selectStudentDialog.title" :visible.sync="selectStudentDialog.isShow" :modal-append-to-body="false" :width="selectStudentDialog.width">
-        <el-table :data="selectStudentDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentSelectionChange">
+    <el-dialog :title="selectZhengShiDialog.title" :visible.sync="selectZhengShiDialog.isShow" :modal-append-to-body="false" :width="selectZhengShiDialog.width">
+        <el-table :data="selectZhengShiDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="studentCode" label="学号" width="120"></el-table-column>
             <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
@@ -73,22 +77,22 @@
             </el-table-column>
             <el-table-column property="firstCourseDate" label="开始上课日期" min-width="210">
                 <template slot-scope="scope">
-                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectStudentDialog.pickerDateOptions">
+                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectZhengShiDialog.pickerDateOptions">
                     </el-date-picker>
                 </template>
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
             <el-button @click="submitStudents_xuanke()" type="success" size="small">确定</el-button>
-            <el-button @click="selectStudentDialog.isShow = false" size="small">取消</el-button>
+            <el-button @click="selectZhengShiDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
 
-    <el-dialog :title="selectStudentTempDialog.title" :visible.sync="selectStudentTempDialog.isShow" :modal-append-to-body="false" :width="selectStudentTempDialog.width">
-        <el-table :data="selectStudentTempDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentTempSelectionChange">
+    <el-dialog :title="selectShiTingDialog.title" :visible.sync="selectShiTingDialog.isShow" :modal-append-to-body="false" :width="selectShiTingDialog.width">
+        <el-table :data="selectShiTingDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentTempSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
-            <el-table-column property="courseDetail" label="课程类别" min-width="180" align='center'>
+            <el-table-column label="课程内容" min-width="180" align='center'>
                 <template slot-scope="scope">
                     <el-cascader expand-trigger="hover" :options="courseOptions" v-model="scope.row.selectedCourseOptions" size="mini">
                     </el-cascader>
@@ -96,14 +100,14 @@
             </el-table-column>
             <el-table-column property="firstCourseDate" label="试听日期" min-width="200">
                 <template slot-scope="scope">
-                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectStudentTempDialog.pickerDateOptions">
+                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectShiTingDialog.pickerDateOptions">
                     </el-date-picker>
                 </template>
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
             <el-button @click="submitStudents_shiting()" type="success" size="small">确定</el-button>
-            <el-button @click="selectStudentTempDialog.isShow = false" size="small">取消</el-button>
+            <el-button @click="selectShiTingDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
 
@@ -116,7 +120,7 @@
             <el-table-column property="attendanceStatusName" label="状态" width="80" align='center'></el-table-column>
             <el-table-column prop="operation" align='left' label="操作" fixed="right" width="190">
                 <template slot-scope='scope'>
-                    <el-button v-if="scope.row.attendanceStatusCode == '09'" plain type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
+                    <el-button v-if="scope.row.attendanceStatusCode == '09' && scope.row.courseType == '正式'" plain type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
                     <el-button v-if="scope.row.attendanceStatusCode == '09'" plain type="danger" icon='edit' size="mini" @click='removeCourse(scope.row.studentCourseId)'>删除</el-button>
                     <el-button v-if="scope.row.attendanceStatusCode == '00'" plain type="success" icon='edit' size="mini" @click='restoreQingJia(scope.row.studentCourseId)'>撤销请假</el-button>
                 </template>
@@ -225,11 +229,9 @@ export default {
                 btnTogglePeriodName: '全部折叠',
                 btnTogglePeriodIcon: 'el-icon-arrow-up',
                 hidTogglePeriodStatus: true, // true : 当前展开
-                periodActionsAreaControl: {
-                    //period_1:true,
-                }
+                holidayList:[]
             },
-            selectStudentDialog: {
+            selectZhengShiDialog: {
                 title: '',
                 isShow: false,
                 width: '830px',
@@ -240,15 +242,22 @@ export default {
                 pickerDateOptions: {
                     firstDayOfWeek: 1,
                     disabledDate: (time) => { // 为了this指向 使用箭头函数 
-                        var curDay = parseInt(this.selectStudentDialog.curDayCode.replace('day', ''));
+                        let result = false;
+                        let curDay = parseInt(this.selectZhengShiDialog.curDayCode.replace('day', ''));
                         if (curDay === 7) {
                             curDay = 0;
                         }
-                        return time.getDay() !== curDay;
+                        if(time.getDay() !== curDay) {
+                            result = true;
+                        }                        
+                        if(this.setting.holidayList.indexOf(this.formatDate(time)) > -1){
+                            result = true;
+                        }
+                        return result;
                     }
                 }
             },
-            selectStudentTempDialog: {
+            selectShiTingDialog: {
                 title: '',
                 isShow: false,
                 width: '600px',
@@ -259,11 +268,18 @@ export default {
                 pickerDateOptions: {
                     firstDayOfWeek: 1,
                     disabledDate: (time) => { // 为了this指向 使用箭头函数 
-                        var curDay = parseInt(this.selectStudentTempDialog.curDayCode.replace('day', ''));
+                        let result = false;
+                        let curDay = parseInt(this.selectShiTingDialog.curDayCode.replace('day', ''));
                         if (curDay === 7) {
                             curDay = 0;
                         }
-                        return time.getDay() !== curDay;
+                        if(time.getDay() !== curDay) {
+                            result = true;
+                        }                        
+                        if(this.setting.holidayList.indexOf(this.formatDate(time)) > -1){
+                            result = true;
+                        }
+                        return result;
                     }
                 }
             },
@@ -285,7 +301,15 @@ export default {
                 pickerDateOptions: {
                     firstDayOfWeek: 1,
                     disabledDate: (time) => {
-                        return time.getTime() < Date.now();
+                        let result = false;
+                        if(time.getTime() < Date.now())
+                        {
+                            result = true;
+                        }
+                        if(this.setting.holidayList.indexOf(this.formatDate(time)) > -1){
+                            result = true;
+                        }
+                        return result;
                     }
                 }
             },
@@ -314,6 +338,7 @@ export default {
     },
     created() {
         this.getTemplatePeriod();
+        this.holidaysInit();
     },
     methods: {
 
@@ -330,13 +355,11 @@ export default {
                     roomCode: _this.roomCode
                 },
                 fn: function (result) {
-                    console.log(result);
                     result.forEach((item) => {
                         // 构造coursePeriods数据
                         for (let day of _this.coursePeriods) {
                             if (day.dayCode === item.courseWeekDay) {
                                 _this.activePeriods_bak[day.dayCode].push(item.id);
-                                _this.setting.periodActionsAreaControl["" + item.id] = false;
                                 day.activePeriods.push(item.id); //默认展开的时间段
                                 day.periods.push({
                                     periodCode: item.id,
@@ -356,7 +379,6 @@ export default {
         refreshPeriodInfo(dayCode, periodName) {
             var _this = this;
             var templateCode = 'at-001';
-            console.log("开始局部刷新...");
             axios({
                 type: 'get',
                 path: '/api/coursearrange/getarrangedinfobyperiod',
@@ -367,7 +389,6 @@ export default {
                     periodName: periodName
                 },
                 fn: function (result) {
-                    //console.log(result);
                     let count = 0;
                     result.forEach(item => {
                         item.isThisWeek == 'Y' ? count++ : '';
@@ -406,82 +427,93 @@ export default {
                     day7: [],
                 },
 
-                this.getTemplatePeriod();
+            this.getTemplatePeriod();
+            this.setting.holidayList = [];
+            this.holidaysInit();
         },
 
         // 试听课程
         showTempStudentsListCourse(dayCode, dayName, periodName) {
-            this.selectStudentTempDialog.title = '选择试听学生 [' + dayName + ' ' + periodName + ']';
-            this.selectStudentTempDialog.curDayCode = dayCode;
-            this.selectStudentTempDialog.curPeriodName = periodName;
+            this.selectShiTingDialog.title = '选择试听学生 [' + dayName + ' ' + periodName + ']';
+            this.selectShiTingDialog.curDayCode = dayCode;
+            this.selectShiTingDialog.curPeriodName = periodName;
             this.getShiTingStudentList();
-            this.selectStudentTempDialog.isShow = true;
+            this.selectShiTingDialog.isShow = true;
         },
 
         // 试听学生列表
         getShiTingStudentList() {
             var _this = this;
+            _this.selectShiTingDialog.studentList = [];
             axios({
                 type: 'get',
                 path: '/api/student/gettempstudentstoselectCourse',
                 fn: function (result) {
-                    _this.selectStudentTempDialog.studentList = result;
+                    _this.selectShiTingDialog.studentList = result;
                 }
             })
         },
 
-        // 提交试听学生选课信息 ？？
+        // 提交试听学生选课信息
         submitStudents_shiting() {
-            if (this.selectStudentTempDialog.selectedStudents.length === 0) {
+            if (this.selectShiTingDialog.selectedStudents.length === 0) {
                 this.$message({
                     message: '请至少选择一位待试听学生！',
                     type: 'warning'
                 });
                 return;
             }
-            var caInfo = {
+            var caInfo_shiting = {
                 'templateCode': 'at-001',
                 'roomCode': this.roomCode,
-                'DayCode': this.selectStudentDialog.curDayCode,
-                'PeriodName': this.selectStudentDialog.curPeriodName,
+                'DayCode': this.selectShiTingDialog.curDayCode,
+                'PeriodName': this.selectShiTingDialog.curPeriodName,
+                'CourseType': '试听',
                 'StudentList': []
             }
-            caInfo.StudentList = [];
-            for (let selectedItem of this.selectStudentDialog.selectedStudents) {
+            caInfo_shiting.StudentList = [];
+            for (let selectedItem of this.selectShiTingDialog.selectedStudents) {
                 //debugger
-                if (!selectedItem.selectedCourseCount || !selectedItem.firstCourseDate) {
+                if (!selectedItem.selectedCourseOptions || !selectedItem.firstCourseDate) {
                     this.$message({
-                        message: '请填写选中学生的课时数以及上课开始日期！',
+                        message: '请选择课程内容和试听日期！',
                         type: 'warning'
                     });
                     return;
                 }
-                caInfo.StudentList.push({
+                let categoryCode = selectedItem.selectedCourseOptions[0];
+                let folderCode = selectedItem.selectedCourseOptions[1];
+                let categoryName = this.getDicNameByCode(categoryCode);
+                let forlderName = this.getDicNameByCode(folderCode);
+                
+                caInfo_shiting.StudentList.push({
                     'StudentCode': selectedItem.studentCode,
                     'StudentName': selectedItem.studentName,
-                    'PackageCode': selectedItem.packageCode,
-                    'CourseCategoryCode': selectedItem.courseCategoryCode,
-                    'CourseCategoryName': selectedItem.courseCategoryName,
-                    'CourseCount': selectedItem.selectedCourseCount,
+                    'PackageCode': 'shiting',
+                    'CourseCategoryCode': categoryCode,
+                    'CourseCategoryName': categoryName,
+                    'CourseFolderCode': folderCode,
+                    'CourseFolderName': forlderName,
+                    'CourseCount': 1,
                     'StartDate': selectedItem.firstCourseDate
                 });
             }
-            //console.log(caInfo);
+            
             var _this = this;
-            var dayCode = _this.selectStudentDialog.curDayCode;
-            var periodName = _this.selectStudentDialog.curPeriodName;
+            var dayCode = _this.selectShiTingDialog.curDayCode;
+            var periodName = _this.selectShiTingDialog.curPeriodName;
             axios({
                 type: 'post',
                 path: '/api/coursearrange/postcoursearrange',
-                data: caInfo,
+                data: caInfo_shiting,
                 fn: function (result) {
                     if (result === 200) {
                         _this.refreshPeriodInfo(dayCode, periodName);
                         _this.$message({
-                            message: '排课成功！',
+                            message: '试听排课成功！',
                             type: 'success'
                         });
-                        _this.selectStudentDialog.isShow = false;
+                        _this.selectShiTingDialog.isShow = false;
                     }
                 }
             })
@@ -489,16 +521,17 @@ export default {
 
         // 添加排课学生入口
         showStudentsListPanel(dayCode, dayName, periodName) {
-            this.selectStudentDialog.title = '选择学生 [' + dayName + ' ' + periodName + ']';
-            this.selectStudentDialog.curDayCode = dayCode;
-            this.selectStudentDialog.curPeriodName = periodName;
+            this.selectZhengShiDialog.title = '选择学生 [' + dayName + ' ' + periodName + ']';
+            this.selectZhengShiDialog.curDayCode = dayCode;
+            this.selectZhengShiDialog.curPeriodName = periodName;
             this.getPickCourseStudentList(dayCode, periodName);
-            this.selectStudentDialog.isShow = true;
+            this.selectZhengShiDialog.isShow = true;
         },
 
         // 待排课学生列表
         getPickCourseStudentList(dayCode, periodName) {
             var _this = this;
+            _this.selectZhengShiDialog.studentList = [];
             axios({
                 type: 'get',
                 path: '/api/student/getstudentstoselectCourse',
@@ -507,14 +540,14 @@ export default {
                     periodName: periodName
                 },
                 fn: function (result) {
-                    _this.selectStudentDialog.studentList = result;
+                    _this.selectZhengShiDialog.studentList = result;
                 }
             })
         },
 
         // 提交排课（正式）
         submitStudents_xuanke() {
-            if (this.selectStudentDialog.selectedStudents.length === 0) {
+            if (this.selectZhengShiDialog.selectedStudents.length === 0) {
                 this.$message({
                     message: '请至少选择一位学生！',
                     type: 'warning'
@@ -524,12 +557,13 @@ export default {
             var caInfo = {
                 'templateCode': 'at-001',
                 'roomCode': this.roomCode,
-                'DayCode': this.selectStudentDialog.curDayCode,
-                'PeriodName': this.selectStudentDialog.curPeriodName,
+                'DayCode': this.selectZhengShiDialog.curDayCode,
+                'PeriodName': this.selectZhengShiDialog.curPeriodName,
+                'CourseType': '正式',
                 'StudentList': []
             }
             caInfo.StudentList = [];
-            for (let selectedItem of this.selectStudentDialog.selectedStudents) {
+            for (let selectedItem of this.selectZhengShiDialog.selectedStudents) {
                 //debugger
                 if (!selectedItem.selectedCourseCount || !selectedItem.firstCourseDate) {
                     this.$message({
@@ -544,14 +578,16 @@ export default {
                     'PackageCode': selectedItem.packageCode,
                     'CourseCategoryCode': selectedItem.courseCategoryCode,
                     'CourseCategoryName': selectedItem.courseCategoryName,
+                    'CourseFolderCode': '',
+                    'CourseFolderName': '',
                     'CourseCount': selectedItem.selectedCourseCount,
                     'StartDate': selectedItem.firstCourseDate
                 });
             }
-            //console.log(caInfo);
+            
             var _this = this;
-            var dayCode = _this.selectStudentDialog.curDayCode;
-            var periodName = _this.selectStudentDialog.curPeriodName;
+            var dayCode = _this.selectZhengShiDialog.curDayCode;
+            var periodName = _this.selectZhengShiDialog.curPeriodName;
             axios({
                 type: 'post',
                 path: '/api/coursearrange/postcoursearrange',
@@ -563,7 +599,7 @@ export default {
                             message: '排课成功！',
                             type: 'success'
                         });
-                        _this.selectStudentDialog.isShow = false;
+                        _this.selectZhengShiDialog.isShow = false;
                     }
                 }
             })
@@ -574,6 +610,7 @@ export default {
             this.studentCourseDialog.curDayCode = dayCode;
             this.studentCourseDialog.curPeriodName = periodName;
             var _this = this;
+            _this.studentCourseDialog.courseList = [];
             axios({
                 type: 'get',
                 path: 'api/course/getarrangedcourselist',
@@ -644,11 +681,11 @@ export default {
 
         // 选择学生(正式) checkbox
         handleStudentSelectionChange(allSelectedStudents) {
-            this.selectStudentDialog.selectedStudents = allSelectedStudents;
+            this.selectZhengShiDialog.selectedStudents = allSelectedStudents;
         },
         // 选择学生(试听) checkbox
         handleStudentTempSelectionChange(allSelectedStudents) {
-            this.selectStudentTempDialog.selectedStudents = allSelectedStudents;
+            this.selectShiTingDialog.selectedStudents = allSelectedStudents;
         },
         // 选择课程 checkbox
         handleCourseListChange(allSelectedCourses) {
@@ -760,8 +797,9 @@ export default {
 
         // 放假安排
         showHolidaySettingPanel() {
-            var _this = this;
-            var today = _this.getNowFormatDate();
+            var _this = this;            
+            var date = new Date();
+            var today = _this.formatDate(date);
             _this.holidayDialog.newHolidays = [];
             axios({
                 type: 'get',
@@ -779,6 +817,20 @@ export default {
                 }
             });
             _this.holidayDialog.isShow = true;
+        },
+
+        holidaysInit(){
+            var _this = this;
+            axios({
+                type: 'get',
+                path: '/api/coursearrange/getholidays',
+                fn: function (result) {
+                    result.forEach(item => {
+                        //_this.setting.holidayList.push(item.holidayDate.split('T')[0])
+                        _this.setting.holidayList.push(_this.formatDate(new Date(item.holidayDate)));
+                    });
+                }
+            });
         },
 
         indexGernerate(index) {
@@ -828,8 +880,7 @@ export default {
                 data: {
                     strDay: day
                 },
-                fn: function (result) {
-                    console.log("remove holiday result: " + result);
+                fn: function (result) {                    
                     if (result === 200) {
                         _this.$message({
                             message: '删除假期成功',
@@ -842,8 +893,7 @@ export default {
             });
         },
 
-        getNowFormatDate() {
-            var date = new Date();
+        formatDate(date) {
             var seperator1 = "-";
             var seperator2 = ":";
             var month = date.getMonth() + 1;
@@ -889,12 +939,6 @@ export default {
             return week;
         },
 
-        // handleCommand(command) {
-        //     //this.$message('click on item ' + command);
-        //     if (command === "正式") {
-        //         this.selectStudentDialog.isShow = true;
-        //     }
-        // }
         courseCategoryTag(categoryCode) {
             let type = '';
             switch (categoryCode) {
@@ -906,6 +950,33 @@ export default {
                     break;
             }
             return type;
+        },
+        
+        getDicNameByCode(code){
+            let name = '';
+            switch (code) {
+                case 'meishu':
+                    name = '美术';
+                    break;
+                case 'shufa':
+                    name = '书法';
+                    break;
+                case 'meishu_00':
+                    name = '国画';
+                    break;
+                case 'meishu_01':
+                    name = '西画';
+                    break;
+                case 'shufa_00':
+                    name = '毛笔';
+                    break;
+                case 'shufa_01':
+                    name = '硬笔';
+                    break;
+                default:
+                    break;
+            }
+            return name;
         }
     }
 };
@@ -915,7 +986,7 @@ export default {
 .schedule-panel {
     overflow-x: auto;
     .schedule-area {
-        min-width: 1200px;
+        min-width: 1300px;
         overflow-y: auto;
         overflow-x: hidden;
         .week-panel {

@@ -19,6 +19,10 @@ namespace ChuXinEdu.CMS.Server.ViewModel
 
         public string CourseCategoryName { get; set; }
 
+        public string CourseFolderCode { get; set; }
+
+        public string CourseFolderName { get; set; }
+
         public int CourseCount { get; set; }
 
         public DateTime StartDate { get;set; }

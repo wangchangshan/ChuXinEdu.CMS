@@ -21,5 +21,8 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("attendance_status_name")]
         public string AttendanceStatusName { get; set; }
+
+        [Column("course_type")]
+        public string CourseType { get; set; }
     }
 }

@@ -121,7 +121,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {   
                 return context.StudentCoursePackage.FromSql($@"select scp.* from student_course_package  scp 
-                                                                where not exists(
+                                                                where scp.flex_course_count > 0 and not exists(
                                                                     select 1 from student_course_arrange sca 
                                                                     where sca.student_code = scp.student_code 
                                                                     and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
@@ -144,7 +144,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
              using (BaseContext context = new BaseContext())
             {
-                return context.Simplify_StudentCourseList.FromSql($@"select student_course_id,course_category_name,course_date,attendance_status_code,attendance_status_name 
+                return context.Simplify_StudentCourseList.FromSql($@"select student_course_id,course_category_name,course_date,attendance_status_code,attendance_status_name,course_type 
                                                                     from student_course_list
                                                                     where student_code={studentCode} and course_week_day={dayCode} and course_period={coursePeriod}
                                                                         and (attendance_status_code = '00' or attendance_status_code = '03' or attendance_status_code = '09')
