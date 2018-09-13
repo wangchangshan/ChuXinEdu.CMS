@@ -24,8 +24,8 @@
                                     <div class="name-wrapper" style="display:inline">
                                         <el-tag :type="courseFolderTag(student.courseFolderCode)" size="mini">{{student.courseFolderName}}</el-tag>
                                         <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} 
-                                            <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o" style="margin-right:3px;"></i>
-                                            <i v-else style="margin-right:19px;"></i>
+                                            <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o" style="margin-right:2px;"></i>
+                                            <i v-else style="margin-right:18px;"></i>
                                             <i v-show="student.courseType == '试听'" class="fa fa-headphones"></i>
                                         </a>
                                     </div>
@@ -67,13 +67,17 @@
         </el-col>
     </el-row>
 
-    <el-dialog :title="selectZhengShiDialog.title" :visible.sync="selectZhengShiDialog.isShow" :modal-append-to-body="false" :width="selectZhengShiDialog.width">
+    <el-dialog :title="selectZhengShiDialog.title" :visible.sync="selectZhengShiDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="selectZhengShiDialog.width">
         <el-table :data="selectZhengShiDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="studentCode" label="学号" width="120"></el-table-column>
             <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
-            <el-table-column property="courseCategoryName" label="课程类别" width="80" align='center'></el-table-column>
-            <el-table-column property="flexCourseCount" label="可选课时数" align='center' width="90"></el-table-column>
+            <el-table-column property="" label="课程类别" width="100" align='center'>
+                <template slot-scope="scope">
+                    {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
+                </template>
+            </el-table-column>
+            <el-table-column property="flexCourseCount" label="可选课时数" align='center' width="80"></el-table-column>
             <el-table-column property="selectedCourseCount" label="选择课时数" min-width="140">
                 <template slot-scope="scope">
                     <el-input-number v-model="scope.row.selectedCourseCount" :min="1" :max="scope.row.flexCourseCount" label="描述文字" size="mini"></el-input-number>
@@ -92,7 +96,7 @@
         </div>
     </el-dialog>
 
-    <el-dialog :title="selectShiTingDialog.title" :visible.sync="selectShiTingDialog.isShow" :modal-append-to-body="false" :width="selectShiTingDialog.width">
+    <el-dialog :title="selectShiTingDialog.title" :visible.sync="selectShiTingDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="selectShiTingDialog.width">
         <el-table :data="selectShiTingDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentTempSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
@@ -115,7 +119,7 @@
         </div>
     </el-dialog>
 
-    <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :modal-append-to-body="false" :width="studentCourseDialog.width">
+    <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="studentCourseDialog.width">
         <el-table :data="studentCourseDialog.courseList" max-height="400" size="mini" @selection-change="handleCourseListChange">
             <el-table-column :selectable='courseCheckboxControl' type="selection" width="30"></el-table-column>
             <el-table-column type="index" :index="indexGernerate" width="40"> </el-table-column>
@@ -136,7 +140,7 @@
         </div>
     </el-dialog>
 
-    <el-dialog :title="holidayDialog.title" :visible.sync="holidayDialog.isShow" :modal-append-to-body="false" :width="holidayDialog.width">
+    <el-dialog :title="holidayDialog.title" :visible.sync="holidayDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="holidayDialog.width">
         <el-table :data="holidayDialog.holidayList" max-height="400" size="mini">
             <el-table-column type="index" :index="indexGernerate" width="35"> </el-table-column>
             <el-table-column property="holidayDate" label="今年放假日期" min-width="120"></el-table-column>
@@ -937,6 +941,9 @@ export default {
                 case 6:
                     week = '星期六';
                     break;
+                case 7:
+                    week = '星期日';
+                    break;
                 default:
                     break;
             }
@@ -1035,14 +1042,13 @@ export default {
                 }
             }
             .student-list-content {
-                padding-left: 5px;
                 margin-left: 3px;
                 .student-item-left {
                     cursor: pointer;
                 }
                 .student-item-right {
                     float: right;
-                    margin-right: 15px;
+                    margin-right: 6px;
                 }
             }
             .student-list-footer {

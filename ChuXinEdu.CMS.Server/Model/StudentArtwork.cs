@@ -43,6 +43,9 @@ namespace ChuXinEdu.CMS.Server.Model
         
         [Column("artwork_remark")]
         public string ArtworkRemark { get; set; }
+
+        [Column("artwork_status")]
+        public string ArtworkStatus { get; set; }
         
         [Column("create_date")]
         public DateTime CreateDate { get; set; }

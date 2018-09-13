@@ -536,5 +536,69 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+
+        public string SignInBatch(List<CL_U_SIGN_IN> courseList)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    foreach (var item in courseList)
+                    {
+                        string studentCode = item.StudentCode;
+                        var scl = context.StudentCourseList.Where(s => s.StudentCourseId == item.CourseListId).First();
+
+                        // 1. 更新课程记录表的状态
+                        scl.AttendanceStatusCode = "01";
+                        scl.AttendanceStatusName = "上课销课";
+                        scl.TeacherCode = item.TeacherCode;
+                        scl.TeacherName = item.TeacherName;
+
+                        // 2. 判断是否为试听
+                        if (scl.CourseType == "试听")
+                        {
+                            // 2.1.1 更新试听学员表状态
+                            var st = context.StudentTemp.Where(s => s.StudentCode == studentCode).First();
+                            st.StudentTempStatus = "02"; // 试听结束
+
+                            // 2.1.2 删除课程安排表试听信息
+                            var sca = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode && s.CourseType == "试听").First();
+                            context.Remove(sca);
+                        }
+                        else  //正式
+                        {
+                            // 2.2.1 课程安排表信息
+                            string templateCode = scl.ArrangeTemplateCode;
+                            string packageCode = scl.PackageCode;
+                            string dayCode = scl.CourseWeekDay;
+                            string periodName = scl.CoursePeriod;
+                            var sca = context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode
+                                                                                && s.StudentCode == studentCode
+                                                                                && s.PackageCode == packageCode
+                                                                                && s.CourseWeekDay == dayCode
+                                                                                && s.CoursePeriod == periodName)
+                                                                    .First();
+                            if(sca.CourseRestCount == 1)
+                            {
+                                context.Remove(sca);
+                            }
+                            else
+                            {
+                                sca.CourseRestCount -= 1;
+                            }
+                        }
+                    }
+                    // 3. 提交事务
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
     }
 }

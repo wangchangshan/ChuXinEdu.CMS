@@ -15,8 +15,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
     [ApiController]
     public class CourseArrangeController : ControllerBase
     {
-        private readonly IChuXinWorkFlow _chuxinWorkFlow;
         private readonly IChuXinQuery _chuxinQuery;
+        private readonly IChuXinWorkFlow _chuxinWorkFlow;
 
         public CourseArrangeController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow)
         {
@@ -67,8 +67,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public IEnumerable<CA_R_PERIOD_STUDENTS> GetArrangedInfoByPeriod(string templateCode, string roomCode, string dayCode, string periodName)
         {
-            IEnumerable<CA_R_PERIOD_STUDENTS> periodStudents  = _chuxinQuery.GetPeriodStudents(templateCode, roomCode, dayCode, periodName);
-            return periodStudents;
+            IEnumerable<CA_R_PERIOD_STUDENTS> arrangedInfo  = _chuxinQuery.GetPeriodStudents(templateCode, roomCode, dayCode, periodName);
+            return arrangedInfo;
         }
 
         /// <summary>

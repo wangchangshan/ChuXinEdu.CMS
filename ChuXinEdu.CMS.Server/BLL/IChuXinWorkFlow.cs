@@ -28,5 +28,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [排课模块] 删除放假日期
         string RemoveHoliday(string strDay);
+
+        // [课程签到]
+        string SignInBatch(List<CL_U_SIGN_IN> courseList);
     }
 }

@@ -8,6 +8,7 @@ using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
+using System.Web;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -15,13 +16,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
-        private readonly IDicQuery _dicQuery;
         private readonly IChuXinQuery _chuxinQuery;
+        private readonly IChuXinWorkFlow _chuxinWorkFlow;
 
-        public CourseController(IChuXinQuery chuxinQuery, IDicQuery dicQuery)
+        public CourseController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow)
         {
             _chuxinQuery = chuxinQuery;
-            _dicQuery = dicQuery;       
+            _chuxinWorkFlow = chuxinWorkFlow;
         }
 
         /// <summary>
@@ -44,6 +45,32 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetCoursesToSignIn();
             return courseList;
+        }
+
+        /// <summary>
+        /// 签到 PUT api/course/putsigninsingle
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public string PutSignInBatch(List<CL_U_SIGN_IN> courseList)
+        {
+            string result = _chuxinWorkFlow.SignInBatch(courseList);
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// 签到 上传作品 POST api/course/uploadartwork
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string UploadArtwork()
+        {
+            string result = string.Empty;
+            string coruseId = HttpContext.Request.Form["course_id"];
+            //HttpFileCollection df =  HttpContext.Request.Form.Files;
+            return result;
         }
     }   
 }

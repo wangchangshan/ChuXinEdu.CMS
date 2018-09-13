@@ -2,68 +2,78 @@
 <!-- <div>展示今日以及过往没有签到的学生上课列表</div> -->
 <div class="fillcontain">
     <div class="table_container">
-        <el-table :data="attendanceList" :span-method="objectSpanMethod" v-loading="loading" style="width: 100%" align="center" border :max-height="tableHeight" @selection-change="handleSelectionChange">
-
-            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="120">
+        <el-table :data="attendanceList" :span-method="objectSpanMethod" v-loading="loading" border :max-height="tableHeight" @selection-change="handleSelectionChange" style="width: 100%" align="center" size='mini'>
+            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
+                <template slot-scope='scope'>
+                    {{ scope.row.courseDate + ' ' + scope.row.weekName }}
+                </template>
             </el-table-column>
             <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="140">
             </el-table-column>
             <el-table-column type="selection" label="选择" align='center' width="60"></el-table-column>
-
             <el-table-column prop="studentName" label="姓名" align='center' min-width="120">
+                <template slot-scope='scope'>
+                    {{ scope.row.studentName + ' (' + scope.row.courseType + ')' }}
+                </template>
             </el-table-column>
-            <el-table-column prop="courseFolderName" label="课程内容" align='center' width="110">
+            <el-table-column prop="courseFolderName" label="课程内容" align='center' width="100">
             </el-table-column>
             <el-table-column prop="" label="上课教师" align='center' min-width="140">
                 <template slot-scope='scope'>
-                    <el-select v-model="scope.row.teacherCode" placeholder="选择上课教师" size='small'>
-                        <el-option v-for="item in this.teacherList[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
+                    <el-select v-model="scope.row.teacherCode" placeholder="选择上课教师" size='mini'>
+                        <el-option v-for="item in teacherList[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
                         </el-option>
                     </el-select>
                 </template>
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
                 <template slot-scope='scope'>
-                    <el-button type="warning" icon='edit' size="small" @click='singleLeave(scope.row.student_code)'>请假</el-button>
-                    <el-button type="success" icon='edit' size="small" @click='singleSignIn(scope.row)'>签到</el-button>
+                    <el-button type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
+                    <el-button type="success" icon='edit' size="mini" @click='showSingleSignInDialog(scope.row)'>签到</el-button>
                 </template>
             </el-table-column>
         </el-table>
     </div>
     <div class="footer_container">
-        <el-button size="small" type="warning" icon="" @click='batchLeave()'>批量请假</el-button>
-        <el-button size="small" type="success" icon="" @click='batchSignIn()'>批量签到</el-button>
+        <el-button size="small" type="success" icon="" @click='submitBatchSignIn()'>批量签到</el-button>
     </div>
 
-    <el-dialog :title="signInDialog.title" :visible.sync="signInDialog.show" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+    <el-dialog :title="signInDialog.title" :visible.sync="signInDialog.isShow" :width="signInDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" size="mini">
         <div class="form">
-            <el-form ref="studentCourseInfo" :model="signInDialog.studentCourseInfo" :rules="signInDialog.studentCourseInfoRules" :label-width="signInDialog.formLabelWidth" :label-position='signInDialog.labelPosition' size="mini" style="margin:10px;width:auto;" label-suffix='：'>
+            <el-form ref="courseInfo" :model="signInDialog.courseInfo" :rules="signInDialog.studentCourseInfoRules" :label-width="signInDialog.formLabelWidth" :label-position='signInDialog.labelPosition' size="mini" label-suffix='：'>
                 <el-form-item label="姓名">
-                    {{signInDialog.studentCourseInfo.student_name}}
+                    {{signInDialog.courseInfo.studentName}}
                 </el-form-item>
                 <el-form-item label="上课时间">
-                    {{signInDialog.studentCourseInfo.student_course_date + " " + signInDialog.studentCourseInfo.student_course_time}}
+                    {{signInDialog.courseInfo.courseDate + " " + signInDialog.courseInfo.weekName + "  [" + signInDialog.courseInfo.coursePeriod+ "]" }}
                 </el-form-item>
                 <el-form-item label="上课教师">
-                    <el-select v-model="signInDialog.studentCourseInfo.course_teacher_code" placeholder="选择上课教师" size='small'>
-                        <el-option v-for="item in teacherList" :key="item.teacher_code" :label="item.teacher_name" :value="item.teacher_code">
+                    <el-select v-model="signInDialog.courseInfo.teacherCode" placeholder="选择上课教师" size='mini'>
+                        <el-option v-for="item in teacherList[signInDialog.courseInfo.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="作品描述">
-                    <el-input v-model="signInDialog.studentCourseInfo.img_desc"></el-input>
+                    <el-input v-model="signInDialog.courseInfo.imgDesc"></el-input>
                 </el-form-item>
                 <el-form-item label="作品花费课时">
-                    <el-input v-model="signInDialog.studentCourseInfo.img_cost"></el-input>
+                    <el-input-number v-model="signInDialog.courseInfo.imgCost" :min="1" size="mini"></el-input-number>
                 </el-form-item>
                 <el-form-item label="作品上传">
-                    <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handleImgPreview" :on-remove="handleImgRemove" list-type="picture">
+                    <el-upload class="upload-demo" multiple=true 
+                        :action="uploadPanel.actionUrl" 
+                        :on-preview="handleImgPreview" 
+                        :on-remove="handleImgRemove"
+                        :before-upload="beforeUpload"  
+                        :on-success="uploadSuccess" 
+                        :file-list="uploadPanel.thumbnailList"
+                        list-type="picture">
                         <el-button size="mini" type="primary">点击上传</el-button>
                     </el-upload>
                 </el-form-item>
                 <el-form-item class="text_right">
-                    <el-button @click="signInDialog.show = false">取 消</el-button>
-                    <el-button type="primary">签 到</el-button>
+                    <el-button @click="signInDialog.isShow = false" size="small">取 消</el-button>
+                    <el-button type="primary" @click="submitSignIn()" size="small">签 到</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -79,112 +89,53 @@ import {
 export default {
     data() {
         return {
-            attendanceList: [{
-                    student_code: '201807001',
-                    student_name: '杨子铭',
-                    student_course_date: '2018-09-09',
-                    student_course_time: '16:00-17:30',
-                    student_course_content: '国画',
-                    course_teacher_code: '',
-                    teachers: [{
-                            teacher_code: '001',
-                            teacher_name: '唐得红',
-                        },
-                        {
-                            teacher_code: '002',
-                            teacher_name: '马朝',
-                        }
-                    ],
-                },
-                {
-                    student_code: '201807001',
-                    student_name: '杨子铭',
-                    student_course_date: '2018-09-09',
-                    student_course_time: '16:00-17:30',
-                    student_course_content: '国画',
-                    course_teacher_code: '',
-                    teachers: [{
-                            teacher_code: '001',
-                            teacher_name: '唐得红',
-                        },
-                        {
-                            teacher_code: '002',
-                            teacher_name: '马朝',
-                        }
-                    ],
-                },
-                {
-                    student_code: '201807001',
-                    student_name: '杨子铭',
-                    student_course_date: '2018-09-09',
-                    student_course_time: '17:30-19:00',
-                    student_course_content: '国画',
-                    course_teacher_code: '',
-                    teachers: [{
-                            teacher_code: '001',
-                            teacher_name: '唐得红',
-                        },
-                        {
-                            teacher_code: '002',
-                            teacher_name: '马朝',
-                        }
-                    ],
-                },
-            ],
-            teacherList:{
-                "meishu_00":[
-                    {
-                        teacherCode: '001',
-                        teacherName: '唐得红',
-                    }
-                ],
-                "meishu_01":[
-                    {
-                        teacherCode: '002',
-                        teacherName: '马朝',
-                    }
-                ]
-            },
-            dateRowSpanArray: [],
-            timeRowSpanArray: [],
-            // 以后可以缓存
-            teacherList1: [{
-                teacherCode: '001',
-                teacherName: '唐得红',
-            }, {
-                teacherCode: '002',
-                teacherName: '马朝',
-            }],
-            selectedStudents: [],
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 128,
 
+            attendanceList: [],
+            selectedCourses: [],
+
             signInDialog: {
                 title: '签到详细信息',
-                show: false,
+                isShow: false,
                 labelPosition: 'right',
                 formLabelWidth: '120px',
-                width: '400px',
-                studentCourseInfo: {
-                    student_code: '',
-                    student_name: '',
-                    student_course_date: '',
-                    student_course_time: '',
-                    student_course_content: '',
-                    course_teacher_code: '',
-                    img_desc: '',
-                    img_cost: ''
+                width: '600px',
+                courseInfo: {
+                    courseId: 0,
+                    studentCode: '',
+                    studentName: '',
+                    courseDate: '',
+                    weekName: '',
+                    coursePeriod: '',
+                    courseFolderCode: '',
+                    teacherCode: '',
+                    imgDesc: '',
+                    imgCost: ''
                 },
                 studentCourseInfoRules: {
-
                 }
-            }
+            },
+            uploadPanel: {
+                actionUrl:'/api/course/uploadartwork',
+                thumbnailList:[]
+            },
+            teacherList: {
+                "meishu_00": [{
+                    teacherCode: '001',
+                    teacherName: '唐得红',
+                }],
+                "meishu_01": [{
+                    teacherCode: '002',
+                    teacherName: '马朝',
+                }]
+            },
+            dateRowSpanArray: [],
+            timeRowSpanArray: []
         }
     },
     created() {
-        console.log(1);
         this.getAttendanceList();
-        this.getRowSpanInfo();
     },
     methods: {
         getAttendanceList() {
@@ -193,74 +144,152 @@ export default {
                 type: 'get',
                 path: '/api/course/getattendancelist',
                 fn: function (result) {
+                    for (let item of result) {
+                        item.courseDate = item.courseDate.split('T')[0];
+                        item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
+                    }
                     _this.attendanceList = result;
-                    console.log(result);
+                    _this.getRowSpanInfo();
                 }
             });
         },
-        courseTag(course) {
-            let basic = '';
-            switch (course) {
-                case '国画':
-                    basic = 'success'
-                    break;
-                case '西画':
-                    basic = ''
-                    break;
-                case '书法':
-                    basic = 'info'
-                    break;
-                default:
-                    basic = 'danger'
+
+        submitSignIn() {
+            if (!this.signInDialog.courseInfo.teacherCode) {
+                this.$message({
+                    message: '请选择上课教师',
+                    type: 'warning'
+                });
+                return;
             }
-            return basic;
         },
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
-        },
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
-        },
-        addStudent() {
-            this.dialog.title = '新增学生';
-            this.dialog.show = true;
-        },
-        batchLeave() {
-            alert('批量请假')
-            if (this.selectedStudents.length === 0) {
+
+        submitBatchSignIn() {
+            if (this.selectedCourses.length === 0) {
                 this.$message({
                     message: '请选择至少一条记录',
                     type: 'warning'
                 });
-                return false;
+                return;
             }
-        },
-        batchSignIn() {
-            alert('批量签到')
-            if (this.selectedStudents.length === 0) {
-                this.$message({
-                    message: '请选择至少一条记录',
-                    type: 'warning'
+            let courseList = [];
+            for (let item of this.selectedCourses) {
+                if (!item.teacherCode) {
+                    this.$message({
+                        message: '请为选中的课时选择上课教师',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                let teacherName = this.getTeacherNameByCode(item.courseFolderCode, item.teacherCode);
+                courseList.push({
+                    CourseListId: item.studentCourseId,
+                    StudentCode: item.studentCode,
+                    TeacherCode: item.teacherCode,
+                    TeacherName: teacherName
                 });
-                return false;
             }
+
+            let _this = this;
+            axios({
+                type: 'put',
+                path: '/api/course/putsigninbatch',
+                data: courseList,
+                fn: function (result) {
+                    if (result === 200) {
+                        _this.$message({
+                            message: '批量签到成功！',
+                            type: 'success'
+                        });
+                        courseList.forEach(item => {
+                            _this.removeTableRow(item.CourseListId);
+                        });
+                    }
+                }
+            });
         },
-        singleLeave() {
-            alert("只需要修改状态为请教，未排课时数+1");
+        // 请假
+        qingJiaCourse(studentCourseId) {
+            var _this = this;
+            this.$confirm('是否确定该学员已请假?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                axios({
+                    type: 'put',
+                    path: '/api/coursearrange/putqingjiasingle',
+                    data: {
+                        StudentCourseId: studentCourseId
+                    },
+                    fn: function (result) {
+                        if (result === 200) {
+                            _this.$message({
+                                message: '请假成功！',
+                                type: 'success'
+                            });
+                            _this.removeTableRow(studentCourseId)
+                        }
+                    }
+                });
+            });
         },
-        singleSignIn(row) {
-            this.signInDialog.show = true;
-            this.signInDialog.studentCourseInfo = {
-                student_code: row.student_code,
-                student_name: row.student_name,
-                student_course_date: row.student_course_date,
-                student_course_time: row.student_course_time,
-                student_course_content: row.student_course_content,
-                course_teacher_code: row.course_teacher_code,
+
+        // 请假或签到后 删除当前行 
+        removeTableRow(courseId) {
+            let index = -1;
+            for (let i = 0; i < this.attendanceList.length; i++) {
+                if (this.attendanceList[i].studentCourseId == courseId) {
+                    index = i;
+                    break;
+                }
+            }
+
+            this.attendanceList.splice(index, 1);
+            this.getRowSpanInfo();
+        },
+
+        showSingleSignInDialog(row) {
+            this.signInDialog.isShow = true;
+            this.signInDialog.courseInfo = {
+                courseId: row.studentCourseId,
+                studentCode: row.studentCode,
+                studentName: row.studentName,
+                courseDate: row.courseDate,
+                weekName: row.weekName,
+                courseFolderCode: row.courseFolderCode,
+                coursePeriod: row.coursePeriod,
+                teacherCode: row.teacherCode,
             };
         },
+
         handleSelectionChange(allItems) {
-            this.selectedStudents = allItems;
+            this.selectedCourses = allItems;
+        },
+
+        beforeUpload(file){
+            let fd = new FormData();
+            fd.append("course_id", this.signInDialog.courseInfo.courseId);
+            fd.append("pic_file", file);
+            // axios({
+            //     type: 'post',
+            //     path: '/api/course/putsigninbatch',
+            //     data: courseList,
+            //     fn: function (result) {
+            //         if (result === 200) {
+            //             _this.$message({
+            //                 message: '批量签到成功！',
+            //                 type: 'success'
+            //             });
+            //             courseList.forEach(item => {
+            //                 _this.removeTableRow(item.CourseListId);
+            //             });
+            //         }
+            //     }
+            // });
+        },
+        uploadSuccess(response, file, fileList){
+
         },
 
         // 合并行
@@ -275,22 +304,22 @@ export default {
                 this.dateRowSpanArray.push(1);
                 this.timeRowSpanArray.push(1);
                 if (index === 0) {
-                    courseDate = item.student_course_date;
-                    courseTime = item.student_course_time;
+                    courseDate = item.courseDate;
+                    courseTime = item.coursePeriod;
                 } else {
-                    if (item.student_course_date === courseDate) {
+                    if (item.courseDate === courseDate) {
                         this.dateRowSpanArray[dateIndex] += 1;
                         this.dateRowSpanArray[index] = 0;
                     } else {
-                        courseDate = item.student_course_date;
+                        courseDate = item.courseDate;
                         dateIndex = index;
                     }
 
-                    if (item.student_course_time === courseTime) {
+                    if (item.courseTime === courseTime) {
                         this.timeRowSpanArray[timeIndex] += 1;
                         this.timeRowSpanArray[index] = 0;
                     } else {
-                        courseTime = item.student_course_time;
+                        courseTime = item.coursePeriod;
                         timeIndex = index;
                     }
 
@@ -317,10 +346,51 @@ export default {
             }
         },
         handleImgPreview(file) {
-
+            alert('点击文件列表中已上传的文件时的钩子');
         },
         handleImgRemove(file, fileList) {
-            //console.log(file, fileList);
+            alert('文件列表移除文件时的钩子');
+        },
+
+        getTeacherNameByCode(courseFolderCode, teacherCode) {
+            let name = '';
+            for (let item of this.teacherList[courseFolderCode]) {
+                if (item.teacherCode == teacherCode) {
+                    name = item.teacherName;
+                    break;
+                }
+            }
+            return name;
+        },
+
+        getWeekNameByCode(theDay) {
+            let week = '';
+            switch (theDay) {
+                case 'day1':
+                    week = '星期一';
+                    break;
+                case 'day2':
+                    week = '星期二';
+                    break;
+                case 'day3':
+                    week = '星期三';
+                    break;
+                case 'day4':
+                    week = '星期四';
+                    break;
+                case 'day5':
+                    week = '星期五';
+                    break;
+                case 'day6':
+                    week = '星期六';
+                    break;
+                case 'day7':
+                    week = '星期日';
+                    break;
+                default:
+                    break;
+            }
+            return week;
         },
     }
 }
