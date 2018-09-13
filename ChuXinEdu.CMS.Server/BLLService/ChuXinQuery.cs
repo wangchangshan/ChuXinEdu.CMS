@@ -66,52 +66,60 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public IEnumerable<StudentCourseArrange> GetStudentCourseArrage(string templateCode, string roomCode)
+        public IEnumerable<CA_R_PERIOD_STUDENTS> GetAllPeriodStudents(string templateCode, string roomCode)
         {
             using (BaseContext context = new BaseContext())
             {
-                // return context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode 
-                //                                                                             && s.Classroom == roomCode 
-                //                                                                             && s.CourseRestCount > 0)
-                //                                                                 .OrderBy(s => s.CourseCategoryCode)
-                //                                                                 .ToList();
-
                 // is_this_week 为是否本周有课
-                return context.StudentCourseArrange.FromSql($@"select id,arrange_template_code,classroom,course_period,course_week_day,student_code,
-                                                                    student_name,package_code,course_category_code,course_category_name,
-                                                                    course_total_count,course_rest_count,course_type,
-                                                                    uf_IsThisWeekHasCourse(student_code,course_week_day,course_period,classroom) as is_this_week
-                                                                from student_course_arrange
-                                                                where arrange_template_code = {templateCode} and classroom= {roomCode} and course_rest_count > 0
-                                                                order by course_category_code")
+                var studentList = context.CA_R_PERIOD_STUDENTS.FromSql($@"select sca.id,sca.course_period,sca.course_week_day,sca.student_code,sca.student_name,sca.package_code,
+                                                                      scp.course_category_code,scp.course_category_name,scp.course_folder_code,scp.course_folder_name,
+                                                                      sca.course_total_count,sca.course_rest_count,sca.course_type,
+                                                                      uf_IsThisWeekHasCourse(sca.student_code,sca.course_week_day,sca.course_period,sca.classroom) as is_this_week
+                                                                from student_course_arrange sca
+                                                                left join student_course_package scp on sca.student_code = scp.student_code and sca.package_code = scp.package_code 
+                                                                where sca.arrange_template_code = {templateCode} and sca.classroom= {roomCode} and sca.course_rest_count > 0
+                                                                order by scp.course_folder_code")
                                                             .ToList();
-                
+                foreach (var item in studentList)
+                {
+                    if(item.CourseType == "试听")
+                    {
+                        var cl = context.StudentCourseList.Where(s => s.CourseType == "试听" && s.StudentCode == item.StudentCode && s.AttendanceStatusCode == "09").First();
+                        item.CourseFolderCode = cl.CourseFolderCode;
+                        item.CourseFolderName = cl.CourseFolderName;
+                    }
+                }
+                return studentList;
             }
         }
         
         // 获取时间段内排课信息
-        public IEnumerable<StudentCourseArrange> GetArrangedByPeriod(string templateCode, string roomCode, string dayCode, string periodName)
+        public IEnumerable<CA_R_PERIOD_STUDENTS> GetPeriodStudents(string templateCode, string roomCode, string dayCode, string periodName)
         {
             using (BaseContext context = new BaseContext())
             {
-                // return context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode
-                //                                                 && s.Classroom == roomCode
-                //                                                 && s.CourseWeekDay == dayCode
-                //                                                 && s.CoursePeriod == periodName
-                //                                                 && s.CourseRestCount > 0 )
-                //                                     .OrderBy(s => s.CourseCategoryCode)
-                //                                     .ToList();
 
                 // is_this_week 为是否本周有课
-                return context.StudentCourseArrange.FromSql($@"select id,arrange_template_code,classroom,course_period,course_week_day,student_code,
-                                                                    student_name,package_code,course_category_code,course_category_name,
-                                                                    course_total_count,course_rest_count,course_type,
-                                                                    uf_IsThisWeekHasCourse(student_code,{dayCode},{periodName},{roomCode}) as is_this_week
-                                                                from student_course_arrange
-                                                                where arrange_template_code = {templateCode} and classroom = {roomCode} and course_week_day = {dayCode} and course_period = {periodName} 
-                                                                    and course_rest_count > 0
-                                                                order by course_category_code")
+                var studentList = context.CA_R_PERIOD_STUDENTS.FromSql($@"select sca.id,sca.course_period,sca.course_week_day,sca.student_code,sca.student_name,sca.package_code,
+                                                                      scp.course_category_code,scp.course_category_name,scp.course_folder_code,scp.course_folder_name, 
+                                                                      sca.course_total_count,sca.course_rest_count,sca.course_type,
+                                                                      uf_IsThisWeekHasCourse(sca.student_code,{dayCode},{periodName},{roomCode}) as is_this_week
+                                                                from student_course_arrange sca
+                                                                left join student_course_package scp on sca.student_code = scp.student_code and sca.package_code = scp.package_code 
+                                                                where sca.arrange_template_code = {templateCode} and sca.classroom = {roomCode} and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
+                                                                      and sca.course_rest_count > 0
+                                                                order by scp.course_folder_code")
                                                             .ToList();
+                foreach (var item in studentList)
+                {
+                    if(item.CourseType == "试听")
+                    {
+                        var cl = context.StudentCourseList.Where(s => s.CourseType == "试听" && s.StudentCode == item.StudentCode && s.AttendanceStatusCode == "09").First();
+                        item.CourseFolderCode = cl.CourseFolderCode;
+                        item.CourseFolderName = cl.CourseFolderName;
+                    }
+                }
+                return studentList;    
             }
         }
 

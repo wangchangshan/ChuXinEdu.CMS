@@ -24,10 +24,10 @@ namespace ChuXinEdu.CMS.Server.BLL
         IEnumerable<SysCourseArrangeTemplateDetail> GetCourseArrangePeriod(string templateCode);
 
          // 获取学生选课信息（包含每个时间段）
-        IEnumerable<StudentCourseArrange> GetStudentCourseArrage(string templateCode, string roomCode);
+        IEnumerable<CA_R_PERIOD_STUDENTS> GetAllPeriodStudents(string templateCode, string roomCode);
 
         // 获取时间段内排课信息
-        IEnumerable<StudentCourseArrange> GetArrangedByPeriod(string templateCode, string roomCode, string dayCode, string periodName);
+        IEnumerable<CA_R_PERIOD_STUDENTS> GetPeriodStudents(string templateCode, string roomCode, string dayCode, string periodName);
 
         // 获取待选课学生列表
         IEnumerable<StudentCoursePackage> GetStudentToSelectCourse(string dayCode, string periodName);

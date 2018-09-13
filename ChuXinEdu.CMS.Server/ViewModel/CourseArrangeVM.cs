@@ -20,6 +20,6 @@ namespace ChuXinEdu.CMS.Server.ViewModel
 
         public int ThisWeekStudentCount {get; set;}
 
-        public virtual IEnumerable<StudentCourseArrange> StudentCourseArrangeList { get;set; }
+        public virtual IEnumerable<CA_R_PERIOD_STUDENTS> PeriodStudentList { get;set; }
     }
 }

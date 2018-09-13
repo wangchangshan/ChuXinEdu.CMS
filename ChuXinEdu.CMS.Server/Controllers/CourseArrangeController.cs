@@ -24,7 +24,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             _chuxinWorkFlow = chuxinWorkFlow;
         }
 
-        /// <summary>
+        /// <summary>   
         /// 获取排课所有时间段 GET api/coursearrange/getcoursearranged
         /// </summary>
         /// <returns></returns>
@@ -40,7 +40,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             IEnumerable<SysCourseArrangeTemplateDetail> periodsList = _chuxinQuery.GetCourseArrangePeriod(templateCode);
 
             // 获取学生选课信息（包含每个时间段）
-            IEnumerable<StudentCourseArrange> studentCourseArrangeList = _chuxinQuery.GetStudentCourseArrage(templateCode, roomCode);
+            IEnumerable<CA_R_PERIOD_STUDENTS> periodStudents = _chuxinQuery.GetAllPeriodStudents(templateCode, roomCode);
 
             // 定义返回数据
             List<CourseArrangeVM> courseArrangeVMList = new List<CourseArrangeVM>();
@@ -51,8 +51,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 var day = periods.CourseWeekDay;
 
                 courseArrangeVM = mapper.Map<SysCourseArrangeTemplateDetail, CourseArrangeVM>(periods);
-                courseArrangeVM.ThisWeekStudentCount = studentCourseArrangeList.Where(s => s.CourseWeekDay == day && s.CoursePeriod == period && s.IsThisWeek == "Y").Count();
-                courseArrangeVM.StudentCourseArrangeList = studentCourseArrangeList.Where(s => s.CourseWeekDay == day && s.CoursePeriod == period);
+                courseArrangeVM.ThisWeekStudentCount = periodStudents.Where(s => s.CourseWeekDay == day && s.CoursePeriod == period && s.IsThisWeek == "Y").Count();
+                courseArrangeVM.PeriodStudentList = periodStudents.Where(s => s.CourseWeekDay == day && s.CoursePeriod == period);
 
                 courseArrangeVMList.Add(courseArrangeVM);
             }             
@@ -65,10 +65,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<StudentCourseArrange> GetArrangedInfoByPeriod(string templateCode, string roomCode, string dayCode, string periodName)
+        public IEnumerable<CA_R_PERIOD_STUDENTS> GetArrangedInfoByPeriod(string templateCode, string roomCode, string dayCode, string periodName)
         {
-            IEnumerable<StudentCourseArrange> arrangedInfo  = _chuxinQuery.GetArrangedByPeriod(templateCode, roomCode, dayCode, periodName);
-            return arrangedInfo;
+            IEnumerable<CA_R_PERIOD_STUDENTS> periodStudents  = _chuxinQuery.GetPeriodStudents(templateCode, roomCode, dayCode, periodName);
+            return periodStudents;
         }
 
         /// <summary>

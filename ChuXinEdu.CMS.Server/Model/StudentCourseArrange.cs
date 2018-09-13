@@ -32,12 +32,6 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("package_code")]
         public string PackageCode { get; set; }
 
-        [Column("course_category_code")]
-        public string CourseCategoryCode { get; set; }
-
-        [Column("course_category_name")]
-        public string CourseCategoryName { get; set; }
-
         [Column("course_total_count")]
         public int CourseTotalCount { get; set; }
 
@@ -46,8 +40,5 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("course_type")]
         public string CourseType { get; set; }
-
-        [Column("is_this_week")]
-        public string IsThisWeek { get; set; }
     }
 }

@@ -36,8 +36,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             StudentCode = student.StudentCode,
                             StudentName = student.StudentName,
                             PackageCode = student.PackageCode,
-                            CourseCategoryCode = student.CourseCategoryCode,
-                            CourseCategoryName = student.CourseCategoryName,
                             CourseTotalCount = student.CourseCount,
                             CourseRestCount = student.CourseCount,
                             CourseType = courseType
@@ -246,8 +244,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                     StudentCode = studentCode,
                                     StudentName = studentCourse.StudentName,
                                     PackageCode = packageCode,
-                                    CourseCategoryCode = studentCourse.CourseCategoryCode,
-                                    CourseCategoryName = studentCourse.CourseCategoryName,
                                     CourseTotalCount = 1,
                                     CourseRestCount = 1,
                                     CourseType = "正式"
@@ -463,8 +459,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                     StudentCode = course.StudentCode,
                                     StudentName = course.StudentName,
                                     PackageCode = course.PackageCode,
-                                    CourseCategoryCode = course.CourseCategoryCode,
-                                    CourseCategoryName = course.CourseCategoryName,
                                     CourseTotalCount = 1,
                                     CourseRestCount = 1,
                                     CourseType = "试听"
@@ -524,8 +518,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                     StudentCode = course.StudentCode,
                                     StudentName = course.StudentName,
                                     PackageCode = course.PackageCode,
-                                    CourseCategoryCode = course.CourseCategoryCode,
-                                    CourseCategoryName = course.CourseCategoryName,
                                     CourseTotalCount = 1,
                                     CourseRestCount = 1,
                                     CourseType = "正式"

@@ -23,7 +23,11 @@
                                     </el-popover> -->
                                     <div class="name-wrapper" style="display:inline">
                                         <el-tag :type="courseFolderTag(student.courseFolderCode)" size="mini">{{student.courseFolderName}}</el-tag>
-                                        <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o" style="margin-right:3px;"></i><i v-if="student.courseType == '试听'" class="fa fa-headphones"></i></a>
+                                        <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} 
+                                            <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o" style="margin-right:3px;"></i>
+                                            <i v-else style="margin-right:19px;"></i>
+                                            <i v-show="student.courseType == '试听'" class="fa fa-headphones"></i>
+                                        </a>
                                     </div>
                                     <a class="student-item-right" v-show="setting.isShowRestCourseCount">
                                         {{student.courseRestCount}}节
@@ -365,7 +369,7 @@ export default {
                                     periodCode: item.id,
                                     periodName: item.coursePeriod,
                                     thisWeekStudentCount: item.thisWeekStudentCount,
-                                    studentList: item.studentCourseArrangeList
+                                    studentList: item.periodStudentList
                                 });
                                 break;
                             }
