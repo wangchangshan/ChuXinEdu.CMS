@@ -100,8 +100,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
 
             //string webRootPath = _hostingEnvironment.WebRootPath;
+            //Environment.CurrentDirectory;
             string contentRootPath = _hostingEnvironment.ContentRootPath;
-            string documentPath = "\\cxdocs\\" + studentCode + "\\" ;
+            string documentPath = "/cxdocs/" + studentCode + "/" ;
             
             if(!Directory.Exists(contentRootPath + documentPath))
             {

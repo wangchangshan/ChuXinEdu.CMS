@@ -79,7 +79,7 @@ export default {
                 },
                 {
                     student_course_date: '2018-08-09',
-                    student_course_time: '17:30-19:00',
+                    student_course_time: '16:00-17:30',
                     student_course_content: '国画',
                     course_teacher_code: '唐得红',
                     course_desc: '山水画',

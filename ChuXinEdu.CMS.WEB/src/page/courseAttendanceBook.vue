@@ -380,21 +380,26 @@ export default {
                     if (item.courseDate === courseDate) {
                         this.dateRowSpanArray[dateIndex] += 1;
                         this.dateRowSpanArray[index] = 0;
+
+                        if (item.coursePeriod === courseTime) {
+                            this.timeRowSpanArray[timeIndex] += 1;
+                            this.timeRowSpanArray[index] = 0;
+                        } else {
+                            courseTime = item.coursePeriod;
+                            timeIndex = index;
+                        }
                     } else {
                         courseDate = item.courseDate;
                         dateIndex = index;
-                    }
 
-                    if (item.courseTime === courseTime) {
-                        this.timeRowSpanArray[timeIndex] += 1;
-                        this.timeRowSpanArray[index] = 0;
-                    } else {
                         courseTime = item.coursePeriod;
                         timeIndex = index;
                     }
 
                 }
             });
+            console.log(this.dateRowSpanArray);
+            console.log(this.timeRowSpanArray);
         },
         objectSpanMethod({
             row,
