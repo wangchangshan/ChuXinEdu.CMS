@@ -4,6 +4,7 @@
 # -- ChuXinEdu.CMS.Server
 ChuXinEdu.CMS.Server/bin
 ChuXinEdu.CMS.Server/obj
+ChuXinEdu.CMS.Server/cxdocs
 ChuXinEdu.CMS.Server/package-lock.json
 ChuXinEdu.CMS.Server/package.lock.json
 

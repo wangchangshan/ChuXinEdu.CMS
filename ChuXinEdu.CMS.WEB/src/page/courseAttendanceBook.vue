@@ -62,6 +62,7 @@
                 <el-form-item label="作品上传">
                     <el-upload class="upload-demo" multiple=true 
                         :action="uploadPanel.actionUrl" 
+                        :data = "uploadPanel.courseData" 
                         :on-preview="handleImgPreview" 
                         :on-remove="handleImgRemove"
                         :before-upload="beforeUpload"  
@@ -118,6 +119,11 @@ export default {
             },
             uploadPanel: {
                 actionUrl:'/api/course/uploadartwork',
+                courseData: {
+                    courseId: '',
+                    studentCode: '',
+                    studentName: ''
+                },
                 thumbnailList:[]
             },
             teacherList: {
@@ -261,6 +267,11 @@ export default {
                 coursePeriod: row.coursePeriod,
                 teacherCode: row.teacherCode,
             };
+            this.uploadPanel.courseData = {
+                courseId: row.studentCourseId,
+                studentCode: row.studentCode,
+                studentName: row.studentName,
+            }
         },
 
         handleSelectionChange(allItems) {
@@ -268,9 +279,9 @@ export default {
         },
 
         beforeUpload(file){
-            let fd = new FormData();
-            fd.append("course_id", this.signInDialog.courseInfo.courseId);
-            fd.append("pic_file", file);
+            // let fd = new FormData();
+            // fd.append("course_id", this.signInDialog.courseInfo.courseId);
+            // fd.append("pic_file", file);
             // axios({
             //     type: 'post',
             //     path: '/api/course/putsigninbatch',

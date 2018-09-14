@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.IO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
-using System.Web;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -16,13 +18,15 @@ namespace ChuXinEdu.CMS.Server.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChuXinQuery _chuxinQuery;
         private readonly IChuXinWorkFlow _chuxinWorkFlow;
 
-        public CourseController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow)
+        public CourseController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow, IHostingEnvironment hostingEnvironment)
         {
             _chuxinQuery = chuxinQuery;
             _chuxinWorkFlow = chuxinWorkFlow;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         /// <summary>
@@ -68,8 +72,40 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string UploadArtwork()
         {
             string result = string.Empty;
-            string coruseId = HttpContext.Request.Form["course_id"];
-            //HttpFileCollection df =  HttpContext.Request.Form.Files;
+            int courseId = -1;
+            string studentCode = string.Empty;
+            string studentName = string.Empty;
+            if(HttpContext.Request.Form.ContainsKey("courseId"))
+            {
+                courseId = Int32.Parse(HttpContext.Request.Form["courseId"]);
+                studentCode = HttpContext.Request.Form["studentCode"];
+                studentName = HttpContext.Request.Form["studentName"];
+            }
+            else
+            {
+                return "NO COURSE ID";
+            }
+
+            //string webRootPath = _hostingEnvironment.WebRootPath;
+            string contentRootPath = _hostingEnvironment.ContentRootPath;
+            string documentPath = contentRootPath + "\\cxdocs\\" + studentCode + "\\" ;
+            
+            if(!Directory.Exists(documentPath))
+            {
+                Directory.CreateDirectory(documentPath);            
+            }
+
+            var files =  HttpContext.Request.Form.Files;
+            foreach(IFormFile file in files)
+            {
+                string ext = Path.GetExtension(file.FileName);
+                string newName = string.Format("{0}_{1}_{2}{3}", studentName,System.Guid.NewGuid().ToString("N"),courseId.ToString(), ext);
+                documentPath = documentPath + newName;
+                using(var stream = System.IO.File.Create(documentPath))
+                {
+                    file.CopyTo(stream);
+                }
+            }
             return result;
         }
     }   
