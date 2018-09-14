@@ -537,6 +537,86 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string SignInSingle(CL_U_SIGN_IN course)
+        {
+            string result = "200";
+            try
+            {
+                int courseId = course.CourseListId;
+                using (BaseContext context = new BaseContext())
+                {
+                    string studentCode = course.StudentCode;
+                    var scl = context.StudentCourseList.Where(s => s.StudentCourseId == courseId).First();
+
+                    // 1. 更新课程记录表的状态
+                    scl.AttendanceStatusCode = "01";
+                    scl.AttendanceStatusName = "上课销课";
+                    scl.TeacherCode = course.TeacherCode;
+                    scl.TeacherName = course.TeacherName;
+
+                    // 2. 判断是否为试听
+                    if (scl.CourseType == "试听")
+                    {
+                        // 2.1.1 更新试听学员表状态
+                        var st = context.StudentTemp.Where(s => s.StudentCode == studentCode).First();
+                        st.StudentTempStatus = "02"; // 试听结束
+
+                        // 2.1.2 删除课程安排表试听信息
+                        var sca = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode && s.CourseType == "试听").First();
+                        context.Remove(sca);
+                    }
+                    else  //正式
+                    {
+                        // 2.2.1 课程安排表信息
+                        string templateCode = scl.ArrangeTemplateCode;
+                        string packageCode = scl.PackageCode;
+                        string dayCode = scl.CourseWeekDay;
+                        string periodName = scl.CoursePeriod;
+                        var sca = context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode
+                                                                            && s.StudentCode == studentCode
+                                                                            && s.PackageCode == packageCode
+                                                                            && s.CourseWeekDay == dayCode
+                                                                            && s.CoursePeriod == periodName)
+                                                                .First();
+                        if (sca.CourseRestCount == 1)
+                        {
+                            context.Remove(sca);
+                        }
+                        else
+                        {
+                            sca.CourseRestCount -= 1;
+                        }
+                    }
+
+                    // 3. 更新作品表 
+                    if (course.FileUIds != null)
+                    {
+                        List<string> uids = course.FileUIds;
+                        foreach (string uid in uids)
+                        {
+                            var artWork = context.StudentArtwork.Where(s => s.StudentCourseId == courseId
+                                                                            && s.TempUId == uid
+                                                                            && s.ArtworkStatus == "00")
+                                                                .First();
+                            artWork.ArtworkTitle = course.Title;
+                            artWork.ArtworkCostCourseCount = course.CostCount;
+                            artWork.ArtworkStatus = "01";
+                        }
+                    }
+
+                    // 4. 提交事务
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+
         public string SignInBatch(List<CL_U_SIGN_IN> courseList)
         {
             string result = "200";
@@ -579,7 +659,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                 && s.CourseWeekDay == dayCode
                                                                                 && s.CoursePeriod == periodName)
                                                                     .First();
-                            if(sca.CourseRestCount == 1)
+                            if (sca.CourseRestCount == 1)
                             {
                                 context.Remove(sca);
                             }
@@ -591,6 +671,48 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     }
                     // 3. 提交事务
                     context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public int UploadArtWork(StudentArtwork artwork)
+        {
+            int result = -2;
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.StudentArtwork.Add(artwork);
+                    context.SaveChanges();
+                    result = artwork.ArtworkId;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+            return result;
+        }
+
+        public string RemoveTempArtWork(int courseId, string uid)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var artWork = context.StudentArtwork.Where(s => s.TempUId == uid && s.StudentCourseId ==  courseId).FirstOrDefault();
+                    if (artWork != null) 
+                    {
+                        context.Remove(artWork);
+                        context.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)

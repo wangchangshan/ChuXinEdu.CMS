@@ -16,5 +16,11 @@ namespace ChuXinEdu.CMS.Server.ViewModel
         public string TeacherCode { get; set; }
 
         public string TeacherName { get; set; }
+
+        public List<string> FileUIds { get; set;}
+
+        public int CostCount { get; set; } 
+
+        public string Title { get; set; }
     }
 }

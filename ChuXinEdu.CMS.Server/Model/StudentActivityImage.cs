@@ -10,6 +10,9 @@ namespace ChuXinEdu.CMS.Server.Model
         [Key]
         [Column("id")]
         public int Id { get; set; }
+
+        [Column("temp_uid")]
+        public string TempUId { get; set; }
         
         [Column("activity_id")]
         public int ActivityId { get; set; }

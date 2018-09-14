@@ -30,6 +30,15 @@ namespace ChuXinEdu.CMS.Server.BLL
         string RemoveHoliday(string strDay);
 
         // [课程签到]
+        string SignInSingle(CL_U_SIGN_IN course);
+
+        // [课程签到]
         string SignInBatch(List<CL_U_SIGN_IN> courseList);
+
+        // [上传作品]
+        int UploadArtWork(StudentArtwork artwork);
+
+        // [删除临时作品]
+        string RemoveTempArtWork(int courseId, string uid);
     }
 }

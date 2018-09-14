@@ -38,9 +38,9 @@
         <el-button size="small" type="success" icon="" @click='submitBatchSignIn()'>批量签到</el-button>
     </div>
 
-    <el-dialog :title="signInDialog.title" :visible.sync="signInDialog.isShow" :width="signInDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" size="mini">
+    <el-dialog :title="signInDialog.title" :visible.sync="signInDialog.isShow" :width="signInDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
-            <el-form ref="courseInfo" :model="signInDialog.courseInfo" :rules="signInDialog.studentCourseInfoRules" :label-width="signInDialog.formLabelWidth" :label-position='signInDialog.labelPosition' size="mini" label-suffix='：'>
+            <el-form ref="courseInfo" :model="signInDialog.courseInfo" :rules="signInDialog.studentCourseInfoRules" :label-width="signInDialog.formLabelWidth" :label-position='signInDialog.labelPosition' size="mini" label-suffix='：' style="margin-right:20px">
                 <el-form-item label="姓名">
                     {{signInDialog.courseInfo.studentName}}
                 </el-form-item>
@@ -60,20 +60,12 @@
                     <el-input-number v-model="signInDialog.courseInfo.imgCost" :min="1" size="mini"></el-input-number>
                 </el-form-item>
                 <el-form-item label="作品上传">
-                    <el-upload class="upload-demo" multiple=true 
-                        :action="uploadPanel.actionUrl" 
-                        :data = "uploadPanel.courseData" 
-                        :on-preview="handleImgPreview" 
-                        :on-remove="handleImgRemove"
-                        :before-upload="beforeUpload"  
-                        :on-success="uploadSuccess" 
-                        :file-list="uploadPanel.thumbnailList"
-                        list-type="picture">
+                    <el-upload class="upload-demo" :multiple="uploadPanel.multiple" :action="uploadPanel.actionUrl" :data="uploadPanel.courseData" :on-preview="handleImgPreview" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" :file-list="uploadPanel.thumbnailList" list-type="picture">
                         <el-button size="mini" type="primary">点击上传</el-button>
                     </el-upload>
                 </el-form-item>
                 <el-form-item class="text_right">
-                    <el-button @click="signInDialog.isShow = false" size="small">取 消</el-button>
+                    <el-button @click="cancelSignIn()" size="small">取 消</el-button>
                     <el-button type="primary" @click="submitSignIn()" size="small">签 到</el-button>
                 </el-form-item>
             </el-form>
@@ -114,17 +106,19 @@ export default {
                     imgDesc: '',
                     imgCost: ''
                 },
-                studentCourseInfoRules: {
-                }
+                studentCourseInfoRules: {}
             },
             uploadPanel: {
-                actionUrl:'/api/course/uploadartwork',
+                multiple: true,
+                actionUrl: '/api/course/uploadartwork',
                 courseData: {
                     courseId: '',
                     studentCode: '',
-                    studentName: ''
+                    studentName: '',
+                    uid: ''
                 },
-                thumbnailList:[]
+                fileCount: 0,
+                thumbnailList: []
             },
             teacherList: {
                 "meishu_00": [{
@@ -160,6 +154,11 @@ export default {
             });
         },
 
+        cancelSignIn() {
+            this.uploadPanel.thumbnailList = [];
+            this.signInDialog.isShow = false;
+        },
+
         submitSignIn() {
             if (!this.signInDialog.courseInfo.teacherCode) {
                 this.$message({
@@ -168,6 +167,53 @@ export default {
                 });
                 return;
             }
+            if (this.uploadPanel.fileCount > 0) {
+                if (!this.signInDialog.courseInfo.imgDesc || !this.signInDialog.courseInfo.imgCost) {
+                    this.$message({
+                        message: '请填写作品描述和花费课时数',
+                        type: 'warning'
+                    });
+                    return;
+                }
+            }
+
+            let courseId = this.signInDialog.courseInfo.courseId;
+            let studentCode = this.signInDialog.courseInfo.studentCode;
+            let teacherCode = this.signInDialog.courseInfo.teacherCode;
+            let courseFolderCode = this.signInDialog.courseInfo.courseFolderCode;
+            let teacherName = this.getTeacherNameByCode(courseFolderCode, teacherCode);
+            let fileUIds = this.uploadPanel.fileUIds;
+            let imgCost = this.signInDialog.courseInfo.imgCost;
+            let title = this.signInDialog.courseInfo.imgDesc;
+
+            let course = {
+                CourseListId: courseId,
+                StudentCode: studentCode,
+                TeacherCode: teacherCode,
+                TeacherName: teacherName,
+                FileUIds: fileUIds,
+                CostCount: imgCost,
+                Title: title
+            }
+
+            let _this = this;
+            axios({
+                type: 'put',
+                path: '/api/course/putsignin',
+                data: course,
+                fn: function (result) {
+                    if (result == 200) {
+                        _this.$message({
+                            message: '签到成功',
+                            type: 'success'
+                        });
+                        _this.uploadPanel.thumbnailList = [];
+                        _this.signInDialog.isShow = false;
+                        _this.removeTableRow(courseId);
+                    }
+                }
+            });
+
         },
 
         submitBatchSignIn() {
@@ -278,28 +324,41 @@ export default {
             this.selectedCourses = allItems;
         },
 
-        beforeUpload(file){
-            // let fd = new FormData();
-            // fd.append("course_id", this.signInDialog.courseInfo.courseId);
-            // fd.append("pic_file", file);
-            // axios({
-            //     type: 'post',
-            //     path: '/api/course/putsigninbatch',
-            //     data: courseList,
-            //     fn: function (result) {
-            //         if (result === 200) {
-            //             _this.$message({
-            //                 message: '批量签到成功！',
-            //                 type: 'success'
-            //             });
-            //             courseList.forEach(item => {
-            //                 _this.removeTableRow(item.CourseListId);
-            //             });
-            //         }
-            //     }
-            // });
+        beforeUpload(file) {
+            this.uploadPanel.courseData.uid = file.uid;
         },
-        uploadSuccess(response, file, fileList){
+        uploadSuccess(response, file, fileList) {
+            if (response != -1 && response != -2) {
+                // -1 文件存储错误； -2 数据库插入错误                
+                this.uploadPanel.fileCount = fileList.length;
+                this.uploadPanel.fileUIds = [];
+                for (let f of fileList) {
+                    this.uploadPanel.fileUIds.push(f.uid);
+                }
+            }
+        },
+
+        handleImgPreview(file) {
+            //alert('点击文件列表中已上传的文件时的钩子');
+        },
+
+        handleImgRemove(file, fileList) {
+            this.uploadPanel.fileCount = fileList.length;
+            this.uploadPanel.fileUIds = [];
+            for (let f of fileList) {
+                this.uploadPanel.fileUIds.push(f.uid);
+            }
+
+            var courseId = this.signInDialog.courseInfo.courseId;
+            axios({
+                type: 'delete',
+                path: '/api/course/deltempfile',
+                data: {
+                    courseId: courseId,
+                    uid: file.uid
+                },
+                fn: function (result) {}
+            });
 
         },
 
@@ -355,12 +414,6 @@ export default {
                     colspan: 1
                 };
             }
-        },
-        handleImgPreview(file) {
-            alert('点击文件列表中已上传的文件时的钩子');
-        },
-        handleImgRemove(file, fileList) {
-            alert('文件列表移除文件时的钩子');
         },
 
         getTeacherNameByCode(courseFolderCode, teacherCode) {
