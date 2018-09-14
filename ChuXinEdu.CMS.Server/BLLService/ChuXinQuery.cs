@@ -182,8 +182,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 return context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
                                                             && s.CourseDate <= DateTime.Now.Date)
-                                                .OrderBy(s => s.CourseDate)
                                                 .OrderBy(s => s.CoursePeriod)
+                                                .OrderBy(s => s.CourseDate)
                                                 .ToList();
             }
         }
