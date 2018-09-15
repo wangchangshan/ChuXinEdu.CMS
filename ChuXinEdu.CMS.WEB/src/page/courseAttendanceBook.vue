@@ -2,7 +2,7 @@
 <!-- <div>展示今日以及过往没有签到的学生上课列表</div> -->
 <div class="fillcontain">
     <div class="table_container">
-        <el-table :data="attendanceList" :span-method="objectSpanMethod" v-loading="loading" border :max-height="tableHeight" @selection-change="handleSelectionChange" style="width: 100%" align="center" size='mini'>
+        <el-table :data="attendanceList" :span-method="objectSpanMethod" v-loading="loading" border :max-height="tableHeight" @selection-change="handleSelectionChange" size='mini'>
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + ' ' + scope.row.weekName }}
@@ -398,8 +398,6 @@ export default {
 
                 }
             });
-            console.log(this.dateRowSpanArray);
-            console.log(this.timeRowSpanArray);
         },
         objectSpanMethod({
             row,

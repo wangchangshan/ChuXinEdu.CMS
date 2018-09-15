@@ -44,13 +44,48 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public Student GetStudentBaseByCode(string studentCode)
+        public Student GetStudentByCode(string studentCode)
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.Student.Where(s => s.StudentCode == studentCode).FirstOrDefault();
+                return context.Student.Where(s => s.StudentCode == studentCode).First();
             }
         }
+
+        public IEnumerable<StudentCoursePackage> GetStudentCoursePackage(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCoursePackage.Where(s => s.StudentCode == studentCode).ToList();
+            }
+        }
+
+        public IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseList.Where(s => s.StudentCode == studentCode
+                                                            && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"))
+                                                .OrderBy(s => s.CoursePeriod)
+                                                .OrderBy(s => s.CourseDate)
+                                                .ToList();
+            }
+        }
+
+        public int GetStudentSignInCourseCount(string studentCode)
+        {
+            int count = 0;
+            using (BaseContext context = new BaseContext())
+            {
+                count = context.StudentCourseList.Where(s => s.StudentCode == studentCode
+                                                            && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02")
+                                                            && s.CourseType == "正式")
+                                        .Count();
+            }
+
+            return count;
+        }
+
         #endregion
 
 

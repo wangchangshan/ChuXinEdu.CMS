@@ -1,7 +1,7 @@
 <template>
 <div class="fallcontain">
-    <el-row type="flex" class="row-bg" justify="space-around">
-        <el-col :span="7">
+    <el-row type="flex" class="row-bg" :gutter="20" :max-height="pageHeight">
+        <el-col :span="6" >
             <el-card v-for="achievement in achievementList1" 
                 :key="achievement.achievement_code" :body-style="{ padding: '0px' }" style="margin-bottom:5px">
                 <img :src="achievement.achievement_path" class="image">
@@ -14,7 +14,7 @@
                 </div>
             </el-card>
         </el-col>
-        <el-col :span="7">
+        <el-col :span="6">
             <el-card v-for="achievement in achievementList2" 
                 :key="achievement.achievement_code" :body-style="{ padding: '0px' }">
                 <img :src="achievement.achievement_path" class="image">
@@ -27,7 +27,20 @@
                 </div>
             </el-card>
         </el-col>
-        <el-col :span="7">
+        <el-col :span="6">
+            <el-card v-for="achievement in achievementList3" 
+                :key="achievement.achievement_code" :body-style="{ padding: '0px' }">
+                <img :src="achievement.achievement_path" class="image">
+                <div style="padding: 14px;">
+                    <span>{{achievement.achievement_desc}}</span>
+                    <div class="bottom clearfix">
+                        <time class="time">{{ achievement.achievement_date }}</time>
+                        <el-rate v-model="achievement.achievement_rate" :allow-half = "true" class="right"></el-rate>
+                    </div>
+                </div>
+            </el-card>
+        </el-col>
+        <el-col :span="6">
             <el-card v-for="achievement in achievementList3" 
                 :key="achievement.achievement_code" :body-style="{ padding: '0px' }">
                 <img :src="achievement.achievement_path" class="image">
@@ -48,9 +61,11 @@
 export default {
     data(){
         return {
+            pageHeight: this.$store.state.page.win_content.height - 308,
             achievementList1:[],
             achievementList2:[],
             achievementList3:[],
+            achievementList4:[],
             achievementList:[{
                 achievement_code: '1',
                 achievement_path:'../../static/image/test.jpg',

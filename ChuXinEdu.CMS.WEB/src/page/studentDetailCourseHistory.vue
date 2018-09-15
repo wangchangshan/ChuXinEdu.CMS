@@ -1,21 +1,25 @@
 <template>
-<div class="fillcontain">
-    {{'学号：'+ student_code + '; 姓名：'+ student_name}}
+<div class="info_container">
     <div class="table_container">
-        <el-table :data="courseHistoryList" :span-method="objectSpanMethod" stripe v-loading="loading" style="width: 100%" align="center" border :max-height="tableHeight">
-            <el-table-column prop="student_course_date" label="上课日期" align='center' min-width="120">
+        <el-table :data="CourseList" 
+                  :span-method="objectSpanMethod" 
+                  v-loading="loading" 
+                  size="mini"  
+                  align="left"
+                  border 
+                  stripe 
+                  :max-height="tableHeight">
+            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="130">
             </el-table-column>
-            <el-table-column prop="student_course_time" label="上课时间段" align='center' min-width="140">
+            <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="120">
             </el-table-column>
-            <el-table-column prop="student_course_content" label="课程类别" align='center' min-width="110">
+            <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="100">
             </el-table-column>
-            <el-table-column prop="course_teacher_code" label="上课教师" align='center' min-width="140">
+            <el-table-column prop="teacherName" label="上课教师" align='center' min-width="100">
             </el-table-column>
-            <el-table-column prop="course_desc" label="内容简介" align='center' min-width="140">
+            <el-table-column prop="courseType" label="课程标识" align='center' min-width="100">
             </el-table-column>
-            <el-table-column prop="course_type" label="课程标识" align='center' min-width="140">
-            </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="215">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="225">
                 <template slot-scope='scope'>
                     <el-button type="warning" size="small" @click='uploadAchievement(scope.row)'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
                     <el-button type="success" icon='edit' size="small" @click='viewAchievement(scope.row)'>查看作品</el-button>
@@ -24,11 +28,11 @@
         </el-table>
     </div>
 
-    <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.show" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+    <!-- <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.show" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
             <el-form ref="studentCourseInfo" :model="uploadDialog.studentCourseInfo" :rules="uploadDialog.studentCourseInfoRules" :label-width="uploadDialog.formLabelWidth" :label-position='uploadDialog.labelPosition' size="mini" style="margin:10px;width:auto;" label-suffix='：'>
                 <el-form-item label="姓名">
-                    {{student_name}} {{" [" + uploadDialog.studentCourseInfo.student_course_date + " " + uploadDialog.studentCourseInfo.student_course_time + "]"}}
+                    {{ "test" }} {{" [" + uploadDialog.studentCourseInfo.student_course_date + " " + uploadDialog.studentCourseInfo.student_course_time + "]"}}
                 </el-form-item>
                 <el-form-item label="作品描述">
                     <el-input v-model="uploadDialog.studentCourseInfo.img_desc"></el-input>
@@ -55,53 +59,23 @@
                 <h3>{{ item }}</h3>
             </el-carousel-item>
         </el-carousel>
-    </el-dialog>
+    </el-dialog> -->
 </div>
 </template>
 
 <script>
+import {
+    axios
+} from '@/utils/index'
+
 export default {
     name: 'student-course-history',
-    // props:['student_code', 'student_name'],
     props: {
-        'student_code': String,
-        'student_name': String
+        'studentCode': String,
     },
     data() {
         return {
-            courseHistoryList: [{
-                    student_course_date: '2018-08-09',
-                    student_course_time: '16:00-17:30',
-                    student_course_content: '国画',
-                    course_teacher_code: '唐得红',
-                    course_desc: '山水画',
-                    course_type:'正式'
-                },
-                {
-                    student_course_date: '2018-08-09',
-                    student_course_time: '16:00-17:30',
-                    student_course_content: '国画',
-                    course_teacher_code: '唐得红',
-                    course_desc: '山水画',
-                    course_type:'正式'
-                },
-                {
-                    student_course_date: '2018-08-10',
-                    student_course_time: '16:00-17:30',
-                    student_course_content: '西画',
-                    course_teacher_code: '马朝',
-                    course_desc: '山水画',
-                    course_type:'试听'
-                },
-                {
-                    student_course_date: '2018-08-11',
-                    student_course_time: '16:00-17:30',
-                    student_course_content: '西画',
-                    course_teacher_code: '马朝',
-                    course_desc: '山水画',
-                    course_type:'正式'
-                },
-            ],
+            CourseList:[],
             dateRowSpanArray: [],
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 128,
@@ -128,8 +102,22 @@ export default {
         }
     },
     created() {
-        this.getRowSpanInfo();
-        console.log('秋天的酒')
+        var _this = this;
+        axios({
+            type: 'get',
+            path: '/api/student/getcourselist',
+            data: {
+                studentCode: _this.studentCode
+            },
+            fn: function (result) {
+                result.forEach(item => {
+                    item.courseDate = item.courseDate.split('T')[0];
+                });
+                _this.CourseList = result;
+                _this.getRowSpanInfo();
+            }
+        });
+        console.log("table height: " + _this.tableHeight);
     },
     methods: {
         courseTag(course) {
@@ -157,18 +145,18 @@ export default {
         },
         getRowSpanInfo() {
             this.dateRowSpanArray = [];
-            let courseDate = '';
+            let cDate = '';
             let dateIndex = 0;
-            this.courseHistoryList.forEach((item, index, array) => {
+            this.CourseList.forEach((item, index, array) => {
                 this.dateRowSpanArray.push(1);
                 if (index === 0) {
-                    courseDate = item.student_course_date;
+                    cDate = item.courseDate;
                 } else {
-                    if (item.student_course_date === courseDate) {
+                    if (item.courseDate === cDate) {
                         this.dateRowSpanArray[dateIndex] += 1;
                         this.dateRowSpanArray[index] = 0;
                     } else {
-                        courseDate = item.student_course_date;
+                        cDate = item.courseDate;
                         dateIndex = index;
                     }
                 }
@@ -205,19 +193,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.el-carousel__item h3 {
-    color: #475669;
-    font-size: 18px;
-    opacity: 0.75;
-    line-height: 300px;
-    margin: 0;
-}
-
-.el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
-}
 </style>

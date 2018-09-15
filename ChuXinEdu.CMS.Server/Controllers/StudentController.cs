@@ -29,29 +29,28 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<StudentListVM> GetStudentList(int pageIndex, int pageSize)
+        public IEnumerable<STUDENT_R_LIST> GetStudentList(int pageIndex, int pageSize)
         {
-            //Mapper.CreateMap<Student, StudentListVM>();
             var config = new MapperConfiguration(cfg => {
-                cfg.CreateMap<Student, StudentListVM>();
+                cfg.CreateMap<Student, STUDENT_R_LIST>();
             });
             IMapper mapper = config.CreateMapper();
 
 
             IEnumerable<Student> students = _chuxinQuery.GetStudentList(pageIndex, pageSize);
-            List<StudentListVM> studentVMList = new List<StudentListVM>();
+            List<STUDENT_R_LIST> studentList = new List<STUDENT_R_LIST>();
             IEnumerable<Simplify_StudentCourse> studentsCourseCategory = _chuxinQuery.GetAllStudentsCourse();
 
-            StudentListVM studentVM = null;
+            STUDENT_R_LIST studentVM = null;
             foreach(Student student in students)
             {
                 var studentCode = student.StudentCode;
-                studentVM = mapper.Map<Student, StudentListVM>(student);
+                studentVM = mapper.Map<Student, STUDENT_R_LIST>(student);
                 studentVM.StudentCourseCategory = studentsCourseCategory.Where(s => s.StudentCode == studentCode);
-                studentVMList.Add(studentVM);
+                studentList.Add(studentVM);
             }
 
-            return studentVMList;
+            return studentList;
         }
 
         /// <summary>
@@ -74,43 +73,56 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public IEnumerable<StudentTemp> GetTempStudentsToSelectCourse()
         {
-            IEnumerable<StudentTemp>  studentList = _chuxinQuery.GetTempStudentToSelectCourse();
+            IEnumerable<StudentTemp> studentList = _chuxinQuery.GetTempStudentToSelectCourse();
             return studentList;
-        }
-
-        
-
-
-
-
-
-
-
-
+        }    
 
         /// <summary>
-        /// 获取学生基础信息 GET api/student/BJ-2018070002/baseinfo
+        /// 获取学生基础信息 GET api/student/getbaseinfo
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{studentcode}")]
-        [Route("{studentcode}/baseinfo")]
-        public Student GetBaseInfo(string studentCode)
+        [HttpGet]
+        public STUDENT_R_BASEINO GetBaseInfo(string studentCode)
         {
-            Student student = new Student();
-            student = _chuxinQuery.GetStudentBaseByCode(studentCode);
-            return student;
+            STUDENT_R_BASEINO baseInfo = new STUDENT_R_BASEINO();
+
+            baseInfo.StudentInfo = _chuxinQuery.GetStudentByCode(studentCode);
+            baseInfo.CoursePackageList =  _chuxinQuery.GetStudentCoursePackage(studentCode);
+
+            int totalCount = 0;
+            decimal tuition = 0.0m;
+            foreach (var coursePackage in baseInfo.CoursePackageList)
+            {
+                totalCount += coursePackage.PackageCourseCount;
+                if(coursePackage.IsPayed == "Y")
+                {
+                    tuition += coursePackage.ActualPrice;
+                }
+            }
+            baseInfo.TotalCourseCount = totalCount;
+            baseInfo.TotalTuition = tuition;
+            if(totalCount > 0)
+            {
+                int signInCount = _chuxinQuery.GetStudentSignInCourseCount(studentCode);
+                baseInfo.RestCourseCount = totalCount - signInCount;
+            }
+            else
+            {
+                baseInfo.RestCourseCount = 0;
+            }         
+            
+            return baseInfo;
         }
 
         /// <summary>
-        /// 获取学生基础信息 GET api/student/BJ-2018070002/history
+        /// 获取学生上课列表 GET api/student/getcourselist
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{studentcode}")]
-        [Route("{studentcode}/history")]
-        public Student GetHistory(string studentCode)
+        [HttpGet]
+        public IEnumerable<StudentCourseList> GetCourseList(string studentCode)
         {
-            Student student = new Student();
-            return student;
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(studentCode);
+            return courseList;
         }
 
 

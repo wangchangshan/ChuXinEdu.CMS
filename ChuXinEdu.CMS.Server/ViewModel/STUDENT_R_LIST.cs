@@ -6,7 +6,7 @@ using ChuXinEdu.CMS.Server.Model;
 
 namespace ChuXinEdu.CMS.Server.ViewModel
 {
-    public class StudentListVM
+    public class STUDENT_R_LIST
     {
         [Key]
         [Column("id")]

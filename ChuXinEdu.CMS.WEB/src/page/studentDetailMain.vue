@@ -1,27 +1,25 @@
 <template>
 <div class="fillcontain">
     <el-tabs type="card" v-model="activeLabelCode" @tab-click="handleTabClick">
+
         <el-tab-pane :name="'baseinfo'">
             <span slot="label"><i class="fa fa-bank"></i>基础信息</span>
-            <student-base-info v-if="activeLabelCode === 'baseinfo'"></student-base-info>
+            <student-base-info v-if="activeLabelCode === 'baseinfo'" v-bind:studentCode="studentCode"></student-base-info>
         </el-tab-pane>
+
         <el-tab-pane :name="'history'">
             <span slot="label"><i class="fa fa-bank"></i>课程记录</span> 
-            <!-- 包括：历史上课记录列表 （请假、签到等） -->
-            <keep-alive>
-                <student-course-history v-if="activeLabelCode === 'history'" v-bind:student_code="'200808001'" v-bind:student_name="'王暄'"></student-course-history>
-            </keep-alive>
+            <student-course-history v-if="activeLabelCode === 'history'" v-bind:studentCode="studentCode"></student-course-history>
         </el-tab-pane>
+
         <el-tab-pane :name="'achievement'">
             <span slot="label"><i class="fa fa-bank"></i>作品展示</span> 
-            <keep-alive>
-                <student-achievements 
-                    v-if="activeLabelCode === 'achievement'" 
-                    v-bind:student_code="'200808001'" 
-                    v-bind:student_name="'王暄'" 
-                    v-bind:style="{height: pageHeight + 'px'}">
-                </student-achievements>
-            </keep-alive>
+            <student-achievements 
+                v-if="activeLabelCode === 'achievement'" 
+                v-bind:student_code="studentCode" 
+                v-bind:student_name="'王暄'" 
+                v-bind:style="{height: pageHeight + 'px'}">
+            </student-achievements>
         </el-tab-pane>
         
         <el-tab-pane :name="'plan'">
@@ -45,11 +43,12 @@ export default {
     data() {
         return {
             pageHeight: this.$store.state.page.win_content.height,  
-            activeLabelCode: 'baseinfo'
+            activeLabelCode: 'baseinfo',
+            studentCode: ''
         }
     },
-    created() {
-        //console.log('pageHeight ： '+ this.pageHeight);
+    created() {    
+        this.studentCode = this.$route.query.studentcode;
     },
     components: {
         "student-base-info" : studentDetailBaseInfo,
@@ -59,7 +58,7 @@ export default {
     },
     methods: {
         handleTabClick() {
-            console.log('activeLabelCode: '+ this.activeLabelCode)
+            //console.log('activeLabelCode: '+ this.activeLabelCode)
         },
         handleChange() {
 

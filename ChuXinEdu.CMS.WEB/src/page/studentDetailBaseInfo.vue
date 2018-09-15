@@ -13,12 +13,13 @@
         <el-col :span="10">
             <div class="area">
                 <div class="namearea">
-                    <p>姓名：王小川</p>
-                    <p>性别：男</p>
-                    <p>出生日期：2006-07-19</p>
-                    <p>入学日期：2017-09-19</p>
-                    <p>联系电话：189xxxx9028</p>
-                    <p>家庭住址：北京市海淀区龙兴园小区</p>
+                    <p>姓名：{{ BaseInfo.studentInfo.studentName }}</p>
+                    <p>性别：{{ BaseInfo.studentInfo.studentSex }}</p>
+                    <p>出生日期：{{ BaseInfo.studentInfo.studentBirthday }}</p>
+                    <p>入学日期：{{ BaseInfo.studentInfo.studentRegisterDate }}</p>
+                    <p>联系电话：{{ BaseInfo.studentInfo.studentPhone }}</p>
+                    <p>身份证号：{{ BaseInfo.studentInfo.studentIdentityCardNum }}</p>
+                    <p>家庭住址：{{ BaseInfo.studentInfo.studentAddress }}</p>
                     <p class="awards"><i class="el-icon-edit el-icon--left"></i>编辑</p>
                 </div>
             </div>
@@ -29,15 +30,15 @@
                     <p class="gtitle"><i class="el-icon-date el-icon--left"></i>课程数据</p>
                     <div class="gdataarea clear">
                         <div class="gdata left">
-                            <p class="num">40</p>
+                            <p class="num">{{ BaseInfo.totalCourseCount }}</p>
                             <p class="title">总课时数</p>
                         </div>
                         <div class="gdata left">
-                            <p class="num">18</p>
-                            <p class="title">完成课时数</p>
+                            <p class="num">{{ BaseInfo.restCourseCount }}</p>
+                            <p class="title">剩余课时数</p>
                         </div>
                         <div class="gdata left">
-                            <p class="num">￥3000</p>
+                            <p class="num">￥{{ BaseInfo.totalTuition }}</p>
                             <p class="title">缴费金额</p>
                         </div>
                     </div>
@@ -48,22 +49,28 @@
     <el-row class="info_row row" :gutter="10">
         <el-col :span="24">
             <template>
-                <el-table :data="arrangementList" stripe border style="width: 100%">
-                    <el-table-column prop="package_name" align='center' label="课程套餐" min-width="200" fixed>
+                <el-table :data="BaseInfo.coursePackageList" stripe border style="width: 100%" size="mini">
+                    <el-table-column prop="packageName" align='center' label="课程套餐" min-width="200">
                     </el-table-column>
-                    <el-table-column prop="package_type" align='center' label="课程类别" min-width="180">
-                    </el-table-column>
-                    <el-table-column prop="free_date" align='center' label="缴费日期" min-width="180">
-                    </el-table-column>
-                    <el-table-column prop="free_mount" align='center' label="缴费金额（元）" min-width="180">
-                    </el-table-column>
-                    <el-table-column prop="free_type" align='center' label="缴费方式" min-width="180">
-                    </el-table-column>
-                    <el-table-column prop="teacher_name" align='center' label="收款人" min-width="180">
-                    </el-table-column>
-                    <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
+                    <el-table-column prop="" align='center' label="课程类别" min-width="160">
                         <template slot-scope='scope'>
-                            <el-button type="success" icon='edit' size="small" @click='updateStudentPackage()'>更新</el-button>
+                            {{ scope.row.courseCategoryName  + "/" + scope.row.courseFolderName }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="payDate" align='center' label="缴费日期" min-width="110">
+                        <template slot-scope='scope'>
+                            {{ scope.row.payDate && scope.row.payDate.split('T')[0] }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="actualPrice" align='center' label="缴费金额（元）" min-width="110">
+                    </el-table-column>
+                    <el-table-column prop="payPattern" align='center' label="缴费方式" min-width="110">
+                    </el-table-column>
+                    <el-table-column prop="payeeName" align='center' label="收款人" min-width="120">
+                    </el-table-column>
+                    <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
+                        <template slot-scope='scope'>
+                            <el-button type="primary" icon="el-icon-edit" size="mini" @click='updateStudentPackage()'>更新</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -117,8 +124,8 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item class="text_center">
-                        <el-button @click="packageDialog.show = false">取 消</el-button>
-                        <el-button type="primary">提 交</el-button>
+                    <el-button @click="packageDialog.show = false">取 消</el-button>
+                    <el-button type="primary">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -127,32 +134,36 @@
 </template>
 
 <script>
+import {
+    axios
+} from '@/utils/index'
+
 export default {
     name: 'student-base-info',
+    props: {
+        'studentCode': String,
+    },
     data() {
         return {
-            arrangementList: [{
-                package_name: '40节美术套餐',
-                package_type: '美术',
-                free_date: '2018-06-07',
-                free_mount: '5000',
-                free_type: '微信',
-                teacher_name: '唐得红'
-            }, {
-                package_name: '40节美术套餐',
-                package_type: '美术',
-                free_date: '2018-06-07',
-                free_mount: '5000',
-                free_type: '微信',
-                teacher_name: '唐得红'
-            }, {
-                package_name: '40节美术套餐',
-                package_type: '美术',
-                free_date: '2018-06-07',
-                free_mount: '5000',
-                free_type: '微信',
-                teacher_name: '唐得红'
-            }],
+            BaseInfo: {
+                "totalCourseCount": 0,
+                "restCourseCount": 0,
+                "totalTuition": 0,
+                "studentInfo": {
+                    "studentCode": "",
+                    "studentName": "",
+                    "studentSex": "",
+                    "studentBirthday": "",
+                    "studentIdentityCardNum": "",
+                    "studentPhone": "",
+                    "studentPropagateType": "",
+                    "studentPropagateTxt": "",
+                    "studentRegisterDate": "",
+                    "studentAddress": "",
+                    "studentAvatarPath": "",
+                },
+                "coursePackageList": []
+            },
             packageDialog: {
                 width: '500px',
                 show: false,
@@ -247,8 +258,22 @@ export default {
             }
         }
     },
+    created() {
+        var _this = this;
+        axios({
+            type: 'get',
+            path: '/api/student/getbaseinfo',
+            data: {
+                studentCode: _this.studentCode
+            },
+            fn: function (result) {
+                _this.BaseInfo = result;
+            }
+        });
+
+    },
     methods: {
-         handleCourseTypeDisplay(item) {
+        handleCourseTypeDisplay(item) {
             //meishu_guohua   meishu_xihua
             //console.log(this.courseInfo.selected_course); // 存储的是label属性
             if (this.packageDialog.courseInfo.selected_package.length == 0) {
@@ -263,7 +288,7 @@ export default {
                 return true;
             }
         },
-        updateStudentPackage(){
+        updateStudentPackage() {
             alert('修改是否收费信息')
         }
     }
@@ -273,7 +298,7 @@ export default {
 <style lang="less" scoped>
 .info_container {
     padding: 0;
-    margin: 0;
+    margin-top: -20px;
     overflow-x: hidden;
 }
 
@@ -284,23 +309,28 @@ export default {
 .info_row {
     .area {
         border: 1px solid #dfdfdf;
-        height: 200px;
+        height: 210px;
         overflow: hidden;
+
         .imgarea {
             text-align: center;
             padding: 8px;
+
             img {
                 width: 150px;
                 height: 150px;
                 border-radius: 50%;
             }
         }
+
         .namearea {
             padding: 10px;
             font-size: 14px;
+
             p {
                 line-height: 24px;
             }
+
             .awards {
                 text-align: center;
                 width: 100%;
@@ -312,15 +342,18 @@ export default {
                 color: white;
                 display: block;
             }
+
             .awards:hover {
                 background-color: #f9c855;
                 border: 1px solid #f9c855;
             }
         }
+
         .dataarea {
             padding: 10px;
             text-align: center;
             font-size: 14px;
+
             .gtitle {
                 width: 100%;
                 height: 30px;
@@ -330,23 +363,29 @@ export default {
                 color: white;
                 display: block;
             }
+
             .gdataarea {
                 padding-left: 25px;
+
                 p {
                     line-height: 38px;
                 }
+
                 .num {
                     font-weight: bolder;
                     color: #67c23a;
                 }
+
                 .title {
                     color: #3bc5ff;
                 }
+
                 .gdata {
                     margin: 10px;
                     float: left;
                 }
             }
+
             .morearea {
                 a {
                     color: #3bc5ff;

@@ -128,9 +128,9 @@ export default {
                         },
                         {
                             path: 'studentDetailMain',
-                            name: '学生详细',
-                            component: 'studentDetailMain'
-                        },
+                            name: '学生列表',
+                            component: 'studentDetailMain' //() => import('@/page/studentList')
+                        }
                     ]
                 },
                 {
@@ -213,7 +213,7 @@ export default {
                         name: '',
                         hidden: true,
                         component: Home,
-                        redirect: '/student/studentDetailMain',
+                        redirect: '/student/studentList',
                         children: routers
                     }
                 ];

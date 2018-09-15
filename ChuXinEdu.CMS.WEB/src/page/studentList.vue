@@ -3,19 +3,19 @@
     <div class="search_container">
         <el-form :inline="true" :model="searchField" :rules="search_form_rules" ref="searchField" class="demo-form-inline search-form">
             <el-form-item prop='student_name' label="学生姓名：">
-                <el-input type="text" size="medium" v-model="searchField.student_name" placeholder="请输入学生姓名"></el-input>
+                <el-input type="text" size="small" v-model="searchField.student_name" placeholder="请输入学生姓名"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="medium" @click='searchStudent("searchField")'>查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent("searchField")'>查询</el-button>
             </el-form-item>
 
             <el-form-item class="btnRight">
-                <el-button type="primary" icon="el-icon-plus" size="medium" @click='addStudent()'>添加</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="small" @click='addStudent()'>添加</el-button>
             </el-form-item>
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="studentsList" v-loading="loading" style="width: 100%" align="center" :max-height="tableHeight">
+        <el-table :data="studentsList" v-loading="loading" style="width: 100%" align="center" size="mini" :max-height="tableHeight">
             <el-table-column prop="studentCode" label="学号" align='center' min-width="120" sortable fixed>
             </el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="90" fixed>
@@ -24,11 +24,7 @@
             </el-table-column>
             <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="110">
             </el-table-column>
-            <el-table-column prop="studentIdentityCardNum" label="身份证号码" align='center' width="170">
-            </el-table-column>
             <el-table-column prop="studentPhone" label="联系电话" align='center' width="120">
-            </el-table-column>
-            <el-table-column prop="studentRegisterDate" label="报名时间" align='center' min-width="110">
             </el-table-column>
             <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="240">
             </el-table-column>
@@ -49,7 +45,7 @@
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
                 <template slot-scope='scope'>
-                    <el-button type="success" icon='edit' size="small" @click='showStudentDetail(scope.row.student_code)'>查看详细</el-button>
+                    <el-button type="success" icon='edit' size="mini" @click='showStudentDetail(scope.row.studentCode)'>查看详细</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -173,7 +169,6 @@ export default {
                     result.forEach((item) => {
                         item.studentStatusDesc = _this.getStudentStatusDesc(item.studentStatus);
                         item.studentBirthday = item.studentBirthday.split('T')[0];
-                        item.studentRegisterDate = item.studentRegisterDate.split('T')[0];
                     })
                     _this.studentsList = result;
                     fun && fun();
@@ -245,8 +240,9 @@ export default {
             this.dialog.title = '新增学生';
             this.dialog.show = true;
         },
-        showStudentDetail() {
-            alert('待开发')
+        showStudentDetail(studentCode) {
+            this.$router.push({ path: '/student/studentDetailMain', query: { studentcode: studentCode }})
+            //alert('待开发')
         },
         searchStudent() {
             alert('待开发')

@@ -15,9 +15,16 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<Student> GetStudentsByName(string studentName);
 
-        Student GetStudentBaseByCode(string sutdentCode);
+        Student GetStudentByCode(string studentCode);
+
+        IEnumerable<StudentCoursePackage> GetStudentCoursePackage(string studentCode);
+
+        IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode);
 
         IEnumerable<Simplify_StudentCourse> GetAllStudentsCourse();
+
+        //获取已经上课的数目
+        int GetStudentSignInCourseCount(string studentCode);
 
 
         //  获取每天上课时间段
