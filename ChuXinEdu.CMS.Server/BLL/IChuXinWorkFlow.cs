@@ -35,10 +35,13 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [课程签到]
         string SignInBatch(List<CL_U_SIGN_IN> courseList);
 
+        // [作品补充上传]
+        string SupplementArtWork(CL_U_SIGN_IN course);
+
         // [上传作品]
         int UploadArtWork(StudentArtwork artwork);
 
         // [删除临时作品]
-        string RemoveTempArtWork(int courseId, string uid);
+        string RemoveTempArtWork(int courseId, string uid, string rootPath);
     }
 }

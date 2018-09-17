@@ -1,6 +1,6 @@
 <template>
 <div class="fallcontain">
-    <el-row type="flex" class="row-bg" :gutter="20" :max-height="pageHeight">
+    <el-row type="flex" class="row-bg" :gutter="10" :max-height="pageHeight">
         <el-col :span="6" >
             <el-card v-for="achievement in achievementList1" 
                 :key="achievement.achievement_code" :body-style="{ padding: '0px' }" style="margin-bottom:5px">
@@ -112,6 +112,7 @@ export default {
 <style lang="less" scoped>
 .fallcontain{
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
  .time {

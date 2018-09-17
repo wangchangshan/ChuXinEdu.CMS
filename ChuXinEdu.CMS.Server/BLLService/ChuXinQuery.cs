@@ -88,7 +88,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         #endregion
 
-
         #region courseArrange 排课
         public IEnumerable<SysCourseArrangeTemplateDetail> GetCourseArrangePeriod(string templateCode)
         {
@@ -224,7 +223,43 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
         #endregion
 
+        #region  作品
+        public IEnumerable<StudentArtwork> GetArkworkByCourse(int courseId)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentArtwork.Where(s => s.StudentCourseId == courseId
+                                                            && s.ArtworkStatus == "01")
+                                            .ToList();
+            }
+        }
 
+        public IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentArtwork.Where(s => s.StudentCode == studentCode
+                                                            && s.ArtworkStatus == "01")
+                                            .ToList();
+            }
+        }
+
+        public string GetArtWorkTruePath(int artworkId)
+        {
+            string path = string.Empty;
+            using (BaseContext context = new BaseContext())
+            {
+                var aw = context.StudentArtwork.Where(s => s.ArtworkId == artworkId).FirstOrDefault();
+                if (aw != null)
+                {
+                    path = aw.DocumentPath;
+                }
+            }
+
+            return path;
+        }
+
+        #endregion
 
 
 

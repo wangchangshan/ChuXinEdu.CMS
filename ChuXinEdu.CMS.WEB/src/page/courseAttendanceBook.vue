@@ -60,7 +60,16 @@
                     <el-input-number v-model="signInDialog.courseInfo.imgCost" :min="1" size="mini"></el-input-number>
                 </el-form-item>
                 <el-form-item label="作品上传">
-                    <el-upload class="upload-demo" :multiple="uploadPanel.multiple" :action="uploadPanel.actionUrl" :data="uploadPanel.courseData" :on-preview="handleImgPreview" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" :file-list="uploadPanel.thumbnailList" list-type="picture">
+                    <el-upload class="upload-demo" 
+                        :multiple="uploadPanel.multiple" 
+                        :action="uploadPanel.actionUrl" 
+                        :data="uploadPanel.params" 
+                        :on-preview="handleImgPreview" 
+                        :on-remove="handleImgRemove" 
+                        :before-upload="beforeUpload" 
+                        :on-success="uploadSuccess" 
+                        :file-list="uploadPanel.thumbnailList" 
+                        list-type="picture">
                         <el-button size="mini" type="primary">点击上传</el-button>
                     </el-upload>
                 </el-form-item>
@@ -111,14 +120,15 @@ export default {
             uploadPanel: {
                 multiple: true,
                 actionUrl: '/api/course/uploadartwork',
-                courseData: {
+                params: {
                     courseId: '',
                     studentCode: '',
                     studentName: '',
                     uid: ''
                 },
                 fileCount: 0,
-                thumbnailList: []
+                thumbnailList: [],
+                fileUIds: []
             },
             teacherList: {
                 "meishu_00": [{
@@ -313,7 +323,7 @@ export default {
                 coursePeriod: row.coursePeriod,
                 teacherCode: row.teacherCode,
             };
-            this.uploadPanel.courseData = {
+            this.uploadPanel.params = {
                 courseId: row.studentCourseId,
                 studentCode: row.studentCode,
                 studentName: row.studentName,
@@ -325,7 +335,7 @@ export default {
         },
 
         beforeUpload(file) {
-            this.uploadPanel.courseData.uid = file.uid;
+            this.uploadPanel.params.uid = file.uid;
         },
         uploadSuccess(response, file, fileList) {
             if (response != -1 && response != -2) {
@@ -430,9 +440,9 @@ export default {
             return name;
         },
 
-        getWeekNameByCode(theDay) {
+        getWeekNameByCode(code) {
             let week = '';
-            switch (theDay) {
+            switch (code) {
                 case 'day1':
                     week = '星期一';
                     break;

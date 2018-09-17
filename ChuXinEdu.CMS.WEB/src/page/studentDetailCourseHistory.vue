@@ -1,15 +1,11 @@
 <template>
 <div class="info_container">
     <div class="table_container">
-        <el-table :data="CourseList" 
-                  :span-method="objectSpanMethod" 
-                  v-loading="loading" 
-                  size="mini"  
-                  align="left"
-                  border 
-                  stripe 
-                  :max-height="tableHeight">
+        <el-table :data="CourseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="130">
+                <template slot-scope='scope'>
+                    {{ scope.row.courseDate + " " + scope.row.weekName }}
+                </template>
             </el-table-column>
             <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="120">
             </el-table-column>
@@ -21,45 +17,45 @@
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="225">
                 <template slot-scope='scope'>
-                    <el-button type="warning" size="small" @click='uploadAchievement(scope.row)'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
-                    <el-button type="success" icon='edit' size="small" @click='viewAchievement(scope.row)'>查看作品</el-button>
+                    <el-button type="warning" size="small" @click='showUploadDialog(scope.row)'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
+                    <el-button type="success" icon='edit' size="small" @click='viewArtwork(scope.row.studentCourseId)'>查看作品</el-button>
                 </template>
             </el-table-column>
         </el-table>
     </div>
 
-    <!-- <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.show" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+    <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.isShow" :width="uploadDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
-            <el-form ref="studentCourseInfo" :model="uploadDialog.studentCourseInfo" :rules="uploadDialog.studentCourseInfoRules" :label-width="uploadDialog.formLabelWidth" :label-position='uploadDialog.labelPosition' size="mini" style="margin:10px;width:auto;" label-suffix='：'>
+            <el-form ref="courseInfo" :model="uploadDialog.courseInfo" :rules="uploadDialog.studentCourseInfoRules" :label-width="uploadDialog.formLabelWidth" :label-position='uploadDialog.labelPosition' size="mini" style="margin:10px;width:auto;" label-suffix='：'>
                 <el-form-item label="姓名">
-                    {{ "test" }} {{" [" + uploadDialog.studentCourseInfo.student_course_date + " " + uploadDialog.studentCourseInfo.student_course_time + "]"}}
+                    {{ uploadDialog.courseInfo.studentName }} {{" [" + uploadDialog.courseInfo.courseDate + " " + uploadDialog.courseInfo.weekName + " " + uploadDialog.courseInfo.coursePeriod + "]"}}
                 </el-form-item>
                 <el-form-item label="作品描述">
-                    <el-input v-model="uploadDialog.studentCourseInfo.img_desc"></el-input>
+                    <el-input v-model="uploadDialog.courseInfo.imgDesc"></el-input>
                 </el-form-item>
                 <el-form-item label="作品花费课时">
-                    <el-input v-model="uploadDialog.studentCourseInfo.img_cost"></el-input>
+                    <el-input-number v-model="uploadDialog.courseInfo.imgCost" :min="1" size="mini"></el-input-number>
                 </el-form-item>
                 <el-form-item label="作品上传">
-                    <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handleImgPreview" :on-remove="handleImgRemove" list-type="picture">
+                    <el-upload class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-preview="handleImgPreview" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" list-type="picture">
                         <el-button size="mini" type="primary">点击上传</el-button>
                     </el-upload>
                 </el-form-item>
                 <el-form-item class="text_right">
-                    <el-button @click="uploadDialog.show = false">取 消</el-button>
-                    <el-button type="primary">确 定</el-button>
+                    <el-button size="small" @click="uploadDialog.isShow = false">取 消</el-button>
+                    <el-button size="small" type="primary" @click="btnSubmitUpload()">确 定</el-button>
                 </el-form-item>
             </el-form>
         </div>
     </el-dialog>
 
-    <el-dialog :title="viewDialog.title" :visible.sync="viewDialog.show" :close-on-press-escape='false' :modal-append-to-body="false">
-        <el-carousel indicator-position="outside">
-            <el-carousel-item v-for="item in 4" :key="item">
-                <h3>{{ item }}</h3>
+    <el-dialog :title="viewDialog.title" :visible.sync="viewDialog.isShow" :width="viewDialog.width" :close-on-press-escape='false' :modal-append-to-body="false">
+        <el-carousel indicator-position="outside" :autoplay="false">
+            <el-carousel-item v-for="item in viewDialog.artWorkList" :key="item.artworkId">
+                <img :src="item.showURL">
             </el-carousel-item>
         </el-carousel>
-    </el-dialog> -->
+    </el-dialog>
 </div>
 </template>
 
@@ -75,29 +71,43 @@ export default {
     },
     data() {
         return {
-            CourseList:[],
+            CourseList: [],
             dateRowSpanArray: [],
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 128,
 
             uploadDialog: {
                 width: '500px',
-                show: false,
+                isShow: false,
                 title: '上传作品',
                 labelPosition: 'right',
                 formLabelWidth: '120px',
-                studentCourseInfo: {
-                    student_course_date: '2018-09-09',
-                    student_course_time: '17:30-19:00',
-                    img_desc: "",
-                    img_cost: "",
+                multiple: true,
+                actionUrl: '/api/course/uploadartwork',
+                fileCount: 0,
+                fileUIds: [],
+                thumbnailList: [],
+                params: {
+                    courseId: '',
+                    studentCode: '',
+                    studentName: '',
+                    uid: ''
                 },
-                studentCourseInfoRules: {}
+                courseInfo: {
+                    courseId: 0,
+                    studentName: '',
+                    courseDate: '',
+                    weekName: '',
+                    coursePeriod: '',
+                    imgDesc: "",
+                    imgCost: "",
+                },
             },
             viewDialog: {
-                width: '600px',
-                show: false,
+                width: '700px',
+                isShow: false,
                 title: '课程作品展示',
+                artWorkList:[]
             }
         }
     },
@@ -112,37 +122,132 @@ export default {
             fn: function (result) {
                 result.forEach(item => {
                     item.courseDate = item.courseDate.split('T')[0];
+                    item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
                 });
                 _this.CourseList = result;
                 _this.getRowSpanInfo();
             }
         });
-        console.log("table height: " + _this.tableHeight);
     },
     methods: {
-        courseTag(course) {
-            let basic = '';
-            switch (course) {
-                case '国画':
-                    basic = 'success'
-                    break;
-                case '西画':
-                    basic = ''
-                    break;
-                case '书法':
-                    basic = 'info'
-                    break;
-                default:
-                    basic = 'danger'
+        showUploadDialog(row) {
+            this.uploadDialog.courseInfo = {
+                courseId: row.studentCourseId,
+                studentName: row.studentName,
+                courseDate: row.courseDate,
+                weekName: row.weekName,
+                coursePeriod: row.coursePeriod,
+                imgDesc: "",
+                imgCost: null,
             }
-            return basic;
+            this.uploadDialog.params = {
+                courseId: row.studentCourseId,
+                studentCode: row.studentCode,
+                studentName: row.studentName,
+            }
+            this.uploadDialog.isShow = true;
+
         },
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
+        beforeUpload(file) {
+            this.uploadDialog.params.uid = file.uid;
         },
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
+
+        uploadSuccess(response, file, fileList) {
+            if (response != -1 && response != -2) {
+                // -1 文件存储错误； -2 数据库插入错误                
+                this.uploadDialog.fileCount = fileList.length;
+                this.uploadDialog.fileUIds = [];
+                for (let f of fileList) {
+                    this.uploadDialog.fileUIds.push(f.uid);
+                }
+            }
         },
+
+        handleImgRemove(file, fileList) {
+            this.uploadDialog.fileCount = fileList.length;
+            this.uploadDialog.fileUIds = [];
+            for (let f of fileList) {
+                this.uploadDialog.fileUIds.push(f.uid);
+            }
+
+            var courseId = this.uploadDialog.courseInfo.courseId;
+            axios({
+                type: 'delete',
+                path: '/api/course/deltempfile',
+                data: {
+                    courseId: courseId,
+                    uid: file.uid
+                },
+                fn: function (result) {}
+            });
+        },
+        btnSubmitUpload() {
+            if (this.uploadDialog.fileCount == 0) {
+                this.$message({
+                    message: '请上传至少一张作品',
+                    type: 'warning'
+                });
+                return;
+            }
+            if (this.uploadDialog.fileCount > 0) {
+                if (!this.uploadDialog.courseInfo.imgDesc || !this.uploadDialog.courseInfo.imgCost) {
+                    this.$message({
+                        message: '请填写作品描述和花费课时数',
+                        type: 'warning'
+                    });
+                    return;
+                }
+            }
+
+            let courseId = this.uploadDialog.courseInfo.courseId;
+            let courseDate = this.uploadDialog.courseInfo.courseDate;
+            let fileUIds = this.uploadDialog.fileUIds;
+            let imgCost = this.uploadDialog.courseInfo.imgCost;
+            let title = this.uploadDialog.courseInfo.imgDesc;
+
+            let course = {
+                CourseListId: courseId,
+                CourseDate: courseDate,
+                StudentCode: '',
+                TeacherCode: '',
+                TeacherName: '',
+                FileUIds: fileUIds,
+                CostCount: imgCost,
+                Title: title
+            }
+
+            let _this = this;
+            axios({
+                type: 'put',
+                path: '/api/course/artworksupplement',
+                data: course,
+                fn: function (result) {
+                    if (result == 200) {
+                        _this.$message({
+                            message: '全部上传成功',
+                            type: 'success'
+                        });
+                        _this.uploadDialog.thumbnailList = [];
+                        _this.uploadDialog.isShow = false;
+                    }
+                }
+            });
+        },
+        viewArtwork(courseId) {
+            var _this = this;
+            axios({
+                type: 'get',
+                path: '/api/course/getcourseartwork',
+                data: {
+                    courseId: courseId
+                },
+                fn: function (result) {
+                    _this.viewDialog.artWorkList = result;
+                }
+            });
+            this.viewDialog.isShow = true;
+        },
+
         getRowSpanInfo() {
             this.dateRowSpanArray = [];
             let cDate = '';
@@ -175,18 +280,38 @@ export default {
                 };
             }
         },
-        uploadAchievement() {
-            this.uploadDialog.show = true;
-        },
-        viewAchievement() {
-            this.viewDialog.show = true;
-        },
 
         handleImgPreview(file) {
 
         },
-        handleImgRemove(file, fileList) {
-            //console.log(file, fileList);
+        getWeekNameByCode(code) {
+            let week = '';
+            switch (code) {
+                case 'day1':
+                    week = '星期一';
+                    break;
+                case 'day2':
+                    week = '星期二';
+                    break;
+                case 'day3':
+                    week = '星期三';
+                    break;
+                case 'day4':
+                    week = '星期四';
+                    break;
+                case 'day5':
+                    week = '星期五';
+                    break;
+                case 'day6':
+                    week = '星期六';
+                    break;
+                case 'day7':
+                    week = '星期日';
+                    break;
+                default:
+                    break;
+            }
+            return week;
         },
     }
 }

@@ -591,6 +591,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     // 3. 更新作品表 
                     if (course.FileUIds != null)
                     {
+                        DateTime finishDay = scl.CourseDate;
                         List<string> uids = course.FileUIds;
                         foreach (string uid in uids)
                         {
@@ -600,6 +601,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                 .First();
                             artWork.ArtworkTitle = course.Title;
                             artWork.ArtworkCostCourseCount = course.CostCount;
+                            artWork.FinishDate = finishDay;
                             artWork.ArtworkStatus = "01";
                         }
                     }
@@ -615,7 +617,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
-
 
         public string SignInBatch(List<CL_U_SIGN_IN> courseList)
         {
@@ -681,6 +682,43 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string SupplementArtWork(CL_U_SIGN_IN course)
+        {
+            string result = "200";
+            try
+            {
+                int courseId = course.CourseListId;
+                using (BaseContext context = new BaseContext())
+                {
+                    // 1. 更新作品表 
+                    if (course.FileUIds != null)
+                    {
+                        List<string> uids = course.FileUIds;
+                        foreach (string uid in uids)
+                        {
+                            var artWork = context.StudentArtwork.Where(s => s.StudentCourseId == courseId
+                                                                            && s.TempUId == uid
+                                                                            && s.ArtworkStatus == "00")
+                                                                .First();
+                            artWork.ArtworkTitle = course.Title;
+                            artWork.FinishDate = course.CourseDate;
+                            artWork.ArtworkCostCourseCount = course.CostCount;
+                            artWork.ArtworkStatus = "01";
+                        }
+
+                        // 2. 提交事务
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
         public int UploadArtWork(StudentArtwork artwork)
         {
             int result = -2;
@@ -700,7 +738,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
-        public string RemoveTempArtWork(int courseId, string uid)
+        public string RemoveTempArtWork(int courseId, string uid, string rootPath)
         {
             string result = "200";
             try
@@ -710,6 +748,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     var artWork = context.StudentArtwork.Where(s => s.TempUId == uid && s.StudentCourseId ==  courseId).FirstOrDefault();
                     if (artWork != null) 
                     {
+                        string savePath = rootPath + artWork.DocumentPath;
+                        if(System.IO.File.Exists(savePath))
+                        {
+                            System.IO.File.Delete(savePath);
+                        }
                         context.Remove(artWork);
                         context.SaveChanges();
                     }

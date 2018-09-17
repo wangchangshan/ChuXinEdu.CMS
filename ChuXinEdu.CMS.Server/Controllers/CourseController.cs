@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
+using System.Net.Http;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -52,6 +53,34 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取课程作品 GET api/course/getcourseartwork
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]        
+        public IEnumerable<ART_WORK_R_LIST> GetCourseArtwork(int courseId)
+        {
+            var config = new MapperConfiguration(cfg => {
+                cfg.CreateMap<StudentArtwork, ART_WORK_R_LIST>();
+            });
+            IMapper mapper = config.CreateMapper();
+
+            IEnumerable<StudentArtwork> artworks = _chuxinQuery.GetArkworkByCourse(courseId);
+
+            List<ART_WORK_R_LIST> artWorkList = new List<ART_WORK_R_LIST>();
+            ART_WORK_R_LIST  aw = null;
+
+            foreach (var artwork in artworks)
+            {
+                aw = mapper.Map<StudentArtwork, ART_WORK_R_LIST>(artwork);
+                aw.ShowURL = "http://localhost:8080/api/course/getimage?artworkId=" + artwork.ArtworkId;
+
+                artWorkList.Add(aw);
+            }
+
+            return artWorkList;
+        }
+
+        /// <summary>
         /// 签到 PUT api/course/putsignin
         /// </summary>
         /// <returns></returns>
@@ -71,6 +100,18 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string PutSignInBatch(List<CL_U_SIGN_IN> courseList)
         {
             string result = _chuxinWorkFlow.SignInBatch(courseList);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 确定补充上传作品 PUT api/course/artworksupplement
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public string ArtworkSupplement(CL_U_SIGN_IN course)
+        {
+            string result = _chuxinWorkFlow.SupplementArtWork(course);
 
             return result;
         }
@@ -152,8 +193,68 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string DelTempFile(int courseId, string uid)
         {
             string result = string.Empty;
-            result = _chuxinWorkFlow.RemoveTempArtWork(courseId, uid);
+            string contentRootPath = _hostingEnvironment.ContentRootPath;
+            result = _chuxinWorkFlow.RemoveTempArtWork(courseId, uid, contentRootPath);
             return result;
+        }
+
+        // /// <summary>
+        // /// 获取图片 DELETE api/course/getimage
+        // /// </summary>
+        // /// <returns></returns>
+        // [HttpGet]
+        // public HttpResponseMessage GetImage(int artworkId)
+        // {
+        //     // netcore 下无法使用此方法
+        //     string docPath = _chuxinQuery.GetArtWorkTruePath(artworkId);
+        //     string truePath = _hostingEnvironment.ContentRootPath + docPath;
+
+        //     if(System.IO.File.Exists(truePath))
+        //     {
+        //         var imgByte = System.IO.File.ReadAllBytes(truePath);
+        //         //从图片中读取流
+        //         var imgStream = new MemoryStream(System.IO.File.ReadAllBytes(truePath));
+        //         var resp = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+        //         {
+        //             Content = new ByteArrayContent(imgByte)
+        //             //或者
+        //             //Content = new StreamContent(stream)
+        //         };
+        //         resp.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpg");
+        //         return resp;
+        //     }
+        //     else
+        //     {
+        //         var resp = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+        //         {
+        //             Content = null
+        //         };
+
+        //         return resp;
+        //     }    
+        // }
+
+        /// <summary>
+        /// 获取图片 DELETE api/course/getimage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetImage(int artworkId)
+        {
+            string docPath = _chuxinQuery.GetArtWorkTruePath(artworkId);
+            string truePath = _hostingEnvironment.ContentRootPath + docPath;
+
+            if(System.IO.File.Exists(truePath))
+            {
+                var imgByte = System.IO.File.ReadAllBytes(truePath);
+                //从图片中读取流
+                var imgStream = new MemoryStream(System.IO.File.ReadAllBytes(truePath));
+                return File(imgStream, "image/jpg");
+            }
+            else
+            {
+                return NotFound();
+            }    
         }
     }   
 }

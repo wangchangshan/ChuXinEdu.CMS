@@ -42,7 +42,7 @@ import studentDetailAchievements from '@/page/studentDetailAchievements'
 export default {
     data() {
         return {
-            pageHeight: this.$store.state.page.win_content.height,  
+            pageHeight: this.$store.state.page.win_content.height - 100 ,  
             activeLabelCode: 'baseinfo',
             studentCode: ''
         }

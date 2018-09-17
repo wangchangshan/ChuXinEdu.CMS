@@ -51,6 +51,11 @@ namespace ChuXinEdu.CMS.Server.BLL
         // 获取待签到课程列表
         IEnumerable<StudentCourseList> GetCoursesToSignIn();
 
+        IEnumerable<StudentArtwork> GetArkworkByCourse(int courseId);
+
+        IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode);
+
+        string GetArtWorkTruePath(int artworkId);
 
 
 
