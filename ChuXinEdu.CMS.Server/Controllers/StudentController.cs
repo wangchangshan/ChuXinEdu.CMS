@@ -15,13 +15,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly IDicQuery _dicQuery;
         private readonly IChuXinQuery _chuxinQuery;
 
-        public StudentController(IChuXinQuery chuxinQuery, IDicQuery dicQuery)
+        public StudentController(IChuXinQuery chuxinQuery)
         {
-            _chuxinQuery = chuxinQuery;
-            _dicQuery = dicQuery;       
+            _chuxinQuery = chuxinQuery;    
         }
 
         /// <summary>
@@ -123,6 +121,34 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(studentCode);
             return courseList;
+        }
+
+        /// <summary>
+        /// 获取学生所有的课程作品 GET api/student/getartworklist
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]        
+        public IEnumerable<ART_WORK_R_LIST> GetArtworkList(string studentCode)
+        {
+            var config = new MapperConfiguration(cfg => {
+                cfg.CreateMap<StudentArtwork, ART_WORK_R_LIST>();
+            });
+            IMapper mapper = config.CreateMapper();
+
+            IEnumerable<StudentArtwork> artworks = _chuxinQuery.GetArkworkByStudent(studentCode);
+
+            List<ART_WORK_R_LIST> artWorkList = new List<ART_WORK_R_LIST>();
+            ART_WORK_R_LIST  aw = null;
+
+            foreach (var artwork in artworks)
+            {
+                aw = mapper.Map<StudentArtwork, ART_WORK_R_LIST>(artwork);
+                aw.ShowURL = "http://localhost:8080/api/course/getimage?artworkId=" + artwork.ArtworkId;
+
+                artWorkList.Add(aw);
+            }
+
+            return artWorkList;
         }
 
 

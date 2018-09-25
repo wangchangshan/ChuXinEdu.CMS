@@ -16,8 +16,7 @@
             <span slot="label"><i class="fa fa-bank"></i>作品展示</span> 
             <student-achievements 
                 v-if="activeLabelCode === 'achievement'" 
-                v-bind:student_code="studentCode" 
-                v-bind:student_name="'王暄'" 
+                v-bind:studentCode="studentCode" 
                 v-bind:style="{height: pageHeight + 'px'}">
             </student-achievements>
         </el-tab-pane>

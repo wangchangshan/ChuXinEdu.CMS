@@ -50,9 +50,11 @@
     </el-dialog>
 
     <el-dialog :title="viewDialog.title" :visible.sync="viewDialog.isShow" :width="viewDialog.width" :close-on-press-escape='false' :modal-append-to-body="false">
-        <el-carousel indicator-position="outside" :autoplay="false">
+        <el-carousel indicator-position="outside" :autoplay="false" height="550px">
             <el-carousel-item v-for="item in viewDialog.artWorkList" :key="item.artworkId">
-                <img :src="item.showURL">
+                <div style="overflow:auto;width:100%; height:100%">
+                    <img :src="item.showURL">
+                </div>
             </el-carousel-item>
         </el-carousel>
     </el-dialog>
@@ -104,7 +106,7 @@ export default {
                 },
             },
             viewDialog: {
-                width: '700px',
+                width: '900px',
                 isShow: false,
                 title: '课程作品展示',
                 artWorkList:[]
@@ -243,9 +245,17 @@ export default {
                 },
                 fn: function (result) {
                     _this.viewDialog.artWorkList = result;
+                    if(result.length > 0) {
+                        _this.viewDialog.isShow = true;
+                    }
+                    else{
+                        _this.$message({
+                            message: '还没有上传作品',
+                            type: 'warning'
+                        });
+                    }
                 }
             });
-            this.viewDialog.isShow = true;
         },
 
         getRowSpanInfo() {

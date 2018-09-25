@@ -240,6 +240,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 return context.StudentArtwork.Where(s => s.StudentCode == studentCode
                                                             && s.ArtworkStatus == "01")
+                                            .OrderBy(s => s.FinishDate)
                                             .ToList();
             }
         }

@@ -206,6 +206,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         // public HttpResponseMessage GetImage(int artworkId)
         // {
         //     // netcore 下无法使用此方法
+        //     // https://stackoverflow.com/questions/42460198/return-file-in-asp-net-core-web-api
         //     string docPath = _chuxinQuery.GetArtWorkTruePath(artworkId);
         //     string truePath = _hostingEnvironment.ContentRootPath + docPath;
 
@@ -248,7 +249,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 var imgByte = System.IO.File.ReadAllBytes(truePath);
                 //从图片中读取流
-                var imgStream = new MemoryStream(System.IO.File.ReadAllBytes(truePath));
+                var imgStream = new MemoryStream(await System.IO.File.ReadAllBytesAsync(truePath));
                 return File(imgStream, "image/jpg");
             }
             else

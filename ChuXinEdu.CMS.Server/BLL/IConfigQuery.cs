@@ -9,9 +9,9 @@ namespace ChuXinEdu.CMS.Server.BLL
     /// <summary>
 	/// This interface will define all the query function, so the data query from UI must call this interface
 	/// </summary>
-    public interface IDicQuery
+    public interface IConfigQuery
     {
-        IEnumerable<SysDictionary> GetDic(string typeCode);
+        IEnumerable<DIC_R_KEY_VALUE> GetDicByCode(string typeCode);
 
     }
 }

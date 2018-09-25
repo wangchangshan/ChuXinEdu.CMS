@@ -75,57 +75,57 @@
                     </el-table-column>
                 </el-table>
                 <div style="margin-top:10px">
-                    <el-button type="success" icon="el-icon-plus" size="small" @click="packageDialog.show = true">添加课程套餐</el-button>
+                    <el-button type="success" icon="el-icon-plus" size="small" @click="packageDialog.isShow = true">添加课程套餐</el-button>
                 </div>
             </template>
         </el-col>
     </el-row>
 
-    <el-dialog :title="packageDialog.title" :visible.sync="packageDialog.show" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+    <el-dialog :title="packageDialog.title" :visible.sync="packageDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
-            <el-form ref="courseInfo" :model="packageDialog.courseInfo" :rules="packageDialog.courseInfoRules" :label-width="packageDialog.formLabelWidth" :label-position='packageDialog.labelPosition' style="margin:10px;width:auto;">
+            <el-form ref="courseInfo" :model="packageDialog.courseInfo" :label-width="packageDialog.formLabelWidth" :label-position='packageDialog.labelPosition' style="margin:10px;width:auto;" size="mini">
                 <el-form-item prop="selected_package" label="课程类型">
-                    <el-cascader :options="packageDialog.courseInfo.course_package" v-model="packageDialog.courseInfo.selected_package" @change="handleCoursePackageChange()"></el-cascader>
+                    <el-cascader :options="packageDialog.coursePackage" v-model="packageDialog.courseInfo.selectedPackage" size="mini" style="width:350px"></el-cascader>
                 </el-form-item>
                 <el-form-item prop="selected_course" label="课程内容">
-                    <el-checkbox-group v-model="packageDialog.courseInfo.selected_course">
-                        <el-checkbox v-for="item in packageDialog.courseInfo.course_type" :key="item.value" :label="item.value" :disabled="handleCourseTypeDisplay(item)">{{item.label}}</el-checkbox>
+                    <el-checkbox-group v-model="packageDialog.courseInfo.selectedFolder">
+                        <el-checkbox v-for="item in packageDialog.courseFolder" :key="item.value" :label="item.value" :disabled="handleCourseFolderDisplay(item)">{{item.label}}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
-                <el-form-item prop="is_payed" label="是否缴费">
-                    <el-radio-group v-model="packageDialog.courseInfo.is_payed">
+                <el-form-item prop="isPayed" label="是否缴费">
+                    <el-radio-group v-model="packageDialog.courseInfo.isPayed">
                         <el-radio label="Y">是</el-radio>
                         <el-radio label="N">否</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="是否优惠" v-show="packageDialog.courseInfo.is_payed == 'Y'">
-                    <el-radio-group v-model="packageDialog.courseInfo.is_discount" @change="handleIsDiscount()">
+                <el-form-item label="是否优惠" v-show="packageDialog.courseInfo.isPayed == 'Y'">
+                    <el-radio-group v-model="packageDialog.courseInfo.isDiscount">
                         <el-radio label="Y">是</el-radio>
                         <el-radio label="N">否</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="优惠价格" v-show="packageDialog.courseInfo.is_payed == 'Y'">
-                    <el-input v-model="packageDialog.courseInfo.discount_amount" :disabled="packageDialog.courseInfo.is_discount == 'N'"></el-input>
+                <el-form-item label="实际价格" v-show="packageDialog.courseInfo.isPayed == 'Y' && packageDialog.courseInfo.isDiscount == 'Y'">
+                    <el-input-number v-model="packageDialog.courseInfo.actualPrice" :min="0"></el-input-number>
                 </el-form-item>
 
-                <el-form-item label="缴费类型" v-show="packageDialog.courseInfo.is_payed == 'Y'">
+                <el-form-item label="缴费类型" v-show="packageDialog.courseInfo.isPayed == 'Y'">
                     <el-select v-model="packageDialog.courseInfo.selected_payment_type" placeholder="请选择">
-                        <el-option v-for="item in packageDialog.courseInfo.payment_type" :key="item.value" :label="item.label" :value="item.value">
+                        <el-option v-for="item in packageDialog.payPattern" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="缴费日期" v-show="packageDialog.courseInfo.is_payed == 'Y'">
-                    <el-date-picker v-model="packageDialog.courseInfo.payment_date" type="date" placeholder="选择日期"> </el-date-picker>
+                <el-form-item label="缴费日期" v-show="packageDialog.courseInfo.isPayed == 'Y'">
+                    <el-date-picker v-model="packageDialog.courseInfo.payDate" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
-                <el-form-item label="收款人" v-show="packageDialog.courseInfo.is_payed == 'Y'">
-                    <el-select v-model="packageDialog.courseInfo.money_receiver" placeholder="请选择">
-                        <el-option v-for="item in packageDialog.courseInfo.receivers" :key="item.value" :label="item.label" :value="item.value">
+                <el-form-item label="收款人" v-show="packageDialog.courseInfo.isPayed == 'Y'">
+                    <el-select v-model="packageDialog.courseInfo.payeeCode" placeholder="请选择">
+                        <el-option v-for="item in packageDialog.payeeList" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item class="text_center">
-                    <el-button @click="packageDialog.show = false">取 消</el-button>
-                    <el-button type="primary">提 交</el-button>
+                    <el-button @click="packageDialog.isShow = false" size="small">取 消</el-button>
+                    <el-button type="primary" size="small">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -165,101 +165,76 @@ export default {
                 "coursePackageList": []
             },
             packageDialog: {
-                width: '500px',
-                show: false,
-                title: '上传作品',
+                width: '450px',
+                isShow: false,
+                title: '添加课程套餐',
                 labelPosition: 'right',
-                formLabelWidth: '120px',
+                formLabelWidth: '100px',
                 courseInfo: {
-                    course_package: [{
-                        value: 'meishu',
-                        label: '美术',
-                        children: [{
-                            value: 'meishu_taocan1',
-                            label: '20节课2800元'
-                        }, {
-                            value: 'g_taocan2',
-                            label: '40节课5300元'
-                        }, {
-                            value: 'g_taocan3',
-                            label: '80节课8300元'
-                        }, {
-                            value: 'g_taocan4',
-                            label: '暑期活动20节课2100元'
-                        }, {
-                            value: 'x_taocan1',
-                            label: '20节课2800元'
-                        }, {
-                            value: 'x_taocan2',
-                            label: '40节课5300元'
-                        }, {
-                            value: 'x_taocan3',
-                            label: '80节课8300元'
-                        }]
-                    }, {
-                        value: 'shufa',
-                        label: '书法',
-                        children: [{
-                            value: 's_taocan1',
-                            label: '书法20节课2600元'
-                        }, {
-                            value: 's_taocan2',
-                            label: '书法40节课5200元'
-                        }, {
-                            value: 's_taocan3',
-                            label: '书法80节课8200元'
-                        }]
-                    }],
-                    selected_package: [],
-                    course_type: [{
-                            value: "meishu_guohua",
-                            label: "国画"
-                        },
-                        {
-                            value: "meishu_xihua",
-                            label: "西画"
-                        }, {
-                            value: "shufa_shufa",
-                            label: "书法"
-                        }
-                    ],
-                    selected_course: [],
-                    is_discount: 'N',
-                    discount_amount: 0,
-                    is_payed: '',
+                    selectedPackage: [],
+                    selectedFolder: [],
+                    isDiscount: 'N',
+                    actualPrice: 0,
+                    isPayed: '',
                     selected_payment_type: '',
-                    payment_type: [{
-                        value: 'zhifubao',
-                        label: '支付宝'
-                    }, {
-                        value: 'weixin',
-                        label: '微信'
-                    }, {
-                        value: 'yinhangka',
-                        label: '银行卡'
-                    }, {
-                        value: 'pose',
-                        label: 'Pose机'
-                    }, {
-                        value: 'cash',
-                        label: '现金'
-                    }],
-                    money_receiver: '',
-                    receivers: [{
-                        value: 'tangdehong',
-                        label: '唐得红'
-                    }, {
-                        value: 'mazhao',
-                        label: '马朝'
-                    }],
-                    payment_date: ''
+                    payeeCode: '',
+                    payDate: ''
                 },
-                courseInfoRules: []
+                payeeList: [{
+                    value: 'tangdehong',
+                    label: '唐得红'
+                }, {
+                    value: 'mazhao',
+                    label: '马朝'
+                }],
+                coursePackage: [{
+                    value: 'meishu',
+                    label: '美术',
+                    children: [{
+                        value: 'meishu_taocan1',
+                        label: '20节课2800元'
+                    }, {
+                        value: 'g_taocan2',
+                        label: '40节课5300元'
+                    }, {
+                        value: 'g_taocan3',
+                        label: '80节课8300元'
+                    }, {
+                        value: 'g_taocan4',
+                        label: '暑期活动20节课2100元'
+                    }, {
+                        value: 'x_taocan1',
+                        label: '20节课2800元'
+                    }, {
+                        value: 'x_taocan2',
+                        label: '40节课5300元'
+                    }, {
+                        value: 'x_taocan3',
+                        label: '80节课8300元'
+                    }]
+                }, {
+                    value: 'shufa',
+                    label: '书法',
+                    children: [{
+                        value: 's_taocan1',
+                        label: '书法20节课2600元'
+                    }, {
+                        value: 's_taocan2',
+                        label: '书法40节课5200元'
+                    }, {
+                        value: 's_taocan3',
+                        label: '书法80节课8200元'
+                    }]
+                }],
+
+                payPattern: [],
+                courseFolder: [],
             }
         }
     },
     created() {
         var _this = this;
+        // 获取学生所有基本信息
         axios({
             type: 'get',
             path: '/api/student/getbaseinfo',
@@ -267,23 +242,47 @@ export default {
                 studentCode: _this.studentCode
             },
             fn: function (result) {
+                result.studentInfo.studentBirthday = result.studentInfo.studentBirthday.split('T')[0];
+                result.studentInfo.studentRegisterDate = result.studentInfo.studentRegisterDate.split('T')[0];
                 _this.BaseInfo = result;
             }
         });
 
+        // 获取付款方式
+        axios({
+            type: 'get',
+            path: '/api/config/getdicbycode',
+            data: {
+                typeCode: 'pay_pattern'
+            },
+            fn: function (result) {
+                _this.packageDialog.payPattern = result;
+            }
+        });
+
+        // 获取课程小类
+        axios({
+            type: 'get',
+            path: '/api/config/getdicbycode',
+            data: {
+                typeCode: 'course_folder'
+            },
+            fn: function (result) {
+                _this.packageDialog.courseFolder = result;
+            }
+        });
     },
     methods: {
-        handleCourseTypeDisplay(item) {
-            //meishu_guohua   meishu_xihua
+        handleCourseFolderDisplay(item) {
             //console.log(this.courseInfo.selected_course); // 存储的是label属性
-            if (this.packageDialog.courseInfo.selected_package.length == 0) {
+            if (this.packageDialog.courseInfo.selectedPackage.length == 0) {
                 return true;
-            } else if (item.value.indexOf(this.packageDialog.courseInfo.selected_package[0]) > -1) {
+            } else if (item.value.indexOf(this.packageDialog.courseInfo.selectedPackage[0]) > -1) {
                 return false;
             } else {
-                let index = this.courseInfo.selected_course.indexOf(item.value);
+                let index = this.packageDialog.courseInfo.selectedFolder.indexOf(item.value);
                 if (index > -1) {
-                    this.courseInfo.selected_course.splice(index, 1);
+                    this.packageDialog.courseInfo.selectedFolder.splice(index, 1);
                 }
                 return true;
             }
