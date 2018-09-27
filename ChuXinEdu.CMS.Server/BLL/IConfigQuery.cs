@@ -13,5 +13,6 @@ namespace ChuXinEdu.CMS.Server.BLL
     {
         IEnumerable<DIC_R_KEY_VALUE> GetDicByCode(string typeCode);
 
+        IEnumerable<DIC_R_KEY_VALUE> GetSysCoursePackage(string categoryCode);
     }
 }

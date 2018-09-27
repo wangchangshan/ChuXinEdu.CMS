@@ -29,6 +29,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         // 1. 向student_course_arrange表中插入数据
                         context.StudentCourseArrange.Add(new StudentCourseArrange
                         {
+                            StudentCoursePackageId = student.StudentCoursePackageId,
                             ArrangeTemplateCode = caInfo.TemplateCode,
                             Classroom = caInfo.RoomCode,
                             CoursePeriod = caInfo.PeriodName,
@@ -54,12 +55,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             // 统一放假的日期不排课
                             while (!WorkflowHelper.IsAvailableCourseDate(holidays, courseDate))
                             {
-                                coverHolidayCount++;
+                                coverHolidayCount ++;
                                 courseDate = firstCourseDate.AddDays((i + coverHolidayCount) * 7);
                             }
 
                             context.StudentCourseList.Add(new StudentCourseList
                             {
+                                StudentCoursePackageId = student.StudentCoursePackageId,
                                 ArrangeTemplateCode = caInfo.TemplateCode,
                                 Classroom = caInfo.RoomCode,
                                 CoursePeriod = caInfo.PeriodName,
@@ -80,8 +82,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                         if (courseType == "正式")
                         {
-                            // 3.1 更新student_course_package表中的flex_course_count字段
-                            var scp = context.StudentCoursePackage.Where(s => s.StudentCode == student.StudentCode && s.PackageCode == student.PackageCode)
+                            // 3.1 更新student_course_package表中的flex_course_count字段 (如果一个学生续费相同套餐，那么应该等)
+                            var scp = context.StudentCoursePackage.Where(s => s.Id == student.StudentCoursePackageId)
                                                                    .FirstOrDefault();
                             scp.FlexCourseCount = scp.FlexCourseCount - student.CourseCount;
                         }
@@ -122,6 +124,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     studentCourse.AttendanceStatusName = "个人请假";
 
                     // 2. 更新学生排课表 课程 减 1
+                    int studentCoursePackageId = studentCourse.StudentCoursePackageId;                    
                     string studentCode = studentCourse.StudentCode;
                     string templateCode = studentCourse.ArrangeTemplateCode;
                     string packageCode = studentCourse.PackageCode;
@@ -129,11 +132,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     string coursePeriod = studentCourse.CoursePeriod;
                     string roomCode = studentCourse.Classroom;
 
-                    var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode
-                                                                                && s.ArrangeTemplateCode == templateCode
-                                                                                && s.PackageCode == packageCode
-                                                                                && s.CourseWeekDay == dayCode
-                                                                                && s.Classroom == roomCode
+                    var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                                                                                && s.StudentCode == studentCode 
+                                                                                && s.ArrangeTemplateCode == templateCode 
+                                                                                && s.PackageCode == packageCode 
+                                                                                && s.CourseWeekDay == dayCode 
+                                                                                && s.Classroom == roomCode 
                                                                                 && s.CoursePeriod == coursePeriod)
                                                                         .FirstOrDefault();
                     // 如果学生当前时时间段没有排课，则删除student_course_arrange表中的记录
@@ -148,8 +152,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     }
 
                     // 3. 更新学生套餐表， 套餐内未排课课时数 加 1
-                    var studentCoursePackage = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
-                                                                                        && s.PackageCode == packageCode)
+                    var studentCoursePackage = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
                                                                             .FirstOrDefault();
                     studentCoursePackage.FlexCourseCount += 1;
 
@@ -176,6 +179,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     // 1. 获取当前课程的相关信息
                     var studentCourse = context.StudentCourseList.First(s => s.StudentCourseId == studentCourseId);
 
+                    int studentCoursePackageId = studentCourse.StudentCoursePackageId;   
                     string studentCode = studentCourse.StudentCode;
                     string dayCode = studentCourse.CourseWeekDay;
                     string coursePeriod = studentCourse.CoursePeriod;
@@ -198,9 +202,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         // 3.2 没有重新安排课程
                         // 4. 判断是否重新安排完成了所有课程                        
                         string packageCode = studentCourse.PackageCode;
-                        var studentCoursePackage = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
-                                                                                        && s.PackageCode == packageCode)
-                                                                            .FirstOrDefault();
+                        var studentCoursePackage = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
+                                                                            .First();
                         if (studentCoursePackage.FlexCourseCount == 0)
                         {
                             // 4.1 重新安排完成了所有课程，则直接删除当前请假的课程
@@ -219,7 +222,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             // 6. 更新学生排课表student_course_arrange 课程 +1
                             string templateCode = studentCourse.ArrangeTemplateCode;
                             string roomCode = studentCourse.Classroom;
-                            var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode
+                            var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                                                                                    && s.StudentCode == studentCode
                                                                                     && s.ArrangeTemplateCode == templateCode
                                                                                     && s.PackageCode == packageCode
                                                                                     && s.CourseWeekDay == dayCode
@@ -237,6 +241,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 // 6.2 没有记录 插入数据 （说明: 当学生在该时间段的所有课程全部请假时，出现这种情况）
                                 context.StudentCourseArrange.Add(new StudentCourseArrange
                                 {
+                                    StudentCoursePackageId = studentCoursePackageId,
                                     ArrangeTemplateCode = templateCode,
                                     Classroom = roomCode,
                                     CoursePeriod = coursePeriod,
@@ -277,6 +282,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     context.StudentCourseList.Remove(studentCourse);
 
                     // 2. 处理学生排课表  student_course_arrange
+                    int studentCoursePackageId = studentCourse.StudentCoursePackageId; 
                     string studentCode = studentCourse.StudentCode;
                     string templateCode = studentCourse.ArrangeTemplateCode;
                     string packageCode = studentCourse.PackageCode;
@@ -303,7 +309,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     else //正式
                     {
                         // 2.2 更新排课表
-                        var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode
+                        var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                                                                                    && s.StudentCode == studentCode
                                                                                     && s.ArrangeTemplateCode == templateCode
                                                                                     && s.PackageCode == packageCode
                                                                                     && s.CourseWeekDay == dayCode
@@ -324,9 +331,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         }
 
                         // 3. 更新学生套餐表， 套餐内未排课课时数 加 1
-                        var studentCoursePackage = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
-                                                                                            && s.PackageCode == packageCode)
-                                                                                .FirstOrDefault();
+                        var studentCoursePackage = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
+                                                                                .First();
                         studentCoursePackage.FlexCourseCount += 1;
                     }
 
@@ -377,11 +383,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         }
                         else //正式
                         {
+                            int studentCoursePackageId = course.StudentCoursePackageId; 
                             string dayCode = course.CourseWeekDay;
                             string periodName = course.CoursePeriod;
 
                             // 3.1 更新student_course_arrange表 (由于一个时间段内的学生是唯一的 跟模板和套餐没有关系，所以根据学生编码，星期几，时间段过滤即可)
-                            StudentCourseArrange sca = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode
+                            StudentCourseArrange sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                                                                                                && s.StudentCode == studentCode
                                                                                                 && s.CourseWeekDay == dayCode
                                                                                                 && s.CoursePeriod == periodName)
                                                                                     .FirstOrDefault();
@@ -398,9 +406,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                             // 3.2 更新student_course_package表 修改剩余选课课时数目
                             string packageCode = course.PackageCode;
-                            StudentCoursePackage scp = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
-                                                                                               && s.PackageCode == packageCode)
-                                                                                    .FirstOrDefault();
+                            StudentCoursePackage scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
+                                                                                    .First();
                             scp.FlexCourseCount += 1;
                         }
                     }
@@ -452,6 +459,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 // 3.1 向排课表student_course_arrange中插入一条数据
                                 context.StudentCourseArrange.Add(new StudentCourseArrange
                                 {
+                                    StudentCoursePackageId = 0,
                                     ArrangeTemplateCode = course.ArrangeTemplateCode,
                                     Classroom = course.Classroom,
                                     CoursePeriod = course.CoursePeriod,
@@ -476,11 +484,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         else  // 正式
                         {
                             // 3.1 判断是否重新排完了所有课程
+                            int studentCoursePackageId = course.StudentCoursePackageId; 
                             string packageCode = course.PackageCode;
                             string studentCode = course.StudentCode;
-                            StudentCoursePackage scp = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
-                                                                                               && s.PackageCode == packageCode)
-                                                                                    .FirstOrDefault();
+                            StudentCoursePackage scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
+                                                                                    .First();
                             if (scp.FlexCourseCount == 0)
                             {
                                 // 3.1.1 重新拍完了；更新student_course_package 可供排课的课时数 -1
@@ -497,9 +505,10 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             string dayCode = course.CourseWeekDay;
                             string periodName = course.CoursePeriod;
 
-                            var sca = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode
-                                                                             && s.CourseWeekDay == dayCode
-                                                                            && s.CoursePeriod == periodName)
+                            var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                                                                                && s.StudentCode == studentCode
+                                                                                && s.CourseWeekDay == dayCode
+                                                                                && s.CoursePeriod == periodName)
                                                                     .FirstOrDefault();
                             if (sca != null)
                             {
@@ -511,6 +520,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 // 插入数据至student_course_arrange表
                                 context.StudentCourseArrange.Add(new StudentCourseArrange
                                 {
+                                    StudentCoursePackageId = studentCoursePackageId,
                                     ArrangeTemplateCode = course.ArrangeTemplateCode,
                                     Classroom = course.Classroom,
                                     CoursePeriod = course.CoursePeriod,
@@ -567,12 +577,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     }
                     else  //正式
                     {
-                        // 2.2.1 课程安排表信息
+                        // 2.2.1 课程安排表信息                        
+                        int studentCoursePackageId = scl.StudentCoursePackageId; 
                         string templateCode = scl.ArrangeTemplateCode;
                         string packageCode = scl.PackageCode;
                         string dayCode = scl.CourseWeekDay;
                         string periodName = scl.CoursePeriod;
-                        var sca = context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode
+                        var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                                                                            && s.ArrangeTemplateCode == templateCode
                                                                             && s.StudentCode == studentCode
                                                                             && s.PackageCode == packageCode
                                                                             && s.CourseWeekDay == dayCode
@@ -650,11 +662,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         else  //正式
                         {
                             // 2.2.1 课程安排表信息
+                            int studentCoursePackageId = scl.StudentCoursePackageId;
                             string templateCode = scl.ArrangeTemplateCode;
                             string packageCode = scl.PackageCode;
                             string dayCode = scl.CourseWeekDay;
                             string periodName = scl.CoursePeriod;
-                            var sca = context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode
+                            var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                                                                                && s.ArrangeTemplateCode == templateCode
                                                                                 && s.StudentCode == studentCode
                                                                                 && s.PackageCode == packageCode
                                                                                 && s.CourseWeekDay == dayCode

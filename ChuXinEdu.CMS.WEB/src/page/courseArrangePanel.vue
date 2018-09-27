@@ -495,6 +495,7 @@ export default {
                 let forlderName = this.getDicNameByCode(folderCode);
                 
                 caInfo_shiting.StudentList.push({
+                    'StudentCoursePackageId': 0,
                     'StudentCode': selectedItem.studentCode,
                     'StudentName': selectedItem.studentName,
                     'PackageCode': 'shiting',
@@ -581,6 +582,7 @@ export default {
                     return;
                 }
                 caInfo.StudentList.push({
+                    'StudentCoursePackageId': selectedItem.studentCoursePackageId,
                     'StudentCode': selectedItem.studentCode,
                     'StudentName': selectedItem.studentName,
                     'PackageCode': selectedItem.packageCode,

@@ -208,6 +208,8 @@ export default {
             }
             return type;
         },
+
+        // will replace this to util function. GetLabelByValue
         getStudentStatusDesc(statusCode) {
             let statusDesc = '';
             for (let obj of this.dicList.studentStatusList) {

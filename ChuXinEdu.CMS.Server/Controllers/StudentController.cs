@@ -151,6 +151,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return artWorkList;
         }
 
+        /// <summary>
+        /// 提交新的课程套餐 POST api/student/postnewpackage
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string PostNewPackage([FromBody] StudentCoursePackage package)
+        {
+            string studentCode = package.StudentCode;
+            return "OK";
+        }
+
 
 
 

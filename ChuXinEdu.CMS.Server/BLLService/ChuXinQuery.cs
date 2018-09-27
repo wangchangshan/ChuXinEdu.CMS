@@ -12,6 +12,22 @@ namespace ChuXinEdu.CMS.Server.BLLService
 {
     public class ChuXinQuery : IChuXinQuery
     {
+        #region teacher
+        public IEnumerable<DIC_R_KEY_VALUE> GetTeacherKeyValue()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var teachers =  context.DIC_R_KEY_VALUE.FromSql($@"select teacher_code as item_code, teacher_name as item_name 
+                                                                  from teacher 
+                                                                  where teacher_status = '01'
+                                                                  order by teacher_name")
+                                                        .ToList();
+
+                return teachers;
+            }
+        }
+        #endregion
+
         #region student
         public IEnumerable<Student> GetStudentList(int pageIndex, int pageSize)
         {

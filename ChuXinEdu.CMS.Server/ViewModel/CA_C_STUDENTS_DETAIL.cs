@@ -9,6 +9,8 @@ namespace ChuXinEdu.CMS.Server.ViewModel
     //
     public class CA_C_STUDENTS_DETAIL
     {
+        public int StudentCoursePackageId { get; set; }
+
         public string StudentCode { get; set; }
 
         public string StudentName { get; set; }

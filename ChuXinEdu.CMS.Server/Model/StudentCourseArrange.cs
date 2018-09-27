@@ -10,6 +10,9 @@ namespace ChuXinEdu.CMS.Server.Model
         [Key]
         [Column("id")]
         public int Id { get; set; }
+        
+        [Column("student_course_package_id")]
+        public int StudentCoursePackageId { get; set; }
 
         [Column("arrange_template_code")]
         public string ArrangeTemplateCode { get; set; }

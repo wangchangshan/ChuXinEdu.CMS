@@ -81,13 +81,13 @@
         </el-col>
     </el-row>
 
-    <el-dialog :title="packageDialog.title" :visible.sync="packageDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+    <el-dialog :title="packageDialog.title" :width="packageDialog.width" :visible.sync="packageDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
             <el-form ref="courseInfo" :model="packageDialog.courseInfo" :label-width="packageDialog.formLabelWidth" :label-position='packageDialog.labelPosition' style="margin:10px;width:auto;" size="mini">
-                <el-form-item prop="selected_package" label="课程类型">
+                <el-form-item label="课程类型">
                     <el-cascader :options="packageDialog.coursePackage" v-model="packageDialog.courseInfo.selectedPackage" size="mini" style="width:350px"></el-cascader>
                 </el-form-item>
-                <el-form-item prop="selected_course" label="课程内容">
+                <el-form-item label="课程内容">
                     <el-checkbox-group v-model="packageDialog.courseInfo.selectedFolder">
                         <el-checkbox v-for="item in packageDialog.courseFolder" :key="item.value" :label="item.value" :disabled="handleCourseFolderDisplay(item)">{{item.label}}</el-checkbox>
                     </el-checkbox-group>
@@ -109,7 +109,7 @@
                 </el-form-item>
 
                 <el-form-item label="缴费类型" v-show="packageDialog.courseInfo.isPayed == 'Y'">
-                    <el-select v-model="packageDialog.courseInfo.selected_payment_type" placeholder="请选择">
+                    <el-select v-model="packageDialog.courseInfo.selectedPaymentType" placeholder="请选择">
                         <el-option v-for="item in packageDialog.payPattern" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
@@ -125,7 +125,7 @@
                 </el-form-item>
                 <el-form-item class="text_center">
                     <el-button @click="packageDialog.isShow = false" size="small">取 消</el-button>
-                    <el-button type="primary" size="small">提 交</el-button>
+                    <el-button type="primary" size="small" @click="submitPackage()">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -165,68 +165,23 @@ export default {
                 "coursePackageList": []
             },
             packageDialog: {
-                width: '450px',
+                width: '520px',
                 isShow: false,
                 title: '添加课程套餐',
                 labelPosition: 'right',
-                formLabelWidth: '100px',
+                formLabelWidth: '90px',
                 courseInfo: {
                     selectedPackage: [],
                     selectedFolder: [],
                     isDiscount: 'N',
                     actualPrice: 0,
                     isPayed: '',
-                    selected_payment_type: '',
+                    selectedPaymentType: '',
                     payeeCode: '',
                     payDate: ''
                 },
-                payeeList: [{
-                    value: 'tangdehong',
-                    label: '唐得红'
-                }, {
-                    value: 'mazhao',
-                    label: '马朝'
-                }],
-                coursePackage: [{
-                    value: 'meishu',
-                    label: '美术',
-                    children: [{
-                        value: 'meishu_taocan1',
-                        label: '20节课2800元'
-                    }, {
-                        value: 'g_taocan2',
-                        label: '40节课5300元'
-                    }, {
-                        value: 'g_taocan3',
-                        label: '80节课8300元'
-                    }, {
-                        value: 'g_taocan4',
-                        label: '暑期活动20节课2100元'
-                    }, {
-                        value: 'x_taocan1',
-                        label: '20节课2800元'
-                    }, {
-                        value: 'x_taocan2',
-                        label: '40节课5300元'
-                    }, {
-                        value: 'x_taocan3',
-                        label: '80节课8300元'
-                    }]
-                }, {
-                    value: 'shufa',
-                    label: '书法',
-                    children: [{
-                        value: 's_taocan1',
-                        label: '书法20节课2600元'
-                    }, {
-                        value: 's_taocan2',
-                        label: '书法40节课5200元'
-                    }, {
-                        value: 's_taocan3',
-                        label: '书法80节课8200元'
-                    }]
-                }],
-
+                payeeList: [],
+                coursePackage: [],
                 payPattern: [],
                 courseFolder: [],
             }
@@ -271,9 +226,28 @@ export default {
                 _this.packageDialog.courseFolder = result;
             }
         });
+
+        // 获取所有课程套餐
+        axios({
+            type: 'get',
+            path: '/api/config/getcoursepackage',
+            fn: function (result) {
+                _this.packageDialog.coursePackage = result;
+            }
+        });
+
+        // 获取收费教师
+        axios({
+            type: 'get',
+            path: '/api/teacher/getteachers',
+            fn: function (result) {
+                _this.packageDialog.payeeList = result;
+            }
+        });
     },
     methods: {
         handleCourseFolderDisplay(item) {
+            // 控制课程小类的是否可选
             //console.log(this.courseInfo.selected_course); // 存储的是label属性
             if (this.packageDialog.courseInfo.selectedPackage.length == 0) {
                 return true;
@@ -287,8 +261,52 @@ export default {
                 return true;
             }
         },
+
+        submitPackage() {
+            var _this = this;
+            var folderCode = _this.packageDialog.courseInfo.selectedFolder[0],
+                folderName = _this.GetLabelByValue(_this.packageDialog.courseFolder, folderCode);
+
+            var teacherCode = _this.packageDialog.courseInfo.payeeCode,
+                teacherName = _this.GetLabelByValue(_this.packageDialog.payeeList, teacherCode);
+
+            // 添加新的套餐
+            var newPackage = {
+                StudentCode: _this.studentCode,
+                StudentName: _this.BaseInfo.studentInfo.studentName,
+                PackageCode: _this.packageDialog.courseInfo.selectedPackage[1],
+                CourseFolderCode: folderCode,
+                CourseFolderName: folderName,
+                IsDiscount: _this.packageDialog.courseInfo.isDiscount,
+                IsPayed: _this.packageDialog.courseInfo.isPayed,
+                ActualPrice: _this.packageDialog.courseInfo.actualPrice,
+                PayeeCode: teacherCode,
+                PayeeName: teacherName,
+            }
+            console.log(newPackage);
+            axios({
+                type: 'post',
+                path: '/api/student/postnewpackage',
+                data: newPackage,
+                fn: function (result) {
+                    //
+                }
+            });
+        },
+
         updateStudentPackage() {
             alert('修改是否收费信息')
+        },
+
+        GetLabelByValue(lst, value){
+            let label = '';
+            for(let obj of lst) {
+                if(obj['value'] == value) {
+                    label = obj['label'];
+                    break;
+                }
+            }
+            return label;
         }
     }
 }

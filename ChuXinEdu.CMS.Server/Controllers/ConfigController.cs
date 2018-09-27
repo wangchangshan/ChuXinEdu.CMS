@@ -35,9 +35,22 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<IEnumerable<DIC_R_KEY_VALUE>> GetCoursePackage(string typeCode)
+        public IEnumerable<DIC_R_PACKAGE> GetCoursePackage()
         {
-            return _configQuery.GetDicByCode(typeCode).ToList();
+            var categoryList = _configQuery.GetDicByCode("course_category").ToList();
+
+            List<DIC_R_PACKAGE> coursePackage = new List<DIC_R_PACKAGE>();
+            foreach (var item in categoryList)
+            {
+                DIC_R_PACKAGE package = new DIC_R_PACKAGE();
+                package.Label = item.Label;
+                package.Value = item.Value;
+                package.children = _configQuery.GetSysCoursePackage(item.Value);
+
+                coursePackage.Add(package);
+            }
+
+            return coursePackage;
         }
     }   
 }
