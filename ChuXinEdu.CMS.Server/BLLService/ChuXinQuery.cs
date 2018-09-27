@@ -278,6 +278,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         #endregion
 
+        public SysCoursePackage GetSysCoursePackage(string packageCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.SysCoursePackage.Where(p => p.PackageCode == packageCode).First();    
+            }
+        }
+
 
 
 

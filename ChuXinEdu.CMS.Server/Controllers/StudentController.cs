@@ -158,7 +158,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpPost]
         public string PostNewPackage([FromBody] StudentCoursePackage package)
         {
-            string studentCode = package.StudentCode;
+            string packageCode = package.PackageCode;
+            var sysPackage = _chuxinQuery.GetSysCoursePackage(packageCode);
+            package.PackageName = sysPackage.PackageName;
+            package.PackageCourseCount = sysPackage.PackageCourseCount;
+            package.FlexCourseCount = sysPackage.PackageCourseCount;
+
             return "OK";
         }
 
