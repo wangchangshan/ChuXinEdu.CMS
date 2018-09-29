@@ -59,6 +59,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         string GetArtWorkTruePath(int artworkId);
 
+        string GetAvatarTruePath(int studentId);
+
         SysCoursePackage GetSysCoursePackage(string packageCode);
 
 

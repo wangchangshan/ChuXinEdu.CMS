@@ -41,7 +41,21 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [上传作品]
         int UploadArtWork(StudentArtwork artwork);
 
+        string UploadAvatar(string studentCode, string path);
+
         // [删除临时作品]
         string RemoveTempArtWork(int courseId, string uid, string rootPath);
+
+         // [添加学生选课套餐]
+        string AddStudentCoursePackage(StudentCoursePackage scp);
+
+        // [删除学生选课套餐]
+        string RemoveStudentCoursePackage(int studentCoursePackageId);
+
+        // [更新学生选课套餐]  
+        string UpdateStudentCoursePackage(int id, StudentCoursePackage package);
+
+        // [更新学生]  
+        string UpdateStudentBaseInfo(string studentCode, Student student);
     }
 }

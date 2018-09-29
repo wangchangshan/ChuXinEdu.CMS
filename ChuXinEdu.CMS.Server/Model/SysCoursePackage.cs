@@ -27,7 +27,7 @@ namespace ChuXinEdu.CMS.Server.Model
         public int PackageCourseCount { get; set; }
 
         [Column("package_price")]
-        public decimal StudentIdentityCardNum { get; set; }
+        public decimal PackagePrice { get; set; }
 
         [Column("package_enabled")]
         public string PackageEnabled { get; set; }

@@ -47,7 +47,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             //     return context.Simplify_StudentCourse.FromSql(@"select scp.id,scp.student_code,scp.package_course_category as course_category_code, d.item_name as course_category_name 
             //                             from student_course_package scp 
             //                             left join sys_dictionary d on scp.package_course_category = d.item_code and d.type_code='course_category'").ToList();
-                return context.Simplify_StudentCourse.FromSql(@"select id,student_code,course_category_code,course_category_name from student_course_package")
+                return context.Simplify_StudentCourse.FromSql(@"select id, student_code,course_category_code,course_category_name from student_course_package")
                                                         .ToList();
             }
         }
@@ -126,7 +126,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                       sca.course_total_count,sca.course_rest_count,sca.course_type,
                                                                       uf_IsThisWeekHasCourse(sca.student_code,sca.course_week_day,sca.course_period,sca.classroom) as is_this_week
                                                                 from student_course_arrange sca
-                                                                left join student_course_package scp on sca.student_code = scp.student_code and sca.package_code = scp.package_code 
+                                                                left join student_course_package scp on sca.student_course_package_id = scp.id 
                                                                 where sca.arrange_template_code = {templateCode} and sca.classroom= {roomCode} and sca.course_rest_count > 0
                                                                 order by scp.course_folder_code")
                                                             .ToList();
@@ -155,7 +155,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                       sca.course_total_count,sca.course_rest_count,sca.course_type,
                                                                       uf_IsThisWeekHasCourse(sca.student_code,{dayCode},{periodName},{roomCode}) as is_this_week
                                                                 from student_course_arrange sca
-                                                                left join student_course_package scp on sca.student_code = scp.student_code and sca.package_code = scp.package_code 
+                                                                left join student_course_package scp on sca.student_course_package_id = scp.id 
                                                                 where sca.arrange_template_code = {templateCode} and sca.classroom = {roomCode} and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
                                                                       and sca.course_rest_count > 0
                                                                 order by scp.course_folder_code")
@@ -286,6 +286,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public string GetAvatarTruePath(int studentId)
+        {
+            string path = string.Empty;
+            using (BaseContext context = new BaseContext())
+            {
+                var st = context.Student.Where(s => s.Id == studentId).FirstOrDefault();
+                if (st != null)
+                {
+                    path = st.StudentAvatarPath;
+                }
+            }
+
+            return path;
+        }
 
 
 

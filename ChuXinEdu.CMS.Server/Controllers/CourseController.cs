@@ -72,7 +72,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             foreach (var artwork in artworks)
             {
                 aw = mapper.Map<StudentArtwork, ART_WORK_R_LIST>(artwork);
-                aw.ShowURL = "http://localhost:8080/api/course/getimage?artworkId=" + artwork.ArtworkId;
+                aw.ShowURL = "http://localhost:8080/api/course/getimage?id=" + artwork.ArtworkId + "&type=artwork";
 
                 artWorkList.Add(aw);
             }
@@ -240,9 +240,22 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetImage(int artworkId)
+        public async Task<IActionResult> GetImage(int id, string type)
         {
-            string docPath = _chuxinQuery.GetArtWorkTruePath(artworkId);
+            string docPath = string.Empty;
+            switch (type.ToLower())
+            {
+                case "artwork":
+                    docPath = _chuxinQuery.GetArtWorkTruePath(id);
+                break;
+                
+                case "avatar":
+                    docPath = _chuxinQuery.GetAvatarTruePath(id);
+                break;
+
+                default:
+                break;
+            }
             string truePath = _hostingEnvironment.ContentRootPath + docPath;
 
             if(System.IO.File.Exists(truePath))

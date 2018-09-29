@@ -126,11 +126,11 @@ export default {
                             name: '学生列表',
                             component: 'studentList' //() => import('@/page/studentList')
                         },
-                        {
-                            path: 'studentDetailMain',
-                            name: '学生列表',
-                            component: 'studentDetailMain' //() => import('@/page/studentList')
-                        }
+                        // {
+                        //     path: 'studentDetailMain',
+                        //     name: '学生列表',
+                        //     component: 'studentDetailMain' //() => import('@/page/studentList')
+                        // }
                     ]
                 },
                 {

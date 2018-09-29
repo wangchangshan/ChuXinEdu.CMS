@@ -573,7 +573,6 @@ export default {
             }
             caInfo.StudentList = [];
             for (let selectedItem of this.selectZhengShiDialog.selectedStudents) {
-                //debugger
                 if (!selectedItem.selectedCourseCount || !selectedItem.firstCourseDate) {
                     this.$message({
                         message: '请填写选中学生的课时数以及上课开始日期！',
@@ -582,7 +581,7 @@ export default {
                     return;
                 }
                 caInfo.StudentList.push({
-                    'StudentCoursePackageId': selectedItem.studentCoursePackageId,
+                    'StudentCoursePackageId': selectedItem.id,
                     'StudentCode': selectedItem.studentCode,
                     'StudentName': selectedItem.studentName,
                     'PackageCode': selectedItem.packageCode,

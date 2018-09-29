@@ -1,18 +1,10 @@
 <template>
 <div class="info_container">
-    <el-row class="row">
-        <el-col :span="24">
-            <div class="head-buttons-group">
-                <el-button size="small">取 消</el-button>
-                <el-button size="small" type="primary" @click="submitStudent('studentBaseInfo','courseInfo')">提 交</el-button>
-            </div>
-        </el-col>
-    </el-row>
     <el-row class="info_row row" :gutter="5">
-        <el-col :span="12">
+        <el-col :span="20">
             <div class="area">
                 <p class="title"><i class="fa fa-edit"></i>基础信息</p>
-                <el-form ref="studentBaseInfo" :model="studentBaseInfo" :rules="studentBaseInfoRules" :label-width="formUtil.formLabelWidth" :label-position='formUtil.labelPosition' style="margin:10px;width:auto;">
+                <el-form ref="studentBaseInfo" :model="studentBaseInfo" :rules="studentBaseInfoRules" :label-width="formUtil.formLabelWidth" :label-position='formUtil.labelPosition' style="margin:10px;width:auto;" size="mini">
                     <el-form-item prop="student_name" label="姓名">
                         <el-input v-model="studentBaseInfo.student_name" clearable></el-input>
                     </el-form-item>
@@ -43,65 +35,19 @@
                     <el-form-item prop="student_register_date" label="报名时间">
                         <el-date-picker v-model="studentBaseInfo.student_register_date" type="date" placeholder="选择日期"> </el-date-picker>
                     </el-form-item>
-                    <!-- <el-form-item class="text_center">
-                        <el-button>取 消</el-button>
-                        <el-button type="primary">提 交</el-button>
-                    </el-form-item> -->
-                </el-form>
-            </div>
-        </el-col>
-        <el-col :span="12">
-            <div class="area">
-                <p class="title"><i class="fa fa-edit"></i>课程信息</p>
-                <el-form ref="courseInfo" :model="courseInfo" :rules="courseInfoRules" :label-width="formUtil.formLabelWidth" :label-position='formUtil.labelPosition' style="margin:10px;width:auto;">
-                    <el-form-item prop="selected_package" label="课程类型">
-                        <el-cascader :options="courseInfo.course_package" v-model="courseInfo.selected_package" @change="handleCoursePackageChange()"></el-cascader>
-                    </el-form-item>
-                    <el-form-item prop="selected_course" label="课程内容">
-                        <el-checkbox-group v-model="courseInfo.selected_course">
-                            <el-checkbox v-for="item in courseInfo.course_type" :key="item.value" :label="item.value" :disabled="handleCourseTypeDisplay(item)">{{item.label}}</el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-                    <el-form-item prop="is_payed" label="是否缴费">
-                        <el-radio-group v-model="courseInfo.is_payed">
-                            <el-radio label="Y">是</el-radio>
-                            <el-radio label="N">否</el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item label="是否优惠" v-show="courseInfo.is_payed == 'Y'">
-                        <el-radio-group v-model="courseInfo.is_discount" @change="handleIsDiscount()">
-                            <el-radio label="Y">是</el-radio>
-                            <el-radio label="N">否</el-radio>
-                        </el-radio-group>
-                    </el-form-item>      
-                    <el-form-item label="优惠价格" v-show="courseInfo.is_payed == 'Y'">
-                        <el-input v-model="courseInfo.discount_amount" :disabled="courseInfo.is_discount == 'N'"></el-input>
-                    </el-form-item>
-                    
-                    <el-form-item label="缴费类型" v-show="courseInfo.is_payed == 'Y'">
-                        <el-select v-model="courseInfo.selected_payment_type" placeholder="请选择">
-                            <el-option v-for="item in courseInfo.payment_type" :key="item.value" :label="item.label" :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="缴费日期" v-show="courseInfo.is_payed == 'Y'">
-                        <el-date-picker v-model="courseInfo.payment_date" type="date" placeholder="选择日期"> </el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="收款人" v-show="courseInfo.is_payed == 'Y'">
-                        <el-select v-model="courseInfo.money_receiver" placeholder="请选择">
-                            <el-option v-for="item in courseInfo.receivers" :key="item.value" :label="item.label" :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <!-- <el-form-item class="text_center">
-                        <el-button>取 消</el-button>
-                        <el-button type="primary">提 交</el-button>
-                    </el-form-item> -->
                 </el-form>
             </div>
         </el-col>
     </el-row>
 
+    <el-row class="row">
+        <el-col :span="20">
+            <div class="head-buttons-group">
+                <el-button size="small">取 消</el-button>
+                <el-button size="small" type="primary" @click="submitStudent('studentBaseInfo','courseInfo')">提 交</el-button>
+            </div>
+        </el-col>
+    </el-row>
 </div>
 </template>
 
@@ -286,16 +232,11 @@ export default {
                 this.courseInfo.discount_amount = 0;
             }
         },
-        submitStudent(baseInfoForm, courseInfoForm){
+        submitStudent(baseInfoForm){
             var isValidate = true;
             this.$refs[baseInfoForm].validate((valid) => {
                 if (valid) {
                    isValidate = false;
-                }
-            });
-            this.$refs[courseInfoForm].validate((valid) => {
-                if (!valid) {
-                    isValidate = false;
                 }
             });
             if(isValidate){

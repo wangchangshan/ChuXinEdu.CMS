@@ -20,13 +20,9 @@
                 v-bind:style="{height: pageHeight + 'px'}">
             </student-achievements>
         </el-tab-pane>
-        
-        <el-tab-pane :name="'plan'">
-            <span slot="label"><i class="fa fa-bank"></i>学习计划</span> 
-            略
-        </el-tab-pane>
         <el-tab-pane :name="'otherinfo'">
-            <span slot="label"><i class="fa fa-bank"></i>其他信息</span> 生日礼物？
+            <span slot="label"><i class="fa fa-bank"></i>其他信息</span> 
+            敬请期待 *_~
         </el-tab-pane>
     </el-tabs>
 </div>
@@ -53,7 +49,6 @@ export default {
         "student-base-info" : studentDetailBaseInfo,
         "student-course-history" : studentDetailCourseHistory,
         "student-achievements":studentDetailAchievements
-
     },
     methods: {
         handleTabClick() {

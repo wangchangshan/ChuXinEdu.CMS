@@ -752,6 +752,26 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string UploadAvatar(string studentCode, string path)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var st = context.Student.Where(s => s.StudentCode == studentCode).First();
+                    st.StudentAvatarPath = path;
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
         public string RemoveTempArtWork(int courseId, string uid, string rootPath)
         {
             string result = "200";
@@ -770,6 +790,128 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         context.Remove(artWork);
                         context.SaveChanges();
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string AddStudentCoursePackage(StudentCoursePackage scp)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.StudentCoursePackage.Add(scp);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string RemoveStudentCoursePackage(int studentCoursePackageId)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var courseList = context.StudentCourseList.Where(c => c.StudentCoursePackageId == studentCoursePackageId
+                                                        && c.AttendanceStatusCode == "01")
+                                            .ToList();
+                    if(courseList.Count > 0) 
+                    {
+                        // 已经上课 不能删除
+                        result = "201";
+                    }
+                    else
+                    {
+                        var package = context.StudentCoursePackage.Where(p => p.Id == studentCoursePackageId).FirstOrDefault();
+                        if(package != null)
+                        {
+                            context.StudentCoursePackage.Remove(package);
+                        }
+
+                        var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId).FirstOrDefault();
+                        if(sca != null)
+                        {
+                            context.StudentCourseArrange.Remove(sca);
+                        }
+
+                        var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == studentCoursePackageId).FirstOrDefault();
+                        if(scl != null)
+                        {
+                            context.StudentCourseList.Remove(scl);
+                        }
+
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+        public string UpdateStudentCoursePackage(int id, StudentCoursePackage package)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var scp = context.StudentCoursePackage.Where(s => s.Id == id).First();
+
+                    scp.IsDiscount = package.IsDiscount;
+                    scp.IsPayed = package.IsPayed;
+                    scp.ActualPrice = package.ActualPrice;
+                    scp.PayeeCode = package.PayeeCode;
+                    scp.PayeeName = package.PayeeName;
+                    scp.PayPatternCode = package.PayPatternCode;
+                    scp.PayPatternName = package.PayPatternName;
+                    scp.PayDate = package.PayDate;
+
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string UpdateStudentBaseInfo(string studentCode, Student student)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var s = context.Student.Where(st => st.StudentCode == studentCode).First();
+
+                    s.StudentSex = student.StudentSex;
+                    s.StudentBirthday = student.StudentBirthday;
+                    s.StudentIdentityCardNum = student.StudentIdentityCardNum;
+                    s.StudentPhone = student.StudentPhone;
+                    s.StudentAddress = student.StudentAddress;
+                    s.StudentRemark = student.StudentRemark;
+                    s.StudentRegisterDate = student.StudentRegisterDate;
+
+                    context.SaveChanges();
                 }
             }
             catch (Exception ex)

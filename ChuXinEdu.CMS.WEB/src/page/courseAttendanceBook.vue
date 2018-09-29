@@ -132,11 +132,11 @@ export default {
             },
             teacherList: {
                 "meishu_00": [{
-                    teacherCode: '001',
+                    teacherCode: 't-a-0001',
                     teacherName: '唐得红',
                 }],
                 "meishu_01": [{
-                    teacherCode: '002',
+                    teacherCode: 't-a-0002',
                     teacherName: '马朝',
                 }]
             },
@@ -294,6 +294,8 @@ export default {
                         }
                     }
                 });
+            }).catch(() => {
+                //
             });
         },
 
