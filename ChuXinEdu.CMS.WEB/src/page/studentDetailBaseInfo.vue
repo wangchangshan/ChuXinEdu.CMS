@@ -552,11 +552,11 @@ export default {
         submitUpdateStudent() {
             var _this = this;
             var student = Object.assign({}, _this.studentDialog.baseInfo);
-            this.$refs[baseInfoForm].validate((valid) => {
-                if (valid) {
-                }
-            });
-            return;
+            // this.$refs[baseInfoForm].validate((valid) => {
+            //     if (valid) {
+            //     }
+            // });
+            // return;
             axios({
                 type: 'put',
                 path: '/api/student/updatestudent/' + _this.studentCode,
