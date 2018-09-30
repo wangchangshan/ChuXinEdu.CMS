@@ -57,7 +57,7 @@
 <style lang="less" scoped>
 	.menu_page{
 		position: fixed;
-		top:71px;
+		top:0;
         left:0;
         min-height: 100%; 
         background-color: #324057;

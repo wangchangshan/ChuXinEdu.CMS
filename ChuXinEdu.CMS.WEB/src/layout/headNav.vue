@@ -1,10 +1,19 @@
 <template>
-    <header class="head-nav" id='header_container'>
-        <el-row style="margin:0 10px 0 0">
-            <el-col :span="6" class="logo-container">
-                <img src="../../static/image/logo.png" class="logo" alt=""/>
-                <span class="title">初心教育后台管理系统</span>
-            </el-col>
+<header class="head-nav" id='header_container'>
+    <el-row type="flex" class="row-bg" justify="space-between">
+        <el-col :span="6" class="logo-container">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+                <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+                <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+                <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+                <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+            </el-breadcrumb>
+        </el-col>
+        <el-col :span="6" class="logo-container">
+            <img src="../../static/image/logo.png" class="logo" alt=""/>
+            <!-- <span class="title">初心教育后台管理系统</span> -->
+        </el-col>
+        <el-col :span="6">
             <div class="userinfo">
                 <img src="../../static/image/avatar.png" class="avatar" alt="">
                 <div class="welcome">
@@ -16,14 +25,14 @@
                         <span class="el-dropdown-link">
                             <i class="el-icon-caret-bottom el-icon--right"></i>
                         </span>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item command='info'>修改信息</el-dropdown-item>
-                            <el-dropdown-item command='pwd'>修改密码</el-dropdown-item>
-                            <el-dropdown-item command='exit'>退出</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command='info'>修改信息</el-dropdown-item>
+                    <el-dropdown-item command='pwd'>修改密码</el-dropdown-item>
+                    <el-dropdown-item command='exit'>退出</el-dropdown-item>
+                </el-dropdown-menu>
+                </el-dropdown>
                 </span>
-                 <i class="fa fa-sign-out logout" @click="logout"></i>
+                <i class="fa fa-sign-out logout" @click="logout"></i>
             </div>
             <div class="notify-row">
                 <ul class="top-menu">
@@ -43,7 +52,7 @@
                             </el-badge>
                         </a>
                     </li>
-                     <li class="li-badge">
+                    <li class="li-badge">
                         <a href='#/dashboard'>
                             <el-badge :value="34" class="item three">
                                 <i class="fa fa-bell-o"></i>
@@ -53,145 +62,166 @@
                     </li>
                 </ul>
             </div>
-        </el-row>
-    </header>
+        </el-col>
+
+    </el-row>
+</header>
 </template>
 
 <script>
-    import { LocalDB } from '@/utils/' 
-    export default {
-        name: "head-nav",
-        data(){
-            return {
-                userinfo:''
+import {
+    LocalDB
+} from '@/utils/'
+export default {
+    name: "head-nav",
+    data() {
+        return {
+            userinfo: '',
+            path: ''
+        }
+    },
+    created() {
+        this.userinfo = LocalDB.instance('USER_').getValue('userInfo');
+    },
+    methods: {
+        logout() {
+            this.$router.push('/');
+        },
+        showInfoList() {
+            //this.$router.push('/'); // '/infoModify'
+        },
+        setDialogInfo(cmdItem) {
+            if (!cmdItem) {
+                this.$message('菜单选项缺少command属性');
+                return;
             }
-        },
-        created(){
-            this.userinfo = LocalDB.instance('USER_').getValue('userInfo');
-        },
-        methods: {
-            logout(){
-                this.$router.push('/');
-            },
-            showInfoList(){
-                //this.$router.push('/'); // '/infoModify'
-            },
-            setDialogInfo(cmdItem) {
-                if(!cmdItem) {
-                    this.$message('菜单选项缺少command属性');
-                    return;
-                }
-                switch (cmdItem) {
-                    case 'info':
-                        break;
-                    case 'pwd':
-                        this.showInfoList();
-                        break;
-                    case 'exit':
-                        this.logout();
-                        break;
-                }
+            switch (cmdItem) {
+                case 'info':
+                    break;
+                case 'pwd':
+                    this.showInfoList();
+                    break;
+                case 'exit':
+                    this.logout();
+                    break;
             }
         }
     }
+}
 </script>
 
+<style lang="less" scoped>
+.logo-container {
+    line-height: 60px;
+    min-width: 400px;
 
-<style scoped lang="less">
-    .logo-container {
-        line-height: 60px;
-        min-width: 400px;
-        .logo {
-            height: 60px;
-            margin-right: 5px;
-            vertical-align: middle;
-            display: inline-block;
-        }
-        .title {
-            vertical-align: middle;
-            font-size: 22px;
-            font-family: cursive;
-            letter-spacing: 3px;
-        }
-    }
-    .fa-user {
-        position: relative;
-        top: -2px;
-        margin-right: 4px;
-    }
-    .head-nav {
-        width: 100%;
+    .logo {
         height: 60px;
-        min-width: 600px;
-        padding: 5px;
-        background: #324057;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 100;
-        color: #fff;
-        border-bottom: 1px solid #1F2D3D;
-        .logout {
-            vertical-align: middle;
-            cursor: pointer;
-        }
-    }
-    .userinfo {
-        line-height: 60px;
-        text-align: right;
-        float: right;
-    }
-    .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        vertical-align: middle;
-        display: inline-block;
-    }
-    .welcome {
-        display: inline-block;
-        width: auto;
-        vertical-align: middle;
-        padding: 0 5px;
-        .name {
-            line-height: 20px;
-            text-align: center;
-            font-size: 14px;
-        }
-        .comename {
-            font-size: 12px;
-        }
-        .avatarname {
-            color: #a9d86e;
-            font-weight: bolder;
-        }
-    }
-    .username {
-        cursor: pointer;
         margin-right: 5px;
-        .el-dropdown {
-            color: #fff;
-        }
+        vertical-align: middle;
+        display: inline-block;
     }
-    .border {
-        border: 1px solid;
+
+    .title {
+        vertical-align: middle;
+        font-size: 22px;
+        font-family: cursive;
+        letter-spacing: 3px;
     }
-    .notify-row {
-        line-height: 60px;
-        float: right;
-        margin-right: 20px;
-        margin-top: 5px;
+}
+
+.fa-user {
+    position: relative;
+    top: -2px;
+    margin-right: 4px;
+}
+
+.head-nav {
+    width: 100%;
+    height: 60px;
+    min-width: 600px;
+    padding: 5px;
+    // background: #324057;
+    position: fixed;
+    top: 0;
+    left: 180px;
+    z-index: 100;
+    color: #fff;
+
+    // border-bottom: 1px solid #1F2D3D;
+    .logout {
+        vertical-align: middle;
+        cursor: pointer;
     }
-    ul.top-menu > li {
-        float: left;
-        margin-right: 20px;
+}
+
+.userinfo {
+    line-height: 60px;
+    text-align: right;
+    float: right;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.welcome {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle;
+    padding: 0 5px;
+
+    .name {
+        line-height: 20px;
+        text-align: center;
+        font-size: 14px;
     }
-    ul.top-menu > li > a {
-        color: #3bc5ff;
-        font-size: 16px;
-        border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border: 1px solid #f0f0f8 !important;
-        padding: 2px 6px 4px 6px;
+
+    .comename {
+        font-size: 12px;
     }
+
+    .avatarname {
+        color: #a9d86e;
+        font-weight: bolder;
+    }
+}
+
+.username {
+    cursor: pointer;
+    margin-right: 5px;
+
+    .el-dropdown {
+        color: #fff;
+    }
+}
+
+.border {
+    border: 1px solid;
+}
+
+.notify-row {
+    line-height: 60px;
+    float: right;
+    margin-right: 20px;
+    margin-top: 5px;
+}
+
+ul.top-menu>li {
+    float: left;
+    margin-right: 20px;
+}
+
+ul.top-menu>li>a {
+    color: #3bc5ff;
+    font-size: 16px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border: 1px solid #f0f0f8 !important;
+    padding: 2px 6px 4px 6px;
+}
 </style>

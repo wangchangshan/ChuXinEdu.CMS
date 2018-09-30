@@ -1,6 +1,5 @@
 <template>
     <div class="home">
-        <!-- <head-nav></head-nav> -->
         <div class="left-fixed-right-auto">
             <left-menu></left-menu>
             <div class="content_page" :style="{'margin-left': $store.state.menu.sidebar.width,
