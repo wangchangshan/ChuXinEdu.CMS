@@ -15,7 +15,7 @@
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="studentsList" v-loading="loading" style="width: 100%" align="center" size="mini" :max-height="tableHeight">
+        <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :max-height="tableHeight">
             <el-table-column prop="studentCode" label="学号" align='center' min-width="120" sortable fixed>
             </el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="90" fixed>
@@ -316,7 +316,7 @@ export default {
                                 });
                                 _this.studentDialog.isShow = false;
                                 _this.$router.push({
-                                    path: '/student/studentDetailMain',
+                                    path: '/studentDetailMain',
                                     query: {
                                         studentcode: result
                                     }

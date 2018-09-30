@@ -1,20 +1,15 @@
 <template>
 <header class="head-nav" id='header_container'>
-    <el-row type="flex" class="row-bg" justify="space-between">
-        <el-col :span="6" class="logo-container">
-            <el-breadcrumb separator-class="el-icon-arrow-right">
+    <div style="display: inline-block;width:40%" class="logo-container">
+        <el-breadcrumb separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
                 <el-breadcrumb-item>活动管理</el-breadcrumb-item>
                 <el-breadcrumb-item>活动列表</el-breadcrumb-item>
                 <el-breadcrumb-item>活动详情</el-breadcrumb-item>
             </el-breadcrumb>
-        </el-col>
-        <el-col :span="6" class="logo-container">
-            <img src="../../static/image/logo.png" class="logo" alt=""/>
-            <!-- <span class="title">初心教育后台管理系统</span> -->
-        </el-col>
-        <el-col :span="6">
-            <div class="userinfo">
+    </div>
+    <div style="display: inline-block;width:40%">
+         <div class="userinfo">
                 <img src="../../static/image/avatar.png" class="avatar" alt="">
                 <div class="welcome">
                     <p class="name comename">欢迎</p>
@@ -34,7 +29,7 @@
                 </span>
                 <i class="fa fa-sign-out logout" @click="logout"></i>
             </div>
-            <div class="notify-row">
+         <div class="notify-row">
                 <ul class="top-menu">
                     <li class="li-badge">
                         <a href='#/notifyBirthday'>
@@ -62,9 +57,9 @@
                     </li>
                 </ul>
             </div>
-        </el-col>
-
-    </el-row>
+       
+           
+    </div>
 </header>
 </template>
 
@@ -112,11 +107,13 @@ export default {
 
 <style lang="less" scoped>
 .logo-container {
-    line-height: 60px;
+    height: 70px;
+    line-height: 50px;
+    vertical-align: middle;
     min-width: 400px;
 
     .logo {
-        height: 60px;
+        height: 50px;
         margin-right: 5px;
         vertical-align: middle;
         display: inline-block;
@@ -138,15 +135,16 @@ export default {
 
 .head-nav {
     width: 100%;
-    height: 60px;
+    height: 50px;
     min-width: 600px;
     padding: 5px;
-    // background: #324057;
+    background: #fff;
+    border-bottom:1px solid #d8dce5;
+    box-shadow:0 1px 3px 0 rgba(0,0,0,.12), 0 0 3px 0 rgba(0,0,0,.04);
     position: fixed;
     top: 0;
-    left: 180px;
+    margin-left: 0px;
     z-index: 100;
-    color: #fff;
 
     // border-bottom: 1px solid #1F2D3D;
     .logout {
@@ -156,7 +154,7 @@ export default {
 }
 
 .userinfo {
-    line-height: 60px;
+    line-height: 50px;
     text-align: right;
     float: right;
 }
@@ -173,7 +171,7 @@ export default {
     display: inline-block;
     width: auto;
     vertical-align: middle;
-    padding: 0 5px;
+    padding: 0;
 
     .name {
         line-height: 20px;
@@ -193,7 +191,7 @@ export default {
 
 .username {
     cursor: pointer;
-    margin-right: 5px;
+    margin-right: 0px;
 
     .el-dropdown {
         color: #fff;
@@ -205,7 +203,7 @@ export default {
 }
 
 .notify-row {
-    line-height: 60px;
+    line-height: 50px;
     float: right;
     margin-right: 20px;
     margin-top: 5px;

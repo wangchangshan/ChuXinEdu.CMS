@@ -1,5 +1,21 @@
 <template>
-    <div class="home">
+<el-container>
+    <el-aside width="180px">
+        <left-menu></left-menu>
+    </el-aside>
+    <el-container>
+        <el-header style="padding:0">
+            <head-nav></head-nav>
+        </el-header>
+        <el-main style="padding:10px 0 0 0">
+            <transition name="fade-transform" mode="out-in" >
+                        <router-view ></router-view>
+                    </transition>
+        </el-main>
+    </el-container>
+</el-container>
+
+    <!-- <div class="home">
         <div class="left-fixed-right-auto">
             <left-menu></left-menu>
             <div class="content_page" :style="{'margin-left': $store.state.menu.sidebar.width,
@@ -7,15 +23,14 @@
                                                 'height': $store.state.page.win_content.height + 'px'}">
                 <div class="content">
                     <head-nav></head-nav>
-                    <bread></bread>
-                    <!--页面渲染入口-->
+                    <bread></bread> 
                     <transition name="fade-transform" mode="out-in" >
                         <router-view ></router-view>
                     </transition>
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </template>
 
 <script>
@@ -66,8 +81,8 @@
 
 <style scoped lang='less'>
     .content_page{
-        position: fixed;
-        top:71px;
+        position: absolute;
+        top:70px;
         background: #FFF;
         overflow:auto;
     }
