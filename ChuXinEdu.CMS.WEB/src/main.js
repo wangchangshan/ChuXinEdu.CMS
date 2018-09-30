@@ -25,7 +25,7 @@ var menuData = '';
 if(strMenuData) {
     menuData = JSON.parse(strMenuData)
 } 
-if(false) { //menuData  存在router会重复的问题 或者退出登录的时候需要清空路由
+if(menuData) { //menuData  存在router会重复的问题 或者退出登录的时候需要清空路由
     store.commit('ADD_MENU', menuData);  // ?? commit or dispatch ,将缓存数据注入到store中
     const routes = menuHelper.generateRoutesFromMenu(menuData)  //根据菜单生成的路由信息
     const asyncRouterMap = [
@@ -36,8 +36,7 @@ if(false) { //menuData  存在router会重复的问题 或者退出登录的时�
             component   :   Home,
             redirect    :   '/index',
             children    :   routes
-        },
-       // { path: '/studentList', component: () => import('@/page/studentList'), hidden: true },
+        }
     ];
     router.addRoutes(asyncRouterMap);
 }
@@ -45,7 +44,6 @@ if(false) { //menuData  存在router会重复的问题 或者退出登录的时�
 router.beforeEach((to, from, next) => {
     NProgress.start() // start progress bar
     // 定位到首页时， 清空缓存数据
-    //debugger
     if(to.path === '/') {
         LocalDB.instance('USER_').remove('userinfo');
         LocalDB.instance('MENU_').remove('leftMenu');

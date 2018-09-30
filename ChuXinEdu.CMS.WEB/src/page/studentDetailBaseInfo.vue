@@ -1,14 +1,14 @@
 <template>
 <div class="info_container">
     <el-row class="info_row row" :gutter="10">
-        
+
         <el-col :span="6">
             <div class="area" style="width:220px;border:0">
                 <div class="avatar-panel">
                     <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="300" :height="300" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
                     </my-avatar>
                     <img :src="avatarPanel.imgDataUrl">
-                    <el-button type="success" size="mini" @click="setAvatarShow">设置头像<i class="el-icon-upload el-icon--right"></i></el-button> 
+                    <el-button type="success" size="mini" @click="setAvatarShow">设置头像<i class="el-icon-upload el-icon--right"></i></el-button>
                 </div>
             </div>
         </el-col>
@@ -157,7 +157,7 @@
                 <el-form-item prop="studentPhone" label="联系电话">
                     <el-input v-model="studentDialog.baseInfo.studentPhone"></el-input>
                 </el-form-item>
-                <el-form-item label="家庭地址">
+                <el-form-item prop="studentAddress" label="家庭地址">
                     <el-input v-model="studentDialog.baseInfo.studentAddress"></el-input>
                 </el-form-item>
                 <el-form-item label="备注">
@@ -197,7 +197,7 @@ export default {
                     studentCode: '',
                     studentName: ''
                 },
-                uploadUrl:'/api/student/uploadavatar',
+                uploadUrl: '/api/student/uploadavatar',
                 imgDataUrl: ''
             },
             pageData: {
@@ -267,11 +267,6 @@ export default {
                     studentAddress: [{
                         required: true,
                         message: '请输入家庭地址',
-                        trigger: 'blur'
-                    }],
-                    studentRegisterDate: [{
-                        required: true,
-                        message: '请选择报名时间',
                         trigger: 'blur'
                     }]
                 }
@@ -549,29 +544,29 @@ export default {
             };
         },
 
-        submitUpdateStudent() {
+        submitUpdateStudent(studentForm) {
             var _this = this;
             var student = Object.assign({}, _this.studentDialog.baseInfo);
-            // this.$refs[baseInfoForm].validate((valid) => {
-            //     if (valid) {
-            //     }
-            // });
-            // return;
-            axios({
-                type: 'put',
-                path: '/api/student/updatestudent/' + _this.studentCode,
-                data: student,
-                fn: function (result) {
-                    if (result === 200) {
-                        _this.GetStudentBaseData();
-                        _this.$message({
-                            message: '更新基础信息成功',
-                            type: 'success'
-                        });
-                        _this.studentDialog.isShow = false;
-                    }
+            this.$refs[studentForm].validate((valid) => {
+                if (valid) {
+                    axios({
+                        type: 'put',
+                        path: '/api/student/updatestudent/' + _this.studentCode,
+                        data: student,
+                        fn: function (result) {
+                            if (result === 200) {
+                                _this.GetStudentBaseData();
+                                _this.$message({
+                                    message: '更新基础信息成功',
+                                    type: 'success'
+                                });
+                                _this.studentDialog.isShow = false;
+                            }
+                        }
+                    });
                 }
             });
+
         },
 
         handleCourseFolderDisplay(item) {

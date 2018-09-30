@@ -1,12 +1,13 @@
 <template>
     <div class="home">
-        <head-nav></head-nav>
+        <!-- <head-nav></head-nav> -->
         <div class="left-fixed-right-auto">
             <left-menu></left-menu>
             <div class="content_page" :style="{'margin-left': $store.state.menu.sidebar.width,
                                                 'width': $store.state.page.win_content.width + 'px',
                                                 'height': $store.state.page.win_content.height + 'px'}">
                 <div class="content">
+                    <head-nav></head-nav>
                     <bread></bread>
                     <!--页面渲染入口-->
                     <transition name="fade-transform" mode="out-in" >
@@ -46,7 +47,7 @@
                     height:document.body.clientHeight - 73,
                     width:document.body.clientWidth - 183
                 }
-                console.log('重新计算页面宽高');
+                //console.log('重新计算页面宽高');
                 //将content部分的宽高，存入store中，
                 this.$store.dispatch('set_win_content',this.win_size); //触发动作，content部分的宽高也随即改变。
             },

@@ -89,115 +89,97 @@ export default {
         },
         generateMenu() {
             const leftMenu = [{
-                    path: '/index',
+                    path: '/dashboard',
                     name: '首页',
-                    component: 'index',
-                    icon: 'fa-server',
+                    component: 'dashboard',
+                    icon: 'fa-home',
                     noDropdown: true
                 },
                 {
                     path: '/studentList',
                     name: '学生列表',
                     component: 'studentList',
-                    icon: 'fa-server',
+                    icon: 'fa-users',
                     noDropdown: true
                 },
                 {
-                    path: '/student',
-                    key: '1',
-                    name: '学生信息',
-                    component: 'content',
-                    icon: 'fa-user',
-                    children: [
-                        {
-                            path: 'studentDetailMain',
-                            name: '学生详细',
-                            component: 'studentDetailMain' //() => import('@/page/studentList')
-                        }
-                    ]
+                    path: '/courseArrangeMain',
+                    name: '排课安排',
+                    component: 'courseArrangeMain',
+                    icon: 'fa-magic',
+                    noDropdown: true
                 },
                 {
-                    path: '/course',
-                    key:'2',
-                    name: '课程管理',
-                    component: 'content',
-                    icon: 'fa-asterisk',
-                    children: [{
-                            path: 'coursePackageList',
-                            name: '课程套餐',
-                            component: 'coursePackageList'
-                        },
-                        {
-                            path: 'courseArrangeMain',
-                            name: '排课安排',
-                            component: 'courseArrangeMain'
-                        },
-                        {
-                            path: 'courseAttendanceBook',
-                            name: '待签到',
-                            component: 'courseAttendanceBook'
-                        }
-                    ]
+                    path: '/courseAttendanceBook',
+                    name: '签到销课',
+                    component: 'courseAttendanceBook',
+                    icon: 'fa-calendar-check-o',
+                    noDropdown: true
                 },
                 {
-                    path: '/4',
-                    key:'3',
-                    name: '活动组织',
-                    component: 'content',
-                    icon: 'fa-asterisk',
-                    children: [{
-                            path: '/activityAdd',
-                            name: '新的策划',
-                            component: 'activityAdd'
-                        },
-                        {
-                            path: '/activityList',
-                            name: '活动列表',
-                            component: 'activityList'
-                        }
-                    ]
+                    path: '/activityList',
+                    name: '活动列表',
+                    component: 'activityList',
+                    icon: 'fa-paper-plane-o',
+                    noDropdown: true
                 },
                 {
-                    path: '/1',
-                    key:'4',
-                    name: '系统管理',
-                    component: 'content',
-                    icon: 'fa-asterisk',
-                    children: [{
-                            path: '/sysDicManager',
-                            name: '字典配置',
-                            component: 'sysDicManager'
-                        },{
-                            path: '/sysInfoShow',
-                            name: '个人信息',
-                            component: 'sysInfoShow'
-                        },
-                        {
-                            path: '/sysInfoModify',
-                            name: '修改信息',
-                            component: 'sysInfoModify'
-                        }
-                    ]
+                    path: '/sysCoursePackageList',
+                    name: '课程套餐',
+                    component: 'sysCoursePackageList',
+                    icon: 'fa-shopping-bag',
+                    noDropdown: true
                 },
+                {
+                    path: '/studentDetailMain',
+                    name: '学生详细',
+                    component: 'studentDetailMain',
+                    hidden: true,
+                    noDropdown: true
+                },
+                // {
+                //     path: '/course',
+                //     key:'2',
+                //     name: '课程管理',
+                //     component: 'content',
+                //     icon: 'fa-asterisk',
+                //     children: [{
+                //             path: 'coursePackageList',
+                //             name: '课程套餐',
+                //             component: 'coursePackageList'
+                //         },
+                //         {
+                //             path: 'courseArrangeMain',
+                //             name: '排课安排',
+                //             component: 'courseArrangeMain'
+                //         },
+                //         {
+                //             path: 'courseAttendanceBook',
+                //             name: '签到销课',
+                //             component: 'courseAttendanceBook'
+                //         }
+                //     ]
+                // },
             ];
 
             LocalDB.instance('MENU_').setValue('leftMenu', leftMenu);
             this.addMenu(leftMenu);
             if (true) { // !this.getRouterLoadedStatus 首次进来为false,改变其状态为true
                 const routers = menuHelper.generateRoutesFromMenu(leftMenu);
-                const asyncRouterMap = [{
-                        path: '/404',
-                        name: '404',
-                        hidden: true,
-                        component: NotFound 
-                    },
+                const asyncRouterMap = [
                     {
                         path: '/layout',
                         name: '',
                         hidden: true,
                         component: Home,
-                        redirect: '/student/studentList',
+                        redirect: '/dashboard',
                         children: routers
+                    },
+                    {
+                        path: '/404',
+                        name: '404',
+                        hidden: true,
+                        component: NotFound 
                     }
                 ];
 

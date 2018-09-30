@@ -330,7 +330,7 @@ export default {
 
         showStudentDetail(studentCode) {
             this.$router.push({
-                path: '/student/studentDetailMain',
+                path: '/studentDetailMain',
                 query: {
                     studentcode: studentCode
                 }

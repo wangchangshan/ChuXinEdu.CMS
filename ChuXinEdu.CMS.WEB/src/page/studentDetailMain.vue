@@ -35,6 +35,7 @@ import studentDetailAchievements from '@/page/studentDetailAchievements'
 
 
 export default {
+    name: 'studentDetailMain',
     data() {
         return {
             pageHeight: this.$store.state.page.win_content.height - 100 ,  

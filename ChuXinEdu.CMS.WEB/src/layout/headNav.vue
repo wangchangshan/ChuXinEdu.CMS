@@ -1,6 +1,6 @@
 <template>
     <header class="head-nav" id='header_container'>
-        <el-row style="margin:0 10px">
+        <el-row style="margin:0 10px 0 0">
             <el-col :span="6" class="logo-container">
                 <img src="../../static/image/logo.png" class="logo" alt=""/>
                 <span class="title">初心教育后台管理系统</span>
@@ -28,23 +28,26 @@
             <div class="notify-row">
                 <ul class="top-menu">
                     <li class="li-badge">
-                        <a href='#/index'>
+                        <a href='#/notifyBirthday'>
                             <el-badge :value="6" class="item one">
-                                <i class="fa fa-tasks"></i>
+                                <i class="fa fa-birthday-cake"></i>
+                                <!-- 未来7天生日提醒 -->
                             </el-badge>
                         </a>
                     </li>
                     <li class="li-badge">
-                        <a href='#/index'>
+                        <a href='#/dashboard'>
                             <el-badge :value="12" class="item two">
-                                <i class="fa fa-envelope-o"></i>
+                                <i class="fa fa-calendar-check-o"></i>
+                                 <!-- 待签到数目 -->
                             </el-badge>
                         </a>
                     </li>
                      <li class="li-badge">
-                        <a href='#/notifyBirthday'>
+                        <a href='#/dashboard'>
                             <el-badge :value="34" class="item three">
                                 <i class="fa fa-bell-o"></i>
+                                <!-- 今日上课学生数目 -->
                             </el-badge>
                         </a>
                     </li>
@@ -99,8 +102,7 @@
         line-height: 60px;
         min-width: 400px;
         .logo {
-            height: 50px;
-            width: 50px;
+            height: 60px;
             margin-right: 5px;
             vertical-align: middle;
             display: inline-block;
