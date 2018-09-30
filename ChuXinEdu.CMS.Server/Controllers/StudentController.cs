@@ -6,6 +6,7 @@ using System.IO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
+using ChuXinEdu.CMS.Server.Utils;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
@@ -216,6 +217,23 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string result = _chuxinWorkflow.UpdateStudentCoursePackage(id, package);
             return result;
+        }
+
+        /// <summary>
+        /// 添加学生基本信息 PUT api/student/addstudent
+        /// </summary>
+        /// <returns>studentCode</returns>
+        [HttpPost]
+        public string AddStudent([FromBody] Student student)
+        {
+            string studentCode = TableCodeHelper.GenerateStudentCode();
+            student.StudentCode = studentCode;
+            string result = _chuxinWorkflow.AddStudentBaseInfo(student);
+            if(result == "500")
+            {
+                studentCode = "";
+            }
+            return studentCode;
         }
 
         /// <summary>

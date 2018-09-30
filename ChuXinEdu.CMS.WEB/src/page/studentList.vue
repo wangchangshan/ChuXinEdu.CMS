@@ -10,7 +10,7 @@
             </el-form-item>
 
             <el-form-item class="btnRight">
-                <el-button type="primary" icon="el-icon-plus" size="small" @click='addStudent()'>添加</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="small" @click='showAddStudent()'>添加</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -52,14 +52,50 @@
         <el-row>
             <el-col :span="24">
                 <div class="pagination">
-                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handlePageCurrentChange'
-                        @size-change='handlePageSizeChange'>
+                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handlePageCurrentChange' @size-change='handlePageSizeChange'>
 
                     </el-pagination>
                 </div>
             </el-col>
         </el-row>
     </div>
+    <el-dialog :title="studentDialog.title" :width="studentDialog.width" :visible.sync="studentDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+        <div class="form">
+            <el-form ref="baseInfo" :model="studentDialog.baseInfo" :rules="studentDialog.baseInfoRules" :label-width="studentDialog.formLabelWidth" :label-position='studentDialog.labelPosition' size="mini">
+                <el-form-item prop="studentName" label="姓名">
+                    <el-input v-model="studentDialog.baseInfo.studentName"></el-input>
+                </el-form-item>
+                <el-form-item label="性别">
+                    <el-radio-group v-model="studentDialog.baseInfo.studentSex">
+                        <el-radio label="男"></el-radio>
+                        <el-radio label="女"></el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="出生日期">
+                    <el-date-picker v-model="studentDialog.baseInfo.studentBirthday" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                </el-form-item>
+                <el-form-item label="身份证号码">
+                    <el-input v-model="studentDialog.baseInfo.studentIdentityCardNum"></el-input>
+                </el-form-item>
+                <el-form-item prop="studentPhone" label="联系电话">
+                    <el-input v-model="studentDialog.baseInfo.studentPhone"></el-input>
+                </el-form-item>
+                <el-form-item prop="studentAddress" label="家庭地址">
+                    <el-input v-model="studentDialog.baseInfo.studentAddress"></el-input>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input type="textarea" v-model="studentDialog.baseInfo.studentRemark"></el-input>
+                </el-form-item>
+                <el-form-item label="报名时间">
+                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                </el-form-item>
+                <el-form-item style="text-align:right">
+                    <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
+                    <el-button size="small" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+    </el-dialog>
 </div>
 </template>
 
@@ -106,18 +142,40 @@ export default {
                 page_sizes: [10, 15, 20, 30],
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
             },
-            dialog: {
-                width: '500px',
-                show: false,
-                title: '添加学生',
+            studentDialog: {
+                width: '600px',
+                isShow: false,
+                title: '添加学生基本信息',
                 labelPosition: 'right',
-                formLabelWidth: '120px'
-            },
-            studentInfo: {
-
-            },
-            studentInfoRules: {
-
+                formLabelWidth: '90px',
+                baseInfo: {
+                    studentName: "",
+                    studentSex: "",
+                    studentBirthday: "",
+                    studentIdentityCardNum: "",
+                    studentPhone: "",
+                    studentAddress: "",
+                    studentRemark: "",
+                    studentRegisterDate: "",
+                    studentStatus: "01"
+                },
+                baseInfoRules: {
+                    studentPhone: [{
+                        required: true,
+                        message: '请输入联系电话',
+                        trigger: 'blur'
+                    }],
+                    studentAddress: [{
+                        required: true,
+                        message: '请输入家庭地址',
+                        trigger: 'blur'
+                    }],
+                    studentName: [{
+                        required: true,
+                        message: '请输入学生姓名',
+                        trigger: 'blur'
+                    }]
+                }
             }
         }
     },
@@ -152,7 +210,7 @@ export default {
             var _this = this;
             var query = this.$route.query;
             this.paginations.current_page_index = page || parseInt(query.page) || 1;
-            this.paginations.page_size  = pageSize || parseInt(query.page_size) || this.paginations.page_size;
+            this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
             var data = {
                 pageIndex: this.paginations.current_page_index,
                 pageSize: this.paginations.page_size
@@ -238,13 +296,45 @@ export default {
             });
             //console.log(`当前页: ${page}`);
         },
-        addStudent() {
-            this.dialog.title = '新增学生';
-            this.dialog.show = true;
+        showAddStudent() {
+            this.studentDialog.isShow = true;
         },
+
+        submitAddStudent(studentForm) {
+            var _this = this;
+            this.$refs[studentForm].validate((valid) => {
+                if (valid) {
+                    axios({
+                        type: 'post',
+                        path: '/api/student/addstudent',
+                        data: _this.studentDialog.baseInfo,
+                        fn: function (result) {
+                            if (result != "") {
+                                _this.$message({
+                                    message: '添加学生成功',
+                                    type: 'success'
+                                });
+                                _this.studentDialog.isShow = false;
+                                _this.$router.push({
+                                    path: '/student/studentDetailMain',
+                                    query: {
+                                        studentcode: result
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        },
+
         showStudentDetail(studentCode) {
-            this.$router.push({ path: '/student/studentDetailMain', query: { studentcode: studentCode }})
-            //alert('待开发')
+            this.$router.push({
+                path: '/student/studentDetailMain',
+                query: {
+                    studentcode: studentCode
+                }
+            })
         },
         searchStudent() {
             alert('待开发')

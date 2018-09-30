@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.Model;
+using ChuXinEdu.CMS.Server.Utils;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.ViewModel;
 
@@ -53,7 +54,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             DateTime courseDate = firstCourseDate.AddDays((i + coverHolidayCount) * 7);
 
                             // 统一放假的日期不排课
-                            while (!WorkflowHelper.IsAvailableCourseDate(holidays, courseDate))
+                            while (!DateHelper.IsAvailableCourseDate(holidays, courseDate))
                             {
                                 coverHolidayCount ++;
                                 courseDate = firstCourseDate.AddDays((i + coverHolidayCount) * 7);
@@ -883,6 +884,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     scp.PayPatternName = package.PayPatternName;
                     scp.PayDate = package.PayDate;
 
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string AddStudentBaseInfo(Student student)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.Student.Add(student);
                     context.SaveChanges();
                 }
             }

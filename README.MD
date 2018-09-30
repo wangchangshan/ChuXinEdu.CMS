@@ -52,6 +52,8 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install vue-axios --save
 
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install nprogress --save
 
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install babel-polyfill --save-dev
+
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install vue-image-crop-upload  --save-dev
 ```
 

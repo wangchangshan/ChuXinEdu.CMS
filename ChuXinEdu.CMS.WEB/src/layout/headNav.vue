@@ -3,7 +3,7 @@
         <el-row style="margin:0 10px">
             <el-col :span="6" class="logo-container">
                 <img src="../../static/image/logo.png" class="logo" alt=""/>
-                <!-- <span class="title">初心教育后台管理系统</span> -->
+                <span class="title">初心教育后台管理系统</span>
             </el-col>
             <div class="userinfo">
                 <img src="../../static/image/avatar.png" class="avatar" alt="">

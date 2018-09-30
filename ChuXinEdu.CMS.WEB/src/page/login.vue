@@ -95,20 +95,13 @@ export default {
                     icon: 'fa-server',
                     noDropdown: true
                 },
-                // {
-                //     path: '/studentAdd',
-                //     name: '新增学生',
-                //     component: 'studentAdd',
-                //     icon: 'fa-server',
-                //     noDropdown: true
-                // },
-                // {
-                //     path: '/studentList',
-                //     name: '学生列表',
-                //     component: 'studentList',
-                //     icon: 'fa-server',
-                //     noDropdown: true
-                // },
+                {
+                    path: '/studentList',
+                    name: '学生列表',
+                    component: 'studentList',
+                    icon: 'fa-server',
+                    noDropdown: true
+                },
                 {
                     path: '/student',
                     key: '1',
@@ -117,18 +110,8 @@ export default {
                     icon: 'fa-user',
                     children: [
                         {
-                            path: 'studentAdd',
-                            name: '新增学生',
-                            component: 'studentAdd'
-                        },
-                        {
-                            path: 'studentList',
-                            name: '学生列表',
-                            component: 'studentList' //() => import('@/page/studentList')
-                        },
-                        {
                             path: 'studentDetailMain',
-                            name: '学生列表',
+                            name: '学生详细',
                             component: 'studentDetailMain' //() => import('@/page/studentList')
                         }
                     ]

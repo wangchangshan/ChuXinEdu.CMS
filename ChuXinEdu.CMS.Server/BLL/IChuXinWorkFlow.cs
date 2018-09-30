@@ -55,6 +55,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [更新学生选课套餐]  
         string UpdateStudentCoursePackage(int id, StudentCoursePackage package);
 
+        // [添加学生]  
+        string AddStudentBaseInfo(Student student);
+
         // [更新学生]  
         string UpdateStudentBaseInfo(string studentCode, Student student);
     }

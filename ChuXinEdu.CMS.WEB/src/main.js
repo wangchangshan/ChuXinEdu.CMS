@@ -3,7 +3,6 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-//import vueRouter from 'vue-router'
 import store from './store/index'
 import ElementUI from 'element-ui'
 import {LocalDB, menuHelper} from './utils/index'
