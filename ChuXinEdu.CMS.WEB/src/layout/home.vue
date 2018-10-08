@@ -14,23 +14,6 @@
         </el-main>
     </el-container>
 </el-container>
-
-    <!-- <div class="home">
-        <div class="left-fixed-right-auto">
-            <left-menu></left-menu>
-            <div class="content_page" :style="{'margin-left': $store.state.menu.sidebar.width,
-                                                'width': $store.state.page.win_content.width + 'px',
-                                                'height': $store.state.page.win_content.height + 'px'}">
-                <div class="content">
-                    <head-nav></head-nav>
-                    <bread></bread> 
-                    <transition name="fade-transform" mode="out-in" >
-                        <router-view ></router-view>
-                    </transition>
-                </div>
-            </div>
-        </div>
-    </div> -->
 </template>
 
 <script>

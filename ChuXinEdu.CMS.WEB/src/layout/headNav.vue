@@ -5,10 +5,11 @@
     </div>
     <div class="bread-container">
         <el-breadcrumb>
-            <el-breadcrumb-item :to="{ path: '/dashboard' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-            <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-            <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+            <transition-group name="breadcrumb">
+                <el-breadcrumb-item :to="{ path: item.path }" v-for="(item) in breadcrumbList" v-if="item.title" :key="item.path">
+                    {{item.title}}
+                </el-breadcrumb-item>
+            </transition-group>
         </el-breadcrumb>
     </div>
     <div class="userinfo">
@@ -22,11 +23,11 @@
                 <span class="el-dropdown-link">
                     <i class="el-icon-caret-bottom el-icon--right"></i>
                 </span>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='info'>修改信息</el-dropdown-item>
-                    <el-dropdown-item command='pwd'>修改密码</el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
+        <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command='info'>修改信息</el-dropdown-item>
+            <el-dropdown-item command='pwd'>修改密码</el-dropdown-item>
+        </el-dropdown-menu>
+        </el-dropdown>
         </span>
         <i class="fa fa-sign-out logout" @click="logout"></i>
     </div>
@@ -73,13 +74,60 @@ export default {
             isVertical: false,
             isHorizontal: true,
             userinfo: '',
-            path: ''
+            path: '',
+            breadcrumbList: ''
         }
     },
     created() {
         this.userinfo = LocalDB.instance('USER_').getValue('userInfo');
     },
+    watch: {
+        $route() {
+            this.getBreadcrumb()
+        }
+    },
+    mounted() {
+        this.getBreadcrumb();
+    },
     methods: {
+        getBreadcrumb() {
+            var current = {
+                title: this.$route.name,
+                path: this.$route.path
+            }
+            
+            if( current && current.path != '/dashboard') {
+                this.breadcrumbList = [{
+                    title: '首 页',
+                    path: '/dashboard'
+                }].concat(current);
+            }
+            else {
+                this.breadcrumbList = [current];
+            }
+
+
+            // const {
+            //     params
+            // } = this.$route
+            // let matched = this.$route.matched.filter(item => {
+            //     if (item.name) {
+            //         // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
+            //         var toPath = pathToRegexp.compile(item.path)
+            //         item.path = toPath(params)
+            //         return true
+            //     }
+            // })
+            // const first = matched[0]
+            // if (first && first.name.trim().toLocaleLowerCase() !== 'Dashboard'.toLocaleLowerCase()) {
+            //     matched = [{
+            //         path: '/dashboard',
+            //         meta: {
+            //             title: 'dashboard'
+            //         }
+            //     }].concat(matched)
+            // }
+        },
         handleLefeMenu() {
             this.isVertical = !this.isVertical;
             this.isHorizontal = !this.isHorizontal;
@@ -118,22 +166,23 @@ export default {
     font-size: 26px;
     cursor: pointer;
     line-height: 60px;
-    .vertical{
-		-webkit-transform: rotate(90deg);
-		transform: rotate(90deg);
-		transition: .38s;
-		-webkit-transform-origin: 50% 50%;
-		transform-origin: 50% 50%;
+
+    .vertical {
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+        transition: .38s;
+        -webkit-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
     }
-    .horizontal{
+
+    .horizontal {
         -webkit-transform: rotate(0deg);
-		transform: rotate(0deg);
-		transition: .38s;
-		-webkit-transform-origin: 50% 50%;
-		transform-origin: 50% 50%;
+        transform: rotate(0deg);
+        transition: .38s;
+        -webkit-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
     }
 }
-
 
 .bread-container {
     vertical-align: middle;

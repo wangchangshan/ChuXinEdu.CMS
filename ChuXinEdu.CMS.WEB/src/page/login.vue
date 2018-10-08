@@ -100,42 +100,79 @@ export default {
                     name: '学生列表',
                     component: 'studentList',
                     icon: 'fa-users',
-                    noDropdown: true
+                    noDropdown: true,
+                    meta: {
+                        breadcrumb:{
+                            title: '',
+                            path: ''
+                        }
+                    }
                 },
                 {
                     path: '/courseArrangeMain',
                     name: '排课安排',
                     component: 'courseArrangeMain',
                     icon: 'fa-magic',
-                    noDropdown: true
+                    noDropdown: true,
+                    meta: {
+                        breadcrumb:{
+                            title: '',
+                            path: ''
+                        }
+                    }
                 },
                 {
                     path: '/courseAttendanceBook',
                     name: '签到销课',
                     component: 'courseAttendanceBook',
                     icon: 'fa-calendar-check-o',
-                    noDropdown: true
+                    noDropdown: true,
+                    meta: {
+                        breadcrumb:{
+                            title: '',
+                            path: ''
+                        }
+                    }
                 },
                 {
                     path: '/activityList',
                     name: '活动列表',
                     component: 'activityList',
                     icon: 'fa-paper-plane-o',
-                    noDropdown: true
+                    noDropdown: true,
+                    meta: {
+                        title: "tett",
+                        breadcrumb:{
+                            title: '',
+                            path: ''
+                        }
+                    }
                 },
                 {
                     path: '/sysCoursePackageList',
                     name: '课程套餐',
                     component: 'sysCoursePackageList',
                     icon: 'fa-shopping-bag',
-                    noDropdown: true
+                    noDropdown: true,
+                    meta: {
+                        breadcrumb:{
+                            title: '',
+                            path: ''
+                        }
+                    }
                 },
                 {
                     path: '/studentDetailMain',
                     name: '学生详细',
                     component: 'studentDetailMain',
                     hidden: true,
-                    noDropdown: true
+                    noDropdown: true,
+                    meta: {
+                        breadcrumb:{
+                            title: '',
+                            path: ''
+                        }
+                    }
                 },
                 // {
                 //     path: '/course',
