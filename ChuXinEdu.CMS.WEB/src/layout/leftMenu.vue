@@ -64,7 +64,8 @@
         z-index: 99;
 	}
     .fa-margin{
-        margin-right:5px;
+        margin-right:10px;
+        font-size: 16px;
     }
     .el-menu-vertical-demo:not(.el-menu--collapse) {
         width: 180px;

@@ -1,66 +1,65 @@
 <template>
-<header class="head-nav" id='header_container'>
-    <div style="display: inline-block;width:40%" class="logo-container">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-                <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-                <el-breadcrumb-item>活动详情</el-breadcrumb-item>
-            </el-breadcrumb>
+<div class="head-nav" id='header_container'>
+    <div class="bread-bars">
+        <i class="fa fa-bars" :class="{vertical:isVertical, horizontal:isHorizontal}" aria-hidden="true" @click="handleLefeMenu"></i>
     </div>
-    <div style="display: inline-block;width:40%">
-         <div class="userinfo">
-                <img src="../../static/image/avatar.png" class="avatar" alt="">
-                <div class="welcome">
-                    <p class="name comename">欢迎</p>
-                    <p class="name avatarname">Admin</p>
-                </div>
-                <span class="username">
-                    <el-dropdown trigger="click" @command='setDialogInfo'>
-                        <span class="el-dropdown-link">
-                            <i class="el-icon-caret-bottom el-icon--right"></i>
-                        </span>
+    <div class="bread-container">
+        <el-breadcrumb>
+            <el-breadcrumb-item :to="{ path: '/dashboard' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+            <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+            <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <div class="userinfo">
+        <img src="../../static/image/avatar.png" class="avatar" alt="">
+        <div class="welcome">
+            <p class="name comename">欢迎</p>
+            <p class="name avatarname">Admin</p>
+        </div>
+        <span class="username">
+            <el-dropdown trigger="click" @command='setDialogInfo'>
+                <span class="el-dropdown-link">
+                    <i class="el-icon-caret-bottom el-icon--right"></i>
+                </span>
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command='info'>修改信息</el-dropdown-item>
                     <el-dropdown-item command='pwd'>修改密码</el-dropdown-item>
-                    <el-dropdown-item command='exit'>退出</el-dropdown-item>
                 </el-dropdown-menu>
-                </el-dropdown>
-                </span>
-                <i class="fa fa-sign-out logout" @click="logout"></i>
-            </div>
-         <div class="notify-row">
-                <ul class="top-menu">
-                    <li class="li-badge">
-                        <a href='#/notifyBirthday'>
-                            <el-badge :value="6" class="item one">
-                                <i class="fa fa-birthday-cake"></i>
-                                <!-- 未来7天生日提醒 -->
-                            </el-badge>
-                        </a>
-                    </li>
-                    <li class="li-badge">
-                        <a href='#/dashboard'>
-                            <el-badge :value="12" class="item two">
-                                <i class="fa fa-calendar-check-o"></i>
-                                 <!-- 待签到数目 -->
-                            </el-badge>
-                        </a>
-                    </li>
-                    <li class="li-badge">
-                        <a href='#/dashboard'>
-                            <el-badge :value="34" class="item three">
-                                <i class="fa fa-bell-o"></i>
-                                <!-- 今日上课学生数目 -->
-                            </el-badge>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-       
-           
+            </el-dropdown>
+        </span>
+        <i class="fa fa-sign-out logout" @click="logout"></i>
     </div>
-</header>
+
+    <div class="notify-row">
+        <ul class="top-menu">
+            <li class="li-badge">
+                <a href='#/notifyBirthday'>
+                    <el-badge :value="6" class="item one">
+                        <i class="fa fa-birthday-cake"></i>
+                            <!-- 未来7天生日提醒 -->
+                    </el-badge>
+                </a>
+            </li>
+            <li class="li-badge">
+                <a href='#/dashboard'>
+                    <el-badge :value="12" class="item two">
+                        <i class="fa fa-calendar-check-o"></i>
+                            <!-- 待签到数目 -->
+                    </el-badge>
+                </a>
+            </li>
+            <li class="li-badge">
+                <a href='#/dashboard'>
+                    <el-badge :value="34" class="item three">
+                        <i class="fa fa-bell-o"></i>
+                        <!-- 今日上课学生数目 -->
+                    </el-badge>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
 </template>
 
 <script>
@@ -71,6 +70,8 @@ export default {
     name: "head-nav",
     data() {
         return {
+            isVertical: false,
+            isHorizontal: true,
             userinfo: '',
             path: ''
         }
@@ -79,6 +80,10 @@ export default {
         this.userinfo = LocalDB.instance('USER_').getValue('userInfo');
     },
     methods: {
+        handleLefeMenu() {
+            this.isVertical = !this.isVertical;
+            this.isHorizontal = !this.isHorizontal;
+        },
         logout() {
             this.$router.push('/');
         },
@@ -106,25 +111,34 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.logo-container {
-    height: 70px;
-    line-height: 50px;
+.bread-bars {
     vertical-align: middle;
-    min-width: 400px;
-
-    .logo {
-        height: 50px;
-        margin-right: 5px;
-        vertical-align: middle;
-        display: inline-block;
+    display: inline-block;
+    margin: 0 10px;
+    font-size: 26px;
+    cursor: pointer;
+    line-height: 60px;
+    .vertical{
+		-webkit-transform: rotate(90deg);
+		transform: rotate(90deg);
+		transition: .38s;
+		-webkit-transform-origin: 50% 50%;
+		transform-origin: 50% 50%;
     }
-
-    .title {
-        vertical-align: middle;
-        font-size: 22px;
-        font-family: cursive;
-        letter-spacing: 3px;
+    .horizontal{
+        -webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+		transition: .38s;
+		-webkit-transform-origin: 50% 50%;
+		transform-origin: 50% 50%;
     }
+}
+
+
+.bread-container {
+    vertical-align: middle;
+    min-width: 270px;
+    display: inline-block;
 }
 
 .fa-user {
@@ -134,28 +148,21 @@ export default {
 }
 
 .head-nav {
-    width: 100%;
-    height: 50px;
-    min-width: 600px;
-    padding: 5px;
+    height: 60px;
     background: #fff;
-    border-bottom:1px solid #d8dce5;
-    box-shadow:0 1px 3px 0 rgba(0,0,0,.12), 0 0 3px 0 rgba(0,0,0,.04);
-    position: fixed;
-    top: 0;
-    margin-left: 0px;
-    z-index: 100;
+    border-bottom: 1px solid #d8dce5;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
 
-    // border-bottom: 1px solid #1F2D3D;
     .logout {
         vertical-align: middle;
         cursor: pointer;
+        font-size: 26px;
+        margin-right: 15px;
     }
 }
 
 .userinfo {
-    line-height: 50px;
-    text-align: right;
+    line-height: 60px;
     float: right;
 }
 
@@ -191,11 +198,7 @@ export default {
 
 .username {
     cursor: pointer;
-    margin-right: 0px;
-
-    .el-dropdown {
-        color: #fff;
-    }
+    margin-right: 10px;
 }
 
 .border {
@@ -203,10 +206,10 @@ export default {
 }
 
 .notify-row {
-    line-height: 50px;
+    line-height: 60px;
     float: right;
-    margin-right: 20px;
-    margin-top: 5px;
+    margin-top: 3px;
+    margin-right: 15px;
 }
 
 ul.top-menu>li {
@@ -220,6 +223,6 @@ ul.top-menu>li>a {
     border-radius: 4px;
     -webkit-border-radius: 4px;
     border: 1px solid #f0f0f8 !important;
-    padding: 2px 6px 4px 6px;
+    padding: 2px 6px 8px 6px;
 }
 </style>

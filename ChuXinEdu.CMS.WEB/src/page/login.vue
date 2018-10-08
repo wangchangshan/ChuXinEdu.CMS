@@ -90,9 +90,9 @@ export default {
         generateMenu() {
             const leftMenu = [{
                     path: '/dashboard',
-                    name: '首页',
+                    name: '首    页',
                     component: 'dashboard',
-                    icon: 'fa-home',
+                    icon: 'fa-tachometer',
                     noDropdown: true
                 },
                 {

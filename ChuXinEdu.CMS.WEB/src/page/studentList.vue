@@ -20,7 +20,7 @@
             </el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="90" fixed>
             </el-table-column>
-            <el-table-column prop="studentSex" label="性别" align='center' width="70">
+            <el-table-column prop="studentSex" label="性别" align='center' width="60">
             </el-table-column>
             <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="110">
             </el-table-column>
