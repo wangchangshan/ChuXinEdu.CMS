@@ -1,16 +1,16 @@
 <template>
 <el-container>
-    <el-aside width="180px">
+    <el-aside :style="{width: $store.state.menu.sidebar.width + 'px','overflow-x':'hidden'}">
         <left-menu></left-menu>
     </el-aside>
     <el-container>
         <el-header style="padding:0">
             <head-nav></head-nav>
         </el-header>
-        <el-main style="padding:10px 0 0 0">
+        <el-main style="padding:10px 0 0 0;overflow-x:hidden">
             <transition name="fade-transform" mode="out-in" >
-                        <router-view ></router-view>
-                    </transition>
+                <router-view ></router-view>
+            </transition>
         </el-main>
     </el-container>
 </el-container>
@@ -41,7 +41,7 @@
             setSize() {
                 //lib_$-->$,window的宽,高的获取是没有问题的。
                 this.win_size = {
-                    height:document.body.clientHeight - 73,
+                    height:document.body.clientHeight - 63,
                     width:document.body.clientWidth - 183
                 }
                 //console.log('重新计算页面宽高');

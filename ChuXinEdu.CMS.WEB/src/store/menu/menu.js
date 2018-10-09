@@ -11,7 +11,7 @@ const state = {
     isRouterLoaded: false,
     sidebar: {
         opened: true,
-        width: '180px'
+        width: 160
     },
     isCollapse: false,
     isHidMenuName: false
@@ -40,11 +40,17 @@ const mutations = {
     [menuType.INIT_LEFT_MENU] (state) {
         state.sidebar = {
             opened: true,
-            width: '180px'
+            width: '160px'
         }
     },
     [menuType.SET_LEFT_COLLAPSE] (state) {
         state.isCollapse = !state.isCollapse;
+        if(state.isCollapse) {
+            state.sidebar.width = 40
+        }
+        else{
+            state.sidebar.width = 160
+        }
     },
     [menuType.DISPLAY_MENU_NAME] (state) {
         state.isHidMenuName = !state.isHidMenuName;

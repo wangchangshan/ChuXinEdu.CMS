@@ -95,15 +95,25 @@ export default {
                 title: this.$route.name,
                 path: this.$route.path
             }
-            
-            if( current && current.path != '/dashboard') {
+
+            if(current.path == '/dashboard') {
+                this.breadcrumbList = [current];
+            }
+            else if(current.path == '/studentDetailMain'){
+                current.title = this.$route.query.studentname
+                this.breadcrumbList = [{
+                    title: '首 页',
+                    path: '/dashboard'
+                },{
+                    title: '学生列表',
+                    path: '/studentList'
+                }].concat(current);
+            }
+            else {                
                 this.breadcrumbList = [{
                     title: '首 页',
                     path: '/dashboard'
                 }].concat(current);
-            }
-            else {
-                this.breadcrumbList = [current];
             }
 
 
@@ -131,6 +141,8 @@ export default {
         handleLefeMenu() {
             this.isVertical = !this.isVertical;
             this.isHorizontal = !this.isHorizontal;
+            this.$store.dispatch('setMenuCollapse');
+
         },
         logout() {
             this.$router.push('/');

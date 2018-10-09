@@ -45,7 +45,7 @@
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
                 <template slot-scope='scope'>
-                    <el-button type="success" icon='edit' size="mini" @click='showStudentDetail(scope.row.studentCode)'>查看详细</el-button>
+                    <el-button type="success" icon='edit' size="mini" @click='showStudentDetail(scope.row.studentCode,scope.row.studentName)'>查看详细</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -328,11 +328,12 @@ export default {
             });
         },
 
-        showStudentDetail(studentCode) {
+        showStudentDetail(studentCode, studentName) {
             this.$router.push({
                 path: '/studentDetailMain',
                 query: {
-                    studentcode: studentCode
+                    studentcode: studentCode,
+                    studentname: studentName
                 }
             })
         },
