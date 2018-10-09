@@ -224,7 +224,7 @@ export default {
                 this.loadRouters();
             }
 
-            this.showMessage('success', '登录成功')
+            //this.showMessage('success', '登录成功')
             this.$router.push('layout');
         },
         submitForm(loginForm) {

@@ -7,7 +7,7 @@
         <el-header style="padding:0">
             <head-nav></head-nav>
         </el-header>
-        <el-main style="padding:10px 0 0 0;overflow-x:hidden">
+        <el-main style="padding:10px 0 0 0;overflow-x:hidden" :style="{height: $store.state.page.win_content.height -63 + 'px'}">
             <transition name="fade-transform" mode="out-in" >
                 <router-view ></router-view>
             </transition>
@@ -19,7 +19,6 @@
 <script>
     import HeadNav from './headNav.vue'
     import LeftMenu from './leftMenu.vue'
-    import Bread from './bread.vue'
 
     export default {
         name: "home",
@@ -33,8 +32,7 @@
         },
         components: {
             HeadNav,
-            LeftMenu,
-            Bread
+            LeftMenu
         },
         methods: {
             //用于自适配窗口页面大小

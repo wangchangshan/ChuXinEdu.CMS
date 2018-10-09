@@ -115,28 +115,6 @@ export default {
                     path: '/dashboard'
                 }].concat(current);
             }
-
-
-            // const {
-            //     params
-            // } = this.$route
-            // let matched = this.$route.matched.filter(item => {
-            //     if (item.name) {
-            //         // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
-            //         var toPath = pathToRegexp.compile(item.path)
-            //         item.path = toPath(params)
-            //         return true
-            //     }
-            // })
-            // const first = matched[0]
-            // if (first && first.name.trim().toLocaleLowerCase() !== 'Dashboard'.toLocaleLowerCase()) {
-            //     matched = [{
-            //         path: '/dashboard',
-            //         meta: {
-            //             title: 'dashboard'
-            //         }
-            //     }].concat(matched)
-            // }
         },
         handleLefeMenu() {
             this.isVertical = !this.isVertical;
