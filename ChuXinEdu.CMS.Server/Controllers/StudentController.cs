@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.IO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json;
 using ChuXinEdu.CMS.Server.Utils;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
@@ -104,22 +106,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
             foreach (var coursePackage in baseInfo.CoursePackageList)
             {
                 totalCount += coursePackage.PackageCourseCount;
+                baseInfo.RestCourseCount += coursePackage.RestCourseCount;
                 if(coursePackage.IsPayed == "Y")
                 {
                     tuition += coursePackage.ActualPrice;
                 }
             }
             baseInfo.TotalCourseCount = totalCount;
-            baseInfo.TotalTuition = tuition;
-            if(totalCount > 0)
-            {
-                int signInCount = _chuxinQuery.GetStudentSignInCourseCount(studentCode);
-                baseInfo.RestCourseCount = totalCount - signInCount;
-            }
-            else
-            {
-                baseInfo.RestCourseCount = 0;
-            }         
+            baseInfo.TotalTuition = tuition;         
             
             return baseInfo;
         }
@@ -164,6 +158,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// [通知信息] 获取未来7天过生日的学生 GET api/student/getbirthdaynotify
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult<string> GetBirthdayNotify()
+        {
+            DataTable dt = _chuxinQuery.GetBirthdayIn7Days();
+            string reslutJson = JsonConvert.SerializeObject(dt);
+			//return Json(new { result = "Success", returnObj = reslutJson });            
+            return reslutJson;            
+        }
+
+        /// <summary>
         /// 添加新的课程套餐 POST api/student/postnewpackage
         /// </summary>
         /// <returns></returns>
@@ -179,7 +186,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
             package.CourseCategoryName = sysPackage.PackageCourseCategoryName;
             package.PackageCourseCount = sysPackage.PackageCourseCount;
             package.FlexCourseCount = sysPackage.PackageCourseCount;
-            package.PackagePrice = sysPackage.PackagePrice;
+            package.RestCourseCount = sysPackage.PackageCourseCount;
+            package.PackagePrice = sysPackage.PackagePrice;            
             package.CreateTime = DateTime.Now;
             if(package.ActualPrice == 0)
             {

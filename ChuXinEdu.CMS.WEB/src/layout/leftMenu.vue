@@ -1,6 +1,7 @@
 <template>
-<el-menu mode="vertical" :collapse="$store.state.menu.isCollapse" background-color="#324057" text-color="#fff"
-     active-text-color="#42b983" default-active="/dashboard" 
+<el-menu mode="vertical" :collapse="$store.state.menu.isCollapse" background-color="#324057" text-color="#fff" 
+    active-text-color="#42b983" 
+    :default-active="$store.state.menu.activeMenu" 
     :style="{height: $store.state.page.win_content.height + 63 + 'px'}">
     <template v-for="(item) in $store.state.menu.menuItems" v-if="item.hidden !== true">
         <!-- 拥有二级菜单 -->

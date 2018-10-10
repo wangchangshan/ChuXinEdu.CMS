@@ -138,7 +138,7 @@ export default {
                 },
             ],
             loading: false,
-            tableHeight: this.$store.state.page.win_content.height - 128,
+            tableHeight: this.$store.state.page.win_content.height - 63,
             search_form_rules: {
                 package_name: [{
                     required: false,

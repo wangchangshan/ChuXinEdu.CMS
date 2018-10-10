@@ -3,11 +3,12 @@ const menuType = {
     LOAD_ROUTERS        :   'LOAD_ROUTERS',    // 加载路由
     INIT_LEFT_MENU      :   'INIT_LEFT_MENU',   // 初始化左侧菜单
     SET_LEFT_COLLAPSE   :   'SET_LEFT_COLLAPSE', // 改变左边菜单的收缩宽度
-    DISPLAY_MENU_NAME   :   'DISPLAY_MENU_NAME',   // 收缩时，用于隐藏菜单名称
+    SET_ACTIVE_MENU     :   'SET_ACTIVE_MENU',  //设置活动菜单
 }
 
 const state = {
     menuItems: [],
+    activeMenu: '/dashboard',
     isRouterLoaded: false,
     sidebar: {
         opened: true,
@@ -52,9 +53,14 @@ const mutations = {
             state.sidebar.width = 160
         }
     },
-    [menuType.DISPLAY_MENU_NAME] (state) {
-        state.isHidMenuName = !state.isHidMenuName;
-    }
+    [menuType.SET_ACTIVE_MENU] (state, toMenu) {
+        if(toMenu.indexOf('studentDetailMain') > -1){
+            state.activeMenu = '/studentList';
+        }
+        else {
+            state.activeMenu = toMenu;
+        }
+    },
 }
 
 const actions = {
@@ -72,9 +78,9 @@ const actions = {
     setMenuCollapse:({ commit }) => {  
        commit(menuType.SET_LEFT_COLLAPSE)  
     },
-    setMenuNameDispaly:({ commit }) => {  
-       commit(menuType.DISPLAY_MENU_NAME)  
-    },
+    setActiveMenu:({ commit }) => {  
+        commit(menuType.SET_ACTIVE_MENU)  
+     }
 }
 
 export default {

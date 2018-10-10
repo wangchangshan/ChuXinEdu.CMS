@@ -35,27 +35,53 @@
     <div class="notify-row">
         <ul class="top-menu">
             <li class="li-badge">
-                <a href='#/notifyBirthday'>
-                    <el-badge :value="6" class="item one">
+                <a>
+                <el-popover
+                    width="225"
+                    trigger="hover">
+                    <el-table :data="$store.state.header.birthdayList" stripe size="mini">                        
+                        <el-table-column width="100" property="student_name" label="姓名"></el-table-column>
+                        <el-table-column width="120" property="student_birthday" label="生日"></el-table-column>
+                    </el-table>
+                    <el-badge :value="$store.state.header.birthdayCount" class="item one" slot="reference">
                         <i class="fa fa-birthday-cake"></i>
-                            <!-- 未来7天生日提醒 -->
                     </el-badge>
+                </el-popover>
+                    
                 </a>
             </li>
             <li class="li-badge">
-                <a href='#/dashboard'>
-                    <el-badge :value="12" class="item two">
+                <a href='#/courseAttendanceBook'>
+                    <el-badge :value="$store.state.header.toRecordCount" class="item two">
                         <i class="fa fa-calendar-check-o"></i>
                             <!-- 待签到数目 -->
                     </el-badge>
                 </a>
             </li>
             <li class="li-badge">
-                <a href='#/dashboard'>
-                    <el-badge :value="34" class="item three">
+                <a>
+                <el-popover
+                    width="430"
+                    trigger="hover">
+                    <el-table :data="$store.state.header.toFinishList" stripe size="mini">                        
+                        <el-table-column width="80" property="student_name" label="姓名"></el-table-column>
+                        <el-table-column width="190" property="package_name" label="套餐名称"></el-table-column>
+                        <el-table-column width="70" property="rest_course_count" label="剩余课时" align='center'>
+                            <template slot-scope="scope">  
+                                <span style="color:#f56767;font-weight:600"> {{ scope.row.rest_course_count }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="operation" align='center' label="操作" fixed="right" width="80">
+                            <template slot-scope='scope'>
+                                <el-button type="success" icon='edit' size="mini" @click='showStudentDetail(scope.row.student_code,scope.row.student_name)'>详细</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <el-badge :value="$store.state.header.toFinishCount" class="item three" slot="reference">
                         <i class="fa fa-bell-o"></i>
-                        <!-- 今日上课学生数目 -->
                     </el-badge>
+                </el-popover>
+                <!-- 剩余课时数小于等于5的学生 -->
                 </a>
             </li>
         </ul>
@@ -75,7 +101,21 @@ export default {
             isHorizontal: true,
             userinfo: '',
             path: '',
-            breadcrumbList: ''
+            breadcrumbList: '',
+
+            gridData: [{
+                date: '2016-05-02',
+                name: '王小虎',
+            }, {
+                date: '2016-05-04',
+                name: '王小虎',
+            }, {
+                date: '2016-05-01',
+                name: '王小虎',
+            }, {
+                date: '2016-05-03',
+                name: '王小虎',
+            }]
         }
     },
     created() {
@@ -96,38 +136,46 @@ export default {
                 path: this.$route.path
             }
 
-            if(current.path == '/dashboard') {
+            if (current.path == '/dashboard') {
                 this.breadcrumbList = [current];
-            }
-            else if(current.path == '/studentDetailMain'){
+            } else if (current.path == '/studentDetailMain') {
                 current.title = this.$route.query.studentname
                 this.breadcrumbList = [{
                     title: '首 页',
                     path: '/dashboard'
-                },{
+                }, {
                     title: '学生列表',
                     path: '/studentList'
                 }].concat(current);
-            }
-            else {                
+            } else {
                 this.breadcrumbList = [{
                     title: '首 页',
                     path: '/dashboard'
                 }].concat(current);
             }
         },
+
         handleLefeMenu() {
             this.isVertical = !this.isVertical;
             this.isHorizontal = !this.isHorizontal;
             this.$store.dispatch('setMenuCollapse');
 
         },
+
+        showStudentDetail(studentCode, studentName) {
+            this.$router.push({
+                path: '/studentDetailMain',
+                query: {
+                    studentcode: studentCode,
+                    studentname: studentName
+                }
+            })
+        },
+
         logout() {
             this.$router.push('/');
         },
-        showInfoList() {
-            //this.$router.push('/'); // '/infoModify'
-        },
+
         setDialogInfo(cmdItem) {
             if (!cmdItem) {
                 this.$message('菜单选项缺少command属性');
@@ -253,7 +301,7 @@ export default {
 
 ul.top-menu>li {
     float: left;
-    margin-right: 20px;
+    margin-right: 15px;
 }
 
 ul.top-menu>li>a {
@@ -262,6 +310,7 @@ ul.top-menu>li>a {
     border-radius: 4px;
     -webkit-border-radius: 4px;
     border: 1px solid #f0f0f8 !important;
-    padding: 2px 6px 8px 6px;
+    padding: 2px 8px 8px 8px;
+    cursor: pointer;
 }
 </style>

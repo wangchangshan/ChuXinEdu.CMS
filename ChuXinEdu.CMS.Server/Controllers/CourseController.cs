@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
+using System.Data;
 using System.Net.Http;
 using AutoMapper;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +52,30 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetCoursesToSignIn();
             return courseList;
+        }
+
+        /// <summary>
+        /// 获取待签到数目 GET api/course/gettorecordcount
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]        
+        public int GetToRecordCount()
+        {
+            int count = _chuxinQuery.GetCoursesToSignInCount();
+            return count;
+        }
+
+        /// <summary>
+        /// 获取课时套餐将要结束（5节课）并且没有报新套餐的学生 GET api/course/gettofinish
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]        
+        public ActionResult<string> GetToFinish()
+        {
+            // 暂时没有处理是否已经报了新的套餐
+            DataTable dt = _chuxinQuery.GetCourseToFinishList();
+            string reslutJson = JsonConvert.SerializeObject(dt);        
+            return reslutJson;   
         }
 
         /// <summary>

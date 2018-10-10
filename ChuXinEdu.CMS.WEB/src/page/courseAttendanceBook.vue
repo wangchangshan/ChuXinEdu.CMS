@@ -92,7 +92,7 @@ export default {
     data() {
         return {
             loading: false,
-            tableHeight: this.$store.state.page.win_content.height - 128,
+            tableHeight: this.$store.state.page.win_content.height - 63,
 
             attendanceList: [],
             selectedCourses: [],
@@ -138,7 +138,18 @@ export default {
                 "meishu_01": [{
                     teacherCode: 't-a-0002',
                     teacherName: '马朝',
-                }]
+                },
+                ],
+                "shufa_00": [{
+                    teacherCode: 't-b-0003',
+                    teacherName: '福来',
+                },
+                ],
+                "shufa_01": [{
+                    teacherCode: 't-b-0003',
+                    teacherName: '福来',
+                },
+                ]
             },
             dateRowSpanArray: [],
             timeRowSpanArray: []
@@ -159,6 +170,7 @@ export default {
                         item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
                     }
                     _this.attendanceList = result;
+                    _this.$store.commit('SET_TO_RECORD', result.length);
                     _this.getRowSpanInfo();
                 }
             });
@@ -220,6 +232,7 @@ export default {
                         _this.uploadPanel.thumbnailList = [];
                         _this.signInDialog.isShow = false;
                         _this.removeTableRow(courseId);
+                        _this.$store.commit('REDUCE_TO_RECORD', 1);
                     }
                 }
             });
@@ -266,6 +279,7 @@ export default {
                         courseList.forEach(item => {
                             _this.removeTableRow(item.CourseListId);
                         });
+                        _this.$store.commit('REDUCE_TO_RECORD', courseList.length);
                     }
                 }
             });
@@ -290,7 +304,7 @@ export default {
                                 message: '请假成功！',
                                 type: 'success'
                             });
-                            _this.removeTableRow(studentCourseId)
+                            _this.removeTableRow(studentCourseId);
                         }
                     }
                 });

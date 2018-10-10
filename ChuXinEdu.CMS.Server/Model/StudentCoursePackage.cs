@@ -66,7 +66,10 @@ namespace ChuXinEdu.CMS.Server.Model
         public string PayPatternName { get; set; }
 
         [Column("pay_date")]
-        public DateTime PayDate { get; set; }
+        public DateTime PayDate { get; set; }        
+
+        [Column("rest_course_count")]
+        public int RestCourseCount { get; set; }
 
         [Column("create_time")]
         public DateTime CreateTime { get; set; }

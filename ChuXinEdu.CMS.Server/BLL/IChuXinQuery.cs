@@ -26,7 +26,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         IEnumerable<Simplify_StudentCourse> GetAllStudentsCourse();
 
         //获取已经上课的数目
-        int GetStudentSignInCourseCount(string studentCode);
+        //int GetStudentSignInCourseCount(string studentCode);
 
 
         //  获取每天上课时间段
@@ -46,12 +46,20 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // 获取学生排课列表
         IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod);
+
+        DataTable GetBirthdayIn7Days();
  
         // 获取假期列表
         IEnumerable<SysHoliday> GetHolidayList();
 
         // 获取待签到课程列表
         IEnumerable<StudentCourseList> GetCoursesToSignIn();
+
+        // 获取待签到课程数目
+        int GetCoursesToSignInCount();
+
+        // 获取课程套餐将要结束（5 节课）的学生列表
+        DataTable GetCourseToFinishList();
 
         IEnumerable<StudentArtwork> GetArkworkByCourse(int courseId);
 

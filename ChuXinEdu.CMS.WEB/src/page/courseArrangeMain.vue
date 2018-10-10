@@ -23,12 +23,10 @@ import courseArrangePanel from '@/page/courseArrangePanel'
 export default {
     data() {
         return {
-            pageHeight: this.$store.state.page.win_content.height,  
             activeLabelCode: 'room1'
         }
     },
     created() {
-        //console.log('pageHeight ： '+ this.pageHeight);
     },
     components: {
         "course-arrange-panel": courseArrangePanel

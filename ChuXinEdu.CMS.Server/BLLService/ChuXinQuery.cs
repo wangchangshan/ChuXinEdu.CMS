@@ -88,18 +88,29 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public int GetStudentSignInCourseCount(string studentCode)
-        {
-            int count = 0;
-            using (BaseContext context = new BaseContext())
-            {
-                count = context.StudentCourseList.Where(s => s.StudentCode == studentCode
-                                                            && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02")
-                                                            && s.CourseType == "正式")
-                                        .Count();
-            }
+        // public int GetStudentSignInCourseCount(string studentCode)
+        // {
+        //     int count = 0;
+        //     using (BaseContext context = new BaseContext())
+        //     {
+        //         count = context.StudentCourseList.Where(s => s.StudentCode == studentCode
+        //                                                     && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02")
+        //                                                     && s.CourseType == "正式")
+        //                                 .Count();
+        //     }
 
-            return count;
+        //     return count;
+        // }
+
+        public DataTable GetBirthdayIn7Days()
+        {
+            DataTable dtStudent = ADOContext.GetDataTable(@"select student_name, student_birthday from student 
+                                                            where student_status = '01'
+	                                                            and DATE_FORMAT(student_birthday,'%m-%d') <= DATE_FORMAT(date_add(now(), interval 7 day),'%m-%d')
+	                                                            and DATE_FORMAT(student_birthday,'%m-%d') >= DATE_FORMAT(now(),'%m-%d')
+                                                            order by DATE_FORMAT(student_birthday,'%m-%d')");
+
+            return dtStudent;
         }
 
         #endregion
@@ -228,7 +239,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
          // 获取学生排课列表
         public IEnumerable<StudentCourseList> GetCoursesToSignIn()
         {
-             using (BaseContext context = new BaseContext())
+            using (BaseContext context = new BaseContext())
             {
                 return context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
                                                             && s.CourseDate <= DateTime.Now.Date)
@@ -236,6 +247,26 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                 .OrderBy(s => s.CourseDate)
                                                 .ToList();
             }
+        }
+
+        public int GetCoursesToSignInCount()
+        {
+            int courseCount = -1;
+            using (BaseContext context = new BaseContext())
+            {
+                courseCount = context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
+                                                            && s.CourseDate <= DateTime.Now.Date)
+                                                .Count();
+            }
+            return courseCount;
+        }
+
+        public DataTable GetCourseToFinishList()
+        {
+            // 暂时没有考虑 是否已经报了新的套餐
+            DataTable dt = ADOContext.GetDataTable(@"select student_code, student_name, package_name, rest_course_count from student_course_package where rest_course_count <= 5");
+
+            return dt;
         }
         #endregion
 

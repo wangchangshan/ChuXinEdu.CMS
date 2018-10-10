@@ -599,6 +599,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         {
                             sca.CourseRestCount -= 1;
                         }
+
+                        // 2.2.2 更新学生套餐表
+                        var scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
+                                                                .First();
+                        scp.RestCourseCount -= 1;
                     }
 
                     // 3. 更新作品表 
@@ -683,6 +688,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             {
                                 sca.CourseRestCount -= 1;
                             }
+
+                            // 2.2.2 更新学生套餐表
+                            var scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
+                                                                .First();
+                            scp.RestCourseCount -= 1;
                         }
                     }
                     // 3. 提交事务
