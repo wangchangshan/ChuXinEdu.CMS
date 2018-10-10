@@ -17,33 +17,37 @@
         <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
             <div class="card-panel" @click="handleSetLineChartData('messages')">
                 <div class="card-panel-icon-wrapper icon-message">
-                    <i class="fa fa-image fa-4x" aria-hidden="true"></i>
+                    <i class="fa fa-user fa-4x" aria-hidden="true"></i>
                 </div>
                 <div class="card-panel-description">
-                    <div class="card-panel-text">作品数目</div>
-                    <count-to class="card-panel-num" :startVal="0" :endVal="122" :duration="2000"></count-to>
+                    <div class="card-panel-text">美术人数</div>
+                    <count-to class="card-panel-num" :startVal="0" :endVal="80" :duration="2000"></count-to>
+                </div>
+            </div>
+        </el-col>        
+        <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+            <div class="card-panel" @click="handleSetLineChartData('shoppings')">
+                <div class="card-panel-icon-wrapper icon-shoppingCard">
+                    <i class="fa fa-user fa-4x" aria-hidden="true"></i>
+                </div>
+                <div class="card-panel-description">
+                    <div class="card-panel-text">书法人数</div>
+                    <count-to class="card-panel-num" :startVal="0" :endVal="22" :duration="3600"></count-to>
                 </div>
             </div>
         </el-col>
         <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-            <div class="card-panel" @click="handleSetLineChartData('purchases')">
+            <div class="card-panel" @click="showPurchases()">
                 <div class="card-panel-icon-wrapper icon-money">
                     <i class="fa fa-rmb fa-4x" aria-hidden="true"></i>
                 </div>
                 <div class="card-panel-description">
-                    <div class="card-panel-text">本月收入</div>
-                    <count-to class="card-panel-num" :startVal="0" :endVal="19280" :duration="3200"></count-to>
-                </div>
-            </div>
-        </el-col>
-        <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-            <div class="card-panel" @click="handleSetLineChartData('shoppings')">
-                <div class="card-panel-icon-wrapper icon-shoppingCard">
-                    <i class="fa fa-rmb fa-4x" aria-hidden="true"></i>
+                    <div class="card-panel-text">本月支出</div>
+                    <count-to class="card-panel-num green" :startVal="0" :endVal="expenditure" :duration="3000"></count-to>
                 </div>
                 <div class="card-panel-description">
-                    <div class="card-panel-text">本月支出</div>
-                    <count-to class="card-panel-num" :startVal="0" :endVal="-3600" :duration="3600"></count-to>
+                    <div class="card-panel-text">本月收入</div>
+                    <count-to class="card-panel-num red" :startVal="0" :endVal="income" :duration="3000"></count-to>
                 </div>
             </div>
         </el-col>
@@ -81,6 +85,13 @@ import PieChart from './components/PieChart'
 import BarChart from './components/BarChart'
 
 export default {
+    data(){
+        return{
+            purchasesVisible: false,
+            income: 0,
+            expenditure: 0,
+        }
+    },
     components: {
         CountTo,
         BarChart,
@@ -89,6 +100,18 @@ export default {
     methods: {
         handleSetLineChartData(type) {
             this.$emit('handleSetLineChartData', type)
+        },
+        showPurchases(){
+            if(!this.purchasesVisible){
+                this.income = 20000;
+                this.expenditure = -4000;
+            }
+            else
+            {
+                this.income = 0;
+                this.expenditure = -0;
+            }
+            this.purchasesVisible = !this.purchasesVisible;
         }
     }
 }
@@ -154,6 +177,14 @@ export default {
 
         .icon-money {
             color: #f4516c;
+        }
+
+        .red {
+            color: #f4516c;
+        }
+
+        .green{
+            color: #34bfa3
         }
 
         .icon-shoppingCard {

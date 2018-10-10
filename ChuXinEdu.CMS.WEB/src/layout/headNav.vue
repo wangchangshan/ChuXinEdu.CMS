@@ -102,20 +102,6 @@ export default {
             userinfo: '',
             path: '',
             breadcrumbList: '',
-
-            gridData: [{
-                date: '2016-05-02',
-                name: '王小虎',
-            }, {
-                date: '2016-05-04',
-                name: '王小虎',
-            }, {
-                date: '2016-05-01',
-                name: '王小虎',
-            }, {
-                date: '2016-05-03',
-                name: '王小虎',
-            }]
         }
     },
     created() {
