@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Linq;
 using System.Collections.Generic;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.Context;
@@ -8,59 +9,64 @@ namespace ChuXinEdu.CMS.Server.Utils
 {
     public class TableCodeHelper
     {
-        public static string GenerateStudentCode()
+        public static string GenerateCode(string tableName, string columnName)
         {
             string result = string.Empty;
-            string filter = DateTime.Now.ToString("yyyyMM");
-            using (BaseContext context = new BaseContext())
+            string perfix = string.Empty;
+            int length = 3;
+            switch (columnName.ToLower())
             {
-                DataTable dt = ADOContext.GetDataTable("select max(student_code) from student where student_code like '%"+ filter +"%' ");
-                if(dt.Rows.Count > 0 && dt.Rows[0][0] != DBNull.Value)
+                case "student":
                 {
-                    int sequence = 0;
-                    string curCode = dt.Rows[0][0].ToString();
-                    string[] arr = curCode.Split("-");
-                    if(arr.Length > 1)
-                    {
-                        sequence = Int32.Parse(arr[1].Substring(6, 3));
-                        sequence ++;
-                        result = arr[0] + "-" + filter + sequence.ToString("000");
-                    }
+                    perfix = "BJ-" + DateTime.Now.ToString("yyyyMM");
+                    length = 3;
+                    break;
                 }
-                else
+                case "teacher":
                 {
-                    result = "BJ-" + filter + "001";
+                    perfix = "T-";
+                    length = 6;
+                    break;
+                }
+                case "sys_course_package":
+                {
+                    perfix = "P-";
+                    length = 6;
+                    break;
                 }
             }
 
-            return result;
-        }
-
-        public static string GeneratePackageCode()
-        {
-            string result = string.Empty;
             using (BaseContext context = new BaseContext())
             {
-                DataTable dt = ADOContext.GetDataTable("select max(package_code) from sys_course_package");
-                if(dt.Rows.Count > 0 && dt.Rows[0][0] != DBNull.Value)
+                var codeFactory = context.SysCodeFactory.Where(f => f.TableName == tableName
+                                                    && f.ColumnName == columnName
+                                                    && f.Prefix == perfix)
+                                        .FirstOrDefault();
+
+                if(codeFactory != null)
                 {
-                    int sequence = 0;
-                    string curCode = dt.Rows[0][0].ToString();
-                    string[] arr = curCode.Split("-");
-                    if(arr.Length > 1)
-                    {
-                        sequence = Int32.Parse(arr[1]);
-                        sequence ++;
-                        result = arr[0] + "-" + sequence.ToString("0000");
-                    }
+                    int nextNum =  ++ codeFactory.CurrentNum;
+                    result = perfix + nextNum.ToString().PadLeft(length, '0');
+
+                    codeFactory.CurrentNum += 1;
+                    context.SaveChanges();
                 }
                 else
                 {
-                    result = "P-0001";
+                    SysCodeFactory factory = new SysCodeFactory {
+                        TableName = tableName,
+                        ColumnName = columnName,
+                        Prefix = perfix,
+                        SequenceLength = length,
+                        CurrentNum = 1
+                    };
+                    context.SysCodeFactory.Add(factory);
+                    context.SaveChanges();
+
+                    result = perfix + "1".PadLeft(length, '0');
                 }
             }
-
             return result;
-        }
+        }       
     }
 }

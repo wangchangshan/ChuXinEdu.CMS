@@ -13,7 +13,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
     public class ChuXinQuery : IChuXinQuery
     {
         #region teacher
-        public IEnumerable<DIC_R_KEY_VALUE> GetTeacherKeyValue()
+        public IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge()
         {
             using (BaseContext context = new BaseContext())
             {

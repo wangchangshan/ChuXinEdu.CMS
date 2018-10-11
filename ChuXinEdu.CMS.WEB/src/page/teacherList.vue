@@ -8,7 +8,7 @@
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="packageList" v-loading="loading" style="width: 100%" align="left" stripe size="mini" :max-height="tableHeight">
+        <el-table :data="TeacherList" v-loading="loading" style="width: 100%" align="left" stripe size="mini" :max-height="tableHeight">
             <el-table-column type="index" width="50" fixed></el-table-column>
             <el-table-column prop="packageCode" label="套餐编码" align='left' width="120" sortable fixed>
             </el-table-column>
@@ -93,7 +93,7 @@ export default {
             lookup: {
                 courseCategory: []
             },
-            packageList: [],
+            TeacherList: [],
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 63,
             paginations: {

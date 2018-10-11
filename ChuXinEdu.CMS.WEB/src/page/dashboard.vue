@@ -17,10 +17,10 @@
         <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
             <div class="card-panel" @click="handleSetLineChartData('messages')">
                 <div class="card-panel-icon-wrapper icon-message">
-                    <i class="fa fa-user fa-4x" aria-hidden="true"></i>
+                    <i class="fa fa-user-o fa-4x" aria-hidden="true"></i>
                 </div>
                 <div class="card-panel-description">
-                    <div class="card-panel-text">美术人数</div>
+                    <div class="card-panel-text">本月试听</div>
                     <count-to class="card-panel-num" :startVal="0" :endVal="80" :duration="2000"></count-to>
                 </div>
             </div>

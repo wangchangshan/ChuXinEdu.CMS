@@ -41,7 +41,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string result = string.Empty;
             newPackage.PackageCreateTime = DateTime.Now;
-            newPackage.PackageCode = TableCodeHelper.GeneratePackageCode();
+            newPackage.PackageCode = TableCodeHelper.GenerateCode("sys_course_package", "package_code");
 
             result = _chuxinWorkFlow.AddSysCoursePackage(newPackage);
 

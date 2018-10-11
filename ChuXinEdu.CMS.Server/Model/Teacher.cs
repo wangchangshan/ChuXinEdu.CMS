@@ -38,6 +38,9 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("teacher_avatar_path")]
         public string TeacherAvatarPath { get; set; }
 
+        [Column("teacher_resume")]
+        public string TeacherResume { get; set; }
+
         [Column("teacher_status")]
         public string TeacherStatus { get; set; }
 

@@ -94,10 +94,17 @@ export default {
                     component: 'dashboard',
                     icon: 'fa-tachometer',
                     noDropdown: true
-                },
+                }, 
+                {
+                    path: '/studentTempList',
+                    name: '试听学生',
+                    component: 'studentTempList',
+                    icon: 'fa-user-circle-o',
+                    noDropdown: true,
+                },               
                 {
                     path: '/studentList',
-                    name: '学生列表',
+                    name: '正式学生',
                     component: 'studentList',
                     icon: 'fa-users',
                     noDropdown: true,
@@ -135,6 +142,13 @@ export default {
                     }
                 },
                 {
+                    path: '/chartAnalysis',
+                    name: '图表统计',
+                    component: 'chartAnalysis',
+                    icon: 'fa-bar-chart',
+                    noDropdown: true,
+                },
+                {
                     path: '/activityList',
                     name: '活动列表',
                     component: 'activityList',
@@ -154,12 +168,20 @@ export default {
                     component: 'sysCoursePackageList',
                     icon: 'fa-shopping-bag',
                     noDropdown: true,
-                    meta: {
-                        breadcrumb:{
-                            title: '',
-                            path: ''
-                        }
-                    }
+                },
+                {
+                    path: '/financeList',
+                    name: '资金流水',
+                    component: 'financeList',
+                    icon: 'fa-money',
+                    noDropdown: true,
+                },
+                {
+                    path: '/teacherList',
+                    name: '教师列表',
+                    component: 'teacherList',
+                    icon: 'fa-address-card-o',
+                    noDropdown: true,
                 },
                 {
                     path: '/studentDetailMain',

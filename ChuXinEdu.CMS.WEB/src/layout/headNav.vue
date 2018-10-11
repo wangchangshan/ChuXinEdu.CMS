@@ -159,6 +159,7 @@ export default {
         },
 
         logout() {
+            this.$store.state.menu.isCollapse = false;
             this.$router.push('/');
         },
 

@@ -63,6 +63,8 @@ namespace ChuXinEdu.CMS.Server.Context
         public virtual DbSet<SysCoursePackage> SysCoursePackage { get; set; }
         
         public virtual DbSet<SysDictionary> SysDictionary { get; set; }
+
+        public virtual DbSet<SysCodeFactory> SysCodeFactory { get; set; }
         
         public virtual DbSet<SysFinace> SysFinace { get; set; }
         
@@ -71,6 +73,9 @@ namespace ChuXinEdu.CMS.Server.Context
         public virtual DbSet<SysUser> SysUser { get; set; }
         
         public virtual DbSet<Teacher> Teacher { get; set; }
+
+        public virtual DbSet<TeacherRole> TeacherRole { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -172,7 +172,7 @@ export default {
     },
     data() {
         return {
-            pageHeight: this.$store.state.page.win_content.height - 70,
+            pageHeight: this.$store.state.page.win_content.height - 85,
             coursePeriods: [{
                     dayCode: 'day1',
                     dayName: '星期一',

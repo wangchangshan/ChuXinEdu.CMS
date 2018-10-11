@@ -316,7 +316,7 @@ export default {
         // 获取收费教师
         axios({
             type: 'get',
-            path: '/api/teacher/getteachers',
+            path: '/api/teacher/getfinancer',
             fn: function (result) {
                 _this.packageDialog.payeeList = result;
             }

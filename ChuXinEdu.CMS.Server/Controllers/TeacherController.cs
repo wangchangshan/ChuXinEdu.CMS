@@ -23,13 +23,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// [教师] 获取教师 键值对list GET api/teacher/getteachers
+        /// [教师] 获取教师键值对 list GET api/teacher/getfinancer
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<DIC_R_KEY_VALUE> GetTeachers()
+        public IEnumerable<DIC_R_KEY_VALUE> GetFinancer()
         {
-            return _chuxinQuery.GetTeacherKeyValue();
+            return _chuxinQuery.GetTeacherToCharge();
         }
     }   
 }

@@ -13,7 +13,7 @@
             </el-table-column>
             <el-table-column prop="activity_title" label="活动主题" align='left' min-width="200">
             </el-table-column>
-            <el-table-column prop="activity_from_date" label="活动时间" align='center' width="100">
+            <el-table-column prop="activity_from_date" label="活动时间" align='center' width="200">
             </el-table-column>
             <el-table-column prop="activity_address" label="活动地点" align='center' min-width="200">
             </el-table-column>

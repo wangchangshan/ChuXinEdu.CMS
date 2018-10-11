@@ -11,7 +11,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 	/// </summary>
     public interface IChuXinQuery
     {
-        IEnumerable<DIC_R_KEY_VALUE> GetTeacherKeyValue();
+        IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge();
 
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize);
 
