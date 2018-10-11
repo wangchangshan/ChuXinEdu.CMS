@@ -35,5 +35,32 @@ namespace ChuXinEdu.CMS.Server.Utils
 
             return result;
         }
+
+        public static string GeneratePackageCode()
+        {
+            string result = string.Empty;
+            using (BaseContext context = new BaseContext())
+            {
+                DataTable dt = ADOContext.GetDataTable("select max(package_code) from sys_course_package");
+                if(dt.Rows.Count > 0 && dt.Rows[0][0] != DBNull.Value)
+                {
+                    int sequence = 0;
+                    string curCode = dt.Rows[0][0].ToString();
+                    string[] arr = curCode.Split("-");
+                    if(arr.Length > 1)
+                    {
+                        sequence = Int32.Parse(arr[1]);
+                        sequence ++;
+                        result = arr[0] + "-" + sequence.ToString("0000");
+                    }
+                }
+                else
+                {
+                    result = "P-0001";
+                }
+            }
+
+            return result;
+        }
     }
 }

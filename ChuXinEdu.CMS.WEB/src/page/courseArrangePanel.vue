@@ -2,7 +2,7 @@
 <div class="schedule-panel">
     <el-row class="schedule-area row">
         <el-col :span="3" v-for="day in coursePeriods" v-bind:key="day.dayCode">
-            <div class="week-panel">
+            <div class="week-panel" :style="{height: pageHeight + 'px'}">
                 <p class="title">{{day.dayName}}</p>
                 <el-collapse v-model="day.activePeriods">
                     <el-collapse-item v-for="period in day.periods" v-bind:key="period.periodCode" :name="period.periodCode">
@@ -47,7 +47,7 @@
             </div>
         </el-col>
         <el-col :span="3">
-            <div class="week-panel">
+            <div class="week-panel" :style="{height: pageHeight + 'px'}">
                 <p class="title">其他操作</p>
                 <ul class="side-button-group">
                     <li>
@@ -172,6 +172,7 @@ export default {
     },
     data() {
         return {
+            pageHeight: this.$store.state.page.win_content.height - 70,
             coursePeriods: [{
                     dayCode: 'day1',
                     dayName: '星期一',
@@ -1007,8 +1008,6 @@ export default {
         overflow-y: auto;
         overflow-x: hidden;
         .week-panel {
-            height: 550px;
-            max-height: 600px; // border: 1px solid #dfdfdf;
             border-left: 1px solid #dfdfdf;
             border-bottom: 1px solid #dfdfdf;
             border-top: 1px solid #dfdfdf;

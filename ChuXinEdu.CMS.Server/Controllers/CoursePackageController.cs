@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using ChuXinEdu.CMS.Server.BLL;
 using Microsoft.AspNetCore.Mvc;
+using ChuXinEdu.CMS.Server.Model;
+using System;
+using ChuXinEdu.CMS.Server.Utils;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -19,34 +22,49 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         // GET api/coursepackage
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public IEnumerable<SysCoursePackage> Get()
         {
-            return new string[] { "value1", "value2" };
+            IEnumerable<SysCoursePackage> packageList = _chuxinQuery.GetSysCoursePackageList();
+            return packageList;
         }
 
         // GET api/coursepackage/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public bool Get(int id)
         {
-            return "value";
+            return _chuxinQuery.isPackageUsed(id);
         }
 
         // POST api/coursepackage
         [HttpPost]
-        public void Post([FromBody] string value)
+        public string Post([FromBody] SysCoursePackage newPackage)
         {
+            string result = string.Empty;
+            newPackage.PackageCreateTime = DateTime.Now;
+            newPackage.PackageCode = TableCodeHelper.GeneratePackageCode();
+
+            result = _chuxinWorkFlow.AddSysCoursePackage(newPackage);
+
+            return result;
         }
 
         // PUT api/coursepackage/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public string Put(int id, [FromBody] SysCoursePackage package)
         {
+            string result = string.Empty;
+            result = _chuxinWorkFlow.UpdateSysCoursePackage(id, package);
+            return result;
         }
 
-        // DELETE api/values/5
+        // DELETE api/coursepackage/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public string Delete(int id)
         {
+            string result = string.Empty;
+            result = _chuxinWorkFlow.RemoveSysCoursePackage(id);
+
+            return result;
         }
     }
 }

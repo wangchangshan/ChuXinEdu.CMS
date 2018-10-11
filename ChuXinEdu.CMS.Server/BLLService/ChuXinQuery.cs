@@ -309,6 +309,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         #endregion
 
+        #region sys_course_package
         public SysCoursePackage GetSysCoursePackage(string packageCode)
         {
             using (BaseContext context = new BaseContext())
@@ -316,6 +317,33 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return context.SysCoursePackage.Where(p => p.PackageCode == packageCode).First();    
             }
         }
+
+        public IEnumerable<SysCoursePackage> GetSysCoursePackageList()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.SysCoursePackage.OrderBy(s => s.PackageCourseCategoryCode).ToList();    
+            }
+        }
+
+        public bool isPackageUsed(int packageId)
+        {
+            bool result = false;
+            using (BaseContext context = new BaseContext())
+            {
+                var package = context.SysCoursePackage.Where(scp => scp.Id == packageId).First();
+                string packageCode = package.PackageCode;
+                int count = context.StudentCoursePackage.Where(scp => scp.PackageCode == packageCode).Count();    
+                if(count > 0)
+                {
+                    result = true;
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
 
         public string GetAvatarTruePath(int studentId)
         {

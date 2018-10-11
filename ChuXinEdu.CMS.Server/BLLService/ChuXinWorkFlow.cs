@@ -951,5 +951,70 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+
+        public string AddSysCoursePackage(SysCoursePackage newPackage)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.SysCoursePackage.Add(newPackage);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string UpdateSysCoursePackage(int id, SysCoursePackage package)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var scp = context.SysCoursePackage.Where(s => s.Id == id).First();
+                    scp.PackageName = package.PackageName;
+                    scp.PackageCourseCategoryCode = package.PackageCourseCategoryCode;
+                    scp.PackageCourseCategoryName = package.PackageCourseCategoryName;
+                    scp.PackageCourseCount = package.PackageCourseCount;
+                    scp.PackagePrice = package.PackagePrice;
+                    scp.PackageEnabled = package.PackageEnabled;
+
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string RemoveSysCoursePackage(int id)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var scp = context.SysCoursePackage.Where(s => s.Id == id).First();
+                    context.SysCoursePackage.Remove(scp);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
     }
 }

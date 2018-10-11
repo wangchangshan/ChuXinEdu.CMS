@@ -1,74 +1,80 @@
 <template>
 <div class="fillcontain">
+    <div class="search_container">
+        <el-form :inline="true" class="demo-form-inline search-form">
+            <el-form-item class="btnRight">
+                <el-button type="primary" size="small" icon="el-icon-plus" @click='showAddPackagePanel()'>添加</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
     <div class="table_container">
-        <el-table :data="packageList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :max-height="tableHeight">
-            <el-table-column prop="packageName" label="套餐名称" align='center' min-width="120" sortable fixed>
+        <el-table :data="packageList" v-loading="loading" style="width: 100%" align="left" stripe size="mini" :max-height="tableHeight">
+            <el-table-column type="index" width="50" fixed></el-table-column>
+            <el-table-column prop="packageCode" label="套餐编码" align='left' width="120" sortable fixed>
             </el-table-column>
-            <el-table-column prop="packageCourseCategoryName" label="课程大类" align='center' min-width="90" fixed>
+            <el-table-column prop="packageName" label="课程套餐名称" align='left' min-width="200" fixed>
             </el-table-column>
-            <el-table-column prop="packagePrice" label="价格" align='center' width="60">
+            <el-table-column prop="packageCourseCategoryName" label="课程类别" sortable align='left' min-width="100">
             </el-table-column>
-            <el-table-column prop="packageCourseCount" label="课时" align='center' min-width="110">
+            <el-table-column prop="packageCourseCount" label="课时数" align='center' width="80">
             </el-table-column>
-            <el-table-column prop="packageEnabled" label="是否启用" align='center' width="120">
-            </el-table-column>
-            <el-table-column prop="packageEnabled" label="是否启用" align='center' width="100" :filters="dicList.studentStatusList" :filter-method="filterStudentStatus">
+            <el-table-column prop="packagePrice" label="课程价格" align='left' min-width="100">
                 <template slot-scope="scope">
-                    <el-tag :type="studentStatusTag(scope.row.studentStatus)" :disable-transitions="false">
-                        {{scope.row.studentStatusDesc}}
-                    </el-tag>
-                    <!-- <span style="color:#00d053">{{ scope.row.studentStatusDesc }}</span> -->
+                    <span style="color:#00d053">￥{{ scope.row.packagePrice }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
+            <el-table-column prop="packageEnabled" label="是否启用" :filters="[{text: '是', value: '是'},{text: '否', value: '否'}]" :filter-method="filterPackageEnable" align='left' width="100">
+                <template slot-scope="scope">
+                    <el-tag :type="courseTag(scope.row.packageEnabled)" :disable-transitions="false">
+                        {{scope.row.packageEnabled}}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="packageCreateTime" label="创建日期" align='left' width="100">
+            </el-table-column>
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="100">
                 <template slot-scope='scope'>
-                    <el-button type="primary" icon='edit' size="mini" @click='showStudentDetail(scope.row.studentCode,scope.row.studentName)'>编辑</el-button>
+                    <el-button type="warning" icon='el-icon-edit' size="mini" @click='showEditPackagePanel(scope.row)'>编辑</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <el-row>
+        <!-- <el-row>
             <el-col :span="24">
                 <div class="pagination">
-                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handlePageCurrentChange' @size-change='handlePageSizeChange'>
-
+                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handleCurrentChange' @size-change='handleSizeChange'>
                     </el-pagination>
                 </div>
             </el-col>
-        </el-row>
+        </el-row> -->
     </div>
-    <el-dialog :title="studentDialog.title" :width="studentDialog.width" :visible.sync="studentDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+    <el-dialog :title="dialog.title" :visible.sync="dialog.isShow" :width="dialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
-            <el-form ref="baseInfo" :model="studentDialog.baseInfo" :rules="studentDialog.baseInfoRules" :label-width="studentDialog.formLabelWidth" :label-position='studentDialog.labelPosition' size="mini">
-                <el-form-item prop="studentName" label="姓名">
-                    <el-input v-model="studentDialog.baseInfo.studentName"></el-input>
+            <el-form ref="packageDetail" :model="dialog.packageDetail" :rules="dialog.packageDetailRules" size="mini" :label-width="dialog.formLabelWidth" :label-position='dialog.labelPosition' label-suffix='：' style="margin:10px;width:auto;">
+                <el-form-item prop="packageName" label="课程套餐名称">
+                    <el-input :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packageName"></el-input>
                 </el-form-item>
-                <el-form-item label="性别">
-                    <el-radio-group v-model="studentDialog.baseInfo.studentSex">
-                        <el-radio label="男"></el-radio>
-                        <el-radio label="女"></el-radio>
-                    </el-radio-group>
+                <el-form-item prop="packageCourseCategoryCode" label="课程类别">
+                    <template>
+                        <el-select :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packageCourseCategoryCode" placeholder="请选择">
+                            <el-option v-for="item in lookup.courseCategory" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </template>
                 </el-form-item>
-                <el-form-item label="出生日期">
-                    <el-date-picker v-model="studentDialog.baseInfo.studentBirthday" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                <el-form-item prop="packageCourseCount" label="课时数">
+                    <el-input-number :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packageCourseCount" :min="0"></el-input-number>
                 </el-form-item>
-                <el-form-item label="身份证号码">
-                    <el-input v-model="studentDialog.baseInfo.studentIdentityCardNum"></el-input>
+                <el-form-item prop="packagePrice" label="总价格">
+                    <el-input-number :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packagePrice" :min="0"></el-input-number>
                 </el-form-item>
-                <el-form-item prop="studentPhone" label="联系电话">
-                    <el-input v-model="studentDialog.baseInfo.studentPhone"></el-input>
+                <el-form-item prop="packageEnabled" label="状态">
+                    <el-switch v-model="dialog.packageDetail.packageEnabled" active-color="#13ce66" inactive-color="#dcdfe6" active-text="启用" active-value="是" inactive-text="不启用" inactive-value="否"> </el-switch>
                 </el-form-item>
-                <el-form-item prop="studentAddress" label="家庭地址">
-                    <el-input v-model="studentDialog.baseInfo.studentAddress"></el-input>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="studentDialog.baseInfo.studentRemark"></el-input>
-                </el-form-item>
-                <el-form-item label="报名时间">
-                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
-                </el-form-item>
-                <el-form-item style="text-align:right">
-                    <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
-                    <el-button size="small" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
+                <el-form-item class="text_right">
+                    <el-button @click="dialog.isShow = false">取 消</el-button>
+                    <el-button v-show="!dialog.isUpdate" type="primary" @click="submitNewPackage('packageDetail')">提 交</el-button>
+                    <el-button v-show="dialog.isUpdate && !dialog.isPackageUsed" type="danger" @click='submitRemovePackage()'>删 除</el-button>
+                    <el-button v-show="dialog.isUpdate" type="primary" @click="submitEditPackage('packageDetail')">保 存</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -84,220 +90,181 @@ import {
 export default {
     data() {
         return {
+            lookup: {
+                courseCategory: []
+            },
             packageList: [],
-            dicList: {
-                studentStatusList: [{
-                    text: '试听',
-                    value: '00'
-                }, {
-                    text: '正常在学',
-                    value: '01'
-                }, {
-                    text: '中途退费',
-                    value: '02'
-                }, {
-                    text: '结束未续费',
-                    value: '03'
-                }],
-            },
-            searchField: {
-                student_name: ''
-            },
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 63,
-            search_form_rules: {
-                student_name: [{
-                    required: false,
-                    message: '学生姓名不能为空',
-                    trigger: 'blur'
-                }]
-            },
             paginations: {
                 current_page_index: 1,
-                total: 3,
+                total: 4,
                 page_size: 15,
                 page_sizes: [10, 15, 20, 30],
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
             },
-            studentDialog: {
+            searchField: {
+                package_name: ''
+            },
+            dialog: {
                 width: '600px',
                 isShow: false,
-                title: '添加学生基本信息',
+                title: '添加套餐',
                 labelPosition: 'right',
-                formLabelWidth: '90px',
-                baseInfo: {
-                    studentName: "",
-                    studentSex: "",
-                    studentBirthday: "",
-                    studentIdentityCardNum: "",
-                    studentPhone: "",
-                    studentAddress: "",
-                    studentRemark: "",
-                    studentRegisterDate: "",
-                    studentStatus: "01"
+                formLabelWidth: '130px',
+                isUpdate: false,
+                isPackageUsed: true,
+                currentId: '',
+                packageDetail: {
+                    packageName: '',
+                    packageCourseCategoryCode: '',
+                    packageCourseCategoryName: '',
+                    packageCourseCount: '',
+                    packagePrice: '',
+                    packageEnabled: '是',
                 },
-                baseInfoRules: {
-                    studentPhone: [{
+                packageDetailRules: {
+                    packageName: [{
                         required: true,
-                        message: '请输入联系电话',
+                        message: '请输入套餐名称',
                         trigger: 'blur'
                     }],
-                    studentAddress: [{
+                    packageCourseCategoryCode: [{
                         required: true,
-                        message: '请输入家庭地址',
-                        trigger: 'blur'
+                        message: '请选择套餐类别',
+                        trigger: 'change'
                     }],
-                    studentName: [{
+                    packageCourseCount: [{
                         required: true,
-                        message: '请输入学生姓名',
-                        trigger: 'blur'
-                    }]
+                        type: 'number',
+                        min: 1,
+                        message: '套餐课时数至少为1',
+                        trigger: 'change'
+                    }],
                 }
-            }
+            },
         }
     },
     created() {
         this.getPackageList();
+
+        var _this = this;
+        // 获取课程大类
+        axios({
+            type: 'get',
+            path: '/api/config/getdicbycode',
+            data: {
+                typeCode: 'course_category'
+            },
+            fn: function (result) {
+                _this.lookup.courseCategory = result;
+            }
+        });
     },
     methods: {
-        /**
-         * 改变页码和当前页时需要拼装的路径方法
-         * @param {string} field 参数字段名
-         * @param {string} value 参数字段值
-         */
-        setPath(field, value) {
-            var path = this.$route.path,
-                query = Object.assign({}, this.$route.query);
-            if (typeof field === 'object') {
-                query = field;
-            } else {
-                query[field] = value;
-            }
-            this.$router.push({
-                path,
-                query
-            });
-        },
-        getPackageList({
-            page,
-            pageSize,
-            where,
-            fun
-        } = {}) {
+        getPackageList() {
             var _this = this;
-            var query = this.$route.query;
-            this.paginations.current_page_index = page || parseInt(query.page) || 1;
-            this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
-            var data = {
-                pageIndex: this.paginations.current_page_index,
-                pageSize: this.paginations.page_size
-            }
-            if (where) {
-                data = Object.assign(data, where || {});
-            }
             axios({
                 type: 'get',
-                path: '/api/course/getpackagelist',
-                data: data,
+                path: '/api/coursepackage',
                 fn: function (result) {
-                    _this.paginations.total = result.length;
-                    result.forEach((item) => {
-                        item.studentStatusDesc = _this.getStudentStatusDesc(item.studentStatus);
-                        item.studentBirthday = item.studentBirthday.split('T')[0];
+                    result.forEach(item => {
+                        item.packageCreateTime = item.packageCreateTime.split('T')[0];
                     })
-                    _this.studentsList = result;
-                    fun && fun();
+                    _this.packageList = result;
                 }
             })
         },
-        filterStudentStatus(value, row, column) {
-            return row['studentStatus'] === value;
-        },
-        courseCategoryTag(categoryCode) {
-            let type = '';
-            switch (categoryCode) {
-                case 'meishu':
-                    type = 'success'
-                    break;
-                case 'shufa':
-                    type = ''
-                    break;
+
+        showAddPackagePanel() {
+            this.dialog.title = '新增课程套餐';
+            this.dialog.packageDetail = {
+                packageName: '',
+                packageCourseCategoryCode: '',
+                packageCourseCategoryName: '',
+                packageCourseCount: '',
+                packagePrice: '',
+                packageEnabled: '是',
             }
-            return type;
-        },
-        studentStatusTag(statusCode) {
-            let type = '';
-            switch (statusCode) {
-                case '00': // 试听
-                    type = ''
-                    break;
-                case '01': // 正常在学
-                    type = 'success'
-                    break;
-                case '02': // 中途退费
-                    type = 'danger'
-                    break;
-                case '03': // 结束未续费
-                    type = 'info'
-                    break;
-            }
-            return type;
+            this.dialog.isUpdate = false;
+            this.dialog.isShow = true;
         },
 
-        // will replace this to util function. GetLabelByValue
-        getStudentStatusDesc(statusCode) {
-            let statusDesc = '';
-            for (let obj of this.dicList.studentStatusList) {
-                if (obj['value'] == statusCode) {
-                    statusDesc = obj['text'];
-                    break;
-                }
-            }
-            return statusDesc;
-        },
-        handlePageSizeChange(pageSize) {
-            this.getList({
-                pageSize,
-                fun: () => {
-                    this.setPath('page_size', pageSize);
-                }
-            });
-            console.log(`每页 ${pageSize} 条`);
-        },
-        handlePageCurrentChange(page) {
-            this.getList({
-                page,
-                fun: () => {
-                    this.setPath('page', page);
-                }
-            });
-            //console.log(`当前页: ${page}`);
-        },
-        showAddStudent() {
-            this.studentDialog.isShow = true;
-        },
-
-        submitAddStudent(studentForm) {
+        submitNewPackage(packageForm) {
             var _this = this;
-            this.$refs[studentForm].validate((valid) => {
+            this.$refs[packageForm].validate((valid) => {
                 if (valid) {
+                    var code = _this.dialog.packageDetail.packageCourseCategoryCode,
+                        categoryName = _this.GetLabelByValue(_this.lookup.courseCategory, code);
+                    _this.dialog.packageDetail.packageCourseCategoryName = categoryName;
+
                     axios({
                         type: 'post',
-                        path: '/api/student/addstudent',
-                        data: _this.studentDialog.baseInfo,
+                        path: '/api/coursepackage',
+                        data: _this.dialog.packageDetail,
                         fn: function (result) {
-                            if (result != "") {
+                            if (result == 200) {
+                                _this.getPackageList();
+                                _this.dialog.isShow = false;
+                            }
+                        }
+                    })
+
+                }
+            });
+            return;
+        },
+
+        showEditPackagePanel(row) {
+            var _this = this;
+            // 判断是否可以编辑
+            axios({
+                type: 'get',
+                path: '/api/coursepackage/' + row.id,
+                fn: function (result) {
+                    if (result) {
+                        _this.dialog.isPackageUsed = true;
+                    } 
+                    else{
+                        _this.dialog.isPackageUsed = false;
+                    }
+                }
+            })
+
+            this.dialog.title = '更新课程套餐';
+            this.dialog.packageDetail = {
+                packageName: row.packageName,
+                packageCourseCategoryCode: row.packageCourseCategoryCode,
+                packageCourseCategoryName: row.packageCourseCategoryName,
+                packageCourseCount: row.packageCourseCount,
+                packagePrice: row.packagePrice,
+                packageEnabled: row.packageEnabled,
+            }
+            this.dialog.currentId = row.id;
+            this.dialog.isUpdate = true;
+            this.dialog.isShow = true;
+        },
+
+        submitEditPackage(packageForm) {
+            var _this = this;
+            this.$refs[packageForm].validate((valid) => {
+                if (valid) {
+                    var code = _this.dialog.packageDetail.packageCourseCategoryCode,
+                        categoryName = _this.GetLabelByValue(_this.lookup.courseCategory, code);
+                    _this.dialog.packageDetail.packageCourseCategoryName = categoryName;
+
+                    axios({
+                        type: 'put',
+                        path: '/api/coursepackage/' + _this.dialog.currentId,
+                        data: _this.dialog.packageDetail,
+                        fn: function (result) {
+                            if (result == 200) {
                                 _this.$message({
-                                    message: '添加学生成功',
-                                    type: 'success'
+                                    type: 'success',
+                                    message: '修改成功！'
                                 });
-                                _this.studentDialog.isShow = false;
-                                _this.$router.push({
-                                    path: '/studentDetailMain',
-                                    query: {
-                                        studentcode: result
-                                    }
-                                });
+                                _this.getPackageList();
+                                _this.dialog.isShow = false;
                             }
                         }
                     });
@@ -305,17 +272,55 @@ export default {
             });
         },
 
-        showStudentDetail(studentCode, studentName) {
-            this.$router.push({
-                path: '/studentDetailMain',
-                query: {
-                    studentcode: studentCode,
-                    studentname: studentName
+        submitRemovePackage() {
+            var _this = this;
+            axios({
+                type: 'delete',
+                path: '/api/coursepackage/' + _this.dialog.currentId,
+                fn: function (result) {
+                    if (result == 200) {
+                        _this.$message({
+                            type: 'success',
+                            message: '删除成功！'
+                        });
+                        _this.getPackageList();
+                        _this.dialog.isShow = false;
+                    }
                 }
             })
         },
-        searchStudent() {
-            alert('待开发')
+
+        filterPackageEnable(value, row, column){
+            return row['packageEnabled'] === value;
+        },
+
+        courseTag(course) {
+            let basic = '';
+            switch (course) {
+                case '是':
+                    basic = 'success'
+                    break;
+                case '否':
+                    basic = 'info'
+                    break;
+            }
+            return basic;
+        },
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
+        },
+        handleCurrentChange(val) {
+            console.log(`当前页: ${val}`);
+        },
+        GetLabelByValue(lst, value) {
+            let label = '';
+            for (let obj of lst) {
+                if (obj['value'] == value) {
+                    label = obj['label'];
+                    break;
+                }
+            }
+            return label;
         }
     }
 }

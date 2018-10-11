@@ -60,5 +60,14 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [更新学生]  
         string UpdateStudentBaseInfo(string studentCode, Student student);
+
+        // [添加系统套餐] 
+        string AddSysCoursePackage(SysCoursePackage newPackage);
+
+        // [更新系统套餐] 
+        string UpdateSysCoursePackage(int id, SysCoursePackage package);
+
+        // [删除系统套餐] 
+        string RemoveSysCoursePackage(int id);
     }
 }

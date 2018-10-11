@@ -73,7 +73,7 @@
                     </el-table-column>
                     <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
                         <template slot-scope='scope'>
-                            <el-button type="primary" icon="el-icon-edit" size="mini" @click='showUpdateCoursePackage(scope.row)'>更新</el-button>
+                            <el-button type="warning" icon="el-icon-edit" size="mini" @click='showUpdateCoursePackage(scope.row)'>更新</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -546,9 +546,9 @@ export default {
 
         submitUpdateStudent(studentForm) {
             var _this = this;
-            var student = Object.assign({}, _this.studentDialog.baseInfo);
             this.$refs[studentForm].validate((valid) => {
                 if (valid) {
+                    var student = Object.assign({}, _this.studentDialog.baseInfo);
                     axios({
                         type: 'put',
                         path: '/api/student/updatestudent/' + _this.studentCode,
