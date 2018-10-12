@@ -326,6 +326,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         if (st != null)
                         {
                             st.StudentTempStatus = "00";  // 修改状态为待安排试听
+                            st.TrialFolderCode = "";
+                            st.TrialFolderName = "";
                         }
                         else
                         {
@@ -416,6 +418,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             if (st != null)
                             {
                                 st.StudentTempStatus = "00";  //修改状态为 待安排试听
+                                st.TrialFolderCode = "";
+                                st.TrialFolderName = "";
                             }
                             else
                             {
@@ -531,6 +535,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             if (st != null)
                             {
                                 st.StudentTempStatus = "01";
+                                st.TrialFolderCode = course.CourseFolderCode;
+                                st.TrialFolderName = course.CourseFolderName;
                             }
                             else
                             {

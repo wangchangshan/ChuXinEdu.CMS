@@ -23,6 +23,6 @@ namespace ChuXinEdu.CMS.Server.ViewModel
 
         public int CostCount { get; set; } 
 
-        public string Title { get; set; }
+        public string Title { get; set; } 
     }
 }
