@@ -113,7 +113,7 @@ export default {
                 labelPosition: 'right',
                 formLabelWidth: '130px',
                 isUpdate: false,
-                isPackageUsed: true,
+                isPackageUsed: false,
                 currentId: '',
                 packageDetail: {
                     packageName: '',
@@ -187,6 +187,7 @@ export default {
                 packageEnabled: '是',
             }
             this.dialog.isUpdate = false;
+            this.dialog.isPackageUsed = false;
             this.dialog.isShow = true;
         },
 

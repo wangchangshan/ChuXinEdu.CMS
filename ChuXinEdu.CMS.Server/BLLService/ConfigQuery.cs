@@ -31,7 +31,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 			{
 				var dicList =  context.DIC_R_KEY_VALUE.FromSql($@"select package_code as item_code, package_name as item_name 
                                                                   from sys_course_package  
-                                                                  where package_course_category_code = {categoryCode} and package_enabled = 'Y' ")
+                                                                  where package_course_category_code = {categoryCode} and package_enabled = '是' ")
                                                         .ToList();
                 return dicList;
 			}
