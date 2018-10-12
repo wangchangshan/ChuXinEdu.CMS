@@ -21,7 +21,7 @@ namespace ChuXinEdu.CMS.Server.Model
         public string StudentSex { get; set; }
 
         [Column("student_birthday")]
-        public DateTime StudentBirthday { get; set; }
+        public DateTime? StudentBirthday { get; set; }
 
         [Column("student_identity_card_num")]
         public string StudentIdentityCardNum { get; set; }
@@ -43,6 +43,9 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("student_avatar_path")]
         public string StudentAvatarPath { get; set; }
+
+        [Column("trial_other_course")]
+        public string TrialOtherCourse { get; set; }
 
         [Column("student_status")]
         public string StudentStatus { get; set; }

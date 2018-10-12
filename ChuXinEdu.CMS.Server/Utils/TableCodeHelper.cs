@@ -14,7 +14,7 @@ namespace ChuXinEdu.CMS.Server.Utils
             string result = string.Empty;
             string perfix = string.Empty;
             int length = 3;
-            switch (columnName.ToLower())
+            switch (tableName.ToLower())
             {
                 case "student":
                 {

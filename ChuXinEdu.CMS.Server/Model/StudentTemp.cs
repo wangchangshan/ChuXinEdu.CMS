@@ -21,7 +21,7 @@ namespace ChuXinEdu.CMS.Server.Model
         public string StudentSex { get; set; }
 
         [Column("student_birthday")]
-        public DateTime StudentBirthday { get; set; }
+        public DateTime? StudentBirthday { get; set; }
 
         [Column("student_identity_card_num")]
         public string StudentIdentityCardNum { get; set; }
@@ -41,10 +41,22 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("student_avatar_path")]
         public string StudentAvatarPath { get; set; }
 
-        [Column("is_success")]
-        public string IsSuccess { get; set; }
+        [Column("trial_folder_code")]
+        public string TrialFolderCode { get; set; }
+
+        [Column("trial_folder_name")]
+        public string TrialFolderName { get; set; }
+
+        [Column("result")]
+        public string Result { get; set; }
+
+        [Column("reason")]
+        public string Reason { get; set; }
 
         [Column("student_temp_status")]
         public string StudentTempStatus { get; set; }
+
+        [Column("create_time")]
+        public DateTime? CreateTime { get; set; }        
     }
 }

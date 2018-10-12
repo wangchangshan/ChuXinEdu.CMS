@@ -16,7 +16,7 @@
     </div>
     <div class="table_container">
         <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :max-height="tableHeight">
-            <el-table-column type="index" width="50" fixed></el-table-column>
+            <el-table-column type="index" width="30" fixed></el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="90" fixed>
             </el-table-column>
             <el-table-column prop="studentSex" label="性别" align='center' width="60">
@@ -25,26 +25,26 @@
             </el-table-column>
             <el-table-column prop="studentPhone" label="联系电话" align='center' width="120">
             </el-table-column>
-            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="240">
+            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="220">
             </el-table-column>
-            <el-table-column prop="studentCourseCategory" label="学习课程" align='left' min-width="150">
+            <el-table-column prop="trialFolderName" label="试听课程" align='left' min-width="90">
+            </el-table-column>
+            <el-table-column prop="studentStatusDesc" label="当前状态" align='left' width="140" :filters="$store.state.dic.tempStudentStatus" :filter-method="filterStudentStatus">
+            </el-table-column>
+            <el-table-column prop="result" label="试听结果" align='center' width="90">
                 <template slot-scope="scope">
-                    <el-tag :type="courseCategoryTag(item.code)" v-for="item in scope.row.studentCourseCategory" :key="item.id" :disable-transitions="false">
-                        {{item.name}}
+                    <el-tag :type="handleResultTag(scope.row.result)" :disable-transitions="false">
+                        {{scope.row.result}}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="studentStatus" label="学生状态" align='center' width="100" :filters="dicList.studentStatusList" :filter-method="filterStudentStatus">
-                <template slot-scope="scope">
-                    <el-tag :type="studentStatusTag(scope.row.studentStatus)" :disable-transitions="false">
-                        {{scope.row.studentStatusDesc}}
-                    </el-tag>
-                    <!-- <span style="color:#00d053">{{ scope.row.studentStatusDesc }}</span> -->
-                </template>
-            </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
+            <el-table-column prop="operation" align='left' label="操作" fixed="right" width="220">
                 <template slot-scope='scope'>
-                    <el-button type="success" icon='edit' size="mini" @click='showStudentDetail(scope.row.studentCode,scope.row.studentName)'>查看详细</el-button>
+                    <el-button v-if="scope.row.result != '成功'" @click="showEditPanel(scope.row)" type="primary" size="mini">编辑</el-button>
+                    <el-button v-if="scope.row.result == '成功'" @click="showStudentDetail(scope.row.studentCode, scope.row.studentName)" type="success" size="mini">查看</el-button>
+                    <el-button v-if="scope.row.studentTempStatus == '02' && scope.row.result == '待定'" @click="submitTrialSuccess(scope.row.id)" type="success" size="mini">成功</el-button>
+                    <el-button v-if="scope.row.studentTempStatus == '02' && scope.row.result == '待定'" @click="submitTrialFail(scope.row.id)" type="info" size="mini">失败</el-button>
+                    <el-button v-if="scope.row.studentTempStatus == '00'" @click="removeTempStudent(scope.row.id)" type="danger" size="mini">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -82,15 +82,10 @@
                 <el-form-item prop="studentAddress" label="家庭地址">
                     <el-input v-model="studentDialog.baseInfo.studentAddress"></el-input>
                 </el-form-item>
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="studentDialog.baseInfo.studentRemark"></el-input>
-                </el-form-item>
-                <el-form-item label="报名时间">
-                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
-                </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
-                    <el-button size="small" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
+                    <el-button size="small" v-if="studentDialog.isUpdate == true" type="primary" @click="submitUpdateStudent('baseInfo')">保 存</el-button>
+                    <el-button size="small" v-if="studentDialog.isUpdate == false" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -100,28 +95,14 @@
 
 <script>
 import {
-    axios
+    axios,
+    dicHelper
 } from '@/utils/index'
 
 export default {
     data() {
         return {
             studentsList: [],
-            dicList: {
-                studentStatusList: [{
-                    text: '试听',
-                    value: '00'
-                }, {
-                    text: '正常在学',
-                    value: '01'
-                }, {
-                    text: '中途退费',
-                    value: '02'
-                }, {
-                    text: '结束未续费',
-                    value: '03'
-                }],
-            },
             searchField: {
                 student_name: ''
             },
@@ -144,9 +125,11 @@ export default {
             studentDialog: {
                 width: '600px',
                 isShow: false,
-                title: '添加学生基本信息',
+                isUpdate: false,
+                title: '',
                 labelPosition: 'right',
                 formLabelWidth: '90px',
+                curId: '',
                 baseInfo: {
                     studentName: "",
                     studentSex: "",
@@ -154,9 +137,7 @@ export default {
                     studentIdentityCardNum: "",
                     studentPhone: "",
                     studentAddress: "",
-                    studentRemark: "",
-                    studentRegisterDate: "",
-                    studentStatus: "01"
+                    studentTempStatus: "00"
                 },
                 baseInfoRules: {
                     studentPhone: [{
@@ -180,6 +161,9 @@ export default {
     },
     created() {
         this.getList();
+        if (this.$store.state.dic.student_temp_status.length == 0) {
+            this.getTempStudentStatus();
+        }
     },
     methods: {
         /**
@@ -219,13 +203,13 @@ export default {
             }
             axios({
                 type: 'get',
-                path: '/api/student/getstudentlist',
+                path: '/api/studenttemp/getstudentlist',
                 data: data,
                 fn: function (result) {
                     _this.paginations.total = result.length;
                     result.forEach((item) => {
-                        item.studentStatusDesc = _this.getStudentStatusDesc(item.studentStatus);
-                        item.studentBirthday = item.studentBirthday.split('T')[0];
+                        item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_temp_status'], item.studentTempStatus);
+                        item.studentBirthday = item.studentBirthday && item.studentBirthday.split('T')[0];
                     })
                     _this.studentsList = result;
                     fun && fun();
@@ -233,7 +217,7 @@ export default {
             })
         },
         filterStudentStatus(value, row, column) {
-            return row['studentStatus'] === value;
+            return row['studentTempStatus'] === value;
         },
         courseCategoryTag(categoryCode) {
             let type = '';
@@ -247,20 +231,17 @@ export default {
             }
             return type;
         },
-        studentStatusTag(statusCode) {
+        handleResultTag(resul) {
             let type = '';
-            switch (statusCode) {
-                case '00': // 试听
-                    type = ''
-                    break;
-                case '01': // 正常在学
+            switch (resul) {
+                case '成功': 
                     type = 'success'
                     break;
-                case '02': // 中途退费
-                    type = 'danger'
-                    break;
-                case '03': // 结束未续费
+                case '失败':
                     type = 'info'
+                    break;
+                case '待定': 
+                    type = 'warning'
                     break;
             }
             return type;
@@ -269,9 +250,9 @@ export default {
         // will replace this to util function. GetLabelByValue
         getStudentStatusDesc(statusCode) {
             let statusDesc = '';
-            for (let obj of this.dicList.studentStatusList) {
+            for (let obj of this.$store.state.dic.student_temp_status) {
                 if (obj['value'] == statusCode) {
-                    statusDesc = obj['text'];
+                    statusDesc = obj['label'];
                     break;
                 }
             }
@@ -296,7 +277,18 @@ export default {
             //console.log(`当前页: ${page}`);
         },
         showAddStudent() {
+            this.studentDialog.baseInfo = {
+                studentName: "",
+                studentSex: "",
+                studentBirthday: "",
+                studentIdentityCardNum: "",
+                studentPhone: "",
+                studentAddress: "",
+                studentTempStatus: "00"
+            };
             this.studentDialog.isShow = true;
+            this.studentDialog.isUpdate = false;
+            this.studentDialog.title = '添加试听学生';
         },
 
         submitAddStudent(studentForm) {
@@ -305,26 +297,110 @@ export default {
                 if (valid) {
                     axios({
                         type: 'post',
-                        path: '/api/student/addstudent',
+                        path: '/api/studenttemp/addstudent',
                         data: _this.studentDialog.baseInfo,
                         fn: function (result) {
-                            if (result != "") {
+                            if (result == 200) {
+                                _this.getList();
                                 _this.$message({
-                                    message: '添加学生成功',
+                                    message: '添加试听学生成功',
                                     type: 'success'
                                 });
                                 _this.studentDialog.isShow = false;
-                                _this.$router.push({
-                                    path: '/studentDetailMain',
-                                    query: {
-                                        studentcode: result
-                                    }
-                                });
                             }
                         }
                     });
                 }
             });
+        },
+        
+        showEditPanel(row) {
+            this.studentDialog.curId = row.id;
+            this.studentDialog.isUpdate = true;
+            this.studentDialog.baseInfo = {
+                studentName: row.studentName,
+                studentSex: row.studentSex,
+                studentBirthday: row.studentBirthday,
+                studentIdentityCardNum: row.studentIdentityCardNum,
+                studentPhone: row.studentPhone,
+                studentAddress: row.studentAddress
+            };
+            this.studentDialog.isShow = true;
+            this.studentDialog.title = '编辑试听学生';
+        },
+
+        submitUpdateStudent(studentForm){
+            var _this = this;
+            this.$refs[studentForm].validate((valid) => {
+                if (valid) {
+                    axios({
+                        type: 'put',
+                        path: '/api/studenttemp/updatestudent/' + _this.studentDialog.curId,
+                        data: _this.studentDialog.baseInfo,
+                        fn: function (result) {
+                            if (result == 200) {
+                                _this.getList();
+                                _this.$message({
+                                    message: '修改成功',
+                                    type: 'success'
+                                });
+                                _this.studentDialog.isShow = false;
+                            }
+                        }
+                    });
+                }
+            });
+        },
+
+        removeTempStudent(id){
+            var _this = this;
+            axios({
+                type: 'delete',
+                path: '/api/studenttemp/removestudent/' + id,
+                fn: function (result) {
+                    if (result == 200) {
+                        _this.getList();
+                        _this.$message({
+                            message: '删除成功',
+                            type: 'success'
+                        });
+                    }
+                }
+            })
+        },
+
+        submitTrialSuccess(id){
+            var _this = this;
+            axios({
+                type: 'put',
+                path: '/api/studenttemp/trialsuccess/' + id,
+                fn: function (result) {
+                    if (result == 200) {
+                        _this.getList();
+                        _this.$message({
+                            message: '已经变更为正式学员！',
+                            type: 'success'
+                        });
+                    }
+                }
+            })
+        },
+
+        submitTrialFail(id){
+            var _this = this;
+            axios({
+                type: 'put',
+                path: '/api/studenttemp/trialfail/' + id,
+                fn: function (result) {
+                    if (result == 200) {
+                        _this.getList();
+                        _this.$message({
+                            message: '已经标记为试听失败学生',
+                            type: 'danger'
+                        });
+                    }
+                }
+            })
         },
 
         showStudentDetail(studentCode, studentName) {
@@ -333,6 +409,22 @@ export default {
                 query: {
                     studentcode: studentCode,
                     studentname: studentName
+                }
+            })
+        },
+
+        getTempStudentStatus() {
+            var _this = this;
+            axios({
+                type: 'get',
+                path: '/api/config/getdicbycode',
+                data: {
+                    typeCode: 'student_temp_status'
+                },
+                fn: function (result) {
+                    if (result) {
+                        _this.$store.commit('SET_S_T_STATUS', result);
+                    }
                 }
             })
         },

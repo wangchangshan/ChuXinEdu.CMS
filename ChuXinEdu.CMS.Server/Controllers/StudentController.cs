@@ -236,6 +236,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string studentCode = TableCodeHelper.GenerateCode("student", "student_code");
             student.StudentCode = studentCode;
+            student.TrialOtherCourse = "否";
             string result = _chuxinWorkflow.AddStudentBaseInfo(student);
             if(result == "500")
             {

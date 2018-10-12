@@ -35,7 +35,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 IEnumerable<Student> students = context.Student.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
 
-                return context.Student.ToList();
+                return students;
+            }
+        }
+
+        public IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var tempStudents = context.StudentTemp.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+
+                return tempStudents;
             }
         }
 

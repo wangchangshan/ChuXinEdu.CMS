@@ -56,7 +56,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             // 统一放假的日期不排课
                             while (!DateHelper.IsAvailableCourseDate(holidays, courseDate))
                             {
-                                coverHolidayCount ++;
+                                coverHolidayCount++;
                                 courseDate = firstCourseDate.AddDays((i + coverHolidayCount) * 7);
                             }
 
@@ -91,8 +91,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         else // 试听
                         {
                             // 3.2 更新student_temp 试听学生表
-                            var st = context.StudentTemp.Where(s => s.StudentCode == student.StudentCode).First();
-                            st.StudentTempStatus = "01"; // 修改状态为已安排试听
+                            var st = context.StudentTemp.Where(s => s.StudentCode == student.StudentCode
+                                                                    && s.StudentTempStatus == "00").FirstOrDefault();
+                            if (st != null)
+                            {
+                                st.StudentTempStatus = "01"; // 修改状态为已安排试听
+                                st.TrialFolderCode = student.CourseFolderCode;
+                                st.TrialFolderName = student.CourseFolderName;
+                            }
+                            else
+                            {
+                                // 3.3 正式学生试听其他课程。
+                                var realStudent = context.Student.Where(s => s.StudentCode == student.StudentCode
+                                                                           && s.TrialOtherCourse == "是")
+                                                                .FirstOrDefault();
+                                if (realStudent != null)
+                                {
+                                    realStudent.TrialOtherCourse = "否"; // 已经排课，将试听标志修改为否
+                                }
+                            }
                         }
 
                         // 4. 提交事务
@@ -125,7 +142,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     studentCourse.AttendanceStatusName = "个人请假";
 
                     // 2. 更新学生排课表 课程 减 1
-                    int studentCoursePackageId = studentCourse.StudentCoursePackageId;                    
+                    int studentCoursePackageId = studentCourse.StudentCoursePackageId;
                     string studentCode = studentCourse.StudentCode;
                     string templateCode = studentCourse.ArrangeTemplateCode;
                     string packageCode = studentCourse.PackageCode;
@@ -133,12 +150,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     string coursePeriod = studentCourse.CoursePeriod;
                     string roomCode = studentCourse.Classroom;
 
-                    var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
-                                                                                && s.StudentCode == studentCode 
-                                                                                && s.ArrangeTemplateCode == templateCode 
-                                                                                && s.PackageCode == packageCode 
-                                                                                && s.CourseWeekDay == dayCode 
-                                                                                && s.Classroom == roomCode 
+                    var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
+                                                                                && s.StudentCode == studentCode
+                                                                                && s.ArrangeTemplateCode == templateCode
+                                                                                && s.PackageCode == packageCode
+                                                                                && s.CourseWeekDay == dayCode
+                                                                                && s.Classroom == roomCode
                                                                                 && s.CoursePeriod == coursePeriod)
                                                                         .FirstOrDefault();
                     // 如果学生当前时时间段没有排课，则删除student_course_arrange表中的记录
@@ -180,7 +197,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     // 1. 获取当前课程的相关信息
                     var studentCourse = context.StudentCourseList.First(s => s.StudentCourseId == studentCourseId);
 
-                    int studentCoursePackageId = studentCourse.StudentCoursePackageId;   
+                    int studentCoursePackageId = studentCourse.StudentCoursePackageId;
                     string studentCode = studentCourse.StudentCode;
                     string dayCode = studentCourse.CourseWeekDay;
                     string coursePeriod = studentCourse.CoursePeriod;
@@ -223,7 +240,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             // 6. 更新学生排课表student_course_arrange 课程 +1
                             string templateCode = studentCourse.ArrangeTemplateCode;
                             string roomCode = studentCourse.Classroom;
-                            var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                            var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
                                                                                     && s.StudentCode == studentCode
                                                                                     && s.ArrangeTemplateCode == templateCode
                                                                                     && s.PackageCode == packageCode
@@ -283,7 +300,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     context.StudentCourseList.Remove(studentCourse);
 
                     // 2. 处理学生排课表  student_course_arrange
-                    int studentCoursePackageId = studentCourse.StudentCoursePackageId; 
+                    int studentCoursePackageId = studentCourse.StudentCoursePackageId;
                     string studentCode = studentCourse.StudentCode;
                     string templateCode = studentCourse.ArrangeTemplateCode;
                     string packageCode = studentCourse.PackageCode;
@@ -304,13 +321,28 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         context.Remove(courseArrange);
 
                         // 2.1.1 更新试听学生表
-                        var st = context.StudentTemp.Where(s => s.StudentCode == studentCode).First();
-                        st.StudentTempStatus = "00";  // 修改状态为待安排试听
+                        var st = context.StudentTemp.Where(s => s.StudentCode == studentCode
+                                                                && s.StudentTempStatus == "01").FirstOrDefault();
+                        if (st != null)
+                        {
+                            st.StudentTempStatus = "00";  // 修改状态为待安排试听
+                        }
+                        else
+                        {
+                            // 2.1.2 正式学生试听其他课程。
+                            var realStudent = context.Student.Where(s => s.StudentCode == studentCode
+                                                                       && s.TrialOtherCourse == "否")
+                                                            .FirstOrDefault();
+                            if (realStudent != null)
+                            {
+                                realStudent.TrialOtherCourse = "是";
+                            }
+                        }
                     }
                     else //正式
                     {
                         // 2.2 更新排课表
-                        var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                        var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
                                                                                     && s.StudentCode == studentCode
                                                                                     && s.ArrangeTemplateCode == templateCode
                                                                                     && s.PackageCode == packageCode
@@ -379,17 +411,32 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             context.Remove(sca);
 
                             // 3.2 更新 student_temp中的记录 修改状态为待排课
-                            var st = context.StudentTemp.Where(s => s.StudentCode == studentCode).First();
-                            st.StudentTempStatus = "00";  //修改状态为 待安排试听
+                            var st = context.StudentTemp.Where(s => s.StudentCode == studentCode
+                                                                    && s.StudentTempStatus == "01").FirstOrDefault();
+                            if (st != null)
+                            {
+                                st.StudentTempStatus = "00";  //修改状态为 待安排试听
+                            }
+                            else
+                            {
+                                // 3.3 正式学生试听其他课程。
+                                var realStudent = context.Student.Where(s => s.StudentCode == studentCode
+                                                                           && s.TrialOtherCourse == "否")
+                                                                .FirstOrDefault();
+                                if (realStudent != null)
+                                {
+                                    realStudent.TrialOtherCourse = "是";
+                                }
+                            }
                         }
                         else //正式
                         {
-                            int studentCoursePackageId = course.StudentCoursePackageId; 
+                            int studentCoursePackageId = course.StudentCoursePackageId;
                             string dayCode = course.CourseWeekDay;
                             string periodName = course.CoursePeriod;
 
                             // 3.1 更新student_course_arrange表 (由于一个时间段内的学生是唯一的 跟模板和套餐没有关系，所以根据学生编码，星期几，时间段过滤即可)
-                            StudentCourseArrange sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                            StudentCourseArrange sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
                                                                                                 && s.StudentCode == studentCode
                                                                                                 && s.CourseWeekDay == dayCode
                                                                                                 && s.CoursePeriod == periodName)
@@ -479,13 +526,28 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             }
 
                             // 3.2 更新试听学生表 student_temp
-                            var st = context.StudentTemp.Where(s => s.StudentCode == course.StudentCode).First();
-                            st.StudentTempStatus = "01";
+                            var st = context.StudentTemp.Where(s => s.StudentCode == course.StudentCode
+                                                                    && s.StudentTempStatus == "00").FirstOrDefault();
+                            if (st != null)
+                            {
+                                st.StudentTempStatus = "01";
+                            }
+                            else
+                            {
+                                // 3.3 正式学生试听其他课程。
+                                var realStudent = context.Student.Where(s => s.StudentCode == course.StudentCode
+                                                                           && s.TrialOtherCourse == "是")
+                                                                .FirstOrDefault();
+                                if (realStudent != null)
+                                {
+                                    realStudent.TrialOtherCourse = "否";
+                                }
+                            }
                         }
                         else  // 正式
                         {
                             // 3.1 判断是否重新排完了所有课程
-                            int studentCoursePackageId = course.StudentCoursePackageId; 
+                            int studentCoursePackageId = course.StudentCoursePackageId;
                             string packageCode = course.PackageCode;
                             string studentCode = course.StudentCode;
                             StudentCoursePackage scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
@@ -506,7 +568,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             string dayCode = course.CourseWeekDay;
                             string periodName = course.CoursePeriod;
 
-                            var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                            var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
                                                                                 && s.StudentCode == studentCode
                                                                                 && s.CourseWeekDay == dayCode
                                                                                 && s.CoursePeriod == periodName)
@@ -569,8 +631,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     if (scl.CourseType == "试听")
                     {
                         // 2.1.1 更新试听学员表状态
-                        var st = context.StudentTemp.Where(s => s.StudentCode == studentCode).First();
-                        st.StudentTempStatus = "02"; // 试听结束
+                        var st = context.StudentTemp.Where(s => s.StudentCode == studentCode
+                                                                && s.StudentTempStatus == "01").FirstOrDefault();
+                        if (st != null)
+                        {
+                            st.StudentTempStatus = "02"; // 试听结束
+                        }
 
                         // 2.1.2 删除课程安排表试听信息
                         var sca = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode && s.CourseType == "试听").First();
@@ -579,12 +645,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     else  //正式
                     {
                         // 2.2.1 课程安排表信息                        
-                        int studentCoursePackageId = scl.StudentCoursePackageId; 
+                        int studentCoursePackageId = scl.StudentCoursePackageId;
                         string templateCode = scl.ArrangeTemplateCode;
                         string packageCode = scl.PackageCode;
                         string dayCode = scl.CourseWeekDay;
                         string periodName = scl.CoursePeriod;
-                        var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                        var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
                                                                             && s.ArrangeTemplateCode == templateCode
                                                                             && s.StudentCode == studentCode
                                                                             && s.PackageCode == packageCode
@@ -658,8 +724,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         if (scl.CourseType == "试听")
                         {
                             // 2.1.1 更新试听学员表状态
-                            var st = context.StudentTemp.Where(s => s.StudentCode == studentCode).First();
-                            st.StudentTempStatus = "02"; // 试听结束
+                            var st = context.StudentTemp.Where(s => s.StudentCode == studentCode
+                                                                    && s.StudentTempStatus == "01").FirstOrDefault();
+                            if (st != null)
+                            {
+                                st.StudentTempStatus = "02"; // 试听结束
+                            }
 
                             // 2.1.2 删除课程安排表试听信息
                             var sca = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode && s.CourseType == "试听").First();
@@ -673,7 +743,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             string packageCode = scl.PackageCode;
                             string dayCode = scl.CourseWeekDay;
                             string periodName = scl.CoursePeriod;
-                            var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId 
+                            var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
                                                                                 && s.ArrangeTemplateCode == templateCode
                                                                                 && s.StudentCode == studentCode
                                                                                 && s.PackageCode == packageCode
@@ -790,11 +860,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var artWork = context.StudentArtwork.Where(s => s.TempUId == uid && s.StudentCourseId ==  courseId).FirstOrDefault();
-                    if (artWork != null) 
+                    var artWork = context.StudentArtwork.Where(s => s.TempUId == uid && s.StudentCourseId == courseId).FirstOrDefault();
+                    if (artWork != null)
                     {
                         string savePath = rootPath + artWork.DocumentPath;
-                        if(System.IO.File.Exists(savePath))
+                        if (System.IO.File.Exists(savePath))
                         {
                             System.IO.File.Delete(savePath);
                         }
@@ -840,7 +910,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     var courseList = context.StudentCourseList.Where(c => c.StudentCoursePackageId == studentCoursePackageId
                                                         && c.AttendanceStatusCode == "01")
                                             .ToList();
-                    if(courseList.Count > 0) 
+                    if (courseList.Count > 0)
                     {
                         // 已经上课 不能删除
                         result = "201";
@@ -848,19 +918,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     else
                     {
                         var package = context.StudentCoursePackage.Where(p => p.Id == studentCoursePackageId).FirstOrDefault();
-                        if(package != null)
+                        if (package != null)
                         {
                             context.StudentCoursePackage.Remove(package);
                         }
 
                         var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId).FirstOrDefault();
-                        if(sca != null)
+                        if (sca != null)
                         {
                             context.StudentCourseArrange.Remove(sca);
                         }
 
                         var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == studentCoursePackageId).FirstOrDefault();
-                        if(scl != null)
+                        if (scl != null)
                         {
                             context.StudentCourseList.Remove(scl);
                         }
@@ -924,6 +994,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string AddTempStudent(StudentTemp student)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.StudentTemp.Add(student);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
         public string UpdateStudentBaseInfo(string studentCode, Student student)
         {
             string result = "200";
@@ -941,6 +1030,111 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     s.StudentRemark = student.StudentRemark;
                     s.StudentRegisterDate = student.StudentRegisterDate;
 
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string UpdateTempStudent(int id, StudentTemp student)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var s = context.StudentTemp.Where(st => st.Id == id).First();
+
+                    s.StudentName = student.StudentName;
+                    s.StudentSex = student.StudentSex;
+                    s.StudentBirthday = student.StudentBirthday;
+                    s.StudentIdentityCardNum = student.StudentIdentityCardNum;
+                    s.StudentPhone = student.StudentPhone;
+                    s.StudentAddress = student.StudentAddress;
+
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string TempStudentTrialFail(int id)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var s = context.StudentTemp.Where(st => st.Id == id).First();
+
+                    s.Result = "失败";
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string TempStudentTrialSuccess(int id)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var s = context.StudentTemp.Where(st => st.Id == id).First();
+
+                    s.Result = "成功";
+
+                    context.Student.Add(new Student{
+                        StudentCode = s.StudentCode,
+                        StudentName = s.StudentName,
+                        StudentSex = s.StudentSex,
+                        StudentBirthday = s.StudentBirthday,
+                        StudentIdentityCardNum = s.StudentIdentityCardNum,
+                        StudentPhone = s.StudentPhone,
+                        StudentPropagateType = s.StudentPropagateType,
+                        StudentPropagateTxt = s.StudentPropagateTxt,
+                        StudentAddress = s.StudentAddress,
+                        StudentAvatarPath = s.StudentAvatarPath,
+                        TrialOtherCourse = "否",
+                        StudentStatus = "01"
+                    });
+
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string RemoveTempStudent(int id)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var s = context.StudentTemp.Where(st => st.Id == id).First();
+                    context.StudentTemp.Remove(s);
                     context.SaveChanges();
                 }
             }

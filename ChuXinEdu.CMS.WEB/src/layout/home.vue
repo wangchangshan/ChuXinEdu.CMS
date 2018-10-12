@@ -42,6 +42,7 @@ export default {
         this.getBirthdayNotify();
         this.getToRecordNotify();
         this.getToFinishNotify();
+        this.getTempStudentStatus();
     },
     mounted() {
         window.onresize = () => {
@@ -89,7 +90,20 @@ export default {
                     } 
                 }
             })
-        }
+        },
+        getTempStudentStatus(){
+            var _this = this;
+            axios({
+                type: 'get',
+                path: '/api/config/getdicbycode',
+                data: {typeCode : 'student_temp_status'},
+                fn: function (result) {
+                    if(result){
+                        _this.$store.commit('SET_S_T_STATUS', result); 
+                    } 
+                }
+            })
+        },
     }
 
 }

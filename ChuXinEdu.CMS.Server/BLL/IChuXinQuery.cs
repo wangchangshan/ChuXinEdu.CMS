@@ -15,6 +15,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize);
 
+        IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize);
+
         IEnumerable<Student> GetStudentsByName(string studentName);
 
         Student GetStudentByCode(string studentCode);

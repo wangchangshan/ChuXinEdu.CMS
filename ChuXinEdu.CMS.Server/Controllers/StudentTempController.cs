@@ -1,0 +1,104 @@
+using System;
+using System.Data;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+using System.IO;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json;
+using ChuXinEdu.CMS.Server.Utils;
+using ChuXinEdu.CMS.Server.Context;
+using ChuXinEdu.CMS.Server.Model;
+using ChuXinEdu.CMS.Server.BLL;
+using ChuXinEdu.CMS.Server.ViewModel;
+
+namespace ChuXinEdu.CMS.Server.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class StudentTempController : ControllerBase
+    {
+        private readonly IChuXinQuery _chuxinQuery;
+        private readonly IChuXinWorkFlow _chuxinWorkflow;
+
+        public StudentTempController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkflow)
+        {
+            _chuxinQuery = chuxinQuery;    
+            _chuxinWorkflow = chuxinWorkflow;
+        }
+
+        /// <summary>
+        /// [学生列表] 获取所有学生list GET api/studenttemp/getstudentlist
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<StudentTemp> GetStudentList(int pageIndex, int pageSize)
+        {
+            IEnumerable<StudentTemp> students = _chuxinQuery.GetTempStudentList(pageIndex, pageSize);
+            return students;
+        }
+
+        /// <summary>
+        /// 添加试听学生 PUT api/studenttemp/addstudent
+        /// </summary>
+        /// <returns>studentCode</returns>
+        [HttpPost]
+        public string AddStudent([FromBody] StudentTemp student)
+        {
+            string studentCode = TableCodeHelper.GenerateCode("student", "student_code");
+            student.StudentCode = studentCode;
+            student.CreateTime = DateTime.Now;
+            student.Result = "待定";
+            string result = _chuxinWorkflow.AddTempStudent(student);
+            
+            return result;
+        }
+
+        /// <summary>
+        /// 更新试听学生基本信息 PUT api/studenttemp/updatestudent
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public string UpdateStudent(int id, [FromBody] StudentTemp student)
+        {
+            string result = _chuxinWorkflow.UpdateTempStudent(id, student);
+            return result;
+        }
+
+        /// <summary>
+        /// 删除试听学生 DELETE api/studenttemp/removestudent
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public string RemoveStudent(int id)
+        {
+            string result = string.Empty;
+            result = _chuxinWorkflow.RemoveTempStudent(id);
+            return result;
+        }
+
+        /// <summary>
+        /// 试听成功 PUT api/studenttemp/trialsuccess
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public string TrialSuccess(int id)
+        {
+            string result = _chuxinWorkflow.TempStudentTrialSuccess(id);
+            return result;
+        }
+
+        /// <summary>
+        /// 试听失败 PUT api/studenttemp/trialfail
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public string TrialFail(int id)
+        {
+            string result = _chuxinWorkflow.TempStudentTrialFail(id);
+            return result;
+        }
+    }   
+}

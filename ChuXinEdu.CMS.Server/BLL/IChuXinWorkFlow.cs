@@ -58,8 +58,23 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [添加学生]  
         string AddStudentBaseInfo(Student student);
 
+        // [添加临时试听学生]  
+        string AddTempStudent(StudentTemp student);
+
         // [更新学生]  
         string UpdateStudentBaseInfo(string studentCode, Student student);
+
+        // [更新试听学生]  
+        string UpdateTempStudent(int id, StudentTemp student);
+
+        // [删除试听学生]  
+        string RemoveTempStudent(int id);
+
+        // [试听学生 试听失败]  
+        string TempStudentTrialFail(int id);
+
+        // [试听学生 试听成功] 
+        string TempStudentTrialSuccess(int id);
 
         // [添加系统套餐] 
         string AddSysCoursePackage(SysCoursePackage newPackage);
