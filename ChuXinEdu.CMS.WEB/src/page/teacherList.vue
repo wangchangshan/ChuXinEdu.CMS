@@ -3,34 +3,31 @@
     <div class="search_container">
         <el-form :inline="true" class="demo-form-inline search-form">
             <el-form-item class="btnRight">
-                <el-button type="primary" size="small" icon="el-icon-plus" @click='showAddPackagePanel()'>添加</el-button>
+                <el-button type="primary" size="small" icon="el-icon-plus" @click='showAddTeacherPanel()'>添加</el-button>
             </el-form-item>
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="TeacherList" v-loading="loading" style="width: 100%" align="left" stripe size="mini" :max-height="tableHeight">
+        <el-table :data="teacherList" v-loading="loading" style="width: 100%" align="left" stripe size="mini" :max-height="tableHeight">
             <el-table-column type="index" width="50" fixed></el-table-column>
-            <el-table-column prop="packageCode" label="套餐编码" align='left' width="120" sortable fixed>
+            <el-table-column prop="teacherCode" label="教师编号" align='left' width="120" sortable fixed>
             </el-table-column>
-            <el-table-column prop="packageName" label="课程套餐名称" align='left' min-width="200" fixed>
+            <el-table-column prop="teacherName" label="教师姓名" align='left' width="100" fixed>
             </el-table-column>
-            <el-table-column prop="packageCourseCategoryName" label="课程类别" sortable align='left' min-width="100">
+            <el-table-column prop="teacherSex" label="性别" align='center' width="80">
             </el-table-column>
-            <el-table-column prop="packageCourseCount" label="课时数" align='center' width="80">
+            <el-table-column prop="teacherPhone" label="联系电话" align='center' min-width="120">
             </el-table-column>
-            <el-table-column prop="packagePrice" label="课程价格" align='left' min-width="100">
-                <template slot-scope="scope">
-                    <span style="color:#f56767">￥{{ scope.row.packagePrice }}</span>
-                </template>
+            <el-table-column prop="teacherAddress" label="家庭地址" align='left' min-width="180">
             </el-table-column>
-            <el-table-column prop="packageEnabled" label="是否启用" :filters="[{text: '是', value: '是'},{text: '否', value: '否'}]" :filter-method="filterPackageEnable" align='left' width="100">
-                <template slot-scope="scope">
+            <el-table-column prop="teacherStatus" label="状态" :filters="[{text: '是', value: '是'},{text: '否', value: '否'}]" :filter-method="filterPackageEnable" align='left' width="100">
+                <!-- <template slot-scope="scope">
                     <el-tag :type="courseTag(scope.row.packageEnabled)" :disable-transitions="false">
                         {{scope.row.packageEnabled}}
                     </el-tag>
-                </template>
+                </template> -->
             </el-table-column>
-            <el-table-column prop="packageCreateTime" label="创建日期" align='left' width="100">
+            <el-table-column prop="teacherRegisterDate" label="入职日期" align='left' width="100">
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="100">
                 <template slot-scope='scope'>
@@ -47,34 +44,40 @@
             </el-col>
         </el-row> -->
     </div>
-    <el-dialog :title="dialog.title" :visible.sync="dialog.isShow" :width="dialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+    
+    <el-dialog :title="teacherialog.title" :width="teacherialog.width" :visible.sync="teacherialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
-            <el-form ref="packageDetail" :model="dialog.packageDetail" :rules="dialog.packageDetailRules" size="mini" :label-width="dialog.formLabelWidth" :label-position='dialog.labelPosition' label-suffix='：' style="margin:10px;width:auto;">
-                <el-form-item prop="packageName" label="课程套餐名称">
-                    <el-input :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packageName"></el-input>
+            <el-form ref="baseInfo" :model="teacherialog.baseInfo" :rules="teacherialog.baseInfoRules" :label-width="teacherialog.formLabelWidth" :label-position='teacherialog.labelPosition' size="mini">
+                <el-form-item prop="teacherName" label="姓名">
+                    <el-input v-model="teacherialog.baseInfo.teacherName"></el-input>
                 </el-form-item>
-                <el-form-item prop="packageCourseCategoryCode" label="课程类别">
-                    <template>
-                        <el-select :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packageCourseCategoryCode" placeholder="请选择">
-                            <el-option v-for="item in lookup.courseCategory" :key="item.value" :label="item.label" :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </template>
+                <el-form-item label="性别">
+                    <el-radio-group v-model="teacherialog.baseInfo.teacherSex">
+                        <el-radio label="男"></el-radio>
+                        <el-radio label="女"></el-radio>
+                    </el-radio-group>
                 </el-form-item>
-                <el-form-item prop="packageCourseCount" label="课时数">
-                    <el-input-number :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packageCourseCount" :min="0"></el-input-number>
+                <el-form-item label="出生日期">
+                    <el-date-picker v-model="teacherialog.baseInfo.teacherBirthday" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
-                <el-form-item prop="packagePrice" label="总价格">
-                    <el-input-number :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packagePrice" :min="0"></el-input-number>
+                <el-form-item prop="teacherIdentityCardNum" label="身份证号码">
+                    <el-input v-model="teacherialog.baseInfo.teacherIdentityCardNum"></el-input>
                 </el-form-item>
-                <el-form-item prop="packageEnabled" label="状态">
-                    <el-switch v-model="dialog.packageDetail.packageEnabled" active-color="#13ce66" inactive-color="#dcdfe6" active-text="启用" active-value="是" inactive-text="不启用" inactive-value="否"> </el-switch>
+                <el-form-item prop="teacherPhone" label="联系电话">
+                    <el-input v-model="teacherialog.baseInfo.teacherPhone"></el-input>
                 </el-form-item>
-                <el-form-item class="text_right">
-                    <el-button @click="dialog.isShow = false">取 消</el-button>
-                    <el-button v-show="!dialog.isUpdate" type="primary" @click="submitNewPackage('packageDetail')">提 交</el-button>
-                    <el-button v-show="dialog.isUpdate && !dialog.isPackageUsed" type="danger" @click='submitRemovePackage()'>删 除</el-button>
-                    <el-button v-show="dialog.isUpdate" type="primary" @click="submitEditPackage('packageDetail')">保 存</el-button>
+                <el-form-item prop="teacherAddress" label="家庭地址">
+                    <el-input v-model="teacherialog.baseInfo.teacherAddress"></el-input>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input type="textarea" v-model="teacherialog.baseInfo.teacherRemark"></el-input>
+                </el-form-item>
+                <el-form-item label="入职日期">
+                    <el-date-picker v-model="teacherialog.baseInfo.teacherRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                </el-form-item>
+                <el-form-item style="text-align:right">
+                    <el-button size="small" @click="teacherialog.isShow = false">取 消</el-button>
+                    <el-button size="small" type="primary" @click="submitNewTeacher('baseInfo')">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -93,7 +96,7 @@ export default {
             lookup: {
                 courseCategory: []
             },
-            TeacherList: [],
+            teacherList: [],
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 63,
             paginations: {
@@ -106,47 +109,50 @@ export default {
             searchField: {
                 package_name: ''
             },
-            dialog: {
+            teacherialog: {
                 width: '600px',
                 isShow: false,
-                title: '添加套餐',
+                title: '添加教师基本信息',
                 labelPosition: 'right',
-                formLabelWidth: '130px',
-                isUpdate: false,
-                isPackageUsed: true,
-                currentId: '',
-                packageDetail: {
-                    packageName: '',
-                    packageCourseCategoryCode: '',
-                    packageCourseCategoryName: '',
-                    packageCourseCount: '',
-                    packagePrice: '',
-                    packageEnabled: '是',
+                formLabelWidth: '100px',
+                baseInfo: {
+                    teacherName: "",
+                    teacherSex: "",
+                    teacherBirthday: "",
+                    teacherIdentityCardNum: "",
+                    teacherPhone: "",
+                    teacherAddress: "",
+                    teacherRemark: "",
+                    teacherRegisterDate: "",
+                    teacherStatus: "01"
                 },
-                packageDetailRules: {
-                    packageName: [{
+                baseInfoRules: {
+                    teacherPhone: [{
                         required: true,
-                        message: '请输入套餐名称',
+                        message: '请输入联系电话',
                         trigger: 'blur'
                     }],
-                    packageCourseCategoryCode: [{
+                    teacherAddress: [{
                         required: true,
-                        message: '请选择套餐类别',
-                        trigger: 'change'
+                        message: '请输入家庭地址',
+                        trigger: 'blur'
                     }],
-                    packageCourseCount: [{
+                    teacherName: [{
                         required: true,
-                        type: 'number',
-                        min: 1,
-                        message: '套餐课时数至少为1',
-                        trigger: 'change'
+                        message: '请输入学生姓名',
+                        trigger: 'blur'
                     }],
+                    teacherIdentityCardNum: [{
+                        required: true,
+                        message: '请输入身份证号码',
+                        trigger: 'blur'
+                    }]
                 }
-            },
+            }
         }
     },
     created() {
-        this.getPackageList();
+        this.getTeacherList();
 
         var _this = this;
         // 获取课程大类
@@ -162,23 +168,23 @@ export default {
         });
     },
     methods: {
-        getPackageList() {
+        getTeacherList() {
             var _this = this;
             axios({
                 type: 'get',
-                path: '/api/coursepackage',
+                path: '/api/teacher',
                 fn: function (result) {
                     result.forEach(item => {
-                        item.packageCreateTime = item.packageCreateTime.split('T')[0];
+                        item.teacherRegisterDate = item.teacherRegisterDate.split('T')[0];
                     })
-                    _this.packageList = result;
+                    _this.teacherList = result;
                 }
             })
         },
 
-        showAddPackagePanel() {
-            this.dialog.title = '新增课程套餐';
-            this.dialog.packageDetail = {
+        showAddTeacherPanel() {
+            this.teacherialog.title = '添加教师基本信息';
+            this.teacherialog.packageDetail = {
                 packageName: '',
                 packageCourseCategoryCode: '',
                 packageCourseCategoryName: '',
@@ -186,26 +192,22 @@ export default {
                 packagePrice: '',
                 packageEnabled: '是',
             }
-            this.dialog.isUpdate = false;
-            this.dialog.isShow = true;
+            this.teacherialog.isUpdate = false;
+            this.teacherialog.isShow = true;
         },
 
-        submitNewPackage(packageForm) {
+        submitNewTeacher(teacherForm) {
             var _this = this;
-            this.$refs[packageForm].validate((valid) => {
+            this.$refs[teacherForm].validate((valid) => {
                 if (valid) {
-                    var code = _this.dialog.packageDetail.packageCourseCategoryCode,
-                        categoryName = _this.GetLabelByValue(_this.lookup.courseCategory, code);
-                    _this.dialog.packageDetail.packageCourseCategoryName = categoryName;
-
                     axios({
                         type: 'post',
-                        path: '/api/coursepackage',
-                        data: _this.dialog.packageDetail,
+                        path: '/api/teacher',
+                        data: _this.teacherDialog.baseInfo,
                         fn: function (result) {
                             if (result == 200) {
-                                _this.getPackageList();
-                                _this.dialog.isShow = false;
+                                _this.getTeacherList();
+                                _this.teacherialog.isShow = false;
                             }
                         }
                     })
@@ -245,9 +247,9 @@ export default {
             this.dialog.isShow = true;
         },
 
-        submitEditPackage(packageForm) {
+        submitEditPackage(teacherForm) {
             var _this = this;
-            this.$refs[packageForm].validate((valid) => {
+            this.$refs[teacherForm].validate((valid) => {
                 if (valid) {
                     var code = _this.dialog.packageDetail.packageCourseCategoryCode,
                         categoryName = _this.GetLabelByValue(_this.lookup.courseCategory, code);

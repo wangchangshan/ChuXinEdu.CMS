@@ -355,6 +355,16 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         #endregion
 
+        #region teacher
+        public IEnumerable<Teacher> GetTeacherList()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.Teacher.ToList();    
+            }
+        }
+        #endregion 
+
         public string GetAvatarTruePath(int studentId)
         {
             string path = string.Empty;

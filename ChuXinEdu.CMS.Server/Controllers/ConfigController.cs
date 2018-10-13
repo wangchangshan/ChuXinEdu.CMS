@@ -15,8 +15,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
     public class ConfigController : ControllerBase
     {        
         private readonly IConfigQuery _configQuery;
-        public ConfigController(IConfigQuery configQuery)
+        private readonly IChuXinQuery _chuxinQuery;
+
+        public ConfigController(IChuXinQuery chuxinQuery, IConfigQuery configQuery)
         {
+            _chuxinQuery = chuxinQuery;
             _configQuery = configQuery;
         }
 
@@ -51,6 +54,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
 
             return coursePackage;
+        }
+
+        /// <summary>
+        /// 获取收费教师键值对 list GET api/config/getfinancer
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<DIC_R_KEY_VALUE> GetFinancer()
+        {
+            return _chuxinQuery.GetTeacherToCharge();
         }
     }   
 }

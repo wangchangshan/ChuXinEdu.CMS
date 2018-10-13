@@ -1152,6 +1152,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        #region sys course package
         public string AddSysCoursePackage(SysCoursePackage newPackage)
         {
             string result = "200";
@@ -1216,5 +1217,27 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+        #endregion
+
+        #region teacher
+        public string AddTeacher(Teacher teacher)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.Teacher.Add(teacher);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+        #endregion
     }
 }

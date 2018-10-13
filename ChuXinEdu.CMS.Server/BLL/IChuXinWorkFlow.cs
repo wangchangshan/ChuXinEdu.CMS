@@ -84,5 +84,9 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [删除系统套餐] 
         string RemoveSysCoursePackage(int id);
-    }
+
+        // [添加教师]
+        string AddTeacher(Teacher teacher);
+
+    } 
 }

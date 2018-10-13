@@ -45,7 +45,7 @@ namespace ChuXinEdu.CMS.Server.Utils
 
                 if(codeFactory != null)
                 {
-                    int nextNum =  ++ codeFactory.CurrentNum;
+                    int nextNum = codeFactory.CurrentNum + 1;
                     result = perfix + nextNum.ToString().PadLeft(length, '0');
 
                     codeFactory.CurrentNum += 1;

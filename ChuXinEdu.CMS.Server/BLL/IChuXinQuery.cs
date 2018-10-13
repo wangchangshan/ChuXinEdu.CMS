@@ -77,6 +77,11 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         bool isPackageUsed(int packageId);
 
+        IEnumerable<Teacher> GetTeacherList();
+
+
+
+
 
 
         // 这是一个测试

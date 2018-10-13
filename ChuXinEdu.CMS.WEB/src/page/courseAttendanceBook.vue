@@ -132,21 +132,21 @@ export default {
             },
             teacherList: {
                 "meishu_00": [{
-                    teacherCode: 't-a-0001',
+                    teacherCode: 'T-000001',
                     teacherName: '唐得红',
                 }],
                 "meishu_01": [{
-                    teacherCode: 't-a-0002',
+                    teacherCode: 'T-000002',
                     teacherName: '马朝',
                 },
                 ],
                 "shufa_00": [{
-                    teacherCode: 't-b-0003',
+                    teacherCode: 'T-000003',
                     teacherName: '福来',
                 },
                 ],
                 "shufa_01": [{
-                    teacherCode: 't-b-0003',
+                    teacherCode: 'T-000003',
                     teacherName: '福来',
                 },
                 ]
