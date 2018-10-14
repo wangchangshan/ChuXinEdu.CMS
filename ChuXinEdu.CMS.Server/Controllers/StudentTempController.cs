@@ -47,7 +47,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpPost]
         public string AddStudent([FromBody] StudentTemp student)
         {
-            string studentCode = TableCodeHelper.GenerateCode("student", "student_code");
+            string studentCode = TableCodeHelper.GenerateCode("student", "student_code", DateTime.Now);
             student.StudentCode = studentCode;
             student.CreateTime = DateTime.Now;
             student.Result = "待定";

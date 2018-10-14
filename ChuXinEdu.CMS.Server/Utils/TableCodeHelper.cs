@@ -9,7 +9,7 @@ namespace ChuXinEdu.CMS.Server.Utils
 {
     public class TableCodeHelper
     {
-        public static string GenerateCode(string tableName, string columnName)
+        public static string GenerateCode(string tableName, string columnName, DateTime time)
         {
             string result = string.Empty;
             string perfix = string.Empty;
@@ -18,7 +18,7 @@ namespace ChuXinEdu.CMS.Server.Utils
             {
                 case "student":
                 {
-                    perfix = "BJ-" + DateTime.Now.ToString("yyyyMM");
+                    perfix = "BJ-" + time.ToString("yyyyMM");
                     length = 3;
                     break;
                 }

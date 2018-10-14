@@ -234,7 +234,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpPost]
         public string AddStudent([FromBody] Student student)
         {
-            string studentCode = TableCodeHelper.GenerateCode("student", "student_code");
+            DateTime time  = new DateTime();
+            if(student.StudentRegisterDate != null)
+            {
+                time  = student.StudentRegisterDate;
+            }
+            else
+            {
+                time  = DateTime.Now;
+            }
+            string studentCode = TableCodeHelper.GenerateCode("student", "student_code", time);
             student.StudentCode = studentCode;
             student.TrialOtherCourse = "否";
             string result = _chuxinWorkflow.AddStudentBaseInfo(student);

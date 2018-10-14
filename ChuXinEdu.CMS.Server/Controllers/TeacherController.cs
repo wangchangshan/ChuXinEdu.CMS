@@ -38,7 +38,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string Post([FromBody] Teacher teacher)
         {
             string result = string.Empty;
-            teacher.TeacherCode = TableCodeHelper.GenerateCode("teacher", "teacher_code");
+            teacher.TeacherCode = TableCodeHelper.GenerateCode("teacher", "teacher_code", DateTime.Now);
 
             result = _chuxinWorkFlow.AddTeacher(teacher);
 

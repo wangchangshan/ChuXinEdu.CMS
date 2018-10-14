@@ -22,7 +22,7 @@
             </el-table-column>
             <el-table-column prop="studentSex" label="性别" align='center' width="60">
             </el-table-column>
-            <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="110">
+            <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="110" sortable>
             </el-table-column>
             <el-table-column prop="studentPhone" label="联系电话" align='center' width="120">
             </el-table-column>
@@ -127,7 +127,7 @@ export default {
                 student_name: ''
             },
             loading: false,
-            tableHeight: this.$store.state.page.win_content.height - 63,
+            tableHeight: this.$store.state.page.win_content.height - 120,
             search_form_rules: {
                 student_name: [{
                     required: false,
@@ -138,8 +138,8 @@ export default {
             paginations: {
                 current_page_index: 1,
                 total: 3,
-                page_size: 15,
-                page_sizes: [10, 15, 20, 30],
+                page_size: 150,
+                page_sizes: [10, 150, 20, 30],
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
             },
             studentDialog: {
