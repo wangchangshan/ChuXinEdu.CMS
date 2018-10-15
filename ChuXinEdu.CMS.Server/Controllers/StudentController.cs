@@ -39,7 +39,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public ActionResult<string> GetStudentList(int pageIndex, int pageSize, string q)
         {
-            QUERY_PARAM query = JsonConvert.DeserializeObject<QUERY_PARAM>(q);            
+            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);            
             
             var config = new MapperConfiguration(cfg => {
                 cfg.CreateMap<Student, STUDENT_R_LIST>();

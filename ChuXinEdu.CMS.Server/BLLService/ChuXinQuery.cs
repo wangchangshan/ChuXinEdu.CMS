@@ -29,15 +29,15 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #endregion
 
         #region student
-        public IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_PARAM query, out int totalCount)
+        public IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount)
         {
             IEnumerable<Student> students = null;
             using (BaseContext context = new BaseContext())
             {
-                if (!String.IsNullOrEmpty(query.name))
+                if (!String.IsNullOrEmpty(query.studentName))
                 {
-                    totalCount = context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + query.name + "%")).Count();
-                    students = context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + query.name + "%")).Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+                    totalCount = context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%")).Count();
+                    students = context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%")).Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
                 }
                 else
                 {

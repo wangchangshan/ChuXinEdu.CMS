@@ -7,14 +7,13 @@ using ChuXinEdu.CMS.Server.Model;
 namespace ChuXinEdu.CMS.Server.ViewModel
 {
     //
-    public class QUERY_PARAM
+    public class QUERY_STUDENT
     {
+        public string studentName { get; set; }
 
-        public string name { get; set; }
+        public DateTime? startRegisterDate { get;set; }
 
-        public DateTime? startDate { get;set; }
-
-        public DateTime? endDate { get; set; }
+        public DateTime? endRegisterDate { get; set; }
 
     }
 }

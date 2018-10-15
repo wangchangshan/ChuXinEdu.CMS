@@ -18,3 +18,4 @@ namespace ChuXinEdu.CMS.Server.ViewModel
         public string Text { get; set; }
     }
 }
+

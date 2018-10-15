@@ -41,7 +41,6 @@
                     <el-tag :type="studentStatusTag(scope.row.studentStatus)" :disable-transitions="false">
                         {{scope.row.studentStatusDesc}}
                     </el-tag>
-                    <!-- <span style="color:#00d053">{{ scope.row.studentStatusDesc }}</span> -->
                 </template>
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
@@ -104,7 +103,8 @@
 import {
     axios,
     LocalDB,
-    dicHelper
+    dicHelper,
+    tagTypeHelper
 } from '@/utils/index'
 
 export default {
@@ -168,6 +168,7 @@ export default {
     },
     created() {
         this.getList();
+        console.log(tagTypeHelper['studentStatusTag']('01'))
     },
     methods: {
         /**
@@ -211,7 +212,7 @@ export default {
                 path: '/api/student/getstudentlist',
                 data: data,
                 fn: function (result) {
-                    _this.paginations.total = result.totalCount;//result.length;
+                    _this.paginations.total = result.totalCount;
                     result.studentList.forEach((item) => {
                         item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
                         

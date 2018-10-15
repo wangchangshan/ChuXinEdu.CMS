@@ -13,7 +13,7 @@ namespace ChuXinEdu.CMS.Server.BLL
     {
         IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge();
 
-        IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_PARAM query, out int totalCount);
+        IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount);
 
         IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize);
 

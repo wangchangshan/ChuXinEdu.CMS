@@ -31,6 +31,9 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("parent_item_code")]
         public string ParentItemCode { get; set; }
 
+        [Column("tag_type")]
+        public string TagType { get; set; }
+
         [Column("item_sort_weight")]
         public string ItemSortWeight { get; set; }
 
