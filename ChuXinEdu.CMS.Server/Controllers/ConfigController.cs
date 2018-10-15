@@ -7,13 +7,16 @@ using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.ViewModel;
+using Newtonsoft.Json;
+using System.Text;
+using Newtonsoft.Json.Serialization;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class ConfigController : ControllerBase
-    {        
+    {
         private readonly IConfigQuery _configQuery;
         private readonly IChuXinQuery _chuxinQuery;
 
@@ -21,6 +24,39 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             _chuxinQuery = chuxinQuery;
             _configQuery = configQuery;
+        }
+
+        /// <summary>
+        /// [配置] 获取配置键值对 GET api/config/getdics
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult<string> GetDics(string codes)
+        {
+            string[] arrCodes = codes.Split(",");
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.Formatting = Formatting.Indented;
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("{");
+            foreach (string dicCode in arrCodes)
+            {
+                var dicList = _configQuery.GetDicByCode(dicCode).ToList();
+                var strJson = JsonConvert.SerializeObject(dicList, settings);
+                if(dicList != null)
+                {
+                    sb.AppendFormat("\"{0}\": {1},", dicCode, strJson);
+                }
+            }
+            if(sb.Length > 1)
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+
+            sb.Append("}");
+            return sb.ToString();
         }
 
         /// <summary>
@@ -65,5 +101,5 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             return _chuxinQuery.GetTeacherToCharge();
         }
-    }   
+    }
 }

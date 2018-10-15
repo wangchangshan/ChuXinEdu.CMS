@@ -29,7 +29,7 @@
             </el-table-column>
             <el-table-column prop="trialFolderName" label="试听课程" align='left' min-width="90">
             </el-table-column>
-            <el-table-column prop="studentStatusDesc" label="当前状态" align='left' width="140" :filters="$store.state.dic.tempStudentStatus" :filter-method="filterStudentStatus">
+            <el-table-column prop="studentStatusDesc" label="当前状态" align='left' width="140" :filters="$store.getters['student_temp_status']" :filter-method="filterStudentStatus">
             </el-table-column>
             <el-table-column prop="result" label="试听结果" align='center' width="90">
                 <template slot-scope="scope">
@@ -161,9 +161,6 @@ export default {
     },
     created() {
         this.getList();
-        if (this.$store.state.dic.student_temp_status.length == 0) {
-            this.getTempStudentStatus();
-        }
     },
     methods: {
         /**
@@ -247,17 +244,6 @@ export default {
             return type;
         },
 
-        // will replace this to util function. GetLabelByValue
-        getStudentStatusDesc(statusCode) {
-            let statusDesc = '';
-            for (let obj of this.$store.state.dic.student_temp_status) {
-                if (obj['value'] == statusCode) {
-                    statusDesc = obj['label'];
-                    break;
-                }
-            }
-            return statusDesc;
-        },
         handlePageSizeChange(pageSize) {
             this.getList({
                 pageSize,
@@ -413,21 +399,6 @@ export default {
             })
         },
 
-        getTempStudentStatus() {
-            var _this = this;
-            axios({
-                type: 'get',
-                path: '/api/config/getdicbycode',
-                data: {
-                    typeCode: 'student_temp_status'
-                },
-                fn: function (result) {
-                    if (result) {
-                        _this.$store.commit('SET_S_T_STATUS', result);
-                    }
-                }
-            })
-        },
         searchStudent() {
             alert('待开发')
         }

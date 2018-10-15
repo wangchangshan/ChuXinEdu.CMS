@@ -13,5 +13,8 @@ namespace ChuXinEdu.CMS.Server.ViewModel
 
         [Column("item_name")]
         public string Label { get; set; }
+
+        [Column("item_name")]
+        public string Text { get; set; }
     }
 }

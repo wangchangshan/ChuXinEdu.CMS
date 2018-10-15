@@ -245,7 +245,7 @@ export default {
                 this.$router.addRoutes(asyncRouterMap);
                 this.loadRouters();
             }
-
+            this.getConfigs();
             //this.showMessage('success', '登录成功')
             this.$router.push('layout');
         },
@@ -279,6 +279,20 @@ export default {
                     return false;
                 }
             });
+        },
+        getConfigs(){
+            var _this = this;
+            axios({
+                type: 'get',
+                path: '/api/config/getdics',
+                data: {codes : _this.$store.getters['all_dic_code']},
+                fn: function (result) {
+                    if(result){
+                        _this.$store.commit('set_all_dic', result); 
+                        LocalDB.instance('DIC_').setValue('ALL', result);
+                    } 
+                }
+            })
         },
         getIP() {
             axios({

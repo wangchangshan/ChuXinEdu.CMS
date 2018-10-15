@@ -17,7 +17,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                var teachers =  context.DIC_R_KEY_VALUE.FromSql($@"select teacher_code as item_code, teacher_name as item_name 
+                var teachers = context.DIC_R_KEY_VALUE.FromSql($@"select teacher_code as item_code, teacher_name as item_name 
                                                                   from teacher 
                                                                   where teacher_status = '01'
                                                                   order by teacher_name")
@@ -29,11 +29,22 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #endregion
 
         #region student
-        public IEnumerable<Student> GetStudentList(int pageIndex, int pageSize)
+        public IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_PARAM query, out int totalCount)
         {
+            IEnumerable<Student> students = null;
             using (BaseContext context = new BaseContext())
             {
-                IEnumerable<Student> students = context.Student.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+                if (!String.IsNullOrEmpty(query.name))
+                {
+                    totalCount = context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + query.name + "%")).Count();
+                    students = context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + query.name + "%")).Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+                }
+                else
+                {
+                    totalCount = context.Student.Count();
+                    students = context.Student.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+
+                }
 
                 return students;
             }
@@ -54,19 +65,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-            //     return context.Simplify_StudentCourse.FromSql(@"select scp.id,scp.student_code,scp.package_course_category as course_category_code, d.item_name as course_category_name 
-            //                             from student_course_package scp 
-            //                             left join sys_dictionary d on scp.package_course_category = d.item_code and d.type_code='course_category'").ToList();
+                //     return context.Simplify_StudentCourse.FromSql(@"select scp.id,scp.student_code,scp.package_course_category as course_category_code, d.item_name as course_category_name 
+                //                             from student_course_package scp 
+                //                             left join sys_dictionary d on scp.package_course_category = d.item_code and d.type_code='course_category'").ToList();
                 return context.Simplify_StudentCourse.FromSql(@"select id, student_code,course_category_code,course_category_name from student_course_package")
                                                         .ToList();
-            }
-        }
-
-        public IEnumerable<Student> GetStudentsByName(string studentName)
-        {
-            using (BaseContext context = new BaseContext())
-            {
-                return context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + studentName + "%")).ToList();
             }
         }
 
@@ -153,7 +156,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                             .ToList();
                 foreach (var item in studentList)
                 {
-                    if(item.CourseType == "试听")
+                    if (item.CourseType == "试听")
                     {
                         var cl = context.StudentCourseList.Where(s => s.CourseType == "试听" && s.StudentCode == item.StudentCode && s.AttendanceStatusCode == "09").First();
                         item.CourseFolderCode = cl.CourseFolderCode;
@@ -163,7 +166,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return studentList;
             }
         }
-        
+
         // 获取时间段内排课信息
         public IEnumerable<CA_R_PERIOD_STUDENTS> GetPeriodStudents(string templateCode, string roomCode, string dayCode, string periodName)
         {
@@ -183,14 +186,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                             .ToList();
                 foreach (var item in studentList)
                 {
-                    if(item.CourseType == "试听")
+                    if (item.CourseType == "试听")
                     {
                         var cl = context.StudentCourseList.Where(s => s.CourseType == "试听" && s.StudentCode == item.StudentCode && s.AttendanceStatusCode == "09").First();
                         item.CourseFolderCode = cl.CourseFolderCode;
                         item.CourseFolderName = cl.CourseFolderName;
                     }
                 }
-                return studentList;    
+                return studentList;
             }
         }
 
@@ -198,7 +201,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             // 不显示当前时间段内已经排过课的学生 与模板和教室无关
             using (BaseContext context = new BaseContext())
-            {   
+            {
                 return context.StudentCoursePackage.FromSql($@"select scp.* from student_course_package  scp 
                                                                 where scp.flex_course_count > 0 and not exists(
                                                                     select 1 from student_course_arrange sca 
@@ -212,7 +215,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public IEnumerable<StudentTemp> GetTempStudentToSelectCourse()
         {
-            using( BaseContext context = new BaseContext())
+            using (BaseContext context = new BaseContext())
             {
                 return context.StudentTemp.Where(s => s.StudentTempStatus == "00").ToList();
             }
@@ -221,7 +224,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         // 获取学生排课列表
         public IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod)
         {
-             using (BaseContext context = new BaseContext())
+            using (BaseContext context = new BaseContext())
             {
                 return context.Simplify_StudentCourseList.FromSql($@"select student_course_id,course_category_name,course_date,attendance_status_code,attendance_status_name,course_type 
                                                                     from student_course_list
@@ -238,7 +241,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 DateTime firstDay = new DateTime(DateTime.Now.Year, 1, 1);
-                return context.SysHoliday.Where( h => h.HolidayDate >= firstDay)
+                return context.SysHoliday.Where(h => h.HolidayDate >= firstDay)
                                         .OrderBy(h => h.HolidayDate)
                                         .ToList();
             }
@@ -246,7 +249,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #endregion
 
         #region  待签到
-         // 获取学生排课列表
+        // 获取学生排课列表
         public IEnumerable<StudentCourseList> GetCoursesToSignIn()
         {
             using (BaseContext context = new BaseContext())
@@ -324,7 +327,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.SysCoursePackage.Where(p => p.PackageCode == packageCode).First();    
+                return context.SysCoursePackage.Where(p => p.PackageCode == packageCode).First();
             }
         }
 
@@ -332,7 +335,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.SysCoursePackage.OrderBy(s => s.PackageCourseCategoryCode).ToList();    
+                return context.SysCoursePackage.OrderBy(s => s.PackageCourseCategoryCode).ToList();
             }
         }
 
@@ -343,8 +346,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 var package = context.SysCoursePackage.Where(scp => scp.Id == packageId).First();
                 string packageCode = package.PackageCode;
-                int count = context.StudentCoursePackage.Where(scp => scp.PackageCode == packageCode).Count();    
-                if(count > 0)
+                int count = context.StudentCoursePackage.Where(scp => scp.PackageCode == packageCode).Count();
+                if (count > 0)
                 {
                     result = true;
                 }
@@ -360,7 +363,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.Teacher.ToList();    
+                return context.Teacher.ToList();
             }
         }
         #endregion 

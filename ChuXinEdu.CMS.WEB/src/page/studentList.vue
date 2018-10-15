@@ -1,12 +1,13 @@
 <template>
 <div class="fillcontain">
     <div class="search_container">
-        <el-form :inline="true" :model="searchField" :rules="search_form_rules" ref="searchField" class="demo-form-inline search-form">
-            <el-form-item prop='student_name' label="学生姓名：">
-                <el-input type="text" size="small" v-model="searchField.student_name" placeholder="请输入学生姓名"></el-input>
+        <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
+            <el-form-item prop='name' label="学生姓名：">
+                <el-input type="text" size="small" v-model="searchField.name" placeholder="请输入学生姓名"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent("searchField")'>查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查 询</el-button>
+                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重 置</el-button>
             </el-form-item>
 
             <el-form-item class="btnRight">
@@ -26,7 +27,7 @@
             </el-table-column>
             <el-table-column prop="studentPhone" label="联系电话" align='center' width="120">
             </el-table-column>
-            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="240">
+            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="200">
             </el-table-column>
             <el-table-column prop="studentCourseCategory" label="学习课程" align='left' min-width="150">
                 <template slot-scope="scope">
@@ -35,7 +36,7 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="studentStatus" label="学生状态" align='center' width="100" :filters="dicList.studentStatusList" :filter-method="filterStudentStatus">
+            <el-table-column prop="studentStatus" label="学生状态" align='center' width="100" :filters="$store.getters['student_status']" :filter-method="filterStudentStatus">
                 <template slot-scope="scope">
                     <el-tag :type="studentStatusTag(scope.row.studentStatus)" :disable-transitions="false">
                         {{scope.row.studentStatusDesc}}
@@ -43,9 +44,9 @@
                     <!-- <span style="color:#00d053">{{ scope.row.studentStatusDesc }}</span> -->
                 </template>
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
                 <template slot-scope='scope'>
-                    <el-button type="success" size="mini" @click='showStudentDetail(scope.row.studentCode,scope.row.studentName)'>查看详细</el-button>
+                    <el-button type="success" size="mini" @click='showStudentDetail(scope.row.studentCode,scope.row.studentName)'>详 细</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -74,20 +75,20 @@
                 <el-form-item label="出生日期">
                     <el-date-picker v-model="studentDialog.baseInfo.studentBirthday" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
-                <el-form-item label="身份证号码">
-                    <el-input v-model="studentDialog.baseInfo.studentIdentityCardNum"></el-input>
-                </el-form-item>
                 <el-form-item prop="studentPhone" label="联系电话">
                     <el-input v-model="studentDialog.baseInfo.studentPhone"></el-input>
                 </el-form-item>
                 <el-form-item prop="studentAddress" label="家庭地址">
                     <el-input v-model="studentDialog.baseInfo.studentAddress"></el-input>
+                </el-form-item>                   
+                <el-form-item prop="studentRegisterDate" label="报名时间">
+                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                </el-form-item>             
+                <el-form-item label="身份证号码">
+                    <el-input v-model="studentDialog.baseInfo.studentIdentityCardNum"></el-input>
                 </el-form-item>
                 <el-form-item label="备注">
                     <el-input type="textarea" v-model="studentDialog.baseInfo.studentRemark"></el-input>
-                </el-form-item>
-                <el-form-item label="报名时间">
-                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
@@ -101,45 +102,26 @@
 
 <script>
 import {
-    axios
+    axios,
+    LocalDB,
+    dicHelper
 } from '@/utils/index'
 
 export default {
     data() {
-        return {
-            studentsList: [],
-            dicList: {
-                studentStatusList: [{
-                    text: '试听',
-                    value: '00'
-                }, {
-                    text: '正常在学',
-                    value: '01'
-                }, {
-                    text: '中途退费',
-                    value: '02'
-                }, {
-                    text: '结束未续费',
-                    value: '03'
-                }],
-            },
-            searchField: {
-                student_name: ''
-            },
+        return {            
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 120,
-            search_form_rules: {
-                student_name: [{
-                    required: false,
-                    message: '学生姓名不能为空',
-                    trigger: 'blur'
-                }]
+            lookup: null,
+            studentsList: [],
+            searchField: {
+                name: ''
             },
             paginations: {
                 current_page_index: 1,
                 total: 3,
-                page_size: 150,
-                page_sizes: [10, 150, 20, 30],
+                page_size: 15,
+                page_sizes: [10, 15, 20, 30],
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
             },
             studentDialog: {
@@ -174,7 +156,12 @@ export default {
                         required: true,
                         message: '请输入学生姓名',
                         trigger: 'blur'
-                    }]
+                    }],
+                    studentRegisterDate: [{
+                        required: true,
+                        message: '请输入报名日期',
+                        trigger: 'blur'
+                    }],
                 }
             }
         }
@@ -213,7 +200,8 @@ export default {
             this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
             var data = {
                 pageIndex: this.paginations.current_page_index,
-                pageSize: this.paginations.page_size
+                pageSize: this.paginations.page_size,
+                q: this.searchField
             }
             if (where) {
                 data = Object.assign(data, where || {});
@@ -223,12 +211,13 @@ export default {
                 path: '/api/student/getstudentlist',
                 data: data,
                 fn: function (result) {
-                    _this.paginations.total = result.length;
-                    result.forEach((item) => {
-                        item.studentStatusDesc = _this.getStudentStatusDesc(item.studentStatus);
+                    _this.paginations.total = result.totalCount;//result.length;
+                    result.studentList.forEach((item) => {
+                        item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
+                        
                         item.studentBirthday = item.studentBirthday.split('T')[0];
                     })
-                    _this.studentsList = result;
+                    _this.studentsList = result.studentList;
                     fun && fun();
                 }
             })
@@ -267,17 +256,6 @@ export default {
             return type;
         },
 
-        // will replace this to util function. GetLabelByValue
-        getStudentStatusDesc(statusCode) {
-            let statusDesc = '';
-            for (let obj of this.dicList.studentStatusList) {
-                if (obj['value'] == statusCode) {
-                    statusDesc = obj['text'];
-                    break;
-                }
-            }
-            return statusDesc;
-        },
         handlePageSizeChange(pageSize) {
             this.getList({
                 pageSize,
@@ -285,7 +263,6 @@ export default {
                     this.setPath('page_size', pageSize);
                 }
             });
-            console.log(`每页 ${pageSize} 条`);
         },
         handlePageCurrentChange(page) {
             this.getList({
@@ -294,7 +271,6 @@ export default {
                     this.setPath('page', page);
                 }
             });
-            //console.log(`当前页: ${page}`);
         },
         showAddStudent() {
             this.studentDialog.isShow = true;
@@ -338,7 +314,20 @@ export default {
             })
         },
         searchStudent() {
-            alert('待开发')
+            var page = 1;
+            this.paginations.current_page_index = 1;
+            this.getList({
+                page,
+                fun: () => {
+                    this.setPath('page', page);
+                }
+            });
+        },
+        resetStudentList(){
+            this.searchField = {
+                name: ''
+            };
+            this.getList();
         }
     }
 }

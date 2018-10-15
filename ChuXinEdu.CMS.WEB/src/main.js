@@ -41,6 +41,15 @@ if(menuData) { //menuData  存在router会重复的问题 或者退出登录的�
     router.addRoutes(asyncRouterMap);
 }
 
+var strAllDics = LocalDB.instance('DIC_').getValue('ALL').value;
+var dics = '';
+if(strAllDics) {
+    dics = JSON.parse(strAllDics)
+} 
+if(dics){
+    store.commit('set_all_dic', dics); 
+}
+
 router.beforeEach((to, from, next) => {
     NProgress.start() // start progress bar
     // 定位到首页时， 清空缓存数据

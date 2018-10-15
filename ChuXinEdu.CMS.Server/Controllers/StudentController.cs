@@ -13,6 +13,7 @@ using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
+using Newtonsoft.Json.Serialization;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -36,15 +37,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<STUDENT_R_LIST> GetStudentList(int pageIndex, int pageSize)
+        public ActionResult<string> GetStudentList(int pageIndex, int pageSize, string q)
         {
+            QUERY_PARAM query = JsonConvert.DeserializeObject<QUERY_PARAM>(q);            
+            
             var config = new MapperConfiguration(cfg => {
                 cfg.CreateMap<Student, STUDENT_R_LIST>();
             });
             IMapper mapper = config.CreateMapper();
 
-
-            IEnumerable<Student> students = _chuxinQuery.GetStudentList(pageIndex, pageSize);
+            int totalCount = 0;
+            IEnumerable<Student> students = _chuxinQuery.GetStudentList(pageIndex, pageSize, query, out totalCount);
             List<STUDENT_R_LIST> studentList = new List<STUDENT_R_LIST>();
             IEnumerable<Simplify_StudentCourse> studentsCourseCategory = _chuxinQuery.GetAllStudentsCourse();
 
@@ -57,7 +60,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 studentList.Add(studentVM);
             }
 
-            return studentList;
+            dynamic obj = new {
+                TotalCount = totalCount,
+                StudentList = studentList
+            };
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.Formatting = Formatting.Indented;
+            string reslutJson = JsonConvert.SerializeObject(obj,settings);
+
+            return reslutJson;
         }
 
         /// <summary>

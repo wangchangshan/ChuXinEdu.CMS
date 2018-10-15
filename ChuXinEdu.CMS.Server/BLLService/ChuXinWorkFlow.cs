@@ -1117,6 +1117,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         StudentPropagateTxt = s.StudentPropagateTxt,
                         StudentAddress = s.StudentAddress,
                         StudentAvatarPath = s.StudentAvatarPath,
+                        StudentRegisterDate = DateTime.Now,
                         TrialOtherCourse = "否",
                         StudentStatus = "01"
                     });
