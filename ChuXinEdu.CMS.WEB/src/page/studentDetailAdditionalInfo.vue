@@ -50,8 +50,8 @@
                     <el-input type="text" size="small" v-model="searchStudentDialog.searchField.studentName" placeholder="请输入学生姓名"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent("searchFrom")'>查 询</el-button>
-                    <el-button type="" icon="el-icon-close" size="small" @click="searchStudentDialog.isShow = false">关 闭</el-button>
+                    <el-button type="primary" size="small" @click='searchStudent("searchFrom")'>查 询</el-button>
+                    <el-button type="" size="small" @click="searchStudentDialog.isShow = false">关 闭</el-button>
                 </el-form-item>
             </el-form>
             <el-table :data="searchStudentDialog.studentList" v-loading="searchStudentDialog.loading" style="width: auto" align="left" size="mini">
