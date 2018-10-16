@@ -75,7 +75,7 @@ namespace ChuXinEdu.CMS.Server.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql("server=localhost;database=chuxin_dev;user=cswang;password=123456a?;port=3306;sslmode=none;allowPublicKeyRetrieval=true");
+            optionsBuilder.UseMySql("server=localhost;database=chuxin_live;user=cswang;password=123456a?;port=3306;sslmode=none;allowPublicKeyRetrieval=true");
         }
     }
 }
