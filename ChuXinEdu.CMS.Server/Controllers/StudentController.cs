@@ -74,6 +74,38 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// [学生列表] 根据姓名获取学生列表for添加介绍的学生 list GET api/student/getstudentforrecommend
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{studentName}")]
+        public ActionResult<string> GetStudentForRecommend(string studentName)
+        {
+            string reslutJson = string.Empty;
+            DataTable dt = _chuxinQuery.GetStudentForRecommend(studentName);
+            if(dt!= null)
+            {
+                reslutJson = JsonConvert.SerializeObject(dt);
+            }
+			return reslutJson;   
+        }
+        
+         /// <summary>
+        /// 添加新的推荐学员 POST api/student/postnewrecommend
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string PostNewRecommend([FromBody] StudentRecommend srd)
+        {
+            string result = string.Empty;
+
+            srd.CreateDate = DateTime.Now;
+
+            result = _chuxinWorkflow.AddNewRecommend(srd);
+
+            return result;
+        }
+
+        /// <summary>
         /// [学生排课] 获取待排课学生列表 GET api/student/getstudentstoselectcourse
         /// 说明：不显示当前时间段已经选过课程的学生
         /// </summary>
@@ -132,6 +164,18 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取学生附属信息[是否开启新试听 | 介绍人] GET api/student/getauxiliaryinfo
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{studentcode}")]
+        public ActionResult<string> GetAuxiliaryInfo(string studentCode)
+        {
+            DataTable dt = _chuxinQuery.GetStudentAuxiliaryInfo(studentCode);
+            string reslutJson = JsonConvert.SerializeObject(dt);
+            return reslutJson;
+        }
+
+        /// <summary>
         /// 获取学生上课列表 GET api/student/getcourselist
         /// </summary>
         /// <returns></returns>
@@ -181,6 +225,29 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string reslutJson = JsonConvert.SerializeObject(dt);
 			//return Json(new { result = "Success", returnObj = reslutJson });            
             return reslutJson;            
+        }
+
+        /// <summary>
+        /// [其他信息] 获取介绍的新学员列表 GET api/student/getrecommend
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{studentCode}")]
+        public IEnumerable<StudentRecommend> GetRecommend(string studentCode)
+        {
+            IEnumerable<StudentRecommend> list = _chuxinQuery.GetRecommendStudentList(studentCode);
+            return list;
+        }
+
+        /// <summary>
+        /// [其他信息] 删除介绍的新学员 GET api/student/delrecommend
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public string DelRecommend(int id)
+        {
+            string result = string.Empty;
+            result = _chuxinWorkflow.RemoveStudentRecommend(id);
+            return result;
         }
 
         /// <summary>
@@ -237,6 +304,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string UpdateStudentPackage(int id, [FromBody] StudentCoursePackage package)
         {
             string result = _chuxinWorkflow.UpdateStudentCoursePackage(id, package);
+            return result;
+        }
+
+        /// <summary>
+        /// 更新学生新试听状态 PUT api/student/updatetrialothercourse
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{studentcode}")]
+        public string UpdateTrialOtherCourse(string studentCode, [FromBody] dynamic obj)
+        {
+            string result = _chuxinWorkflow.UpdateStudentTrialOtherCourse(studentCode, obj.curVal.ToString());
             return result;
         }
 

@@ -1,56 +1,74 @@
 <template>
 <div class="fallcontain">
-    <el-row type="flex" class="row-bg" :gutter="10" :max-height="pageHeight">
-        <el-col :span="6" >
-            <el-card v-for="achievement in artWorkList1" 
-                :key="achievement.artworkId" :body-style="{ padding: '0px' }" style="margin-bottom:5px">
+    <el-row>
+        <div style="text-align:right">
+            <el-button type="primary" size="small" @click='showUploadDialog()'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
+        </div>
+    </el-row>
+    <el-row type="flex" class="row-bg" :gutter="10">
+        <el-col :span="6">
+            <el-card v-for="achievement in artWorkList1" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
                 <img :src="achievement.showURL" class="image">
                 <div style="padding: 14px;">
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
                         <time class="time">{{ achievement.finishDate }}</time>
+                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(achievement.artworkId)"></el-button>
                         <!-- <el-rate v-model="achievement.achievement_rate" :allow-half = "true" class="right"></el-rate> -->
                     </div>
                 </div>
             </el-card>
         </el-col>
         <el-col :span="6">
-            <el-card v-for="achievement in artWorkList2" 
-                :key="achievement.artworkId" :body-style="{ padding: '0px' }">
+            <el-card v-for="achievement in artWorkList2" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
                 <img :src="achievement.showURL" class="image">
                 <div style="padding: 14px;">
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
                         <time class="time">{{ achievement.finishDate }}</time>
+                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(achievement.artworkId)"></el-button>
                     </div>
                 </div>
             </el-card>
         </el-col>
         <el-col :span="6">
-            <el-card v-for="achievement in artWorkList3" 
-                :key="achievement.artworkId" :body-style="{ padding: '0px' }">
+            <el-card v-for="achievement in artWorkList3" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
                 <img :src="achievement.showURL" class="image">
                 <div style="padding: 14px;">
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
                         <time class="time">{{ achievement.finishDate }}</time>
+                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(achievement.artworkId)"></el-button>
                     </div>
                 </div>
             </el-card>
         </el-col>
         <el-col :span="6">
-            <el-card v-for="achievement in artWorkList4" 
-                :key="achievement.artworkId" :body-style="{ padding: '0px' }">
+            <el-card v-for="achievement in artWorkList4" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
                 <img :src="achievement.showURL" class="image">
                 <div style="padding: 14px;">
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
                         <time class="time">{{ achievement.finishDate }}</time>
+                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(achievement.artworkId)"></el-button>
                     </div>
                 </div>
             </el-card>
         </el-col>
     </el-row>
+    <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.isShow" :width="uploadDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+        <div class="form">
+            <el-upload class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" list-type="picture">
+                <el-button size="mini" type="primary">选择上传<i class="el-icon-upload el-icon--right"></i></el-button>
+            </el-upload>
+            <el-form style="margin:10px;width:auto;">
+                <el-form-item class="text_right">
+                    <el-button size="small" @click="btnCancelUpload()">取 消</el-button>
+                    <el-button size="small" type="primary" @click="btnSubmitUpload()">确 定</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+    </el-dialog>
 </div>
 </template>
 
@@ -59,101 +77,223 @@ import {
     axios
 } from '@/utils/index'
 
-export default {    
+export default {
     props: {
         'studentCode': String,
     },
-    data(){
+    data() {
         return {
-            pageHeight: this.$store.state.page.win_content.height - 308,
             artWorkList: [],
-            artWorkList1:[],
-            artWorkList2:[],
-            artWorkList3:[],
-            artWorkList4:[],
+            artWorkList1: [],
+            artWorkList2: [],
+            artWorkList3: [],
+            artWorkList4: [],
+
+            uploadDialog: {
+                title: '批量上传作品',
+                isShow: false,
+                multiple: true,
+                actionUrl: '/api/upload/uploadartworksimple',
+                fileCount: 0,
+                fileUIds: [],
+                thumbnailList: [],
+                params: {
+                    studentCode: '',
+                    studentName: '',
+                    uid: ''
+                },
+            }
         }
     },
-    created(){
-        var _this = this;
-        axios({
-            type: 'get',
-            path: '/api/student/getartworklist',
-            data: {
-                studentCode: _this.studentCode
-            },
-            fn: function (result) {
-                result.forEach(item => {
-                    item.finishDate = item.finishDate.split('T')[0];
-                });
-                _this.artWorkList = result;
-                _this.GenerateColumn();
-            }
-        });
-
-       
+    created() {
+        this.getAllArtWorks();
     },
     methods: {
+        dataInit() {
+            this.artWorkList = [];
+            this.artWorkList1 = [];
+            this.artWorkList2 = [];
+            this.artWorkList3 = [];
+            this.artWorkList4 = [];
+        },
+        getAllArtWorks() {
+            var _this = this;
+            axios({
+                type: 'get',
+                path: '/api/student/getartworklist',
+                data: {
+                    studentCode: _this.studentCode
+                },
+                fn: function (result) {
+                    _this.dataInit();
+                    result.forEach(item => {
+                        item.finishDate = item.finishDate.split('T')[0];
+                    });
+                    _this.artWorkList = result;
+                    _this.GenerateColumn();
+                }
+            });
+        },
         GenerateColumn() {
             this.artWorkList.forEach((item, index) => {
-            if((index + 1) % 4 === 1){
-                this.artWorkList1.push(item);
+                if ((index + 1) % 4 === 1) {
+                    this.artWorkList1.push(item);
+                } else if ((index + 1) % 4 === 2) {
+                    this.artWorkList2.push(item);
+                } else if ((index + 1) % 4 === 3) {
+                    this.artWorkList3.push(item);
+                } else {
+                    this.artWorkList4.push(item);
+                }
+            });
+        },
+
+        showUploadDialog() {
+            this.uploadDialog.params = {
+                studentCode: this.studentCode,
+                studentName: this.$route.query.studentname,
             }
-            else if((index + 1) % 4 === 2){
-                this.artWorkList2.push(item);
+            this.uploadDialog.thumbnailList = [];
+            this.uploadDialog.fileUIds = [];
+            this.uploadDialog.fileCount = 0;
+            this.uploadDialog.isShow = true;
+        },
+
+        beforeUpload(file) {
+            this.uploadDialog.params.uid = file.uid;
+        },
+
+        uploadSuccess(response, file, fileList) {
+            if (response != -1 && response != -2) {
+                // -1 文件存储错误； -2 数据库插入错误                
+                this.uploadDialog.fileCount = fileList.length;
+                this.uploadDialog.fileUIds = [];
+                for (let f of fileList) {
+                    this.uploadDialog.fileUIds.push(f.uid);
+                }
             }
-            else if((index + 1) % 4 === 3){
-                this.artWorkList3.push(item);
+        },
+
+        handleImgRemove(file, fileList) {
+            this.uploadDialog.fileCount = fileList.length;
+            this.uploadDialog.fileUIds = [];
+            for (let f of fileList) {
+                this.uploadDialog.fileUIds.push(f.uid);
             }
-            else
-            {
-                this.artWorkList4.push(item);
+
+            axios({
+                type: 'delete',
+                path: '/api/upload/deltempfile',
+                data: {
+                    courseId: 0,
+                    uid: file.uid
+                },
+                fn: function (result) {}
+            });
+        },
+        btnSubmitUpload() {
+            let fileUIds = this.uploadDialog.fileUIds;
+            let _this = this;
+            axios({
+                type: 'put',
+                path: '/api/upload/artwork2yes',
+                data: fileUIds,
+                fn: function (result) {
+                    if (result == 200) {
+                        _this.getAllArtWorks();
+                        _this.$message({
+                            message: '全部上传成功',
+                            type: 'success'
+                        });
+                        _this.uploadDialog.thumbnailList = [];
+                        _this.uploadDialog.isShow = false;
+                    }
+                }
+            });
+        },
+        btnCancelUpload() {
+            this.uploadDialog.isShow = false;
+            this.uploadDialog.thumbnailList = [];
+            let fileUIds = this.uploadDialog.fileUIds;
+            
+            if (fileUIds.length > 0) {
+                let _this = this;
+                axios({
+                    type: 'delete',
+                    path: '/api/upload/delalltempfile',
+                    data: fileUIds,
+                    fn: function (result) {}
+                });
             }
-        });
+
+        },
+        removeAchievement(achievementId){
+            var _this = this;
+            this.$confirm('确定删除这个作品吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                axios({
+                    type: 'delete',
+                    path: '/api/upload/delachievement/' + achievementId,
+                    fn: function (result) {
+                        if (result === 200) {
+                            _this.getAllArtWorks();
+                            _this.$message({
+                                message: '删除成功！',
+                                type: 'success'
+                            });
+                        }
+                    }
+                });
+            }).catch(() => {
+                //
+            });
         }
     }
 }
 </script>
 
 <style lang="less" scoped>
-.fallcontain{
+.fallcontain {
     overflow-y: auto;
     overflow-x: hidden;
 }
 
- .time {
+.time {
     font-size: 13px;
     color: #999;
-  }
-  
-  .bottom {
+}
+
+.bottom {
     margin-top: 13px;
     line-height: 12px;
-  }
+}
 
-  .button {
+.button {
     padding: 0;
     float: right;
-  }
+}
 
-  .right{
+.right {
     padding: 0;
     float: right;
     margin-top: -3px;
-  }
+}
 
-  .image {
+.image {
     width: 100%;
     display: block;
-  }
+}
 
-  .clearfix:before,
-  .clearfix:after {
-      display: table;
-      content: "";
-  }
-  
-  .clearfix:after {
-      clear: both
-  }
+.clearfix:before,
+.clearfix:after {
+    display: table;
+    content: "";
+}
 
+.clearfix:after {
+    clear: both
+}
 </style>

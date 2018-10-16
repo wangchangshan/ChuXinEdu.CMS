@@ -3,17 +3,17 @@
     <el-tabs type="card" v-model="activeLabelCode" @tab-click="handleTabClick">
 
         <el-tab-pane :name="'baseinfo'">
-            <span slot="label"><i class="fa fa-bank"></i>基础信息</span>
+            <span slot="label"><i class="fa fa-info-circle"></i> 基础信息</span>
             <student-base-info v-if="activeLabelCode === 'baseinfo'" v-bind:studentCode="studentCode"></student-base-info>
         </el-tab-pane>
 
         <el-tab-pane :name="'history'">
-            <span slot="label"><i class="fa fa-bank"></i>课程记录</span> 
+            <span slot="label"><i class="fa fa-list"></i> 课程记录</span> 
             <student-course-history v-if="activeLabelCode === 'history'" v-bind:studentCode="studentCode"></student-course-history>
         </el-tab-pane>
 
         <el-tab-pane :name="'achievement'">
-            <span slot="label"><i class="fa fa-bank"></i>作品展示</span> 
+            <span slot="label"><i class="fa fa-image"></i> 作品展示</span> 
             <student-achievements 
                 v-if="activeLabelCode === 'achievement'" 
                 v-bind:studentCode="studentCode" 
@@ -21,8 +21,8 @@
             </student-achievements>
         </el-tab-pane>
         <el-tab-pane :name="'otherinfo'">
-            <span slot="label"><i class="fa fa-bank"></i>其他信息</span> 
-            敬请期待 *_~
+            <span slot="label"><i class="fa fa-handshake-o"></i> 其他信息</span> 
+            <student-additional-info v-if="activeLabelCode === 'otherinfo'" v-bind:studentCode="studentCode"></student-additional-info>
         </el-tab-pane>
     </el-tabs>
 </div>
@@ -32,13 +32,13 @@
 import studentDetailBaseInfo from '@/page/studentDetailBaseInfo'
 import studentDetailCourseHistory from '@/page/studentDetailCourseHistory'
 import studentDetailAchievements from '@/page/studentDetailAchievements'
-
+import studentDetailAdditionalInfo from '@/page/studentDetailAdditionalInfo'
 
 export default {
     name: 'studentDetailMain',
     data() {
         return {
-            pageHeight: this.$store.state.page.win_content.height - 100 ,  
+            pageHeight: this.$store.state.page.win_content.height - 65 ,  
             activeLabelCode: 'baseinfo',
             studentCode: ''
         }
@@ -49,7 +49,8 @@ export default {
     components: {
         "student-base-info" : studentDetailBaseInfo,
         "student-course-history" : studentDetailCourseHistory,
-        "student-achievements":studentDetailAchievements
+        "student-achievements":studentDetailAchievements,
+        "student-additional-info":studentDetailAdditionalInfo
     },
     methods: {
         handleTabClick() {

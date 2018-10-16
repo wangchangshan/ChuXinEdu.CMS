@@ -820,6 +820,34 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string SupplementArtWork(string[] uids)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    foreach (string uid in uids)
+                    {
+                        var artWork = context.StudentArtwork.Where(s => s.TempUId == uid
+                                                                        && s.ArtworkStatus == "00")
+                                                            .First();
+                        artWork.FinishDate = DateTime.Now;
+                        artWork.ArtworkStatus = "01";
+                    }
+
+                    // 2. 提交事务
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
         public int UploadArtWork(StudentArtwork artwork)
         {
             int result = -2;
@@ -866,7 +894,38 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var artWork = context.StudentArtwork.Where(s => s.TempUId == uid && s.StudentCourseId == courseId).FirstOrDefault();
+                    var artWork = context.StudentArtwork.Where(s => s.TempUId == uid
+                                                                    && s.StudentCourseId == courseId
+                                                                    && s.ArtworkStatus == "00")
+                                                        .FirstOrDefault();
+                    if (artWork != null)
+                    {
+                        string savePath = rootPath + artWork.DocumentPath;
+                        if (System.IO.File.Exists(savePath))
+                        {
+                            System.IO.File.Delete(savePath);
+                        }
+                        context.Remove(artWork);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string RemoveArtWorkById(int id, string rootPath)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var artWork = context.StudentArtwork.Where(s => s.ArtworkId == id).FirstOrDefault();
                     if (artWork != null)
                     {
                         string savePath = rootPath + artWork.DocumentPath;
@@ -1047,6 +1106,29 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string UpdateStudentTrialOtherCourse(string studentCode, string curVal)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var s = context.Student.Where(st => st.StudentCode == studentCode).FirstOrDefault();
+                    if(s != null)
+                    {
+                        s.TrialOtherCourse = curVal;
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
         public string UpdateTempStudent(int id, StudentTemp student)
         {
             string result = "200";
@@ -1106,7 +1188,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                     s.Result = "成功";
 
-                    context.Student.Add(new Student{
+                    context.Student.Add(new Student
+                    {
                         StudentCode = s.StudentCode,
                         StudentName = s.StudentName,
                         StudentSex = s.StudentSex,
@@ -1240,5 +1323,47 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
         #endregion
+
+        public string AddNewRecommend(StudentRecommend srd)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.StudentRecommend.Add(srd);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
+        public string RemoveStudentRecommend(int id)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var srd = context.StudentRecommend.Where(s => s.Id == id).FirstOrDefault();
+                    if(srd != null)
+                    {
+                        context.StudentRecommend.Remove(srd);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
     }
 }

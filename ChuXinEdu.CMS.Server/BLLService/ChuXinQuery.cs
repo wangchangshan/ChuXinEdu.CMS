@@ -50,6 +50,34 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<StudentRecommend> GetRecommendStudentList(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+               return context.StudentRecommend.Where(s => s.OriginStudentCode == studentCode).ToList();
+            }
+        }
+
+        public DataTable GetStudentForRecommend(string studentName)
+        {
+            DataTable dtStudent = ADOContext.GetDataTable($@"select s.student_code, s.student_name,s.student_sex, s.student_register_date 
+                                                            from student s
+                                                            where s.student_name like '%{studentName}%' and not exists (
+		                                                        select * from student_recommend sr where sr.new_student_code = s.student_code
+	                                                        )");
+
+            return dtStudent;
+        }
+
+        public DataTable GetStudentAuxiliaryInfo(string studentCode)
+        {
+            DataTable dtStudent = ADOContext.GetDataTable($@"select s.trial_other_course,sr.origin_student_code,sr.origin_student_name from student s 
+                                                            left join student_recommend sr on s.student_code = sr.new_student_code
+                                                            where s.student_code = '{studentCode}'");
+
+            return dtStudent;
+        }
+
         public IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize)
         {
             using (BaseContext context = new BaseContext())

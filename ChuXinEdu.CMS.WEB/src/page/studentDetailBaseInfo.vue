@@ -60,6 +60,8 @@
                             {{ scope.row.courseCategoryName  + "/" + scope.row.courseFolderName }}
                         </template>
                     </el-table-column>
+                    <el-table-column prop="restCourseCount" align='center' label="剩余课时" width="90">
+                    </el-table-column>
                     <el-table-column prop="payDate" align='center' label="缴费日期" min-width="100">
                         <template slot-scope='scope'>
                             {{ scope.row.payDate && scope.row.payDate.split('T')[0] }}

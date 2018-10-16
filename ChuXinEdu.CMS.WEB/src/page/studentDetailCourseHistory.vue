@@ -42,7 +42,7 @@
                     </el-upload>
                 </el-form-item>
                 <el-form-item class="text_right">
-                    <el-button size="small" @click="uploadDialog.isShow = false">取 消</el-button>
+                    <el-button size="small" @click="btnCancelUpload()">取 消</el-button>
                     <el-button size="small" type="primary" @click="btnSubmitUpload()">确 定</el-button>
                 </el-form-item>
             </el-form>
@@ -85,7 +85,7 @@ export default {
                 labelPosition: 'right',
                 formLabelWidth: '120px',
                 multiple: true,
-                actionUrl: '/api/course/uploadartwork',
+                actionUrl: '/api/upload/uploadartwork',
                 fileCount: 0,
                 fileUIds: [],
                 thumbnailList: [],
@@ -147,6 +147,10 @@ export default {
                 studentCode: row.studentCode,
                 studentName: row.studentName,
             }
+            this.uploadDialog.fileCount = 0;
+            this.uploadDialog.fileUIds = [];
+            this.uploadDialog.thumbnailList = [];
+
             this.uploadDialog.isShow = true;
 
         },
@@ -175,7 +179,7 @@ export default {
             var courseId = this.uploadDialog.courseInfo.courseId;
             axios({
                 type: 'delete',
-                path: '/api/course/deltempfile',
+                path: '/api/upload/deltempfile',
                 data: {
                     courseId: courseId,
                     uid: file.uid
@@ -234,6 +238,22 @@ export default {
                     }
                 }
             });
+        },        
+        btnCancelUpload() {
+            this.uploadDialog.isShow = false;
+            let fileUIds = this.uploadDialog.fileUIds;
+            var courseId = this.uploadDialog.courseInfo.courseId;
+
+            if (fileUIds.length > 0) {
+                let _this = this;
+                axios({
+                    type: 'delete',
+                    path: '/api/upload/deltempfilebycourse/' + courseId,
+                    data: fileUIds,
+                    fn: function (result) {}
+                });
+            }
+
         },
         viewArtwork(courseId) {
             var _this = this;

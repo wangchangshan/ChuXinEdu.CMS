@@ -15,9 +15,15 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount);
 
+        DataTable GetStudentForRecommend(string studentName);
+
+        IEnumerable<StudentRecommend> GetRecommendStudentList(string studentCode);
+
         IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize);
 
         Student GetStudentByCode(string studentCode);
+
+        DataTable GetStudentAuxiliaryInfo(string studentCode);
 
         IEnumerable<StudentCoursePackage> GetStudentCoursePackage(string studentCode);
 

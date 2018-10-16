@@ -38,6 +38,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [作品补充上传]
         string SupplementArtWork(CL_U_SIGN_IN course);
 
+        // [作品补充上传]
+        string SupplementArtWork(string[] uids);
+
         // [上传作品]
         int UploadArtWork(StudentArtwork artwork);
 
@@ -46,8 +49,17 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [删除临时作品]
         string RemoveTempArtWork(int courseId, string uid, string rootPath);
 
+        // [删除正式作品]
+        string RemoveArtWorkById(int id, string rootPath);
+
          // [添加学生选课套餐]
         string AddStudentCoursePackage(StudentCoursePackage scp);
+
+        // [添加新的推荐学员]
+        string AddNewRecommend(StudentRecommend srd);
+
+        // [删除学生推荐表中的数据]
+        string RemoveStudentRecommend(int id);
 
         // [删除学生选课套餐]
         string RemoveStudentCoursePackage(int studentCoursePackageId);
@@ -63,6 +75,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [更新学生]  
         string UpdateStudentBaseInfo(string studentCode, Student student);
+
+        string UpdateStudentTrialOtherCourse(string studentCode, string curVal);
 
         // [更新试听学生]  
         string UpdateTempStudent(int id, StudentTemp student);

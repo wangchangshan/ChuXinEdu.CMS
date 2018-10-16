@@ -119,7 +119,7 @@ export default {
             },
             uploadPanel: {
                 multiple: true,
-                actionUrl: '/api/course/uploadartwork',
+                actionUrl: '/api/upload/uploadartwork',
                 params: {
                     courseId: '',
                     studentCode: '',
@@ -378,7 +378,7 @@ export default {
             var courseId = this.signInDialog.courseInfo.courseId;
             axios({
                 type: 'delete',
-                path: '/api/course/deltempfile',
+                path: '/api/upload/deltempfile',
                 data: {
                     courseId: courseId,
                     uid: file.uid

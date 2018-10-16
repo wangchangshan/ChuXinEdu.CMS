@@ -2,8 +2,8 @@
 <div class="fillcontain">
     <div class="search_container">
         <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
-            <el-form-item prop='name' label="学生姓名：">
-                <el-input type="text" size="small" v-model="searchField.name" placeholder="请输入学生姓名"></el-input>
+            <el-form-item label="学生姓名：">
+                <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查 询</el-button>
@@ -115,7 +115,7 @@ export default {
             lookup: null,
             studentsList: [],
             searchField: {
-                name: ''
+                studentName: ''
             },
             paginations: {
                 current_page_index: 1,
@@ -168,7 +168,6 @@ export default {
     },
     created() {
         this.getList();
-        console.log(tagTypeHelper['studentStatusTag']('01'))
     },
     methods: {
         /**
@@ -227,34 +226,10 @@ export default {
             return row['studentStatus'] === value;
         },
         courseCategoryTag(categoryCode) {
-            let type = '';
-            switch (categoryCode) {
-                case 'meishu':
-                    type = 'success'
-                    break;
-                case 'shufa':
-                    type = ''
-                    break;
-            }
-            return type;
+            return tagTypeHelper.courseCategoryTag(categoryCode);
         },
         studentStatusTag(statusCode) {
-            let type = '';
-            switch (statusCode) {
-                case '00': // 试听
-                    type = ''
-                    break;
-                case '01': // 正常在学
-                    type = 'success'
-                    break;
-                case '02': // 中途退费
-                    type = 'danger'
-                    break;
-                case '03': // 结束未续费
-                    type = 'info'
-                    break;
-            }
-            return type;
+            return tagTypeHelper.studentStatusTag(statusCode);
         },
 
         handlePageSizeChange(pageSize) {
@@ -326,7 +301,7 @@ export default {
         },
         resetStudentList(){
             this.searchField = {
-                name: ''
+                studentName: ''
             };
             this.getList();
         }
