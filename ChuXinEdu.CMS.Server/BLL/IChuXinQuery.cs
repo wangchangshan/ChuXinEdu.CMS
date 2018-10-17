@@ -19,7 +19,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentRecommend> GetRecommendStudentList(string studentCode);
 
-        IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize);
+        IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize, QUERY_STUDENT_TEMP query, out int totalCount);
 
         Student GetStudentByCode(string studentCode);
 

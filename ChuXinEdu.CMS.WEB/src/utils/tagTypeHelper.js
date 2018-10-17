@@ -30,6 +30,21 @@ const tagTypeHelper = {
         }
         return type;
     },
+    studentTrialResultTag(result) {
+        let type = '';
+        switch (result) {
+            case '成功':
+                type = 'success'
+                break;
+            case '失败':
+                type = 'info'
+                break;
+            case '待定':
+                type = 'warning'
+                break;
+        }
+        return type;
+    }
 }
 
 export { tagTypeHelper }

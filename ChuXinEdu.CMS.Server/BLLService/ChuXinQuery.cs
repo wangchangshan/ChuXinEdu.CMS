@@ -34,18 +34,36 @@ namespace ChuXinEdu.CMS.Server.BLLService
             IEnumerable<Student> students = null;
             using (BaseContext context = new BaseContext())
             {
-                if (!String.IsNullOrEmpty(query.studentName))
+                IQueryable<Student> temp = null;
+                
+                if(!String.IsNullOrEmpty(query.studentStatus))
                 {
-                    totalCount = context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%")).Count();
-                    students = context.Student.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%")).Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+                    temp = context.Student.Where(s => s.StudentStatus == query.studentStatus);
                 }
-                else
+                if(!String.IsNullOrEmpty(query.studentCode))
                 {
-                    totalCount = context.Student.Count();
-                    students = context.Student.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-
+                    if(temp == null)
+                    {
+                        temp = context.Student;
+                    }
+                    temp = temp.Where(s => EF.Functions.Like(s.StudentCode, "%" + query.studentCode + "%"));
+                }
+                if(!String.IsNullOrEmpty(query.studentName))
+                {
+                    if(temp == null)
+                    {
+                        temp = context.Student;
+                    }
+                    temp = temp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
                 }
 
+                if(temp == null)
+                {
+                    temp = context.Student.Where(s => 1 == 1);
+                }
+                totalCount = temp.Count();
+                students = temp.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+                
                 return students;
             }
         }
@@ -78,13 +96,33 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return dtStudent;
         }
 
-        public IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize)
+        public IEnumerable<StudentTemp> GetTempStudentList(int pageIndex, int pageSize, QUERY_STUDENT_TEMP query, out int totalCount)
         {
+            IEnumerable<StudentTemp> students = null;
             using (BaseContext context = new BaseContext())
             {
-                var tempStudents = context.StudentTemp.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+                IQueryable<StudentTemp> temp = null;
+                if(!string.IsNullOrEmpty(query.studentName))
+                {
+                    temp = context.StudentTemp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
+                }
+                if(query.studentTempStatus.Count() > 0)
+                {
+                    if(temp == null)
+                    {
+                        temp = context.StudentTemp;
+                    }
+                    temp = temp.Where( s => query.studentTempStatus.Contains(s.StudentTempStatus));
+                }
 
-                return tempStudents;
+                if(temp == null)
+                {
+                    temp = context.StudentTemp.Where(s => 1 == 1);
+                }
+
+                totalCount = temp.Count();
+                students = temp.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+                return students;
             }
         }
 

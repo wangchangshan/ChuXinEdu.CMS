@@ -13,6 +13,7 @@ using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
+using Newtonsoft.Json.Serialization;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -34,10 +35,24 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<StudentTemp> GetStudentList(int pageIndex, int pageSize)
+        public ActionResult<string> GetStudentList(int pageIndex, int pageSize, string q)
         {
-            IEnumerable<StudentTemp> students = _chuxinQuery.GetTempStudentList(pageIndex, pageSize);
-            return students;
+            int totalCount = 0;
+            QUERY_STUDENT_TEMP query = JsonConvert.DeserializeObject<QUERY_STUDENT_TEMP>(q);  
+
+            IEnumerable<StudentTemp> students = _chuxinQuery.GetTempStudentList(pageIndex, pageSize, query, out totalCount);
+
+            dynamic obj = new {
+                TotalCount = totalCount,
+                StudentList = students
+            };
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.Formatting = Formatting.Indented;
+            string reslutJson = JsonConvert.SerializeObject(obj,settings);
+
+            return reslutJson;
         }
 
         /// <summary>

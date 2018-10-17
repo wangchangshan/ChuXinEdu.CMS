@@ -179,9 +179,16 @@ export default {
                         type: 'get',
                         path: '/api/student/getstudentforrecommend/' + _this.searchStudentDialog.searchField.studentName,
                         fn: function (result) {
-                            result.forEach(item => {
-                                item.student_register_date = item.student_register_date.split('T')[0];
-                            })
+                            let delIndex = -1;
+                            for(var i=0; i< result.length; i ++){
+                                if(result[i].student_code == _this.studentCode){
+                                    delIndex = i;
+                                }
+                                result[i].student_register_date = result[i].student_register_date.split('T')[0];
+                            }
+                            if(delIndex > -1){
+                                result.splice(delIndex, 1);
+                            }
                             _this.searchStudentDialog.studentList = result;
                         }
                     });

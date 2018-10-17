@@ -1,12 +1,19 @@
 <template>
 <div class="fillcontain">
     <div class="search_container">
-        <el-form :inline="true" :model="searchField" :rules="search_form_rules" ref="searchField" class="demo-form-inline search-form">
-            <el-form-item prop='student_name' label="学生姓名：">
-                <el-input type="text" size="small" v-model="searchField.student_name" placeholder="请输入学生姓名"></el-input>
+        <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
+            <el-form-item label="姓名：">
+                <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名"></el-input>
+            </el-form-item>
+            <el-form-item label="状态：">
+                <el-select size="small" v-model="searchField.studentTempStatus" multiple placeholder="请选择" style="width:320px">
+                    <el-option v-for="item in $store.getters['student_temp_status']" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent("searchField")'>查询</el-button>
+                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查 询</el-button>
+                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重 置</el-button>
             </el-form-item>
 
             <el-form-item class="btnRight">
@@ -73,9 +80,6 @@
                 <el-form-item label="出生日期">
                     <el-date-picker v-model="studentDialog.baseInfo.studentBirthday" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
-                <el-form-item label="身份证号码">
-                    <el-input v-model="studentDialog.baseInfo.studentIdentityCardNum"></el-input>
-                </el-form-item>
                 <el-form-item prop="studentPhone" label="联系电话">
                     <el-input v-model="studentDialog.baseInfo.studentPhone"></el-input>
                 </el-form-item>
@@ -96,7 +100,8 @@
 <script>
 import {
     axios,
-    dicHelper
+    dicHelper,
+    tagTypeHelper
 } from '@/utils/index'
 
 export default {
@@ -104,20 +109,14 @@ export default {
         return {
             studentsList: [],
             searchField: {
-                student_name: ''
+                studentName: '',
+                studentTempStatus:[]
             },
             loading: false,
-            tableHeight: this.$store.state.page.win_content.height - 63,
-            search_form_rules: {
-                student_name: [{
-                    required: false,
-                    message: '学生姓名不能为空',
-                    trigger: 'blur'
-                }]
-            },
+            tableHeight: this.$store.state.page.win_content.height - 120,
             paginations: {
                 current_page_index: 1,
-                total: 3,
+                total: 0,
                 page_size: 15,
                 page_sizes: [10, 15, 20, 30],
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
@@ -193,7 +192,8 @@ export default {
             this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
             var data = {
                 pageIndex: this.paginations.current_page_index,
-                pageSize: this.paginations.page_size
+                pageSize: this.paginations.page_size,
+                q: this.searchField
             }
             if (where) {
                 data = Object.assign(data, where || {});
@@ -203,12 +203,12 @@ export default {
                 path: '/api/studenttemp/getstudentlist',
                 data: data,
                 fn: function (result) {
-                    _this.paginations.total = result.length;
-                    result.forEach((item) => {
+                    _this.paginations.total = result.totalCount;
+                    result.studentList.forEach((item) => {
                         item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_temp_status'], item.studentTempStatus);
                         item.studentBirthday = item.studentBirthday && item.studentBirthday.split('T')[0];
                     })
-                    _this.studentsList = result;
+                    _this.studentsList = result.studentList;
                     fun && fun();
                 }
             })
@@ -217,31 +217,10 @@ export default {
             return row['studentTempStatus'] === value;
         },
         courseCategoryTag(categoryCode) {
-            let type = '';
-            switch (categoryCode) {
-                case 'meishu':
-                    type = 'success'
-                    break;
-                case 'shufa':
-                    type = ''
-                    break;
-            }
-            return type;
+            return tagTypeHelper.courseCategoryTag(categoryCode);
         },
-        handleResultTag(resul) {
-            let type = '';
-            switch (resul) {
-                case '成功': 
-                    type = 'success'
-                    break;
-                case '失败':
-                    type = 'info'
-                    break;
-                case '待定': 
-                    type = 'warning'
-                    break;
-            }
-            return type;
+        handleResultTag(result) {
+            return tagTypeHelper.studentTrialResultTag(result);
         },
 
         handlePageSizeChange(pageSize) {
@@ -251,7 +230,6 @@ export default {
                     this.setPath('page_size', pageSize);
                 }
             });
-            console.log(`每页 ${pageSize} 条`);
         },
         handlePageCurrentChange(page) {
             this.getList({
@@ -260,7 +238,6 @@ export default {
                     this.setPath('page', page);
                 }
             });
-            //console.log(`当前页: ${page}`);
         },
         showAddStudent() {
             this.studentDialog.baseInfo = {
@@ -299,7 +276,7 @@ export default {
                 }
             });
         },
-        
+
         showEditPanel(row) {
             this.studentDialog.curId = row.id;
             this.studentDialog.isUpdate = true;
@@ -307,7 +284,6 @@ export default {
                 studentName: row.studentName,
                 studentSex: row.studentSex,
                 studentBirthday: row.studentBirthday,
-                studentIdentityCardNum: row.studentIdentityCardNum,
                 studentPhone: row.studentPhone,
                 studentAddress: row.studentAddress
             };
@@ -315,7 +291,7 @@ export default {
             this.studentDialog.title = '编辑试听学生';
         },
 
-        submitUpdateStudent(studentForm){
+        submitUpdateStudent(studentForm) {
             var _this = this;
             this.$refs[studentForm].validate((valid) => {
                 if (valid) {
@@ -338,7 +314,7 @@ export default {
             });
         },
 
-        removeTempStudent(id){
+        removeTempStudent(id) {
             var _this = this;
             axios({
                 type: 'delete',
@@ -355,7 +331,7 @@ export default {
             })
         },
 
-        submitTrialSuccess(id){
+        submitTrialSuccess(id) {
             var _this = this;
             axios({
                 type: 'put',
@@ -372,7 +348,7 @@ export default {
             })
         },
 
-        submitTrialFail(id){
+        submitTrialFail(id) {
             var _this = this;
             axios({
                 type: 'put',
@@ -400,7 +376,22 @@ export default {
         },
 
         searchStudent() {
-            alert('待开发')
+            var page = 1;
+            this.paginations.current_page_index = 1;
+            this.getList({
+                page,
+                fun: () => {
+                    this.setPath('page', page);
+                }
+            });
+        },
+
+        resetStudentList(){
+            this.searchField = {
+                studentName: '',
+                studentTempStatus: []
+            };
+            this.getList();
         }
     }
 }

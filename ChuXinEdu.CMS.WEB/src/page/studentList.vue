@@ -2,14 +2,22 @@
 <div class="fillcontain">
     <div class="search_container">
         <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
-            <el-form-item label="学生姓名：">
-                <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名"></el-input>
+            <el-form-item label="学号：">
+                <el-input type="text" size="small" v-model="searchField.studentCode" placeholder="请输入学生学号" class="search_field"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名：">
+                <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名" class="search_field"></el-input>
+            </el-form-item>
+            <el-form-item label="状态：">
+                <el-select size="small" v-model="searchField.studentStatus" placeholder="请选择学生状态"  class="search_field">
+                    <el-option v-for="item in $store.getters['student_status']" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查 询</el-button>
                 <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重 置</el-button>
             </el-form-item>
-
             <el-form-item class="btnRight">
                 <el-button type="primary" icon="el-icon-plus" size="small" @click='showAddStudent()'>添加</el-button>
             </el-form-item>
@@ -36,7 +44,7 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="studentStatus" label="学生状态" align='center' width="100" :filters="$store.getters['student_status']" :filter-method="filterStudentStatus">
+            <el-table-column prop="studentStatus" label="学生状态" align='center' width="100">
                 <template slot-scope="scope">
                     <el-tag :type="studentStatusTag(scope.row.studentStatus)" :disable-transitions="false">
                         {{scope.row.studentStatusDesc}}
@@ -102,7 +110,6 @@
 <script>
 import {
     axios,
-    LocalDB,
     dicHelper,
     tagTypeHelper
 } from '@/utils/index'
@@ -115,11 +122,13 @@ export default {
             lookup: null,
             studentsList: [],
             searchField: {
-                studentName: ''
+                studentCode: '',
+                studentName: '',
+                studentStatus: '',
             },
             paginations: {
                 current_page_index: 1,
-                total: 3,
+                total: 0,
                 page_size: 15,
                 page_sizes: [10, 15, 20, 30],
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
@@ -215,15 +224,12 @@ export default {
                     result.studentList.forEach((item) => {
                         item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
                         
-                        item.studentBirthday = item.studentBirthday.split('T')[0];
+                        item.studentBirthday = item.studentBirthday && item.studentBirthday.split('T')[0];
                     })
                     _this.studentsList = result.studentList;
                     fun && fun();
                 }
             })
-        },
-        filterStudentStatus(value, row, column) {
-            return row['studentStatus'] === value;
         },
         courseCategoryTag(categoryCode) {
             return tagTypeHelper.courseCategoryTag(categoryCode);
@@ -301,7 +307,9 @@ export default {
         },
         resetStudentList(){
             this.searchField = {
-                studentName: ''
+                studentCode: '',
+                studentName: '',
+                studentStatus: '',
             };
             this.getList();
         }
@@ -313,6 +321,10 @@ export default {
 .btnRight {
     float: right;
     margin-right: 10px !important;
+}
+
+.search_field{
+    width: 150px;
 }
 
 .search_container {

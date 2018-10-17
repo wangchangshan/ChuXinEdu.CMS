@@ -2,8 +2,8 @@
 <div class="info_container">
     <el-row class="info_row row" :gutter="10">
 
-        <el-col :span="6">
-            <div class="area" style="width:220px;border:0">
+        <el-col style="width:240px">
+            <div class="area" style="width:230px;border:0">
                 <div class="avatar-panel">
                     <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="300" :height="300" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
                     </my-avatar>
@@ -14,8 +14,8 @@
         </el-col>
         <el-col :span="10">
             <div class="area">
-                <div class="namearea">
-                    <p>姓名：{{ pageData.studentInfo.studentName }}</p>
+                <div class="namearea">                    
+                    <p>姓名：{{ pageData.studentInfo.studentName }} </p><el-tag size="mini">{{pageData.studentInfo.studentStatus}}</el-tag>
                     <p>性别：{{ pageData.studentInfo.studentSex }}</p>
                     <p>出生日期：{{ pageData.studentInfo.studentBirthday }}</p>
                     <p>入学日期：{{ pageData.studentInfo.studentRegisterDate }}</p>
@@ -218,6 +218,7 @@ export default {
                     studentRegisterDate: "",
                     studentAddress: "",
                     studentAvatarPath: "",
+                    studentStatus: "",
                 },
                 coursePackageList: []
             },
