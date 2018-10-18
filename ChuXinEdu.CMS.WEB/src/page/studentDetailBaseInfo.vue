@@ -1,34 +1,46 @@
 <template>
 <div class="info_container">
     <el-row class="info_row row" :gutter="10">
-
-        <el-col style="width:240px">
-            <div class="area" style="width:230px;border:0">
-                <div class="avatar-panel">
-                    <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="300" :height="300" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
-                    </my-avatar>
-                    <img :src="avatarPanel.imgDataUrl">
-                    <el-button type="success" size="mini" @click="setAvatarShow">设置头像<i class="el-icon-upload el-icon--right"></i></el-button>
-                </div>
-            </div>
-        </el-col>
-        <el-col :span="10">
-            <div class="area">
-                <div class="namearea">                    
-                    <p>姓名：{{ pageData.studentInfo.studentName }} </p><el-tag size="mini">{{pageData.studentInfo.studentStatus}}</el-tag>
-                    <p>性别：{{ pageData.studentInfo.studentSex }}</p>
-                    <p>出生日期：{{ pageData.studentInfo.studentBirthday }}</p>
-                    <p>入学日期：{{ pageData.studentInfo.studentRegisterDate }}</p>
-                    <p>联系电话：{{ pageData.studentInfo.studentPhone }}</p>
-                    <p>身份证号：{{ pageData.studentInfo.studentIdentityCardNum }}</p>
-                    <p>家庭住址：{{ pageData.studentInfo.studentAddress }}</p>
-                    <p>备注：{{ pageData.studentInfo.studentRemark }}</p>
-                    <p class="awards" @click="showUpdateStudent()"><i class="el-icon-edit el-icon--left"></i>编辑</p>
-                </div>
+        <el-col style="width:260px">
+            <div class="avatar-panel">
+                <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="300" :height="300" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
+                </my-avatar>
+                <img :src="avatarPanel.imgDataUrl">
+                <el-button type="success" size="mini" @click="setAvatarShow">设置头像<i class="el-icon-upload el-icon--right"></i></el-button>
             </div>
         </el-col>
         <el-col :span="8">
-            <div class="area">
+            <el-card shadow="never" class="card-student-base">
+                <el-form :label-width="packageDialog.formLabelWidth" :label-position='packageDialog.labelPosition' size="mini" label-suffix="：">
+                    <el-form-item label="姓名">
+                        {{ pageData.studentInfo.studentName }} &nbsp;&nbsp; <el-tag size="medium" :type="studentStatusTag(pageData.studentInfo.studentStatus)">{{ pageData.studentInfo.studentStatusDesc}}</el-tag>
+                    </el-form-item>
+                    <el-form-item label="性别">
+                        {{ pageData.studentInfo.studentSex }}
+                    </el-form-item>
+                    <el-form-item label="出生日期">
+                        {{ pageData.studentInfo.studentBirthday }}
+                    </el-form-item>
+                    <el-form-item label="报名日期">
+                        {{ pageData.studentInfo.studentRegisterDate }}
+                    </el-form-item>
+                    <el-form-item label="联系电话">
+                        {{ pageData.studentInfo.studentPhone }}
+                    </el-form-item>
+                    <el-form-item label="家庭住址">
+                        {{ pageData.studentInfo.studentAddress }}
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        {{ pageData.studentInfo.studentRemark }}
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="showUpdateStudent()"><i class="el-icon-edit el-icon--left"></i>编 辑</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-card>
+        </el-col>
+        <el-col :span="9">
+            <el-card shadow="never" class="card-student-course">
                 <div class="dataarea">
                     <p class="gtitle"><i class="el-icon-date el-icon--left"></i>课程数据</p>
                     <div class="gdataarea clear">
@@ -46,7 +58,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </el-card>
         </el-col>
     </el-row>
     <el-row class="info_row row" :gutter="10">
@@ -180,7 +192,9 @@
 
 <script>
 import {
-    axios
+    axios,
+    dicHelper,
+    tagTypeHelper
 } from '@/utils/index'
 
 import myAvatar from 'vue-image-crop-upload';
@@ -259,7 +273,9 @@ export default {
                     studentAddress: "",
                     student_introduce: "",
                     studentRemark: "",
-                    studentRegisterDate: ""
+                    studentRegisterDate: "",
+                    studentStatus: "",
+                    studentStatusDesc: ""
                 },
                 baseInfoRules: {
                     studentPhone: [{
@@ -378,8 +394,10 @@ export default {
                 fn: function (result) {
                     result.studentInfo.studentBirthday = result.studentInfo.studentBirthday.split('T')[0];
                     result.studentInfo.studentRegisterDate = result.studentInfo.studentRegisterDate.split('T')[0];
+                    result.studentInfo.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], result.studentInfo.studentStatus);
                     _this.avatarPanel.imgDataUrl = result.studentInfo.studentAvatarPath;
                     _this.pageData = result;
+
                 }
             });
         },
@@ -595,12 +613,24 @@ export default {
                 }
             }
             return label;
-        }
+        },
+
+        studentStatusTag(studentStatusCode) {
+            return tagTypeHelper.studentStatusTag(studentStatusCode);
+        },
     }
 }
 </script>
 
 <style lang="less" scoped>
+.card-student-base .el-card__body {
+    padding-bottom: 2px !important;
+}
+
+.el-card__body .el-form-item--mini {
+    margin-bottom: 5px;
+}
+
 .info_container {
     padding: 0;
     margin-top: -20px;
@@ -612,89 +642,59 @@ export default {
 }
 
 .info_row {
-    .area {
-        border: 1px solid #dfdfdf;
-        height: 240px;
+    .avatar-panel {
+        height: 260px;
         overflow: hidden;
+        text-align: center;
+        margin-top: 20px;
 
-        .avatar-panel {
-            text-align: center;
-            margin: 20px;
+        img {
+            width: 210px;
+            height: 210px;
+            border-radius: 50%;
+        }
+    }
 
-            img {
-                width: 180px;
-                height: 180px;
-                border-radius: 50%;
-            }
+    .dataarea {
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+
+        .gtitle {
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            cursor: pointer;
+            background-color: #3bc5ff;
+            color: white;
+            display: block;
         }
 
-        .namearea {
-            padding: 10px;
-            font-size: 14px;
+        .gdataarea {
+            padding-left: 25px;
 
             p {
-                line-height: 24px;
+                line-height: 38px;
             }
 
-            .awards {
-                text-align: center;
-                width: 100%;
-                height: 30px;
-                line-height: 30px;
-                cursor: pointer;
-                background-color: #3bc5ff;
-                border: 1px solid #3bc5ff;
-                color: white;
-                display: block;
+            .num {
+                font-weight: bolder;
+                color: #67c23a;
             }
 
-            .awards:hover {
-                background-color: #f9c855;
-                border: 1px solid #f9c855;
+            .title {
+                color: #3bc5ff;
+            }
+
+            .gdata {
+                margin: 10px;
+                float: left;
             }
         }
 
-        .dataarea {
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
-
-            .gtitle {
-                width: 100%;
-                height: 30px;
-                line-height: 30px;
-                cursor: pointer;
-                background-color: #3bc5ff;
-                color: white;
-                display: block;
-            }
-
-            .gdataarea {
-                padding-left: 25px;
-
-                p {
-                    line-height: 38px;
-                }
-
-                .num {
-                    font-weight: bolder;
-                    color: #67c23a;
-                }
-
-                .title {
-                    color: #3bc5ff;
-                }
-
-                .gdata {
-                    margin: 10px;
-                    float: left;
-                }
-            }
-
-            .morearea {
-                a {
-                    color: #3bc5ff;
-                }
+        .morearea {
+            a {
+                color: #3bc5ff;
             }
         }
     }

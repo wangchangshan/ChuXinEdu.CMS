@@ -342,8 +342,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public DataTable GetCourseToFinishList()
         {
-            // 暂时没有考虑 是否已经报了新的套餐
-            DataTable dt = ADOContext.GetDataTable(@"select student_code, student_name, package_name, rest_course_count from student_course_package where rest_course_count <= 5");
+            // 当前学生是正常在学的。如果当前套餐剩余0课时， 但是学生状态依然是正常，说明还有其他课程套餐。这种情况不提醒了。
+            DataTable dt = ADOContext.GetDataTable(@"select scp.student_code, scp.student_name, scp.package_name, scp.rest_course_count 
+                                                        from student_course_package scp
+                                                        left join student s on scp.student_code = s.student_code
+                                                        where s.student_status='01' and scp.rest_course_count <= 5 and scp.rest_course_count > 0");
 
             return dt;
         }

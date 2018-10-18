@@ -9,7 +9,7 @@
                 <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名" class="search_field"></el-input>
             </el-form-item>
             <el-form-item label="状态：">
-                <el-select size="small" v-model="searchField.studentStatus" placeholder="请选择学生状态"  class="search_field">
+                <el-select size="small" v-model="searchField.studentStatus" placeholder="请选择学生状态"  class="search_field" :clearable="true">
                     <el-option v-for="item in $store.getters['student_status']" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
@@ -44,7 +44,7 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="studentStatus" label="学生状态" align='center' width="100">
+            <el-table-column prop="studentStatus" label="学生状态" align='center' width="110">
                 <template slot-scope="scope">
                     <el-tag :type="studentStatusTag(scope.row.studentStatus)" :disable-transitions="false">
                         {{scope.row.studentStatusDesc}}

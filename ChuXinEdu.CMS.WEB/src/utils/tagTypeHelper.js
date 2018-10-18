@@ -3,9 +3,6 @@ const tagTypeHelper = {
     studentStatusTag(statusCode) {
         let type = '';
         switch (statusCode) {
-            case '00': // 试听
-                type = ''
-                break;
             case '01': // 正常在学
                 type = 'success'
                 break;

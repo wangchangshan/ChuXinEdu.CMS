@@ -675,6 +675,21 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         // 2.2.2 更新学生套餐表
                         var scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
                                                                 .First();
+
+                        if (scp.RestCourseCount == 1)
+                        {
+                            // 2.2.3 如果是套餐的最后一节课， 判断该学生时候还有其他没有完成的套餐
+                            var otherNormalScpCount = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
+                                                                                   && s.RestCourseCount > 0
+                                                                                   && s.Id != studentCoursePackageId)
+                                                                                .Count();
+                            if (otherNormalScpCount == 0)
+                            {
+                                // 2.2.4 没有其他上课的套餐， 修改学生状态为 ‘03 结束未续费’
+                                var student = context.Student.Where(s => s.StudentCode == studentCode).First();
+                                student.StudentStatus = "03";
+                            }
+                        }
                         scp.RestCourseCount -= 1;
                     }
 
@@ -769,6 +784,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             var scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
                                                                 .First();
                             scp.RestCourseCount -= 1;
+                            if (scp.RestCourseCount == 1)
+                            {
+                                // 2.2.3 如果是套餐的最后一节课， 判断该学生时候还有其他没有完成的套餐
+                                var otherNormalScpCount = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
+                                                                                       && s.RestCourseCount > 0
+                                                                                       && s.Id != studentCoursePackageId)
+                                                                                    .Count();
+                                if (otherNormalScpCount == 0)
+                                {
+                                    // 2.2.4 没有其他上课的套餐， 修改学生状态为 ‘03 结束未续费’
+                                    var student = context.Student.Where(s => s.StudentCode == studentCode).First();
+                                    student.StudentStatus = "03";
+                                }
+                            }
                         }
                     }
                     // 3. 提交事务
@@ -1114,7 +1143,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 using (BaseContext context = new BaseContext())
                 {
                     var s = context.Student.Where(st => st.StudentCode == studentCode).FirstOrDefault();
-                    if(s != null)
+                    if (s != null)
                     {
                         s.TrialOtherCourse = curVal;
                         context.SaveChanges();
@@ -1351,7 +1380,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 using (BaseContext context = new BaseContext())
                 {
                     var srd = context.StudentRecommend.Where(s => s.Id == id).FirstOrDefault();
-                    if(srd != null)
+                    if (srd != null)
                     {
                         context.StudentRecommend.Remove(srd);
                         context.SaveChanges();
