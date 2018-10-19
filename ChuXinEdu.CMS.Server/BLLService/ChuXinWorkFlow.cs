@@ -1142,6 +1142,42 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string SetStudentFeeBack(string studentCode, List<StudentCoursePackage> packageList)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var student = context.Student.Where(st => st.StudentCode == studentCode).FirstOrDefault();
+                    if (student != null)
+                    {
+                        student.StudentStatus = "02"; // 中途退费
+                    }
+
+                    foreach(var package in packageList)
+                    {
+                        var scp = context.StudentCoursePackage.Where(s => s.Id == package.Id
+                                                                            && s.ScpStatus == "00")
+                                                            .FirstOrDefault();
+                        if(scp != null)
+                        {
+                            scp.ScpStatus = "02";
+                            scp.FeeBackAmount = package.FeeBackAmount;
+                        }
+                    }
+                    
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
         public string UpdateStudentTrialOtherCourse(string studentCode, string curVal)
         {
             string result = "200";

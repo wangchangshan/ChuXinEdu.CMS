@@ -27,9 +27,11 @@ namespace ChuXinEdu.CMS.Server.BLL
         
         IEnumerable<StudentCoursePackage> GetStudentCoursePackage(string studentCode);
 
+        IEnumerable<StudentCoursePackage> GetNoFinishPackage(string studentCode);
+
         IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode);
 
-        IEnumerable<Simplify_StudentCourse> GetAllStudentsCourse();
+        DataTable GetScpSimplify();
 
         //获取已经上课的数目
         //int GetStudentSignInCourseCount(string studentCode);

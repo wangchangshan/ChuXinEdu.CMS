@@ -49,14 +49,27 @@ namespace ChuXinEdu.CMS.Server.Controllers
             int totalCount = 0;
             IEnumerable<Student> students = _chuxinQuery.GetStudentList(pageIndex, pageSize, query, out totalCount);
             List<STUDENT_R_LIST> studentList = new List<STUDENT_R_LIST>();
-            IEnumerable<Simplify_StudentCourse> studentsCourseCategory = _chuxinQuery.GetAllStudentsCourse();
+            DataTable dtScpSimplify = _chuxinQuery.GetScpSimplify();
 
             STUDENT_R_LIST studentVM = null;
             foreach(Student student in students)
             {
                 var studentCode = student.StudentCode;
                 studentVM = mapper.Map<Student, STUDENT_R_LIST>(student);
-                studentVM.StudentCourseCategory = studentsCourseCategory.Where(s => s.StudentCode == studentCode);
+
+                DataRow[] drArr = dtScpSimplify.Select("student_code = '" + studentCode + "'");
+                List<Simplify_StudentCourse> ssList = new List<Simplify_StudentCourse>();
+                foreach(DataRow dr in drArr)
+                {
+                    Simplify_StudentCourse ss = new Simplify_StudentCourse{
+                        StudentCode = studentCode,
+                        Code = dr["course_category_code"].ToString(),
+                        Name = dr["course_category_name"].ToString()
+                    };
+                    dtScpSimplify.Rows.Remove(dr);
+                    ssList.Add(ss);
+                }
+                studentVM.StudentCourseCategory = ssList;
                 studentList.Add(studentVM);
             }
 
@@ -170,7 +183,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     meishu.TotalRestCourseCount += coursePackage.RestCourseCount;
                     if(coursePackage.IsPayed == "Y")
                     {
-                        meishu.TotalTuition += coursePackage.ActualPrice;
+                        meishu.TotalTuition += coursePackage.ActualPrice - coursePackage.FeeBackAmount;
                     }
                 }
                 else if(coursePackage.CourseCategoryCode == "shufa")
@@ -201,6 +214,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
             DataTable dt = _chuxinQuery.GetStudentAuxiliaryInfo(studentCode);
             string reslutJson = JsonConvert.SerializeObject(dt);
             return reslutJson;
+        }
+
+        /// <summary>
+        /// 获取学生为完成套餐列表 GET api/student/getnofinishpackage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{studentCode}")]
+        public IEnumerable<StudentCoursePackage> GetNoFinishPackage(string studentCode)
+        {
+            IEnumerable<StudentCoursePackage> packageList = _chuxinQuery.GetNoFinishPackage(studentCode);
+            return packageList;
         }
 
         /// <summary>
@@ -346,6 +370,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string UpdateTrialOtherCourse(string studentCode, [FromBody] dynamic obj)
         {
             string result = _chuxinWorkflow.UpdateStudentTrialOtherCourse(studentCode, obj.curVal.ToString());
+            return result;
+        }
+
+        /// <summary>
+        /// 学生退费 PUT api/student/feeback
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{studentcode}")]
+        public string Feeback(string studentCode, [FromBody] List<StudentCoursePackage> packageList)
+        {
+            string result = _chuxinWorkflow.SetStudentFeeBack(studentCode, packageList);
             return result;
         }
 

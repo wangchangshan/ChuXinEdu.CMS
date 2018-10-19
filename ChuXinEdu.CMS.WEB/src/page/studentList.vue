@@ -37,7 +37,7 @@
             </el-table-column>
             <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="200">
             </el-table-column>
-            <el-table-column prop="studentCourseCategory" label="学习课程" align='left' min-width="150">
+            <el-table-column prop="studentCourseCategory" label="学习课程" align='left' min-width="130">
                 <template slot-scope="scope">
                     <el-tag :type="courseCategoryTag(item.code)" v-for="item in scope.row.studentCourseCategory" :key="item.id" :disable-transitions="false">
                         {{item.name}}

@@ -127,15 +127,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
 
         // 所有学生的课程大类
-        public IEnumerable<Simplify_StudentCourse> GetAllStudentsCourse()
+        public DataTable GetScpSimplify()
         {
             using (BaseContext context = new BaseContext())
             {
-                //     return context.Simplify_StudentCourse.FromSql(@"select scp.id,scp.student_code,scp.package_course_category as course_category_code, d.item_name as course_category_name 
-                //                             from student_course_package scp 
-                //                             left join sys_dictionary d on scp.package_course_category = d.item_code and d.type_code='course_category'").ToList();
-                return context.Simplify_StudentCourse.FromSql(@"select id, student_code,course_category_code,course_category_name from student_course_package")
-                                                        .ToList();
+                DataTable dt = ADOContext.GetDataTable(@"select  distinct student_code,course_category_code,course_category_name from student_course_package");
+
+                return dt;
             }
         }
 
@@ -152,6 +150,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 return context.StudentCoursePackage.Where(s => s.StudentCode == studentCode).ToList();
+            }
+        }
+
+        public IEnumerable<StudentCoursePackage> GetNoFinishPackage(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
+                                                                && s.ScpStatus == "00"
+                                                                && s.IsPayed == "Y")
+                                                    .ToList();
             }
         }
 

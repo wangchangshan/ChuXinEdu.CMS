@@ -116,9 +116,6 @@ export default {
         }
     },
     watch: {
-        '$route'(to, from) {
-            this.$router.go(0);
-        },
         'trialOtherCourse'(curVal,oldVal){
             axios({
                 type: 'put',

@@ -20,6 +20,10 @@
                 v-bind:style="{height: pageHeight + 'px'}">
             </student-achievements>
         </el-tab-pane>
+        <el-tab-pane :name="'feeback'">
+            <span slot="label"><i class="fa fa-exclamation-triangle"></i> 退 费</span> 
+            <student-fee-back v-if="activeLabelCode === 'feeback'" v-bind:studentCode="studentCode"></student-fee-back>
+        </el-tab-pane>
         <el-tab-pane :name="'otherinfo'">
             <span slot="label"><i class="fa fa-handshake-o"></i> 其他信息</span> 
             <student-additional-info v-if="activeLabelCode === 'otherinfo'" v-bind:studentCode="studentCode"></student-additional-info>
@@ -32,6 +36,7 @@
 import studentDetailBaseInfo from '@/page/studentDetailBaseInfo'
 import studentDetailCourseHistory from '@/page/studentDetailCourseHistory'
 import studentDetailAchievements from '@/page/studentDetailAchievements'
+import studentDetailFeeBack from '@/page/studentDetailFeeBack'
 import studentDetailAdditionalInfo from '@/page/studentDetailAdditionalInfo'
 
 export default {
@@ -49,7 +54,8 @@ export default {
     components: {
         "student-base-info" : studentDetailBaseInfo,
         "student-course-history" : studentDetailCourseHistory,
-        "student-achievements":studentDetailAchievements,
+        "student-achievements": studentDetailAchievements,
+        "student-fee-back": studentDetailFeeBack,
         "student-additional-info":studentDetailAdditionalInfo
     },
     methods: {

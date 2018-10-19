@@ -49,6 +49,9 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("actual_price")]
         public decimal ActualPrice { get; set; }
+        
+        [Column("fee_back_amount")]
+        public decimal FeeBackAmount { get; set; }
 
         [Column("is_discount")]
         public string IsDiscount { get; set; }

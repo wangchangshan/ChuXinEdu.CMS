@@ -76,7 +76,11 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [更新学生]  
         string UpdateStudentBaseInfo(string studentCode, Student student);
 
+        // [正式学生打开新试听开关]
         string UpdateStudentTrialOtherCourse(string studentCode, string curVal);
+
+        // [学生退费]
+        string SetStudentFeeBack(string studentCode, List<StudentCoursePackage> packageList);
 
         // [更新试听学生]  
         string UpdateTempStudent(int id, StudentTemp student);
