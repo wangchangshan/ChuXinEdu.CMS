@@ -346,7 +346,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             DataTable dt = ADOContext.GetDataTable(@"select scp.student_code, scp.student_name, scp.package_name, scp.rest_course_count 
                                                         from student_course_package scp
                                                         left join student s on scp.student_code = s.student_code
-                                                        where s.student_status='01' and scp.rest_course_count <= 5 and scp.rest_course_count > 0");
+                                                        where s.student_status='01' and scp.rest_course_count <= 5 and scp.scp_status = '00'");
 
             return dt;
         }

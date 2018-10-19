@@ -86,7 +86,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             // 3.1 更新student_course_package表中的flex_course_count字段 (如果一个学生续费相同套餐，那么应该等)
                             var scp = context.StudentCoursePackage.Where(s => s.Id == student.StudentCoursePackageId)
                                                                    .FirstOrDefault();
-                            scp.FlexCourseCount = scp.FlexCourseCount - student.CourseCount;
+                            scp.FlexCourseCount = scp.FlexCourseCount - courseCount;
                         }
                         else // 试听
                         {
@@ -678,9 +678,9 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                         if (scp.RestCourseCount == 1)
                         {
-                            // 2.2.3 如果是套餐的最后一节课， 判断该学生时候还有其他没有完成的套餐
+                            // 2.2.3 如果是套餐的最后一节课， 判断该学生是否还有其他没有完成的套餐
                             var otherNormalScpCount = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
-                                                                                   && s.RestCourseCount > 0
+                                                                                   && s.ScpStatus == "00"
                                                                                    && s.Id != studentCoursePackageId)
                                                                                 .Count();
                             if (otherNormalScpCount == 0)
@@ -689,6 +689,9 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 var student = context.Student.Where(s => s.StudentCode == studentCode).First();
                                 student.StudentStatus = "03";
                             }
+
+                            // 2.2.5 修改当前学生套餐状态为 01已完成
+                            scp.ScpStatus = "01";
                         }
                         scp.RestCourseCount -= 1;
                     }
@@ -783,12 +786,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             // 2.2.2 更新学生套餐表
                             var scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
                                                                 .First();
-                            scp.RestCourseCount -= 1;
                             if (scp.RestCourseCount == 1)
                             {
-                                // 2.2.3 如果是套餐的最后一节课， 判断该学生时候还有其他没有完成的套餐
+                                // 2.2.3 如果是套餐的最后一节课， 判断该学生是否还有其他没有完成的套餐
                                 var otherNormalScpCount = context.StudentCoursePackage.Where(s => s.StudentCode == studentCode
-                                                                                       && s.RestCourseCount > 0
+                                                                                       && s.ScpStatus == "00"
                                                                                        && s.Id != studentCoursePackageId)
                                                                                     .Count();
                                 if (otherNormalScpCount == 0)
@@ -797,7 +799,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                     var student = context.Student.Where(s => s.StudentCode == studentCode).First();
                                     student.StudentStatus = "03";
                                 }
+
+                                // 2.2.5 修改当前学生套餐状态为 01已完成 
+                                scp.ScpStatus = "01";
                             }
+                            scp.RestCourseCount -= 1;
                         }
                     }
                     // 3. 提交事务

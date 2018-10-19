@@ -166,7 +166,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 if(coursePackage.CourseCategoryCode == "meishu")
                 {
-                    meishu.TotalCourseCount += coursePackage.PackageCourseCount;
+                    meishu.TotalCourseCount += coursePackage.ActualCourseCount;
                     meishu.TotalRestCourseCount += coursePackage.RestCourseCount;
                     if(coursePackage.IsPayed == "Y")
                     {
@@ -175,7 +175,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 }
                 else if(coursePackage.CourseCategoryCode == "shufa")
                 {
-                    shufa.TotalCourseCount += coursePackage.PackageCourseCount;
+                    shufa.TotalCourseCount += coursePackage.ActualCourseCount;
                     shufa.TotalRestCourseCount += coursePackage.RestCourseCount;
                     if(coursePackage.IsPayed == "Y")
                     {
@@ -293,9 +293,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
             package.CourseCategoryCode = sysPackage.PackageCourseCategoryCode;
             package.CourseCategoryName = sysPackage.PackageCourseCategoryName;
             package.PackageCourseCount = sysPackage.PackageCourseCount;
-            package.FlexCourseCount = sysPackage.PackageCourseCount;
-            package.RestCourseCount = sysPackage.PackageCourseCount;
             package.PackagePrice = sysPackage.PackagePrice;            
+
+            package.FlexCourseCount = package.ActualCourseCount;
+            package.RestCourseCount = package.ActualCourseCount;
+            package.ScpStatus = "00";
             package.CreateTime = DateTime.Now;
 
             if(package.ActualPrice == 0)

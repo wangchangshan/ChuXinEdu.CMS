@@ -544,7 +544,7 @@ export default {
             _this.selectZhengShiDialog.studentList = [];
             axios({
                 type: 'get',
-                path: '/api/student/getstudentstoselectCourse',
+                path: '/api/student/getstudentstoselectcourse',
                 data: {
                     dayCode: dayCode,
                     periodName: periodName

@@ -72,23 +72,29 @@
                 <el-table :data="pageData.coursePackageList" stripe border style="width: 100%" size="mini">
                     <el-table-column prop="packageName" align='left' label="课程套餐" min-width="200">
                     </el-table-column>
-                    <el-table-column prop="" align='center' label="课程类别" min-width="140">
+                    <el-table-column prop="" align='center' label="课程类别" min-width="120">
                         <template slot-scope='scope'>
                             {{ scope.row.courseCategoryName  + "/" + scope.row.courseFolderName }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="restCourseCount" align='center' label="剩余课时" width="90">
+                    <el-table-column prop="restCourseCount" align='center' label="剩余课时数" min-width="90">
+                        <template slot-scope='scope'>
+                            {{ scope.row.restCourseCount  + "/" + scope.row.actualCourseCount }}
+                        </template>
                     </el-table-column>
                     <el-table-column prop="payDate" align='center' label="缴费日期" min-width="100">
                         <template slot-scope='scope'>
                             {{ scope.row.payDate && scope.row.payDate.split('T')[0] }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="actualPrice" align='center' label="缴费金额（元）" min-width="110">
+                    <el-table-column prop="actualPrice" align='center' label="缴费金额" min-width="80">
+                        <template slot-scope='scope'>
+                            <span style="color:#f56767;">{{ scope.row.actualPrice }}</span> 
+                        </template>
                     </el-table-column>
-                    <el-table-column prop="payPatternName" align='center' label="缴费方式" min-width="100">
+                    <el-table-column prop="payPatternName" align='center' label="缴费方式" min-width="80">
                     </el-table-column>
-                    <el-table-column prop="payeeName" align='center' label="收款人" min-width="100">
+                    <el-table-column prop="payeeName" align='center' label="收款人" min-width="90">
                     </el-table-column>
                     <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
                         <template slot-scope='scope'>
@@ -113,6 +119,9 @@
                     <el-radio-group :disabled="packageDialog.uploadPanel == 'Y'" v-model="packageDialog.courseInfo.selectedFolder">
                         <el-radio v-for="item in packageDialog.courseFolder" :key="item.value" :label="item.value" :disabled="handleCourseFolderDisplay(item)">{{item.label}}</el-radio>
                     </el-radio-group>
+                </el-form-item>
+                <el-form-item label="实际课程数目">
+                    <el-input-number v-model="packageDialog.courseInfo.actualCourseCount" :disabled="packageDialog.uploadPanel == 'Y'" :min="0"></el-input-number>
                 </el-form-item>
                 <el-form-item label="是否缴费">
                     <el-radio-group v-model="packageDialog.courseInfo.isPayed">
@@ -250,11 +259,12 @@ export default {
                 isShow: false,
                 title: '添加课程套餐',
                 labelPosition: 'right',
-                formLabelWidth: '90px',
+                formLabelWidth: '100px',
                 uploadPanel: 'N',
                 courseInfo: {
                     selectedPackage: [],
                     selectedFolder: '',
+                    actualCourseCount: 0,
                     isDiscount: 'N',
                     actualPrice: 0,
                     isPayed: 'N',
@@ -377,20 +387,6 @@ export default {
             console.log('field: ' + field);
         },
 
-        showAddCoursePackage() {
-            this.packageDialog.uploadPanel = 'N';
-            this.packageDialog.courseInfo = {
-                selectedPackage: [],
-                selectedFolder: '',
-                isDiscount: 'N',
-                actualPrice: 0,
-                isPayed: 'N',
-                selectedPaymentType: '',
-                payeeCode: '',
-                payDate: ''
-            }
-            this.packageDialog.isShow = true;
-        },
         GetStudentBaseData() {
             var _this = this;
             axios({
@@ -408,22 +404,6 @@ export default {
 
                 }
             });
-        },
-        showUpdateCoursePackage(row) {
-            this.packageDialog.uploadPanel = 'Y';
-            this.packageDialog.courseInfo = {
-                id: row.id,
-                selectedPackage: [row.courseCategoryCode, row.packageCode],
-                selectedFolder: row.courseFolderCode,
-                isDiscount: row.isDiscount,
-                actualPrice: row.actualPrice,
-                isPayed: row.isPayed,
-                selectedPaymentType: row.payPatternCode,
-                payeeCode: row.payeeCode,
-                payDate: row.payDate.split('T')[0]
-            }
-
-            this.packageDialog.isShow = true;
         },
 
         DelPackage() {
@@ -464,6 +444,21 @@ export default {
             });
         },
 
+        showAddCoursePackage() {
+            this.packageDialog.uploadPanel = 'N';
+            this.packageDialog.courseInfo = {
+                selectedPackage: [],
+                selectedFolder: '',
+                isDiscount: 'N',
+                actualCourseCount: 0,
+                actualPrice: 0,
+                isPayed: 'N',
+                selectedPaymentType: '',
+                payeeCode: '',
+                payDate: ''
+            }
+            this.packageDialog.isShow = true;
+        },
         submitAddPackage() {
             var _this = this;
             var cascader = _this.packageDialog.courseInfo.selectedPackage;
@@ -475,8 +470,24 @@ export default {
                 return;
             }
 
+            if (_this.packageDialog.courseInfo.actualCourseCount == 0) {
+                _this.$message({
+                    message: '请填写实际课程数目',
+                    type: 'warning'
+                });
+                return;
+            }
+
             var folderCode = _this.packageDialog.courseInfo.selectedFolder,
                 folderName = _this.GetLabelByValue(_this.packageDialog.courseFolder, folderCode);
+
+            if (!folderCode) {
+                _this.$message({
+                    message: '请选择课程内容',
+                    type: 'warning'
+                });
+                return;
+            }
 
             var teacherCode = _this.packageDialog.courseInfo.payeeCode,
                 teacherName = _this.GetLabelByValue(_this.packageDialog.payeeList, teacherCode);
@@ -493,6 +504,7 @@ export default {
                 CourseFolderName: folderName,
                 IsDiscount: _this.packageDialog.courseInfo.isDiscount,
                 IsPayed: _this.packageDialog.courseInfo.isPayed,
+                ActualCourseCount: _this.packageDialog.courseInfo.actualCourseCount,
                 ActualPrice: _this.packageDialog.courseInfo.actualPrice,
                 PayeeCode: teacherCode,
                 PayeeName: teacherName,
@@ -518,6 +530,24 @@ export default {
             });
         },
 
+
+        showUpdateCoursePackage(row) {
+            this.packageDialog.uploadPanel = 'Y';
+            this.packageDialog.courseInfo = {
+                id: row.id,
+                selectedPackage: [row.courseCategoryCode, row.packageCode],
+                selectedFolder: row.courseFolderCode,
+                isDiscount: row.isDiscount,
+                actualCourseCount: row.actualCourseCount,
+                actualPrice: row.actualPrice,
+                isPayed: row.isPayed,
+                selectedPaymentType: row.payPatternCode,
+                payeeCode: row.payeeCode,
+                payDate: row.payDate.split('T')[0]
+            }
+
+            this.packageDialog.isShow = true;
+        },
         UpdatePackage() {
             var _this = this;
 

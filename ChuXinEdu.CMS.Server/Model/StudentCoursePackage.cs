@@ -36,7 +36,10 @@ namespace ChuXinEdu.CMS.Server.Model
         public string CourseFolderName { get; set; }
 
         [Column("package_course_count")]
-        public int PackageCourseCount { get; set; }        
+        public int PackageCourseCount { get; set; }       
+
+        [Column("actual_course_count")]
+        public int ActualCourseCount { get; set; }   
 
         [Column("flex_course_count")]
         public int FlexCourseCount { get; set; }
@@ -70,6 +73,9 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("rest_course_count")]
         public int RestCourseCount { get; set; }
+
+        [Column("scp_status")]
+        public string ScpStatus { get; set; }
 
         [Column("create_time")]
         public DateTime CreateTime { get; set; }
