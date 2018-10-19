@@ -1123,6 +1123,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     s.StudentAddress = student.StudentAddress;
                     s.StudentRemark = student.StudentRemark;
                     s.StudentRegisterDate = student.StudentRegisterDate;
+                    s.StudentStatus = student.StudentStatus;
 
                     context.SaveChanges();
                 }

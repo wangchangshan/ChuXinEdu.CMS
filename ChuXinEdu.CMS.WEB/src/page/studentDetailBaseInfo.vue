@@ -1,71 +1,76 @@
 <template>
 <div class="info_container">
-    <el-row class="info_row row" :gutter="10">
-        <el-col style="width:260px">
-            <div class="avatar-panel">
-                <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="300" :height="300" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
-                </my-avatar>
-                <img :src="avatarPanel.imgDataUrl">
-                <el-button type="success" size="mini" @click="setAvatarShow">设置头像<i class="el-icon-upload el-icon--right"></i></el-button>
-            </div>
-        </el-col>
-        <el-col :span="8">
-            <el-card shadow="never" class="card-student-base">
-                <el-form :label-width="packageDialog.formLabelWidth" :label-position='packageDialog.labelPosition' size="mini" label-suffix="：">
-                    <el-form-item label="姓名">
-                        {{ pageData.studentInfo.studentName }} &nbsp;&nbsp; <el-tag size="medium" :type="studentStatusTag(pageData.studentInfo.studentStatus)">{{ pageData.studentInfo.studentStatusDesc}}</el-tag>
-                    </el-form-item>
-                    <el-form-item label="性别">
-                        {{ pageData.studentInfo.studentSex }}
-                    </el-form-item>
-                    <el-form-item label="出生日期">
-                        {{ pageData.studentInfo.studentBirthday }}
-                    </el-form-item>
-                    <el-form-item label="报名日期">
-                        {{ pageData.studentInfo.studentRegisterDate }}
-                    </el-form-item>
-                    <el-form-item label="联系电话">
-                        {{ pageData.studentInfo.studentPhone }}
-                    </el-form-item>
-                    <el-form-item label="家庭住址">
-                        {{ pageData.studentInfo.studentAddress }}
-                    </el-form-item>
-                    <el-form-item label="备注">
-                        {{ pageData.studentInfo.studentRemark }}
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="showUpdateStudent()"><i class="el-icon-edit el-icon--left"></i>编 辑</el-button>
-                    </el-form-item>
-                </el-form>
-            </el-card>
-        </el-col>
-        <el-col :span="9">
-            <el-card shadow="never" class="card-student-course">
-                <div class="dataarea">
-                    <p class="gtitle"><i class="el-icon-date el-icon--left"></i>课程数据</p>
-                    <div class="gdataarea clear">
-                        <div class="gdata left">
-                            <p class="num">{{ pageData.totalCourseCount }}</p>
-                            <p class="title">总课时数</p>
-                        </div>
-                        <div class="gdata left">
-                            <p class="num">{{ pageData.restCourseCount }}</p>
-                            <p class="title">剩余课时数</p>
-                        </div>
-                        <div class="gdata left">
-                            <p class="num">￥{{ pageData.totalTuition }}</p>
-                            <p class="title">缴费金额</p>
-                        </div>
-                    </div>
+    <el-row class="info_row row" :gutter="10" style="margin:10px">
+        <el-container>
+            <el-aside width="260px">
+                <div class="avatar-panel">
+                    <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="300" :height="300" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
+                    </my-avatar>
+                    <img :src="avatarPanel.imgDataUrl">
+                    <el-button type="success" size="mini" @click="setAvatarShow">设置头像<i class="el-icon-upload el-icon--right"></i></el-button>
                 </div>
-            </el-card>
-        </el-col>
+            </el-aside>
+            <el-main style="padding:10px; padding-bottom:0">
+                <el-row :gutter="10">
+                    <el-col :span="12" style="min-width:280px">
+                        <el-card shadow="never" class="card-student-base">
+                            <el-form :label-width="packageDialog.formLabelWidth" :label-position='packageDialog.labelPosition' size="mini" label-suffix="：">
+                                <el-form-item label="姓名">
+                                    {{ pageData.studentInfo.studentName }} &nbsp;&nbsp; <el-tag size="medium" :type="studentStatusTag(pageData.studentInfo.studentStatus)">{{ pageData.studentInfo.studentStatusDesc}}</el-tag>
+                                </el-form-item>
+                                <el-form-item label="性别">
+                                    {{ pageData.studentInfo.studentSex }}
+                                </el-form-item>
+                                <el-form-item label="出生日期">
+                                    {{ pageData.studentInfo.studentBirthday }}
+                                </el-form-item>
+                                <el-form-item label="报名日期">
+                                    {{ pageData.studentInfo.studentRegisterDate }}
+                                </el-form-item>
+                                <el-form-item label="联系电话">
+                                    {{ pageData.studentInfo.studentPhone }}
+                                </el-form-item>
+                                <el-form-item label="家庭住址">
+                                    {{ pageData.studentInfo.studentAddress }}
+                                </el-form-item>
+                                <el-form-item label="备注">
+                                    {{ pageData.studentInfo.studentRemark }}
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" @click="showUpdateStudent()"><i class="el-icon-edit el-icon--left"></i>编 辑</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="12" style="min-width:340px">
+                        <el-card shadow="never" class="card-student-course">
+                            <div class="dataarea">
+                                <p class="gtitle"><i class="el-icon-date el-icon--left"></i>课程数据</p>
+                                <el-table :data="pageData.courseOverview" border size="mini" :summary-method="getSummaries" show-summary style="width: 100%; margin-top: 20px">
+                                    <el-table-column prop="courseCategoryName" label="课程名称" align="center" width="70">
+                                    </el-table-column>
+                                    <el-table-column prop="totalCourseCount" label="总课时数" align="center" min-width="70">
+                                    </el-table-column>
+                                    <el-table-column prop="totalRestCourseCount" label="剩余课时数" align="center" min-width="90">
+                                    </el-table-column>
+                                    <el-table-column prop="totalTuition" label="缴费金额" align="center" min-width="70">
+                                        <!-- <template slot-scope='scope'>
+                                                 <span style="color:#f56767;font-weight:600">{{ scope.row.totalTuition }}</span> 
+                                        </template> -->
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-main>
+        </el-container>
     </el-row>
     <el-row class="info_row row" :gutter="10">
         <el-col :span="24">
             <template>
                 <el-table :data="pageData.coursePackageList" stripe border style="width: 100%" size="mini">
-                    <el-table-column prop="packageName" align='center' label="课程套餐" min-width="200">
+                    <el-table-column prop="packageName" align='left' label="课程套餐" min-width="200">
                     </el-table-column>
                     <el-table-column prop="" align='center' label="课程类别" min-width="140">
                         <template slot-scope='scope'>
@@ -92,7 +97,7 @@
                     </el-table-column>
                 </el-table>
                 <div style="margin-top:10px">
-                    <el-button type="success" icon="el-icon-plus" size="small" @click="showAddCoursePackage()">添加课程套餐</el-button>
+                    <el-button type="success" v-if="pageData.studentInfo.studentStatus == '01'" icon="el-icon-plus" size="small" @click="showAddCoursePackage()">添加课程套餐</el-button>
                 </div>
             </template>
         </el-col>
@@ -154,7 +159,11 @@
         <div class="form">
             <el-form ref="baseInfo" :model="studentDialog.baseInfo" :rules="studentDialog.baseInfoRules" :label-width="studentDialog.formLabelWidth" :label-position='studentDialog.labelPosition' size="mini">
                 <el-form-item label="姓名">
-                    {{ studentDialog.baseInfo.studentName }}
+                    {{ studentDialog.baseInfo.studentName }} 
+                    <el-select v-model="studentDialog.baseInfo.studentStatus" placeholder="请选择学生状态">
+                        <el-option v-for="item in $store.getters['student_status']" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="性别">
                     <el-radio-group v-model="studentDialog.baseInfo.studentSex">
@@ -217,9 +226,6 @@ export default {
                 imgDataUrl: ''
             },
             pageData: {
-                totalCourseCount: 0,
-                restCourseCount: 0,
-                totalTuition: 0,
                 studentInfo: {
                     studentCode: "",
                     studentName: "",
@@ -233,8 +239,11 @@ export default {
                     studentAddress: "",
                     studentAvatarPath: "",
                     studentStatus: "",
+                    studentStatus: "",
+                    studentStatusDesc: ""
                 },
-                coursePackageList: []
+                coursePackageList: [],
+                courseOverview: []
             },
             packageDialog: {
                 width: '520px',
@@ -275,7 +284,6 @@ export default {
                     studentRemark: "",
                     studentRegisterDate: "",
                     studentStatus: "",
-                    studentStatusDesc: ""
                 },
                 baseInfoRules: {
                     studentPhone: [{
@@ -522,7 +530,6 @@ export default {
             var patternCode = _this.packageDialog.courseInfo.selectedPaymentType,
                 patternName = _this.GetLabelByValue(_this.packageDialog.payPattern, patternCode);
 
-            // 添加新的套餐
             var updatePackage = {
                 IsDiscount: _this.packageDialog.courseInfo.isDiscount,
                 IsPayed: _this.packageDialog.courseInfo.isPayed,
@@ -561,7 +568,8 @@ export default {
                 studentPhone: this.pageData.studentInfo.studentPhone,
                 studentAddress: this.pageData.studentInfo.studentAddress,
                 studentRemark: this.pageData.studentInfo.studentRemark,
-                studentRegisterDate: this.pageData.studentInfo.studentRegisterDate
+                studentRegisterDate: this.pageData.studentInfo.studentRegisterDate,
+                studentStatus: this.pageData.studentInfo.studentStatus
             };
         },
 
@@ -618,15 +626,40 @@ export default {
         studentStatusTag(studentStatusCode) {
             return tagTypeHelper.studentStatusTag(studentStatusCode);
         },
+        getSummaries(param) {
+            const {
+                columns,
+                data
+            } = param;
+            const sums = [];
+            columns.forEach((column, index) => {
+                if (index === 0) {
+                    sums[index] = '合计';
+                    return;
+                }
+                const values = data.map(item => Number(item[column.property]));
+                if (!values.every(value => isNaN(value))) {
+                    sums[index] = values.reduce((prev, curr) => {
+                        const value = Number(curr);
+                        if (!isNaN(value)) {
+                            return prev + curr;
+                        } else {
+                            return prev;
+                        }
+                    }, 0);
+                    sums[index] += '';
+                } else {
+                    sums[index] = 'N/A';
+                }
+            });
+
+            return sums;
+        }
     }
 }
 </script>
 
 <style lang="less" scoped>
-.card-student-base .el-card__body {
-    padding-bottom: 2px !important;
-}
-
 .el-card__body .el-form-item--mini {
     margin-bottom: 5px;
 }
@@ -643,7 +676,6 @@ export default {
 
 .info_row {
     .avatar-panel {
-        height: 260px;
         overflow: hidden;
         text-align: center;
         margin-top: 20px;
@@ -668,28 +700,6 @@ export default {
             background-color: #3bc5ff;
             color: white;
             display: block;
-        }
-
-        .gdataarea {
-            padding-left: 25px;
-
-            p {
-                line-height: 38px;
-            }
-
-            .num {
-                font-weight: bolder;
-                color: #67c23a;
-            }
-
-            .title {
-                color: #3bc5ff;
-            }
-
-            .gdata {
-                margin: 10px;
-                float: left;
-            }
         }
 
         .morearea {

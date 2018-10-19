@@ -24,7 +24,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         Student GetStudentByCode(string studentCode);
 
         DataTable GetStudentAuxiliaryInfo(string studentCode);
-
+        
         IEnumerable<StudentCoursePackage> GetStudentCoursePackage(string studentCode);
 
         IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode);

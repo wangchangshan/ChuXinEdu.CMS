@@ -144,21 +144,49 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 int id = baseInfo.StudentInfo.Id;
                 baseInfo.StudentInfo.StudentAvatarPath = "http://localhost:8080/api/course/getimage?id=" + id + "&type=avatar&rnd="+ System.Guid.NewGuid().ToString("N");
             }
+
             baseInfo.CoursePackageList =  _chuxinQuery.GetStudentCoursePackage(studentCode);
 
-            int totalCount = 0;
-            decimal tuition = 0.0m;
+            
+            STUDENT_R_COURSE_OVERVIEW meishu = new STUDENT_R_COURSE_OVERVIEW {
+                CourseCategoryCode = "meishu",
+                CourseCategoryName = "美术",
+                TotalCourseCount = 0,
+                TotalRestCourseCount = 0,
+                TotalTuition = 0.0m
+            };
+            STUDENT_R_COURSE_OVERVIEW shufa = new STUDENT_R_COURSE_OVERVIEW{
+                CourseCategoryCode = "shufa",
+                CourseCategoryName = "书法",
+                TotalCourseCount = 0,
+                TotalRestCourseCount = 0,
+                TotalTuition = 0.0m
+            };
             foreach (var coursePackage in baseInfo.CoursePackageList)
             {
-                totalCount += coursePackage.PackageCourseCount;
-                baseInfo.RestCourseCount += coursePackage.RestCourseCount;
-                if(coursePackage.IsPayed == "Y")
+                if(coursePackage.CourseCategoryCode == "meishu")
                 {
-                    tuition += coursePackage.ActualPrice;
+                    meishu.TotalCourseCount += coursePackage.PackageCourseCount;
+                    meishu.TotalRestCourseCount += coursePackage.RestCourseCount;
+                    if(coursePackage.IsPayed == "Y")
+                    {
+                        meishu.TotalTuition += coursePackage.ActualPrice;
+                    }
+                }
+                else if(coursePackage.CourseCategoryCode == "shufa")
+                {
+                    shufa.TotalCourseCount += coursePackage.PackageCourseCount;
+                    shufa.TotalRestCourseCount += coursePackage.RestCourseCount;
+                    if(coursePackage.IsPayed == "Y")
+                    {
+                        shufa.TotalTuition += coursePackage.ActualPrice;
+                    }
                 }
             }
-            baseInfo.TotalCourseCount = totalCount;
-            baseInfo.TotalTuition = tuition;         
+            List<STUDENT_R_COURSE_OVERVIEW> overview = new List<STUDENT_R_COURSE_OVERVIEW>();
+            overview.Add(meishu);
+            overview.Add(shufa);
+            baseInfo.CourseOverview = overview;
             
             return baseInfo;
         }
@@ -269,6 +297,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             package.RestCourseCount = sysPackage.PackageCourseCount;
             package.PackagePrice = sysPackage.PackagePrice;            
             package.CreateTime = DateTime.Now;
+
             if(package.ActualPrice == 0)
             {
                 package.ActualPrice = sysPackage.PackagePrice;

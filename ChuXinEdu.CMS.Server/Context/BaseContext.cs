@@ -34,6 +34,8 @@ namespace ChuXinEdu.CMS.Server.Context
 
         public virtual DbSet<DIC_R_KEY_VALUE> DIC_R_KEY_VALUE {get; set;}
 
+        public virtual DbSet<STUDENT_R_COURSE_OVERVIEW> STUDENT_R_COURSE_OVERVIEW {get; set;}
+
         public virtual DbSet<Student> Student { get; set; }
 
         public virtual DbSet<StudentTemp> StudentTemp { get; set; }
