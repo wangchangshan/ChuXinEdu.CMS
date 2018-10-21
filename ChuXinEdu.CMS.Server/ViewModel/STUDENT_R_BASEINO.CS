@@ -16,3 +16,4 @@ namespace ChuXinEdu.CMS.Server.ViewModel
         public virtual IEnumerable<StudentCoursePackage> CoursePackageList { get; set; }
     }
 }
+
