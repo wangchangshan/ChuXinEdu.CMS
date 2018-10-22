@@ -345,7 +345,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     {
                         // 2.2 更新排课表
                         var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
-                                                                                    && s.StudentCode == studentCode
                                                                                     && s.ArrangeTemplateCode == templateCode
                                                                                     && s.PackageCode == packageCode
                                                                                     && s.CourseWeekDay == dayCode
@@ -354,7 +353,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                     && s.CourseType == "正式")
                                                                             .FirstOrDefault();
 
-                        // 如果学生当前时时间段没有排课，则删除student_course_arrange表中的记录
+                        // 如果学生这个时间段只排了当前一节课，则删除student_course_arrange表中的记录
                         if (courseArrange.CourseTotalCount == 1)
                         {
                             context.Remove(courseArrange);

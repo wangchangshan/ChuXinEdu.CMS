@@ -37,7 +37,9 @@ const tagTypeHelper = {
                 type = '';
                 break;
             case 'shufa_00':
-                type = ''
+                type = 'warning'
+            case 'shufa_01':
+                type = 'warning'
                 break;
         }
         return type;

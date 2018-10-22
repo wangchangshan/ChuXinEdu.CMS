@@ -982,7 +982,7 @@ export default {
         },
 
         courseFolderTag(folderCode) {
-            return tagTypeHelper.courseCategoryTag(folderCode);
+            return tagTypeHelper.courseFolderTag(folderCode);
         }
     }
 };
