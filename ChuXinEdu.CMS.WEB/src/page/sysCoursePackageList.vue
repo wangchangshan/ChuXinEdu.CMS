@@ -95,7 +95,7 @@ export default {
             },
             packageList: [],
             loading: false,
-            tableHeight: this.$store.state.page.win_content.height - 63,
+            tableHeight: this.$store.state.page.win_content.height - 73,
             paginations: {
                 current_page_index: 1,
                 total: 4,
