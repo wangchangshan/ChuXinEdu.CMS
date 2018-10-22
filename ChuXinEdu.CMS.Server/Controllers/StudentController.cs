@@ -69,6 +69,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     dtScpSimplify.Rows.Remove(dr);
                     ssList.Add(ss);
                 }
+                studentVM.StudentAvatarPath = "http://localhost:8080/api/course/getimage?id=" + student.Id + "&type=avatar";
                 studentVM.StudentCourseCategory = ssList;
                 studentList.Add(studentVM);
             }

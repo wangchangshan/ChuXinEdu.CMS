@@ -34,7 +34,10 @@ namespace ChuXinEdu.CMS.Server.ViewModel
         public DateTime StudentRegisterDate { get; set; }
 
         [Column("student_address")]
-        public string StudentAddress { get; set; }        
+        public string StudentAddress { get; set; }   
+
+        [Column("student_avatar_path")]
+        public string StudentAvatarPath { get; set; }     
 
         [Column("student_status")]
         public string StudentStatus { get; set; }

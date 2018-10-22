@@ -77,10 +77,7 @@ const actions = {
     },
     setMenuCollapse:({ commit }) => {  
        commit(menuType.SET_LEFT_COLLAPSE)  
-    },
-    setActiveMenu:({ commit }) => {  
-        commit(menuType.SET_ACTIVE_MENU)  
-     }
+    }
 }
 
 export default {

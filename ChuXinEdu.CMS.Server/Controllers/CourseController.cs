@@ -151,7 +151,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public async Task<IActionResult> GetImage(int id, string type)
         {
             string docPath = string.Empty;
-            switch (type.ToLower())
+            type = type.ToLower();
+            switch (type)
             {
                 case "artwork":
                     docPath = _chuxinQuery.GetArtWorkTruePath(id);
@@ -163,6 +164,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
                 default:
                 break;
+            }
+            if(string.IsNullOrEmpty(docPath))
+            {
+                if(type == "avatar")
+                {
+                    docPath = "/image/avatar-default.png";
+                }
+                else 
+                {
+                    return NotFound();
+                }
             }
             string truePath = _hostingEnvironment.ContentRootPath + docPath;
 

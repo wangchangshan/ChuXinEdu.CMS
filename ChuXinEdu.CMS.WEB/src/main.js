@@ -67,14 +67,12 @@ router.beforeEach((to, from, next) => {
         NProgress.done()
     } else {
         // 有用户信息和路由名称的，直接跳要路由的页面。
-        store.commit('SET_ACTIVE_MENU', to.path);
-        next();
-        
-        // if(to.name) {
-        //     next();
-        // } else {
-        //    // next({ path: '/404' })
-        // }
+        store.commit('SET_ACTIVE_MENU', to.path);  
+        if(to.name) {
+            next();
+        } else {
+            next({ path: '/404' })
+        }
     }
 });
 

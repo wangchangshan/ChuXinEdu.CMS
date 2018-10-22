@@ -2,14 +2,11 @@
 <div class="fillcontain">
     <div class="search_container">
         <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
-            <el-form-item label="学号：">
-                <el-input type="text" size="small" v-model="searchField.studentCode" placeholder="请输入学生学号" class="search_field"></el-input>
-            </el-form-item>
             <el-form-item label="姓名：">
                 <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名" class="search_field"></el-input>
             </el-form-item>
             <el-form-item label="状态：">
-                <el-select size="small" v-model="searchField.studentStatus" placeholder="请选择学生状态"  class="search_field" :clearable="true">
+                <el-select size="small" v-model="searchField.studentStatus" placeholder="请选择学生状态" class="search_field" :clearable="true">
                     <el-option v-for="item in $store.getters['student_status']" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
@@ -28,6 +25,15 @@
             <el-table-column prop="studentCode" label="学号" align='center' min-width="120" sortable fixed>
             </el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="90" fixed>
+                <template slot-scope="scope">
+                    <el-popover trigger="hover" placement="right-end" width="150">
+                        <img :src="scope.row.studentAvatarPath" class='avatar-min'>
+                        <div slot="reference" class="name-wrapper" style="display:inline">
+                            {{ scope.row.studentName }}
+                        </div>
+                    </el-popover>
+                </template>
+
             </el-table-column>
             <el-table-column prop="studentSex" label="性别" align='center' width="60">
             </el-table-column>
@@ -87,10 +93,10 @@
                 </el-form-item>
                 <el-form-item prop="studentAddress" label="家庭地址">
                     <el-input v-model="studentDialog.baseInfo.studentAddress"></el-input>
-                </el-form-item>                   
+                </el-form-item>
                 <el-form-item prop="studentRegisterDate" label="报名时间">
                     <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
-                </el-form-item>             
+                </el-form-item>
                 <el-form-item label="身份证号码">
                     <el-input v-model="studentDialog.baseInfo.studentIdentityCardNum"></el-input>
                 </el-form-item>
@@ -116,7 +122,7 @@ import {
 
 export default {
     data() {
-        return {            
+        return {
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 120,
             lookup: null,
@@ -223,7 +229,7 @@ export default {
                     _this.paginations.total = result.totalCount;
                     result.studentList.forEach((item) => {
                         item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
-                        
+
                         item.studentBirthday = item.studentBirthday && item.studentBirthday.split('T')[0];
                     })
                     _this.studentsList = result.studentList;
@@ -305,7 +311,7 @@ export default {
                 }
             });
         },
-        resetStudentList(){
+        resetStudentList() {
             this.searchField = {
                 studentCode: '',
                 studentName: '',
@@ -318,12 +324,17 @@ export default {
 </script>
 
 <style lang="less" scoped>
+img.avatar-min {
+    width: 145px;
+    height: 145px;
+}
+
 .btnRight {
     float: right;
     margin-right: 10px !important;
 }
 
-.search_field{
+.search_field {
     width: 150px;
 }
 

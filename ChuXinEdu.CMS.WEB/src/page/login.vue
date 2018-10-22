@@ -40,7 +40,6 @@ import {
     mapGetters,
     mapState
 } from 'vuex'
-import NotFound from '@/page/404'
 import Home from '@/layout/home'
 
 export default {
@@ -188,14 +187,16 @@ export default {
                     name: '学生详细',
                     component: 'studentDetailMain',
                     hidden: true,
-                    noDropdown: true,
-                    meta: {
-                        breadcrumb:{
-                            title: '',
-                            path: ''
-                        }
-                    }
+                    noDropdown: true
                 },
+                {
+                    path: '/404',
+                    name: '404',
+                    hidden: true,
+                    component: '404',
+                    hidden: true,
+                    noDropdown: true
+                }
                 // {
                 //     path: '/course',
                 //     key:'2',
@@ -223,7 +224,7 @@ export default {
 
             LocalDB.instance('MENU_').setValue('leftMenu', leftMenu);
             this.addMenu(leftMenu);
-            if (true) { // !this.getRouterLoadedStatus 首次进来为false,改变其状态为true
+            if (!this.getRouterLoadedStatus) { 
                 const routers = menuHelper.generateRoutesFromMenu(leftMenu);
                 const asyncRouterMap = [
                     {
@@ -233,12 +234,6 @@ export default {
                         component: Home,
                         redirect: '/dashboard',
                         children: routers
-                    },
-                    {
-                        path: '/404',
-                        name: '404',
-                        hidden: true,
-                        component: NotFound 
                     }
                 ];
 
