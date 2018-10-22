@@ -343,6 +343,7 @@ export default {
                 courseFolderCode: row.courseFolderCode,
                 coursePeriod: row.coursePeriod,
                 teacherCode: row.teacherCode,
+                imgDesc: row.courseSubject
             };
             this.uploadPanel.params = {
                 courseId: row.studentCourseId,
