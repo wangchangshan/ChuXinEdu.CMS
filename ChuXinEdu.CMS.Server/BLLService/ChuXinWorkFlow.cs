@@ -743,6 +743,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         scl.AttendanceStatusName = "上课销课";
                         scl.TeacherCode = item.TeacherCode;
                         scl.TeacherName = item.TeacherName;
+                        scl.CourseSubject = item.Title;
 
                         // 2. 判断是否为试听
                         if (scl.CourseType == "试听")

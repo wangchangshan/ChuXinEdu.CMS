@@ -29,6 +29,11 @@
                     </el-select>
                 </template>
             </el-table-column>
+            <el-table-column prop="" label="课程主题" align='center' min-width="140">
+                <template slot-scope='scope'>
+                    <el-input size="mini" v-model="scope.row.courseSubject" placeholder="请输入课程主题"></el-input>
+                </template>
+            </el-table-column>
             <el-table-column prop="operation" align='left' label="操作" fixed="right" width="160">
                 <template slot-scope='scope'>
                     <el-button type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
@@ -260,7 +265,8 @@ export default {
                     CourseListId: item.studentCourseId,
                     StudentCode: item.studentCode,
                     TeacherCode: item.teacherCode,
-                    TeacherName: teacherName
+                    TeacherName: teacherName,
+                    Title: item.courseSubject
                 });
             }
 

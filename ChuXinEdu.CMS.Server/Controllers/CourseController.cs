@@ -123,7 +123,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        public string PutSignInBatch(List<CL_U_SIGN_IN> courseList)
+        public string PutSignInBatch([FromBody] List<CL_U_SIGN_IN> courseList)
         {
             string result = _chuxinWorkFlow.SignInBatch(courseList);
 

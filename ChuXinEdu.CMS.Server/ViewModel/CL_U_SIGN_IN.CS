@@ -11,7 +11,7 @@ namespace ChuXinEdu.CMS.Server.ViewModel
     {
         public int CourseListId{ get; set; }
 
-        public DateTime CourseDate{ get; set; }
+        public DateTime? CourseDate{ get; set; }
 
         public string StudentCode{ get; set; }
 

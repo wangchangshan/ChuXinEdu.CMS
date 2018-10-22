@@ -51,7 +51,7 @@ namespace ChuXinEdu.CMS.Server.Model
         public string ArtworkStatus { get; set; }
         
         [Column("finish_date")]
-        public DateTime FinishDate { get; set; }
+        public DateTime? FinishDate { get; set; }
 
         [Column("create_date")]
         public DateTime CreateDate { get; set; }
