@@ -16,7 +16,10 @@
                     {{ scope.row.studentName + ' (' + scope.row.courseType + ')' }}
                 </template>
             </el-table-column>
-            <el-table-column prop="courseFolderName" label="课程内容" align='center' width="100">
+            <el-table-column prop="courseFolderName" label="课程类别" align='center' width="100">
+                <template slot-scope='scope'>
+                    {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
+                </template>
             </el-table-column>
             <el-table-column prop="" label="上课教师" align='center' min-width="140">
                 <template slot-scope='scope'>
@@ -26,7 +29,7 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
+            <el-table-column prop="operation" align='left' label="操作" fixed="right" width="160">
                 <template slot-scope='scope'>
                     <el-button type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
                     <el-button type="success" icon='edit' size="mini" @click='showSingleSignInDialog(scope.row)'>签到</el-button>
@@ -47,35 +50,26 @@
                 <el-form-item label="上课时间">
                     {{signInDialog.courseInfo.courseDate + " " + signInDialog.courseInfo.weekName + "  [" + signInDialog.courseInfo.coursePeriod+ "]" }}
                 </el-form-item>
-                <el-form-item label="上课教师">
+                <el-form-item prop="teacherCode" label="上课教师">
                     <el-select v-model="signInDialog.courseInfo.teacherCode" placeholder="选择上课教师" size='mini'>
                         <el-option v-for="item in teacherList[signInDialog.courseInfo.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="作品描述">
+                <el-form-item prop="imgDesc" label="课程主题">
                     <el-input v-model="signInDialog.courseInfo.imgDesc"></el-input>
                 </el-form-item>
                 <el-form-item label="作品花费课时">
                     <el-input-number v-model="signInDialog.courseInfo.imgCost" :min="1" size="mini"></el-input-number>
                 </el-form-item>
                 <el-form-item label="作品上传">
-                    <el-upload class="upload-demo" 
-                        :multiple="uploadPanel.multiple" 
-                        :action="uploadPanel.actionUrl" 
-                        :data="uploadPanel.params" 
-                        :on-preview="handleImgPreview" 
-                        :on-remove="handleImgRemove" 
-                        :before-upload="beforeUpload" 
-                        :on-success="uploadSuccess" 
-                        :file-list="uploadPanel.thumbnailList" 
-                        list-type="picture">
+                    <el-upload class="upload-demo" :multiple="uploadPanel.multiple" :action="uploadPanel.actionUrl" :data="uploadPanel.params" :on-preview="handleImgPreview" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" :file-list="uploadPanel.thumbnailList" list-type="picture">
                         <el-button size="mini" type="primary">点击上传</el-button>
                     </el-upload>
                 </el-form-item>
                 <el-form-item class="text_right">
                     <el-button @click="cancelSignIn()" size="small">取 消</el-button>
-                    <el-button type="primary" @click="submitSignIn()" size="small">签 到</el-button>
+                    <el-button type="primary" @click="submitSignIn('courseInfo')" size="small">签 到</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -115,7 +109,18 @@ export default {
                     imgDesc: '',
                     imgCost: ''
                 },
-                studentCourseInfoRules: {}
+                studentCourseInfoRules: {
+                    teacherCode: [{
+                        required: true,
+                        message: '请选择上课教师',
+                        trigger: 'change'
+                    }],
+                    imgDesc: [{
+                        required: true,
+                        message: '请输入课程主题',
+                        trigger: 'blur'
+                    }]
+                }
             },
             uploadPanel: {
                 multiple: true,
@@ -138,18 +143,15 @@ export default {
                 "meishu_01": [{
                     teacherCode: 'T-000002',
                     teacherName: '马朝',
-                },
-                ],
+                }, ],
                 "shufa_00": [{
                     teacherCode: 'T-000003',
                     teacherName: '福来',
-                },
-                ],
+                }, ],
                 "shufa_01": [{
                     teacherCode: 'T-000003',
                     teacherName: '福来',
-                },
-                ]
+                }, ]
             },
             dateRowSpanArray: [],
             timeRowSpanArray: []
@@ -181,59 +183,56 @@ export default {
             this.signInDialog.isShow = false;
         },
 
-        submitSignIn() {
-            if (!this.signInDialog.courseInfo.teacherCode) {
-                this.$message({
-                    message: '请选择上课教师',
-                    type: 'warning'
-                });
-                return;
-            }
-            if (this.uploadPanel.fileCount > 0) {
-                if (!this.signInDialog.courseInfo.imgDesc || !this.signInDialog.courseInfo.imgCost) {
-                    this.$message({
-                        message: '请填写作品描述和花费课时数',
-                        type: 'warning'
-                    });
-                    return;
-                }
-            }
-
-            let courseId = this.signInDialog.courseInfo.courseId;
-            let studentCode = this.signInDialog.courseInfo.studentCode;
-            let teacherCode = this.signInDialog.courseInfo.teacherCode;
-            let courseFolderCode = this.signInDialog.courseInfo.courseFolderCode;
-            let teacherName = this.getTeacherNameByCode(courseFolderCode, teacherCode);
-            let fileUIds = this.uploadPanel.fileUIds;
-            let imgCost = this.signInDialog.courseInfo.imgCost;
-            let title = this.signInDialog.courseInfo.imgDesc;
-
-            let course = {
-                CourseListId: courseId,
-                StudentCode: studentCode,
-                TeacherCode: teacherCode,
-                TeacherName: teacherName,
-                FileUIds: fileUIds,
-                CostCount: imgCost,
-                Title: title
-            }
-
+        submitSignIn(courseForm) {
             let _this = this;
-            axios({
-                type: 'put',
-                path: '/api/course/putsignin',
-                data: course,
-                fn: function (result) {
-                    if (result == 200) {
-                        _this.$message({
-                            message: '签到成功',
-                            type: 'success'
-                        });
-                        _this.uploadPanel.thumbnailList = [];
-                        _this.signInDialog.isShow = false;
-                        _this.removeTableRow(courseId);
-                        _this.$store.commit('REDUCE_TO_RECORD', 1);
+            this.$refs[courseForm].validate((valid) => {
+                if (valid) {
+                    if (_this.uploadPanel.fileCount > 0) {
+                        if (!_this.signInDialog.courseInfo.imgCost) {
+                            _this.$message({
+                                message: '请填写作品描述和花费课时数',
+                                type: 'warning'
+                            });
+                            return;
+                        }
                     }
+
+                    let courseId = _this.signInDialog.courseInfo.courseId;
+                    let studentCode = _this.signInDialog.courseInfo.studentCode;
+                    let teacherCode = _this.signInDialog.courseInfo.teacherCode;
+                    let courseFolderCode = _this.signInDialog.courseInfo.courseFolderCode;
+                    let teacherName = _this.getTeacherNameByCode(courseFolderCode, teacherCode);
+                    let fileUIds = _this.uploadPanel.fileUIds;
+                    let imgCost = _this.signInDialog.courseInfo.imgCost;
+                    let title = _this.signInDialog.courseInfo.imgDesc;
+
+                    let course = {
+                        CourseListId: courseId,
+                        StudentCode: studentCode,
+                        TeacherCode: teacherCode,
+                        TeacherName: teacherName,
+                        FileUIds: fileUIds,
+                        CostCount: imgCost,
+                        Title: title
+                    }
+
+                    axios({
+                        type: 'put',
+                        path: '/api/course/putsignin',
+                        data: course,
+                        fn: function (result) {
+                            if (result == 200) {
+                                _this.$message({
+                                    message: '签到成功',
+                                    type: 'success'
+                                });
+                                _this.uploadPanel.thumbnailList = [];
+                                _this.signInDialog.isShow = false;
+                                _this.removeTableRow(courseId);
+                                _this.$store.commit('REDUCE_TO_RECORD', 1);
+                            }
+                        }
+                    });
                 }
             });
 

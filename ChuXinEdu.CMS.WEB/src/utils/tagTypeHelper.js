@@ -27,6 +27,21 @@ const tagTypeHelper = {
         }
         return type;
     },
+    courseFolderTag(folderCode) {
+        let type = '';
+        switch (folderCode) {
+            case 'meishu_00':
+                type = 'success';
+                break;
+            case 'meishu_01':
+                type = '';
+                break;
+            case 'shufa_00':
+                type = ''
+                break;
+        }
+        return type;
+    },
     studentTrialResultTag(result) {
         let type = '';
         switch (result) {

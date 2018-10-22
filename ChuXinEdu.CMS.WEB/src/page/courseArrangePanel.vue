@@ -70,7 +70,7 @@
     <el-dialog :title="selectZhengShiDialog.title" :visible.sync="selectZhengShiDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="selectZhengShiDialog.width">
         <el-table :data="selectZhengShiDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
-            <el-table-column property="studentCode" label="学号" width="120"></el-table-column>
+            <!-- <el-table-column property="studentCode" label="学号" width="120"></el-table-column> -->
             <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
             <el-table-column property="" label="课程类别" width="100" align='center'>
                 <template slot-scope="scope">
@@ -78,12 +78,20 @@
                 </template>
             </el-table-column>
             <el-table-column property="flexCourseCount" label="可选课时数" align='center' width="80"></el-table-column>
-            <el-table-column property="selectedCourseCount" label="选择课时数" min-width="140">
+            <el-table-column property="selectedCourseCount" label="选择课时数" width="140">
                 <template slot-scope="scope">
                     <el-input-number v-model="scope.row.selectedCourseCount" :min="1" :max="scope.row.flexCourseCount" label="描述文字" size="mini"></el-input-number>
                 </template>
             </el-table-column>
-            <el-table-column property="firstCourseDate" label="开始上课日期" min-width="210">
+            <el-table-column property="selectedCourseCount" label="课程内容" width="140">
+                <template slot-scope="scope">
+                    <el-select v-model="scope.row.courseFolderCode" size='mini'>
+                        <el-option v-for="item in $store.getters['course_folder_' + scope.row.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column property="firstCourseDate" label="开始上课日期" width="200">
                 <template slot-scope="scope">
                     <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectZhengShiDialog.pickerDateOptions">
                     </el-date-picker>
@@ -124,7 +132,11 @@
             <el-table-column :selectable='courseCheckboxControl' type="selection" width="30"></el-table-column>
             <el-table-column type="index" :index="indexGernerate" width="40"> </el-table-column>
             <el-table-column property="courseDate" label="上课日期" width="110"></el-table-column>
-            <el-table-column property="courseCategoryName" label="课程类别" width="80" align='center'></el-table-column>
+            <el-table-column property="courseCategoryName" label="课程类别" width="110" align='center'>
+                <template slot-scope="scope">
+                    {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
+                </template>
+            </el-table-column>
             <el-table-column property="attendanceStatusName" label="状态" width="80" align='center'></el-table-column>
             <el-table-column prop="operation" align='left' label="操作" fixed="right" width="190">
                 <template slot-scope='scope'>
@@ -163,7 +175,9 @@
 
 <script>
 import {
-    axios
+    axios,
+    dicHelper,
+    tagTypeHelper
 } from '@/utils/index'
 
 export default {
@@ -492,8 +506,8 @@ export default {
                 }
                 let categoryCode = selectedItem.selectedCourseOptions[0];
                 let folderCode = selectedItem.selectedCourseOptions[1];
-                let categoryName = this.getDicNameByCode(categoryCode);
-                let forlderName = this.getDicNameByCode(folderCode);
+                let categoryName = dicHelper.getLabelByValue(this.$store.getters['course_category'], categoryCode);
+                let forlderName = dicHelper.getLabelByValue(this.$store.getters['course_category'], folderCode);
                 
                 caInfo_shiting.StudentList.push({
                     'StudentCoursePackageId': 0,
@@ -573,6 +587,7 @@ export default {
                 'StudentList': []
             }
             caInfo.StudentList = [];
+            let recodeCode = []; 
             for (let selectedItem of this.selectZhengShiDialog.selectedStudents) {
                 if (!selectedItem.selectedCourseCount || !selectedItem.firstCourseDate) {
                     this.$message({
@@ -581,6 +596,20 @@ export default {
                     });
                     return;
                 }
+                if(recodeCode.indexOf(selectedItem.studentCode) > -1){
+                    this.$message({
+                        message: '一个时间段只能选择【'+ selectedItem.studentName +'】的一种套餐',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                else {
+                    recodeCode.push(selectedItem.studentCode);
+                }
+
+                let newFolderCode = selectedItem.courseFolderCode;
+                let newFolderName = dicHelper.getLabelByValue(this.$store.getters['course_folder'], newFolderCode);
+                
                 caInfo.StudentList.push({
                     'StudentCoursePackageId': selectedItem.id,
                     'StudentCode': selectedItem.studentCode,
@@ -588,8 +617,8 @@ export default {
                     'PackageCode': selectedItem.packageCode,
                     'CourseCategoryCode': selectedItem.courseCategoryCode,
                     'CourseCategoryName': selectedItem.courseCategoryName,
-                    'CourseFolderCode': selectedItem.courseFolderCode,
-                    'CourseFolderName': selectedItem.courseFolderName,
+                    'CourseFolderCode': newFolderCode,
+                    'CourseFolderName': newFolderName,
                     'CourseCount': selectedItem.selectedCourseCount,
                     'StartDate': selectedItem.firstCourseDate
                 });
@@ -953,48 +982,7 @@ export default {
         },
 
         courseFolderTag(folderCode) {
-            let type = '';
-            switch (folderCode) {
-                case 'meishu_00':
-                    type = 'success';
-                    break;
-                case 'meishu_01':
-                    type = '';
-                    break;
-                case 'shufa_00':
-                    type = ''
-                    break;
-                default:
-                    break;
-            }
-            return type;
-        },
-        
-        getDicNameByCode(code){
-            let name = '';
-            switch (code) {
-                case 'meishu':
-                    name = '美术';
-                    break;
-                case 'shufa':
-                    name = '书法';
-                    break;
-                case 'meishu_00':
-                    name = '国画';
-                    break;
-                case 'meishu_01':
-                    name = '西画';
-                    break;
-                case 'shufa_00':
-                    name = '毛笔';
-                    break;
-                case 'shufa_01':
-                    name = '硬笔';
-                    break;
-                default:
-                    break;
-            }
-            return name;
+            return tagTypeHelper.courseCategoryTag(folderCode);
         }
     }
 };

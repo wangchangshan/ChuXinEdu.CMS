@@ -14,7 +14,10 @@ namespace ChuXinEdu.CMS.Server.Model
         public DateTime CourseDate { get; set; }
 
         [Column("course_category_name")]
-        public string CourseCategoryName { get; set; }        
+        public string CourseCategoryName { get; set; } 
+
+        [Column("course_folder_name")]
+        public string CourseFolderName { get; set; }          
         
         [Column("attendance_status_code")]
         public string AttendanceStatusCode { get; set; }

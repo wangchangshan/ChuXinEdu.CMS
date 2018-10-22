@@ -131,7 +131,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                DataTable dt = ADOContext.GetDataTable(@"select  distinct student_code,course_category_code,course_category_name from student_course_package");
+                DataTable dt = ADOContext.GetDataTable(@"select distinct student_code,course_category_code,course_category_name from student_course_package");
 
                 return dt;
             }
@@ -220,13 +220,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 // is_this_week 为是否本周有课
-                var studentList = context.CA_R_PERIOD_STUDENTS.FromSql($@"select sca.id,sca.course_period,sca.course_week_day,sca.student_code,sca.student_name,sca.package_code,
-                                                                      scp.course_category_code,scp.course_category_name,scp.course_folder_code,scp.course_folder_name,
+                var studentList = context.CA_R_PERIOD_STUDENTS.FromSql($@"select distinctrow sca.id,sca.course_period,sca.course_week_day,sca.student_code,sca.student_name,sca.package_code,
+                                                                      scp.course_category_code,scp.course_category_name,scl.course_folder_code,scl.course_folder_name,
                                                                       sca.course_total_count,sca.course_rest_count,sca.course_type,
                                                                       uf_IsThisWeekHasCourse(sca.student_code,sca.course_week_day,sca.course_period,sca.classroom) as is_this_week
                                                                 from student_course_arrange sca
                                                                 left join student_course_package scp on sca.student_course_package_id = scp.id 
-                                                                where sca.arrange_template_code = {templateCode} and sca.classroom= {roomCode} and sca.course_rest_count > 0
+                                                                left join student_course_list scl on sca.student_course_package_id = scl.student_course_package_id  and scl.attendance_status_code = '09' 
+                                                                where sca.arrange_template_code = {templateCode} and sca.classroom= {roomCode} and scp.scp_status = '00' and sca.course_rest_count > 0
                                                                 order by scp.course_folder_code")
                                                             .ToList();
                 foreach (var item in studentList)
@@ -249,13 +250,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
 
                 // is_this_week 为是否本周有课
-                var studentList = context.CA_R_PERIOD_STUDENTS.FromSql($@"select sca.id,sca.course_period,sca.course_week_day,sca.student_code,sca.student_name,sca.package_code,
-                                                                      scp.course_category_code,scp.course_category_name,scp.course_folder_code,scp.course_folder_name, 
+                var studentList = context.CA_R_PERIOD_STUDENTS.FromSql($@"select distinctrow sca.id,sca.course_period,sca.course_week_day,sca.student_code,sca.student_name,sca.package_code,
+                                                                      scp.course_category_code,scp.course_category_name,scl.course_folder_code,scl.course_folder_name, 
                                                                       sca.course_total_count,sca.course_rest_count,sca.course_type,
                                                                       uf_IsThisWeekHasCourse(sca.student_code,{dayCode},{periodName},{roomCode}) as is_this_week
                                                                 from student_course_arrange sca
                                                                 left join student_course_package scp on sca.student_course_package_id = scp.id 
-                                                                where sca.arrange_template_code = {templateCode} and sca.classroom = {roomCode} and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
+                                                                left join student_course_list scl on sca.student_course_package_id = scl.student_course_package_id and scl.attendance_status_code = '09' 
+                                                                where sca.arrange_template_code = {templateCode} and sca.classroom = {roomCode} and scp.scp_status = '00' and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
                                                                       and sca.course_rest_count > 0
                                                                 order by scp.course_folder_code")
                                                             .ToList();
@@ -278,7 +280,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 return context.StudentCoursePackage.FromSql($@"select scp.* from student_course_package  scp 
-                                                                where scp.flex_course_count > 0 and not exists(
+                                                                where scp.scp_status = '00' and not exists(
                                                                     select 1 from student_course_arrange sca 
                                                                     where sca.student_code = scp.student_code 
                                                                     and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
@@ -301,7 +303,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.Simplify_StudentCourseList.FromSql($@"select student_course_id,course_category_name,course_date,attendance_status_code,attendance_status_name,course_type 
+                return context.Simplify_StudentCourseList.FromSql($@"select student_course_id,course_category_name,course_folder_name,course_date,attendance_status_code,attendance_status_name,course_type 
                                                                     from student_course_list
                                                                     where student_code={studentCode} and course_week_day={dayCode} and course_period={coursePeriod} 
                                                                           and (attendance_status_code = '00' or attendance_status_code = '03' or attendance_status_code = '09')

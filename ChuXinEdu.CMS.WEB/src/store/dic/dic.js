@@ -2,6 +2,8 @@ const state = {
     all_dic_code: [
         'student_temp_status',
         'student_status',
+        'course_category',
+        'course_folder'
     ].join(','),
 
     allDics: null,
@@ -18,6 +20,18 @@ const getters = {
     },
     student_status: state => {
         return state.allDics && state.allDics.student_status || [];
+    },
+    course_category: state => {
+        return state.allDics && state.allDics.course_category || [];
+    },
+    course_folder: state => {
+        return state.allDics && state.allDics.course_folder || [];
+    },
+    course_folder_meishu: state => {
+        return state.allDics && state.allDics.course_folder && state.allDics.course_folder.filter(folder => folder.value.indexOf('meishu') > -1);
+    },
+    course_folder_shufa: state => {
+        return state.allDics && state.allDics.course_folder && state.allDics.course_folder.filter(folder => folder.value.indexOf('shufa') > -1);
     }
 }
 

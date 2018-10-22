@@ -2,18 +2,23 @@
 <div class="info_container">
     <div class="table_container">
         <el-table :data="CourseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
-            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="130">
+            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + " " + scope.row.weekName }}
                 </template>
             </el-table-column>
-            <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="120">
+            <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="110">
             </el-table-column>
             <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="100">
+                <template slot-scope='scope'>
+                    {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
+                </template>
             </el-table-column>
-            <el-table-column prop="teacherName" label="上课教师" align='center' min-width="100">
+            <el-table-column prop="courseSubject" label="课程主题" align='center' min-width="160">
             </el-table-column>
-            <el-table-column prop="courseType" label="课程标识" align='center' min-width="100">
+            <el-table-column prop="teacherName" label="上课教师" align='center' min-width="85">
+            </el-table-column>
+            <el-table-column prop="courseType" label="课程标识" align='center' min-width="85">
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="225">
                 <template slot-scope='scope'>
