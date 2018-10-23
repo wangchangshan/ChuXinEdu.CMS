@@ -231,7 +231,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        public string Artwork2Yes(string[] uids)
+        public string Artwork2Yes([FromBody] string[] uids)
         {
             string result = _chuxinWorkFlow.SupplementArtWork(uids);
 

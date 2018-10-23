@@ -1,11 +1,6 @@
 <template>
 <div class="fallcontain">
-    <el-row>
-        <div style="text-align:right">
-            <el-button type="primary" size="small" @click='showUploadDialog()'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
-        </div>
-    </el-row>
-    <el-row type="flex" class="row-bg" :gutter="10">
+    <el-row type="flex" class="row-bg" :gutter="10" style="overflow:auto" v-bind:style="{height: pageHeight + 'px'}">
         <el-col :span="6">
             <el-card v-for="achievement in artWorkList1" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
                 <img :src="achievement.showURL" class="image">
@@ -56,6 +51,11 @@
             </el-card>
         </el-col>
     </el-row>
+
+    <div class="footer_container">
+        <el-button type="primary" size="small" @click='showUploadDialog()'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
+    </div>
+
     <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.isShow" :width="uploadDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
             <el-upload class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" list-type="picture">
@@ -83,6 +83,7 @@ export default {
     },
     data() {
         return {
+            pageHeight: this.$store.state.page.win_content.height - 96,
             artWorkList: [],
             artWorkList1: [],
             artWorkList2: [],
@@ -295,5 +296,11 @@ export default {
 
 .clearfix:after {
     clear: both
+}
+
+.footer_container {
+    height: 36px;
+    line-height: 36px;
+    text-align: left;
 }
 </style>

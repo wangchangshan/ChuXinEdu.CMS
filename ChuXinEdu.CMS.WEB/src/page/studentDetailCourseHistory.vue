@@ -1,12 +1,5 @@
 <template>
 <div class="info_container">
-    <div class="search_container">
-        <el-form :inline="true" class="demo-form-inline search-form">
-            <el-form-item class="btnRight">
-                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
     <div class="table_container">
         <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
@@ -34,6 +27,10 @@
                 </template>
             </el-table-column>
         </el-table>
+    </div>
+    
+    <div class="footer_container">
+        <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
     </div>
 
     <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.isShow" :width="uploadDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
@@ -89,7 +86,7 @@ export default {
             dateRowSpanArray: [],
             loading: false,
             downloadLoading: false,
-            tableHeight: this.$store.state.page.win_content.height - 63,
+            tableHeight: this.$store.state.page.win_content.height - 100,
 
             uploadDialog: {
                 width: '500px',
@@ -393,22 +390,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.btnRight {
-    float: right;
-    margin-right: 10px !important;
-}
-
-.search_field {
-    width: 150px;
-}
-
-.search_container {
+.footer_container {
     height: 36px;
     line-height: 36px;
-}
-
-.search-form {
-    width: 100%;
-    min-width: 750px;
+    text-align: left;
 }
 </style>

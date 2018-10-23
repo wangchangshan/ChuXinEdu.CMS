@@ -16,8 +16,7 @@
             <span slot="label"><i class="fa fa-image"></i> 作品展示</span> 
             <student-achievements 
                 v-if="activeLabelCode === 'achievement'" 
-                v-bind:studentCode="studentCode" 
-                v-bind:style="{height: pageHeight + 'px'}">
+                v-bind:studentCode="studentCode">
             </student-achievements>
         </el-tab-pane>
         <el-tab-pane :name="'feeback'">
@@ -42,8 +41,7 @@ import studentDetailAdditionalInfo from '@/page/studentDetailAdditionalInfo'
 export default {
     name: 'studentDetailMain',
     data() {
-        return {
-            pageHeight: this.$store.state.page.win_content.height - 65 ,  
+        return { 
             activeLabelCode: 'baseinfo',
             studentCode: ''
         }
