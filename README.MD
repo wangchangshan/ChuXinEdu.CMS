@@ -57,6 +57,13 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install babel-polyfill --save-
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install vue-image-crop-upload  --save-dev
 
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install --save vue-count-to
+
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install js-xlsx file-saver -S
+
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install script-loader -S -D
+
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install --save xlsx
+
 ```
 
 ### 6. 修改ChuXinEdu.CMS.WEB项目目录结构如下

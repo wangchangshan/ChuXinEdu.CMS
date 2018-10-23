@@ -68,6 +68,44 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<Student> GetStudentList2Export(QUERY_STUDENT query)
+        {
+            IEnumerable<Student> students = null;
+            using (BaseContext context = new BaseContext())
+            {
+                IQueryable<Student> temp = null;
+                
+                if(!String.IsNullOrEmpty(query.studentStatus))
+                {
+                    temp = context.Student.Where(s => s.StudentStatus == query.studentStatus);
+                }
+                if(!String.IsNullOrEmpty(query.studentCode))
+                {
+                    if(temp == null)
+                    {
+                        temp = context.Student;
+                    }
+                    temp = temp.Where(s => EF.Functions.Like(s.StudentCode, "%" + query.studentCode + "%"));
+                }
+                if(!String.IsNullOrEmpty(query.studentName))
+                {
+                    if(temp == null)
+                    {
+                        temp = context.Student;
+                    }
+                    temp = temp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
+                }
+
+                if(temp == null)
+                {
+                    temp = context.Student.Where(s => 1 == 1);
+                }
+                students = temp.ToList();
+                
+                return students;
+            }
+        }
+
         public IEnumerable<StudentRecommend> GetRecommendStudentList(string studentCode)
         {
             using (BaseContext context = new BaseContext())

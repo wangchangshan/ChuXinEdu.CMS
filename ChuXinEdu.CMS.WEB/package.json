@@ -12,13 +12,16 @@
   "dependencies": {
     "echarts": "^4.1.0",
     "element-ui": "^2.4.4",
+    "file-saver": "^2.0.0-rc.4",
+    "js-xlsx": "^0.8.22",
     "node-sass": "^4.9.3",
     "nprogress": "^0.2.0",
     "vue": "^2.5.2",
     "vue-axios": "^2.1.2",
     "vue-count-to": "^1.0.13",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "xlsx": "^0.14.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -51,6 +54,7 @@
     "postcss-url": "^7.2.1",
     "rimraf": "^2.6.0",
     "sass-loader": "^7.0.3",
+    "script-loader": "^0.7.2",
     "semver": "^5.3.0",
     "shelljs": "^0.7.6",
     "uglifyjs-webpack-plugin": "^1.1.1",

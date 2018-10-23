@@ -183,6 +183,13 @@ export default {
                     noDropdown: true,
                 },
                 {
+                    path: '/sysSettingMain',
+                    name: '系统配置',
+                    component: 'sysSettingMain',
+                    icon: 'fa-cogs',
+                    noDropdown: true,
+                },
+                {
                     path: '/studentDetailMain',
                     name: '学生详细',
                     component: 'studentDetailMain',

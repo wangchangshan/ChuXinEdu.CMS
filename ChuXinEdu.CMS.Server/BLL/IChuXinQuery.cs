@@ -15,6 +15,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount);
 
+        IEnumerable<Student> GetStudentList2Export(QUERY_STUDENT query);
+
         DataTable GetStudentForRecommend(string studentName);
 
         IEnumerable<StudentRecommend> GetRecommendStudentList(string studentCode);

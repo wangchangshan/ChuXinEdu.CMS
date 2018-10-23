@@ -88,6 +88,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// [导出学生列表] 获取待排课学生列表 GET api/student/getstudentlist2export
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<Student> GetStudentList2Export(string q)
+        { 
+            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);            
+            IEnumerable<Student>  studentList = _chuxinQuery.GetStudentList2Export(query);
+            return studentList;
+        }
+
+
+        /// <summary>
         /// [学生列表] 根据姓名获取学生列表for添加介绍的学生 list GET api/student/getstudentforrecommend
         /// </summary>
         /// <returns></returns>

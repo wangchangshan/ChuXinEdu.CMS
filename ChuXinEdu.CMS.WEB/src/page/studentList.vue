@@ -2,6 +2,9 @@
 <div class="fillcontain">
     <div class="search_container">
         <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
+            <el-form-item label="学号：">
+                <el-input type="text" size="small" v-model="searchField.studentCode" placeholder="请输入学号" class="search_field"></el-input>
+            </el-form-item>
             <el-form-item label="姓名：">
                 <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名" class="search_field"></el-input>
             </el-form-item>
@@ -16,7 +19,8 @@
                 <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重 置</el-button>
             </el-form-item>
             <el-form-item class="btnRight">
-                <el-button type="primary" icon="el-icon-plus" size="small" @click='showAddStudent()'>添加</el-button>
+                <el-button type="primary" size="small" @click='showAddStudent()'><i class="fa fa-user-plus" aria-hidden="true"></i> 添加学生</el-button>
+                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -124,6 +128,7 @@ export default {
     data() {
         return {
             loading: false,
+            downloadLoading: false,
             tableHeight: this.$store.state.page.win_content.height - 120,
             lookup: null,
             studentsList: [],
@@ -318,7 +323,44 @@ export default {
                 studentStatus: '',
             };
             this.getList();
-        }
+        },
+
+        export2Excle() {
+            let list = [];
+            let data = {
+                q: this.searchField
+            }
+            this.downloadLoading = true
+            axios({
+                type: 'get',
+                path: '/api/student/getstudentlist2export',
+                data: data,
+                fn: function (result) {
+                    result.forEach(item => {
+                        list.push({
+                            "studentCode": item.studentCode,
+                            "studentName": item.studentName,
+                            "studentSex": item.studentSex,
+                            "studentPhone": item.studentPhone,
+                            "studentBirthday": item.studentBirthday && item.studentBirthday.split('T')[0] || '',
+                            "studentAddress": item.studentAddress,
+                        });
+                    });
+                    import('@/vendor/Export2Excel').then(excel => {
+                        const tHeader = ['学号', '姓名', '性别', '电话', '生日', '地址'];
+                        excel.export_json_to_excel({
+                            header: tHeader,
+                            data: list,
+                            filename: "学生列表",
+                            autoWidth: true,
+                            bookType: 'xlsx'
+                        })
+                        this.downloadLoading = false;
+                    })
+                }
+            })
+
+        },
     }
 }
 </script>
