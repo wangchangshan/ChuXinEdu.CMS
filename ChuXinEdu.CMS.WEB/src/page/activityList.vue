@@ -185,7 +185,6 @@ export default {
 .search_container {
     height: 36px;
     line-height: 36px;
-    margin-bottom: 10px;
 }
 
 .search-form {

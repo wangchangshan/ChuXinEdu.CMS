@@ -129,7 +129,7 @@ export default {
         return {
             loading: false,
             downloadLoading: false,
-            tableHeight: this.$store.state.page.win_content.height - 120,
+            tableHeight: this.$store.state.page.win_content.height - 106,
             lookup: null,
             studentsList: [],
             searchField: {
@@ -326,41 +326,41 @@ export default {
         },
 
         export2Excle() {
-            let list = [];
             let data = {
                 q: this.searchField
             }
             this.downloadLoading = true
+            var _this = this;
             axios({
                 type: 'get',
                 path: '/api/student/getstudentlist2export',
                 data: data,
                 fn: function (result) {
-                    result.forEach(item => {
-                        list.push({
-                            "studentCode": item.studentCode,
-                            "studentName": item.studentName,
-                            "studentSex": item.studentSex,
-                            "studentPhone": item.studentPhone,
-                            "studentBirthday": item.studentBirthday && item.studentBirthday.split('T')[0] || '',
-                            "studentAddress": item.studentAddress,
-                        });
-                    });
                     import('@/vendor/Export2Excel').then(excel => {
-                        const tHeader = ['学号', '姓名', '性别', '电话', '生日', '地址'];
+                        const tHeader = ['学 号', '姓 名', '性 别', '电 话', '生 日', '地 址','报名时间','备 注'];
+                        const filterVal = ['studentCode', 'studentName', 'studentSex', 'studentPhone', 'studentBirthday', 'studentAddress','studentRegisterDate', 'studentRemark']
+                        const data = _this.formatJson(filterVal, result)
                         excel.export_json_to_excel({
                             header: tHeader,
-                            data: list,
+                            data,
                             filename: "学生列表",
                             autoWidth: true,
                             bookType: 'xlsx'
                         })
-                        this.downloadLoading = false;
+                        _this.downloadLoading = false;
                     })
                 }
             })
-
         },
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'studentBirthday' || j === 'studentRegisterDate') {
+                    return v[j] && v[j].split('T')[0] || '';//parseTime(v[j])
+                } else {
+                    return v[j]
+                }
+            }))
+        }
     }
 }
 </script>
@@ -383,7 +383,6 @@ img.avatar-min {
 .search_container {
     height: 36px;
     line-height: 36px;
-    margin-bottom: 10px;
 }
 
 .search-form {

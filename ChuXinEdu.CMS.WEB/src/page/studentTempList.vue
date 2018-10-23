@@ -113,7 +113,7 @@ export default {
                 studentTempStatus:[]
             },
             loading: false,
-            tableHeight: this.$store.state.page.win_content.height - 120,
+            tableHeight: this.$store.state.page.win_content.height - 106,
             paginations: {
                 current_page_index: 1,
                 total: 0,
@@ -406,7 +406,6 @@ export default {
 .search_container {
     height: 36px;
     line-height: 36px;
-    margin-bottom: 10px;
 }
 
 .search-form {

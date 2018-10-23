@@ -1,7 +1,14 @@
 <template>
 <div class="info_container">
+    <div class="search_container">
+        <el-form :inline="true" class="demo-form-inline search-form">
+            <el-form-item class="btnRight">
+                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
     <div class="table_container">
-        <el-table :data="CourseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
+        <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + " " + scope.row.weekName }}
@@ -78,9 +85,10 @@ export default {
     },
     data() {
         return {
-            CourseList: [],
+            courseList: [],
             dateRowSpanArray: [],
             loading: false,
+            downloadLoading: false,
             tableHeight: this.$store.state.page.win_content.height - 63,
 
             uploadDialog: {
@@ -114,7 +122,7 @@ export default {
                 width: '900px',
                 isShow: false,
                 title: '课程作品展示',
-                artWorkList:[]
+                artWorkList: []
             }
         }
     },
@@ -131,7 +139,7 @@ export default {
                     item.courseDate = item.courseDate.split('T')[0];
                     item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
                 });
-                _this.CourseList = result;
+                _this.courseList = result;
                 _this.getRowSpanInfo();
             }
         });
@@ -243,7 +251,7 @@ export default {
                     }
                 }
             });
-        },        
+        },
         btnCancelUpload() {
             this.uploadDialog.isShow = false;
             let fileUIds = this.uploadDialog.fileUIds;
@@ -270,10 +278,9 @@ export default {
                 },
                 fn: function (result) {
                     _this.viewDialog.artWorkList = result;
-                    if(result.length > 0) {
+                    if (result.length > 0) {
                         _this.viewDialog.isShow = true;
-                    }
-                    else{
+                    } else {
                         _this.$message({
                             message: '还没有上传作品',
                             type: 'warning'
@@ -287,7 +294,7 @@ export default {
             this.dateRowSpanArray = [];
             let cDate = '';
             let dateIndex = 0;
-            this.CourseList.forEach((item, index, array) => {
+            this.courseList.forEach((item, index, array) => {
                 this.dateRowSpanArray.push(1);
                 if (index === 0) {
                     cDate = item.courseDate;
@@ -348,9 +355,60 @@ export default {
             }
             return week;
         },
+        export2Excle() {
+            if (this.courseList.length == 0) {
+                this.$message({
+                    message: '没有数据需要导出！',
+                    type: 'success'
+                });
+                return;
+            }
+            var filename = this.courseList[0].studentName + "上课记录";
+            this.downloadLoading = true
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['上课日期', '上课时间', '课程类别', '课程主题', '上课教师'];
+                const filterVal = ['courseDate', 'coursePeriod', 'courseFolderName', 'courseSubject', 'teacherName']
+                const data = this.formatJson(filterVal, this.courseList)
+                excel.export_json_to_excel({
+                    header: tHeader,
+                    data,
+                    filename: filename,
+                    autoWidth: true,
+                    bookType: 'xlsx'
+                })
+                this.downloadLoading = false;
+            })
+        },
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'courseDate') {
+                    return v[j] && v[j].split('T')[0] || ''; //parseTime(v[j])
+                } else {
+                    return v[j]
+                }
+            }))
+        }
     }
 }
 </script>
 
 <style lang="less" scoped>
+.btnRight {
+    float: right;
+    margin-right: 10px !important;
+}
+
+.search_field {
+    width: 150px;
+}
+
+.search_container {
+    height: 36px;
+    line-height: 36px;
+}
+
+.search-form {
+    width: 100%;
+    min-width: 750px;
+}
 </style>
