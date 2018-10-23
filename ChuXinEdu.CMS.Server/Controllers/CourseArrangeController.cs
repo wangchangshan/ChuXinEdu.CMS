@@ -138,7 +138,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        public string RemoveCourseBatch(int[] studentCourseIds)
+        public string RemoveCourseBatch([FromBody] int[] studentCourseIds)
         {
             string result = string.Empty;
             foreach (int studentCourseId in studentCourseIds)
