@@ -149,7 +149,7 @@ export function export_json_to_excel({
   data,
   filename,
   autoWidth = true,
-  bookType=  'xlsx'
+  bookType = 'xlsx'
 } = {}) {
   /* original data */
   filename = filename || 'excel-list'
@@ -174,9 +174,15 @@ export function export_json_to_excel({
           'wch': val.toString().length * 2
         };
       } else {
-        return {
-          'wch': val.toString().length
-        };
+        if (val.toString().length > 4 && val.toString().charCodeAt(5) > 255) {
+          return {
+            'wch': val.toString().length * 1.6
+          };
+        } else {
+          return {
+            'wch': val.toString().length
+          };
+        }
       }
     }))
     /*以第一行为初始值*/

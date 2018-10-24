@@ -316,7 +316,7 @@ export default {
                     header: tHeader,
                     data,
                     filename: '课程套餐列表',
-                    autoWidth: false,
+                    autoWidth: true,
                     bookType: 'xlsx'
                 })
                 this.downloadLoading = false;
