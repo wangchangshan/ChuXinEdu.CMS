@@ -58,6 +58,18 @@ const tagTypeHelper = {
                 break;
         }
         return type;
+    },
+    packageEnableTag(code){
+        let type = '';
+        switch (code) {
+            case '是':
+                type = 'success'
+                break;
+            case '否':
+                type = 'info'
+                break;
+        }
+        return type;
     }
 }
 

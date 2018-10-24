@@ -377,7 +377,7 @@ img.avatar-min {
 }
 
 .search_field {
-    width: 150px;
+    width: 140px;
 }
 
 .search_container {

@@ -453,11 +453,34 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public IEnumerable<SysCoursePackage> GetSysCoursePackageList()
+        public IEnumerable<SysCoursePackage> GetSysCoursePackageList(QUERY_SYS_PACKAGE query)
         {
+            IEnumerable<SysCoursePackage> packages = null;
             using (BaseContext context = new BaseContext())
             {
-                return context.SysCoursePackage.OrderBy(s => s.PackageCourseCategoryCode).ToList();
+                IQueryable<SysCoursePackage> temp = null;
+
+                if(!string.IsNullOrEmpty(query.packageEnabled) && query.packageEnabled.ToLower() != "all")
+                {
+                    temp = context.SysCoursePackage.Where(s => s.PackageEnabled == query.packageEnabled);
+                }
+                if(!string.IsNullOrEmpty(query.packageName))
+                {
+                    if(temp == null)
+                    {
+                        temp = context.SysCoursePackage;
+                    }
+                    temp = temp.Where(s => EF.Functions.Like(s.PackageName, "%" + query.packageName + "%"));
+                }
+                if(temp == null)
+                {
+                    packages = context.SysCoursePackage.OrderBy(s => s.PackageCourseCategoryCode).ToList();
+                }
+                else
+                {
+                    packages = temp.ToList();
+                }
+                return packages;
             }
         }
 

@@ -2,50 +2,56 @@
 <div class="fillcontain">
     <div class="search_container">
         <el-form :inline="true" class="demo-form-inline search-form">
+            <el-form-item label="名称：">
+                <el-input type="text" size="small" v-model="searchField.packageName" placeholder="请输入套餐名称" class="search_field"></el-input>
+            </el-form-item>
+            <el-form-item label="状态：">
+                <el-select size="small" v-model="searchField.packageEnabled" class="search_field" :clearable="true">
+                    <el-option v-for="item in [{label: '全部', value: 'all'}, {label: '启用', value: '是'},{label: '不启用', value: '否'}]" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" size="small" @click='searchPackage()'>查 询</el-button>
+                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetPackageList()'>重 置</el-button>
+            </el-form-item>
             <el-form-item class="btnRight">
-                <el-button type="primary" size="small" icon="el-icon-plus" @click='showAddPackagePanel()'>添加</el-button>
+                <el-button type="primary" size="small" icon="el-icon-plus" @click='showAddPackagePanel()'>添 加</el-button>
+                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
             </el-form-item>
         </el-form>
     </div>
     <div class="table_container">
         <el-table :data="packageList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :max-height="tableHeight">
-            <el-table-column type="index" width="50" fixed></el-table-column>
-            <el-table-column prop="packageCode" label="套餐编码" align='left' width="120" sortable fixed>
+            <el-table-column type="index" width="40" fixed></el-table-column>
+            <el-table-column prop="packageCode" label="套餐编码" align='center' width="90" fixed>
             </el-table-column>
-            <el-table-column prop="packageName" label="课程套餐名称" align='left' min-width="200" fixed>
+            <el-table-column prop="packageName" label="课程套餐名称" align='left' min-width="230" fixed>
             </el-table-column>
-            <el-table-column prop="packageCourseCategoryName" label="课程类别" sortable align='left' min-width="100">
+            <el-table-column prop="packageCourseCategoryName" label="课程类别" align='center' width="90">
             </el-table-column>
-            <el-table-column prop="packageCourseCount" label="课时数" align='center' width="80">
+            <el-table-column prop="packageCourseCount" label="课时数" align='center' width="70">
             </el-table-column>
-            <el-table-column prop="packagePrice" label="课程价格" align='left' min-width="100">
+            <el-table-column prop="packagePrice" label="价格" align='center' sortable min-width="90">
                 <template slot-scope="scope">
                     <span style="color:#f56767">￥{{ scope.row.packagePrice }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="packageEnabled" label="是否启用" :filters="[{text: '是', value: '是'},{text: '否', value: '否'}]" :filter-method="filterPackageEnable" align='left' width="100">
+            <el-table-column prop="packageEnabled" label="是否启用" align='left' width="90">
                 <template slot-scope="scope">
-                    <el-tag :type="courseTag(scope.row.packageEnabled)" :disable-transitions="false">
+                    <el-tag :type="enableTag(scope.row.packageEnabled)" :disable-transitions="false">
                         {{scope.row.packageEnabled}}
                     </el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="packageCreateTime" label="创建日期" align='left' width="100">
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" min-width="100">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
                 <template slot-scope='scope'>
                     <el-button type="warning" icon='el-icon-edit' size="mini" @click='showEditPackagePanel(scope.row)'>编辑</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <!-- <el-row>
-            <el-col :span="24">
-                <div class="pagination">
-                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handleCurrentChange' @size-change='handleSizeChange'>
-                    </el-pagination>
-                </div>
-            </el-col>
-        </el-row> -->
     </div>
     <el-dialog :title="dialog.title" :visible.sync="dialog.isShow" :width="dialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
@@ -56,7 +62,7 @@
                 <el-form-item prop="packageCourseCategoryCode" label="课程类别">
                     <template>
                         <el-select :disabled="dialog.isPackageUsed" v-model="dialog.packageDetail.packageCourseCategoryCode" placeholder="请选择">
-                            <el-option v-for="item in lookup.courseCategory" :key="item.value" :label="item.label" :value="item.value">
+                            <el-option v-for="item in $store.getters['course_category']" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
                     </template>
@@ -84,27 +90,21 @@
 
 <script>
 import {
-    axios
+    axios,
+    dicHelper,
+    tagTypeHelper
 } from '@/utils/index'
 
 export default {
     data() {
         return {
-            lookup: {
-                courseCategory: []
-            },
-            packageList: [],
             loading: false,
-            tableHeight: this.$store.state.page.win_content.height - 73,
-            paginations: {
-                current_page_index: 1,
-                total: 4,
-                page_size: 15,
-                page_sizes: [10, 15, 20, 30],
-                layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
-            },
+            downloadLoading: false,
+            packageList: [],
+            tableHeight: this.$store.state.page.win_content.height - 60,
             searchField: {
-                package_name: ''
+                packageName: '',
+                packageEnabled: '是'
             },
             dialog: {
                 width: '600px',
@@ -147,26 +147,29 @@ export default {
     },
     created() {
         this.getPackageList();
-
-        var _this = this;
-        // 获取课程大类
-        axios({
-            type: 'get',
-            path: '/api/config/getdicbycode',
-            data: {
-                typeCode: 'course_category'
-            },
-            fn: function (result) {
-                _this.lookup.courseCategory = result;
-            }
-        });
     },
     methods: {
+        searchPackage() {
+            this.getPackageList();
+        },
+
+        resetPackageList() {
+            this.searchField = {
+                packageName: '',
+                packageEnabled: '是'
+            };
+            this.getPackageList();
+        },
+
         getPackageList() {
             var _this = this;
+            var data = {
+                q: _this.searchField
+            }
             axios({
                 type: 'get',
                 path: '/api/coursepackage',
+                data: data,
                 fn: function (result) {
                     result.forEach(item => {
                         item.packageCreateTime = item.packageCreateTime.split('T')[0];
@@ -196,7 +199,7 @@ export default {
             this.$refs[packageForm].validate((valid) => {
                 if (valid) {
                     var code = _this.dialog.packageDetail.packageCourseCategoryCode,
-                        categoryName = _this.GetLabelByValue(_this.lookup.courseCategory, code);
+                        categoryName = dicHelper.getLabelByValue(_this.$store.getters['course_category'], code);
                     _this.dialog.packageDetail.packageCourseCategoryName = categoryName;
 
                     axios({
@@ -251,7 +254,8 @@ export default {
             this.$refs[packageForm].validate((valid) => {
                 if (valid) {
                     var code = _this.dialog.packageDetail.packageCourseCategoryCode,
-                        categoryName = _this.GetLabelByValue(_this.lookup.courseCategory, code);
+                        categoryName = dicHelper.getLabelByValue(_this.$store.getters['course_category'], code);
+
                     _this.dialog.packageDetail.packageCourseCategoryName = categoryName;
 
                     axios({
@@ -291,37 +295,41 @@ export default {
             })
         },
 
-        filterPackageEnable(value, row, column){
-            return row['packageEnabled'] === value;
+        enableTag(code) {
+            return tagTypeHelper.packageEnableTag(code);
         },
 
-        courseTag(course) {
-            let basic = '';
-            switch (course) {
-                case '是':
-                    basic = 'success'
-                    break;
-                case '否':
-                    basic = 'info'
-                    break;
+        export2Excle() {
+            if (this.packageList.length == 0) {
+                this.$message({
+                    message: '没有数据需要导出！',
+                    type: 'success'
+                });
+                return;
             }
-            return basic;
+            this.downloadLoading = true
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['套餐编码', '套餐名称', '课程类别', '课时数目', '价 格', '是否启用'];
+                const filterVal = ['packageCode', 'packageName', 'packageCourseCategoryName', 'packageCourseCount', 'packagePrice', 'packageEnabled']
+                const data = this.formatJson(filterVal, this.packageList)
+                excel.export_json_to_excel({
+                    header: tHeader,
+                    data,
+                    filename: '课程套餐列表',
+                    autoWidth: false,
+                    bookType: 'xlsx'
+                })
+                this.downloadLoading = false;
+            })
         },
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
-        },
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
-        },
-        GetLabelByValue(lst, value) {
-            let label = '';
-            for (let obj of lst) {
-                if (obj['value'] == value) {
-                    label = obj['label'];
-                    break;
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'time') {
+                    return v[j] && v[j].split('T')[0] || ''; //parseTime(v[j])
+                } else {
+                    return v[j]
                 }
-            }
-            return label;
+            }))
         }
     }
 }
@@ -342,9 +350,7 @@ export default {
     width: 100%;
     min-width: 750px;
 }
-
-.pagination {
-    text-align: left;
-    margin-top: 10px
+.search_field {
+    width: 140px;
 }
 </style>

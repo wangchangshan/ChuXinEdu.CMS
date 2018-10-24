@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using ChuXinEdu.CMS.Server.Model;
 using System;
 using ChuXinEdu.CMS.Server.Utils;
+using ChuXinEdu.CMS.Server.ViewModel;
+using Newtonsoft.Json;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -22,9 +24,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         // GET api/coursepackage
         [HttpGet]
-        public IEnumerable<SysCoursePackage> Get()
+        public IEnumerable<SysCoursePackage> Get(string q)
         {
-            IEnumerable<SysCoursePackage> packageList = _chuxinQuery.GetSysCoursePackageList();
+            QUERY_SYS_PACKAGE query = JsonConvert.DeserializeObject<QUERY_SYS_PACKAGE>(q);
+            IEnumerable<SysCoursePackage> packageList = _chuxinQuery.GetSysCoursePackageList(query);
             return packageList;
         }
 

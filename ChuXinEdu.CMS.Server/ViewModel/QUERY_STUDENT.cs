@@ -6,7 +6,6 @@ using ChuXinEdu.CMS.Server.Model;
 
 namespace ChuXinEdu.CMS.Server.ViewModel
 {
-    //
     public class QUERY_STUDENT
     {
         public string studentCode { get; set; }

@@ -81,7 +81,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         SysCoursePackage GetSysCoursePackage(string packageCode);
 
-        IEnumerable<SysCoursePackage> GetSysCoursePackageList();
+        IEnumerable<SysCoursePackage> GetSysCoursePackageList(QUERY_SYS_PACKAGE query);
 
         bool isPackageUsed(int packageId);
 
