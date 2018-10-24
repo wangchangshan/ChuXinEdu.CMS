@@ -13,14 +13,6 @@
                         <div class="student-list-content">
                             <ul>
                                 <li v-for="student in period.studentList" v-bind:key="student.studentCode">
-                                    <!-- <el-popover trigger="hover" placement="top">
-                                        <p>姓名: 测试</p>
-                                        <p>住址: 北京市昌平区</p>
-                                        <div slot="reference" class="name-wrapper" style="display:inline">
-                                            <el-tag :type="courseCategoryTag(student.courseCategoryCode)" size="mini">{{student.courseCategoryName}}</el-tag>
-                                            <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} <i v-if="student.isThisWeek == 'Y'" class="fa fa-check-square-o"></i>&nbsp;<i v-if="student.isThisWeek == 'Y' && student.courseType == '试听'" class="fa fa-headphones"></i></a>
-                                        </div>
-                                    </el-popover> -->
                                     <div class="name-wrapper" style="display:inline">
                                         <el-tag :type="courseFolderTag(student.courseFolderCode)" size="mini">{{student.courseFolderName}}</el-tag>
                                         <a class="student-item-left" @click="getStudentCourseList(student.studentCode, student.studentName,day.dayCode, day.dayName, period.periodName)">{{student.studentName}} 
@@ -507,7 +499,7 @@ export default {
                 let categoryCode = selectedItem.selectedCourseOptions[0];
                 let folderCode = selectedItem.selectedCourseOptions[1];
                 let categoryName = dicHelper.getLabelByValue(this.$store.getters['course_category'], categoryCode);
-                let forlderName = dicHelper.getLabelByValue(this.$store.getters['course_category'], folderCode);
+                let folderName = dicHelper.getLabelByValue(this.$store.getters['course_folder'], folderCode);
                 
                 caInfo_shiting.StudentList.push({
                     'StudentCoursePackageId': 0,
@@ -517,7 +509,7 @@ export default {
                     'CourseCategoryCode': categoryCode,
                     'CourseCategoryName': categoryName,
                     'CourseFolderCode': folderCode,
-                    'CourseFolderName': forlderName,
+                    'CourseFolderName': folderName,
                     'CourseCount': 1,
                     'StartDate': selectedItem.firstCourseDate
                 });

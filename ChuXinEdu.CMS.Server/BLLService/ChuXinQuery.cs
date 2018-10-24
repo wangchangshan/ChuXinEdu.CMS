@@ -259,13 +259,15 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 // is_this_week 为是否本周有课
                 var studentList = context.CA_R_PERIOD_STUDENTS.FromSql($@"select distinctrow sca.id,sca.course_period,sca.course_week_day,sca.student_code,sca.student_name,sca.package_code,
-                                                                      scp.course_category_code,scp.course_category_name,scl.course_folder_code,scl.course_folder_name,
+                                                                      scl.course_category_code,scl.course_category_name,scl.course_folder_code,scl.course_folder_name,
                                                                       sca.course_total_count,sca.course_rest_count,sca.course_type,
                                                                       uf_IsThisWeekHasCourse(sca.student_code,sca.course_week_day,sca.course_period,sca.classroom) as is_this_week
                                                                 from student_course_arrange sca
                                                                 left join student_course_package scp on sca.student_course_package_id = scp.id 
                                                                 left join student_course_list scl on sca.student_course_package_id = scl.student_course_package_id and sca.course_week_day = scl.course_week_day and sca.course_period = scl.course_period and sca.arrange_template_code = scl.arrange_template_code and sca.classroom = scl.classroom  and scl.attendance_status_code = '09' 
-                                                                where sca.arrange_template_code = {templateCode} and sca.classroom= {roomCode} and scp.scp_status = '00' and sca.course_rest_count > 0
+                                                                where sca.arrange_template_code = {templateCode} and sca.classroom= {roomCode} 
+                                                                and (scp.scp_status = '00' or scp.scp_status is null) 
+                                                                and sca.course_rest_count > 0
                                                                 order by scl.course_folder_code")
                                                             .ToList();
                 foreach (var item in studentList)
@@ -289,14 +291,16 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                 // is_this_week 为是否本周有课
                 var studentList = context.CA_R_PERIOD_STUDENTS.FromSql($@"select distinctrow sca.id,sca.course_period,sca.course_week_day,sca.student_code,sca.student_name,sca.package_code,
-                                                                      scp.course_category_code,scp.course_category_name,scl.course_folder_code,scl.course_folder_name, 
+                                                                      scl.course_category_code,scl.course_category_name,scl.course_folder_code,scl.course_folder_name, 
                                                                       sca.course_total_count,sca.course_rest_count,sca.course_type,
                                                                       uf_IsThisWeekHasCourse(sca.student_code,{dayCode},{periodName},{roomCode}) as is_this_week
                                                                 from student_course_arrange sca
                                                                 left join student_course_package scp on sca.student_course_package_id = scp.id 
                                                                 left join student_course_list scl on sca.student_course_package_id = scl.student_course_package_id and sca.course_week_day = scl.course_week_day and sca.course_period = scl.course_period and sca.arrange_template_code = scl.arrange_template_code and sca.classroom = scl.classroom  and scl.attendance_status_code = '09' 
-                                                                where sca.arrange_template_code = {templateCode} and sca.classroom = {roomCode} and scp.scp_status = '00' and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
-                                                                      and sca.course_rest_count > 0
+                                                                where sca.arrange_template_code = {templateCode} and sca.classroom = {roomCode} 
+                                                                       and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
+                                                                       and sca.course_rest_count > 0
+                                                                       and (scp.scp_status = '00' or scp.scp_status is null) 
                                                                 order by scl.course_folder_code")
                                                             .ToList();
                 foreach (var item in studentList)
