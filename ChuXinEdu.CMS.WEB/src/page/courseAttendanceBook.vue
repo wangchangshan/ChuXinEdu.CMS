@@ -16,9 +16,12 @@
                     {{ scope.row.studentName + ' (' + scope.row.courseType + ')' }}
                 </template>
             </el-table-column>
-            <el-table-column prop="courseFolderName" label="课程类别" align='center' width="100">
-                <template slot-scope='scope'>
-                    {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
+            <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="100">
+                <template slot-scope="scope">
+                    <el-select v-model="scope.row.courseFolderCode" size='mini'>
+                        <el-option v-for="item in $store.getters['course_folder_' + scope.row.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
                 </template>
             </el-table-column>
             <el-table-column prop="" label="上课教师" align='center' min-width="140">
@@ -55,6 +58,12 @@
                 <el-form-item label="上课时间">
                     {{signInDialog.courseInfo.courseDate + " " + signInDialog.courseInfo.weekName + "  [" + signInDialog.courseInfo.coursePeriod+ "]" }}
                 </el-form-item>
+                <el-form-item label="课程类别">
+                    <el-select v-model="signInDialog.courseInfo.courseFolderCode" size='mini'>
+                        <el-option v-for="item in $store.getters['course_folder_' + signInDialog.courseInfo.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item prop="teacherCode" label="上课教师">
                     <el-select v-model="signInDialog.courseInfo.teacherCode" placeholder="选择上课教师" size='mini'>
                         <el-option v-for="item in teacherList[signInDialog.courseInfo.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
@@ -84,7 +93,8 @@
 
 <script>
 import {
-    axios
+    axios,
+    dicHelper
 } from '@/utils/index'
 
 export default {
@@ -110,6 +120,7 @@ export default {
                     weekName: '',
                     coursePeriod: '',
                     courseFolderCode: '',
+                    courseCategoryCode: '',
                     teacherCode: '',
                     imgDesc: '',
                     imgCost: ''
@@ -186,6 +197,27 @@ export default {
         cancelSignIn() {
             this.uploadPanel.thumbnailList = [];
             this.signInDialog.isShow = false;
+        },        
+
+        showSingleSignInDialog(row) {
+            this.signInDialog.isShow = true;
+            this.signInDialog.courseInfo = {
+                courseId: row.studentCourseId,
+                studentCode: row.studentCode,
+                studentName: row.studentName,
+                courseDate: row.courseDate,
+                weekName: row.weekName,
+                courseFolderCode: row.courseFolderCode,
+                courseCategoryCode: row.courseCategoryCode,
+                coursePeriod: row.coursePeriod,
+                teacherCode: row.teacherCode,
+                imgDesc: row.courseSubject
+            };
+            this.uploadPanel.params = {
+                courseId: row.studentCourseId,
+                studentCode: row.studentCode,
+                studentName: row.studentName,
+            }
         },
 
         submitSignIn(courseForm) {
@@ -205,8 +237,9 @@ export default {
                     let courseId = _this.signInDialog.courseInfo.courseId;
                     let studentCode = _this.signInDialog.courseInfo.studentCode;
                     let teacherCode = _this.signInDialog.courseInfo.teacherCode;
-                    let courseFolderCode = _this.signInDialog.courseInfo.courseFolderCode;
-                    let teacherName = _this.getTeacherNameByCode(courseFolderCode, teacherCode);
+                    let folderCode = _this.signInDialog.courseInfo.courseFolderCode;
+                    let folderName = dicHelper.getLabelByValue(this.$store.getters['course_folder'], folderCode);
+                    let teacherName = _this.getTeacherNameByCode(folderCode, teacherCode);
                     let fileUIds = _this.uploadPanel.fileUIds;
                     let imgCost = _this.signInDialog.courseInfo.imgCost;
                     let title = _this.signInDialog.courseInfo.imgDesc;
@@ -218,7 +251,9 @@ export default {
                         TeacherName: teacherName,
                         FileUIds: fileUIds,
                         CostCount: imgCost,
-                        Title: title
+                        Title: title,
+                        CourseFolderCode: folderCode,
+                        CourseFolderName: folderName
                     }
 
                     axios({
@@ -261,12 +296,16 @@ export default {
                     return;
                 }
                 let teacherName = this.getTeacherNameByCode(item.courseFolderCode, item.teacherCode);
+                let folderCode = item.courseFolderCode;
+                let folderName = dicHelper.getLabelByValue(this.$store.getters['course_folder'], folderCode);
                 courseList.push({
                     CourseListId: item.studentCourseId,
                     StudentCode: item.studentCode,
                     TeacherCode: item.teacherCode,
                     TeacherName: teacherName,
-                    Title: item.courseSubject
+                    Title: item.courseSubject,
+                    CourseFolderCode: folderCode,
+                    CourseFolderName: folderName
                 });
             }
 
@@ -330,26 +369,6 @@ export default {
 
             this.attendanceList.splice(index, 1);
             this.getRowSpanInfo();
-        },
-
-        showSingleSignInDialog(row) {
-            this.signInDialog.isShow = true;
-            this.signInDialog.courseInfo = {
-                courseId: row.studentCourseId,
-                studentCode: row.studentCode,
-                studentName: row.studentName,
-                courseDate: row.courseDate,
-                weekName: row.weekName,
-                courseFolderCode: row.courseFolderCode,
-                coursePeriod: row.coursePeriod,
-                teacherCode: row.teacherCode,
-                imgDesc: row.courseSubject
-            };
-            this.uploadPanel.params = {
-                courseId: row.studentCourseId,
-                studentCode: row.studentCode,
-                studentName: row.studentName,
-            }
         },
 
         handleSelectionChange(allItems) {

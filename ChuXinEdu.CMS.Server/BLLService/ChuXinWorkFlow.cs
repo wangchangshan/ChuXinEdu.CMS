@@ -632,6 +632,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     scl.TeacherCode = course.TeacherCode;
                     scl.TeacherName = course.TeacherName;
                     scl.CourseSubject = course.Title;
+                    scl.CourseFolderCode = course.CourseFolderCode;
+                    scl.CourseFolderName = course.CourseFolderName;
 
                     // 2. 判断是否为试听
                     if (scl.CourseType == "试听")
@@ -744,6 +746,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         scl.TeacherCode = item.TeacherCode;
                         scl.TeacherName = item.TeacherName;
                         scl.CourseSubject = item.Title;
+                        scl.CourseFolderCode = item.CourseFolderCode;
+                        scl.CourseFolderName = item.CourseFolderName;
 
                         // 2. 判断是否为试听
                         if (scl.CourseType == "试听")

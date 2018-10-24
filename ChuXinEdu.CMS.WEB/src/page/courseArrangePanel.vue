@@ -30,9 +30,6 @@
                         <div class="student-list-footer" v-on:mouseenter="showPeriodActions($event)" v-on:mouseleave="HidPeriodActions($event)">
                             <el-button type="success" v-show="false" @click="showStudentsListPanel(day.dayCode, day.dayName,period.periodName)" size="mini">正 式</el-button>
                             <el-button type="primary" v-show="false" @click="showTempStudentsListCourse(day.dayCode, day.dayName,period.periodName)" size="mini">试 听</el-button>
-                            <!-- <el-button type="warning" plain @click="removeStudent()" size="mini">试听</el-button> -->
-                            <!-- <el-button  plain circle icon="el-icon-plus"  @click="removeStudent()" size="mini"></el-button> -->
-
                         </div>
                     </el-collapse-item>
                 </el-collapse>

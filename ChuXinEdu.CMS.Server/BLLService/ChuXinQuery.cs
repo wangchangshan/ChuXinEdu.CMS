@@ -322,7 +322,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 return context.StudentCoursePackage.FromSql($@"select scp.* from student_course_package  scp 
-                                                                where scp.scp_status = '00' and not exists(
+                                                                where scp.scp_status = '00' and scp.flex_course_count > 0 and not exists(
                                                                     select 1 from student_course_arrange sca 
                                                                     where sca.student_code = scp.student_code 
                                                                     and sca.course_week_day = {dayCode} and sca.course_period = {periodName} 
