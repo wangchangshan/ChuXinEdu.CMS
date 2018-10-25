@@ -117,7 +117,7 @@
                 </el-form-item>
                 <el-form-item label="课程内容">
                     <el-radio-group :disabled="packageDialog.uploadPanel == 'Y'" v-model="packageDialog.courseInfo.selectedFolder">
-                        <el-radio v-for="item in packageDialog.courseFolder" :key="item.value" :label="item.value" :disabled="handleCourseFolderDisplay(item)">{{item.label}}</el-radio>
+                        <el-radio v-for="item in $store.getters['course_folder']" :key="item.value" :label="item.value" :disabled="handleCourseFolderDisplay(item)">{{item.label}}</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="实际课程数目">
@@ -141,7 +141,7 @@
 
                 <el-form-item label="缴费类型" v-show="packageDialog.courseInfo.isPayed == 'Y'">
                     <el-select v-model="packageDialog.courseInfo.selectedPaymentType" placeholder="请选择">
-                        <el-option v-for="item in packageDialog.payPattern" :key="item.value" :label="item.label" :value="item.value">
+                        <el-option v-for="item in $store.getters['pay_pattern']" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -274,8 +274,6 @@ export default {
                 },
                 payeeList: [],
                 coursePackage: [],
-                payPattern: [],
-                courseFolder: [],
             },
             studentDialog: {
                 width: '600px',
@@ -316,30 +314,6 @@ export default {
     created() {
         var _this = this;
         _this.GetStudentBaseData();
-
-        // 获取付款方式
-        axios({
-            type: 'get',
-            path: '/api/config/getdicbycode',
-            data: {
-                typeCode: 'pay_pattern'
-            },
-            fn: function (result) {
-                _this.packageDialog.payPattern = result;
-            }
-        });
-
-        // 获取课程小类
-        axios({
-            type: 'get',
-            path: '/api/config/getdicbycode',
-            data: {
-                typeCode: 'course_folder'
-            },
-            fn: function (result) {
-                _this.packageDialog.courseFolder = result;
-            }
-        });
 
         // 获取所有课程套餐
         axios({
@@ -479,7 +453,7 @@ export default {
             }
 
             var folderCode = _this.packageDialog.courseInfo.selectedFolder,
-                folderName = _this.GetLabelByValue(_this.packageDialog.courseFolder, folderCode);
+                folderName = dicHelper.getLabelByValue(_this.$store.getters['course_folder'], folderCode);
 
             if (!folderCode) {
                 _this.$message({
@@ -490,10 +464,10 @@ export default {
             }
 
             var teacherCode = _this.packageDialog.courseInfo.payeeCode,
-                teacherName = _this.GetLabelByValue(_this.packageDialog.payeeList, teacherCode);
+                teacherName = dicHelper.getLabelByValue(_this.packageDialog.payeeList, teacherCode);
 
             var patternCode = _this.packageDialog.courseInfo.selectedPaymentType,
-                patternName = _this.GetLabelByValue(_this.packageDialog.payPattern, patternCode);
+                patternName = dicHelper.getLabelByValue(_this.$store.getters['pay_pattern'], patternCode);
 
             // 添加新的套餐
             var newPackage = {
@@ -552,14 +526,14 @@ export default {
             var _this = this;
 
             var folderCode = _this.packageDialog.courseInfo.selectedFolder,
-                folderName = _this.GetLabelByValue(_this.packageDialog.courseFolder, folderCode);
+                folderName = dicHelper.getLabelByValue(_this.$store.getters['course_folder'], folderCode);
 
             var teacherCode = _this.packageDialog.courseInfo.payeeCode,
-                teacherName = _this.GetLabelByValue(_this.packageDialog.payeeList, teacherCode);
+                teacherName = dicHelper.getLabelByValue(_this.packageDialog.payeeList, teacherCode);
 
             var patternCode = _this.packageDialog.courseInfo.selectedPaymentType,
-                patternName = _this.GetLabelByValue(_this.packageDialog.payPattern, patternCode);
-
+                patternName = dicHelper.getLabelByValue(_this.$store.getters['pay_pattern'], patternCode);
+                
             var updatePackage = {
                 IsDiscount: _this.packageDialog.courseInfo.isDiscount,
                 IsPayed: _this.packageDialog.courseInfo.isPayed,
@@ -642,20 +616,10 @@ export default {
             }
         },
 
-        GetLabelByValue(lst, value) {
-            let label = '';
-            for (let obj of lst) {
-                if (obj['value'] == value) {
-                    label = obj['label'];
-                    break;
-                }
-            }
-            return label;
-        },
-
         studentStatusTag(studentStatusCode) {
             return tagTypeHelper.studentStatusTag(studentStatusCode);
         },
+        
         getSummaries(param) {
             const {
                 columns,
