@@ -171,16 +171,16 @@ export function export_json_to_excel({
       /*再判断是否为中文*/
       else if (val.toString().charCodeAt(0) > 255) {
         return {
-          'wch': val.toString().length * 2
+          'wch': val.toString().length * 2.1
         };
       } else {
         if (val.toString().length > 4 && val.toString().charCodeAt(5) > 255) {
           return {
-            'wch': val.toString().length * 1.6
+            'wch': val.toString().length * 1.5
           };
         } else {
           return {
-            'wch': val.toString().length
+            'wch': val.toString().length * 1.1
           };
         }
       }
