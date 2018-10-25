@@ -504,11 +504,34 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #endregion
 
         #region teacher
-        public IEnumerable<Teacher> GetTeacherList()
+        public IEnumerable<Teacher> GetTeacherList(QUERY_TEACHER query)
         {
+            IEnumerable<Teacher> teachers = null;
             using (BaseContext context = new BaseContext())
             {
-                return context.Teacher.ToList();
+                IQueryable<Teacher> temp = null;
+
+                if(!string.IsNullOrEmpty(query.teacherStatus))
+                {
+                    temp = context.Teacher.Where(t => t.TeacherStatus == query.teacherStatus);
+                }
+                if(!string.IsNullOrEmpty(query.teacherName))
+                {
+                    if(temp == null)
+                    {
+                        temp = context.Teacher;
+                    }
+                    temp = temp.Where(t => EF.Functions.Like(t.TeacherName, "%" + query.teacherName + "%"));
+                }
+                if(temp == null)
+                {
+                    teachers = context.Teacher.OrderBy(t => t.TeacherCode).ToList();
+                }
+                else
+                {
+                    teachers = temp.ToList();
+                }
+                return teachers;
             }
         }
         #endregion 

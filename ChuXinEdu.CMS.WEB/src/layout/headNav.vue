@@ -133,6 +133,15 @@ export default {
                     title: '学生列表',
                     path: '/studentList'
                 }].concat(current);
+            } else if (current.path == '/teacherDetailMain') {
+                current.title = this.$route.query.teacherName
+                this.breadcrumbList = [{
+                    title: '首 页',
+                    path: '/dashboard'
+                }, {
+                    title: '教师列表',
+                    path: '/teacherList'
+                }].concat(current);
             } else {
                 this.breadcrumbList = [{
                     title: '首 页',

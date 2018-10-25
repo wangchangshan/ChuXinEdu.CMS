@@ -85,7 +85,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         bool isPackageUsed(int packageId);
 
-        IEnumerable<Teacher> GetTeacherList();
+        IEnumerable<Teacher> GetTeacherList(QUERY_TEACHER query);
 
 
 

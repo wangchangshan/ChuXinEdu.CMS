@@ -9,6 +9,7 @@ using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
 using ChuXinEdu.CMS.Server.Utils;
+using Newtonsoft.Json;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -27,9 +28,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         // GET api/teacher
         [HttpGet]
-        public IEnumerable<Teacher> Get()
+        public IEnumerable<Teacher> Get(string q)
         {
-            IEnumerable<Teacher> teacherList = _chuxinQuery.GetTeacherList();
+            QUERY_TEACHER query = JsonConvert.DeserializeObject<QUERY_TEACHER>(q);
+            IEnumerable<Teacher> teacherList = _chuxinQuery.GetTeacherList(query);
             return teacherList;
         }
 

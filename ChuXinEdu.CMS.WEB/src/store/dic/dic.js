@@ -2,6 +2,7 @@ const state = {
     all_dic_code: [
         'student_temp_status',
         'student_status',
+        'teacher_status',
         'course_category',
         'course_folder'
     ].join(','),
@@ -20,6 +21,9 @@ const getters = {
     },
     student_status: state => {
         return state.allDics && state.allDics.student_status || [];
+    },
+    teacher_status: state => {
+        return state.allDics && state.allDics.teacher_status || [];
     },
     course_category: state => {
         return state.allDics && state.allDics.course_category || [];

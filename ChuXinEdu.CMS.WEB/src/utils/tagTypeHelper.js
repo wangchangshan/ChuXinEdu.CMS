@@ -15,6 +15,21 @@ const tagTypeHelper = {
         }
         return type;
     },
+    teacherStatusTag(statusCode) {
+        let type = '';
+        switch (statusCode) {
+            case '00': // 试用
+                type = 'warning'
+                break;
+            case '01': // 正式
+                type = 'success'
+                break;
+            case '02': // 离职
+                type = 'danger'
+                break;
+        }
+        return type;
+    },
     courseCategoryTag(categoryCode) {
         let type = '';
         switch (categoryCode) {

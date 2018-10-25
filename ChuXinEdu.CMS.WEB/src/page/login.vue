@@ -116,7 +116,7 @@ export default {
                 },
                 {
                     path: '/courseArrangeMain',
-                    name: '排课安排',
+                    name: '排课管理',
                     component: 'courseArrangeMain',
                     icon: 'fa-magic',
                     noDropdown: true,
@@ -193,6 +193,13 @@ export default {
                     path: '/studentDetailMain',
                     name: '学生详细',
                     component: 'studentDetailMain',
+                    hidden: true,
+                    noDropdown: true
+                },
+                {
+                    path: '/teacherDetailMain',
+                    name: '教师详细',
+                    component: 'teacherDetailMain',
                     hidden: true,
                     noDropdown: true
                 },

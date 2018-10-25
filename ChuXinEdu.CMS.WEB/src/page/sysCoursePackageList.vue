@@ -37,14 +37,14 @@
                     <span style="color:#f56767">￥{{ scope.row.packagePrice }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="packageEnabled" label="是否启用" align='left' width="90">
+            <el-table-column prop="packageEnabled" label="是否启用" align='center' width="90">
                 <template slot-scope="scope">
                     <el-tag :type="enableTag(scope.row.packageEnabled)" :disable-transitions="false">
                         {{scope.row.packageEnabled}}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="packageCreateTime" label="创建日期" align='left' width="100">
+            <el-table-column prop="packageCreateTime" label="创建日期" align='center' width="100">
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
                 <template slot-scope='scope'>

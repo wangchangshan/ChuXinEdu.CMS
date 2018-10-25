@@ -37,7 +37,6 @@
                         </div>
                     </el-popover>
                 </template>
-
             </el-table-column>
             <el-table-column prop="studentSex" label="性别" align='center' width="60">
             </el-table-column>
