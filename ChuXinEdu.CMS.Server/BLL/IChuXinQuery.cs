@@ -77,7 +77,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         string GetArtWorkTruePath(int artworkId);
 
-        string GetAvatarTruePath(int studentId);
+        string GetAvatarTruePath(int id, string type);
 
         SysCoursePackage GetSysCoursePackage(string packageCode);
 
@@ -86,6 +86,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         bool isPackageUsed(int packageId);
 
         IEnumerable<Teacher> GetTeacherList(QUERY_TEACHER query);
+
+        Teacher GetTeacher(string teacherCode);
 
 
 

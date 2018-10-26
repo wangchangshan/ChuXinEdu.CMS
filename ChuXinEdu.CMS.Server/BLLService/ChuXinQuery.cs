@@ -35,35 +35,35 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 IQueryable<Student> temp = null;
-                
-                if(!String.IsNullOrEmpty(query.studentStatus))
+
+                if (!String.IsNullOrEmpty(query.studentStatus))
                 {
                     temp = context.Student.Where(s => s.StudentStatus == query.studentStatus);
                 }
-                if(!String.IsNullOrEmpty(query.studentCode))
+                if (!String.IsNullOrEmpty(query.studentCode))
                 {
-                    if(temp == null)
+                    if (temp == null)
                     {
                         temp = context.Student;
                     }
                     temp = temp.Where(s => EF.Functions.Like(s.StudentCode, "%" + query.studentCode + "%"));
                 }
-                if(!String.IsNullOrEmpty(query.studentName))
+                if (!String.IsNullOrEmpty(query.studentName))
                 {
-                    if(temp == null)
+                    if (temp == null)
                     {
                         temp = context.Student;
                     }
                     temp = temp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
                 }
 
-                if(temp == null)
+                if (temp == null)
                 {
                     temp = context.Student.Where(s => 1 == 1);
                 }
                 totalCount = temp.Count();
                 students = temp.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
-                
+
                 return students;
             }
         }
@@ -74,34 +74,34 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 IQueryable<Student> temp = null;
-                
-                if(!String.IsNullOrEmpty(query.studentStatus))
+
+                if (!String.IsNullOrEmpty(query.studentStatus))
                 {
                     temp = context.Student.Where(s => s.StudentStatus == query.studentStatus);
                 }
-                if(!String.IsNullOrEmpty(query.studentCode))
+                if (!String.IsNullOrEmpty(query.studentCode))
                 {
-                    if(temp == null)
+                    if (temp == null)
                     {
                         temp = context.Student;
                     }
                     temp = temp.Where(s => EF.Functions.Like(s.StudentCode, "%" + query.studentCode + "%"));
                 }
-                if(!String.IsNullOrEmpty(query.studentName))
+                if (!String.IsNullOrEmpty(query.studentName))
                 {
-                    if(temp == null)
+                    if (temp == null)
                     {
                         temp = context.Student;
                     }
                     temp = temp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
                 }
 
-                if(temp == null)
+                if (temp == null)
                 {
                     temp = context.Student.Where(s => 1 == 1);
                 }
                 students = temp.ToList();
-                
+
                 return students;
             }
         }
@@ -110,7 +110,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-               return context.StudentRecommend.Where(s => s.OriginStudentCode == studentCode).ToList();
+                return context.StudentRecommend.Where(s => s.OriginStudentCode == studentCode).ToList();
             }
         }
 
@@ -140,20 +140,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 IQueryable<StudentTemp> temp = null;
-                if(!string.IsNullOrEmpty(query.studentName))
+                if (!string.IsNullOrEmpty(query.studentName))
                 {
                     temp = context.StudentTemp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
                 }
-                if(query.studentTempStatus.Count() > 0)
+                if (query.studentTempStatus.Count() > 0)
                 {
-                    if(temp == null)
+                    if (temp == null)
                     {
                         temp = context.StudentTemp;
                     }
-                    temp = temp.Where( s => query.studentTempStatus.Contains(s.StudentTempStatus));
+                    temp = temp.Where(s => query.studentTempStatus.Contains(s.StudentTempStatus));
                 }
 
-                if(temp == null)
+                if (temp == null)
                 {
                     temp = context.StudentTemp.Where(s => 1 == 1);
                 }
@@ -460,19 +460,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 IQueryable<SysCoursePackage> temp = null;
 
-                if(!string.IsNullOrEmpty(query.packageEnabled) && query.packageEnabled.ToLower() != "all")
+                if (!string.IsNullOrEmpty(query.packageEnabled) && query.packageEnabled.ToLower() != "all")
                 {
                     temp = context.SysCoursePackage.Where(s => s.PackageEnabled == query.packageEnabled);
                 }
-                if(!string.IsNullOrEmpty(query.packageName))
+                if (!string.IsNullOrEmpty(query.packageName))
                 {
-                    if(temp == null)
+                    if (temp == null)
                     {
                         temp = context.SysCoursePackage;
                     }
                     temp = temp.Where(s => EF.Functions.Like(s.PackageName, "%" + query.packageName + "%"));
                 }
-                if(temp == null)
+                if (temp == null)
                 {
                     packages = context.SysCoursePackage.OrderBy(s => s.PackageCourseCategoryCode).ToList();
                 }
@@ -511,19 +511,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 IQueryable<Teacher> temp = null;
 
-                if(!string.IsNullOrEmpty(query.teacherStatus))
+                if (!string.IsNullOrEmpty(query.teacherStatus))
                 {
                     temp = context.Teacher.Where(t => t.TeacherStatus == query.teacherStatus);
                 }
-                if(!string.IsNullOrEmpty(query.teacherName))
+                if (!string.IsNullOrEmpty(query.teacherName))
                 {
-                    if(temp == null)
+                    if (temp == null)
                     {
                         temp = context.Teacher;
                     }
                     temp = temp.Where(t => EF.Functions.Like(t.TeacherName, "%" + query.teacherName + "%"));
                 }
-                if(temp == null)
+                if (temp == null)
                 {
                     teachers = context.Teacher.OrderBy(t => t.TeacherCode).ToList();
                 }
@@ -534,17 +534,36 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return teachers;
             }
         }
+
+        public Teacher GetTeacher(string teacherCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.Teacher.Where(t => t.TeacherCode == teacherCode).FirstOrDefault();
+            }
+        }
         #endregion 
 
-        public string GetAvatarTruePath(int studentId)
+        public string GetAvatarTruePath(int id, string type)
         {
             string path = string.Empty;
             using (BaseContext context = new BaseContext())
             {
-                var st = context.Student.Where(s => s.Id == studentId).FirstOrDefault();
-                if (st != null)
+                if (type == "student")
                 {
-                    path = st.StudentAvatarPath;
+                    var st = context.Student.Where(s => s.Id == id).FirstOrDefault();
+                    if (st != null)
+                    {
+                        path = st.StudentAvatarPath;
+                    }
+                }
+                else if (type == "teacher")
+                {
+                    var teacher = context.Teacher.Where(s => s.Id == id).FirstOrDefault();
+                    if (teacher != null)
+                    {
+                        path = teacher.TeacherAvatarPath;
+                    }
                 }
             }
 

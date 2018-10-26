@@ -158,8 +158,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     docPath = _chuxinQuery.GetArtWorkTruePath(id);
                 break;
                 
-                case "avatar":
-                    docPath = _chuxinQuery.GetAvatarTruePath(id);
+                case "avatar-s":
+                    docPath = _chuxinQuery.GetAvatarTruePath(id, "student");
+                break;
+                case "avatar-t":
+                    docPath = _chuxinQuery.GetAvatarTruePath(id, "teacher");
                 break;
 
                 default:
@@ -167,7 +170,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
             if(string.IsNullOrEmpty(docPath))
             {
-                if(type == "avatar")
+                if(type.IndexOf("avatar") > -1 )
                 {
                     docPath = "/image/avatar-default.png";
                 }

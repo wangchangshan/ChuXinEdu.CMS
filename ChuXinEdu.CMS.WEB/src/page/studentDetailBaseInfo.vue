@@ -14,7 +14,7 @@
                 <el-row :gutter="10">
                     <el-col :span="12" style="min-width:280px">
                         <el-card shadow="never" class="card-student-base">
-                            <el-form :label-width="packageDialog.formLabelWidth" :label-position='packageDialog.labelPosition' size="mini" label-suffix="：">
+                            <el-form :label-width="studentDialog.formLabelWidth" :label-position='studentDialog.labelPosition' size="mini" label-suffix="：">
                                 <el-form-item label="姓名">
                                     {{ pageData.studentInfo.studentName }} &nbsp;&nbsp; <el-tag size="medium" :type="studentStatusTag(pageData.studentInfo.studentStatus)">{{ pageData.studentInfo.studentStatusDesc}}</el-tag>
                                 </el-form-item>
@@ -227,11 +227,12 @@ export default {
             avatarPanel: {
                 isShow: false,
                 params: {
+                    type: 'student',
                     token: '123456798',
-                    studentCode: '',
-                    studentName: ''
+                    code: '',
+                    name: ''
                 },
-                uploadUrl: '/api/student/uploadavatar',
+                uploadUrl: '/api/upload/uploadavatar',
                 imgDataUrl: ''
             },
             pageData: {
@@ -247,7 +248,6 @@ export default {
                     studentRegisterDate: "",
                     studentAddress: "",
                     studentAvatarPath: "",
-                    studentStatus: "",
                     studentStatus: "",
                     studentStatusDesc: ""
                 },
@@ -336,8 +336,8 @@ export default {
     methods: {
         setAvatarShow() {
             this.avatarPanel.isShow = !this.avatarPanel.isShow;
-            this.avatarPanel.params.studentCode = this.pageData.studentInfo.studentCode;
-            this.avatarPanel.params.studentName = this.pageData.studentInfo.studentName;
+            this.avatarPanel.params.code = this.pageData.studentInfo.studentCode;
+            this.avatarPanel.params.name = this.pageData.studentInfo.studentName;
         },
 
         cropSuccess(imgDataUrl, field) {

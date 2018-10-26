@@ -1,6 +1,6 @@
 <template>
 <div class="fillcontain">
-    <el-tabs type="card" v-model="activeLabelCode" @tab-click="handleTabClick">
+    <el-tabs type="card" v-model="activeLabelCode">
 
         <el-tab-pane :name="'baseinfo'">
             <span slot="label"><i class="fa fa-info-circle"></i> 基础信息</span>
@@ -8,7 +8,7 @@
         </el-tab-pane>
 
         <el-tab-pane :name="'history'">
-            <span slot="label"><i class="fa fa-list"></i> 上课记录</span> 
+            <span slot="label"><i class="fa fa-list"></i> 销课记录</span> 
             <teacher-course-history v-if="activeLabelCode === 'history'" v-bind:teacherCode="teacherCode"></teacher-course-history>
         </el-tab-pane>
     </el-tabs>

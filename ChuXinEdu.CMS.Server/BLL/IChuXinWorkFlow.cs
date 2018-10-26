@@ -44,7 +44,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [上传作品]
         int UploadArtWork(StudentArtwork artwork);
 
-        string UploadAvatar(string studentCode, string path);
+        string UploadAvatar(string studentCode, string path, string type);
 
         // [删除临时作品]
         string RemoveTempArtWork(int courseId, string uid, string rootPath);
@@ -105,6 +105,9 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [添加教师]
         string AddTeacher(Teacher teacher);
+
+        // [更新教师]
+        string UpdateTeacher(int id, Teacher teacher);
 
     } 
 }

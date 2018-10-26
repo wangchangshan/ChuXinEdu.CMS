@@ -69,7 +69,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     dtScpSimplify.Rows.Remove(dr);
                     ssList.Add(ss);
                 }
-                studentVM.StudentAvatarPath = "http://localhost:8080/api/course/getimage?id=" + student.Id + "&type=avatar";
+                studentVM.StudentAvatarPath = "http://localhost:8080/api/course/getimage?id=" + student.Id + "&type=avatar-s";
                 studentVM.StudentCourseCategory = ssList;
                 studentList.Add(studentVM);
             }
@@ -169,7 +169,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             if(!String.IsNullOrEmpty(baseInfo.StudentInfo.StudentAvatarPath))
             {
                 int id = baseInfo.StudentInfo.Id;
-                baseInfo.StudentInfo.StudentAvatarPath = "http://localhost:8080/api/course/getimage?id=" + id + "&type=avatar&rnd="+ System.Guid.NewGuid().ToString("N");
+                baseInfo.StudentInfo.StudentAvatarPath = "http://localhost:8080/api/course/getimage?id=" + id + "&type=avatar-s&rnd="+ System.Guid.NewGuid().ToString("N");
             }
 
             baseInfo.CoursePackageList =  _chuxinQuery.GetStudentCoursePackage(studentCode);
@@ -433,56 +433,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string UpdateStudent(string studentCode, [FromBody] Student student)
         {
             string result = _chuxinWorkflow.UpdateStudentBaseInfo(studentCode, student);
-            return result;
-        }
-
-        /// <summary>
-        /// 上传头像 POST api/student/uploadavatar
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public string UploadAvatar()
-        {
-            string result = "201";
-            string studentCode = string.Empty;
-            string studentName = string.Empty;
-            if(HttpContext.Request.Form.ContainsKey("studentCode"))
-            {
-                studentCode = HttpContext.Request.Form["studentCode"];
-                studentName = HttpContext.Request.Form["studentName"];
-            }
-            else
-            {
-                return result;
-            }
-
-            string contentRootPath = _hostingEnvironment.ContentRootPath;
-            string documentPath = "/cxdocs/avatars/" ;
-            
-            if(!Directory.Exists(contentRootPath + documentPath))
-            {
-                Directory.CreateDirectory(contentRootPath + documentPath);            
-            }
-
-            var file =  HttpContext.Request.Form.Files.FirstOrDefault();
-            if(file != null)
-            {  
-                string ext = Path.GetExtension(file.FileName);
-                string newName = string.Format("{0}_{1}{2}", studentName,studentCode, ext);
-                documentPath = documentPath + newName;
-                string savePath = contentRootPath + documentPath;
-
-                using(var stream = System.IO.File.Create(savePath))
-                {
-                    file.CopyTo(stream);
-                }
-
-                result = _chuxinWorkflow.UploadAvatar(studentCode, documentPath);
-            }
-            else
-            {
-                return result;
-            }
             return result;
         }
     }   

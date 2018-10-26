@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class TeacherController : ControllerBase
     {
@@ -26,18 +26,31 @@ namespace ChuXinEdu.CMS.Server.Controllers
             _chuxinWorkFlow = chuxinWorkFlow;
         }
 
-        // GET api/teacher
+        // GET api/teacher/getteacherlist
         [HttpGet]
-        public IEnumerable<Teacher> Get(string q)
+        public IEnumerable<Teacher> GetTeacherList(string q)
         {
             QUERY_TEACHER query = JsonConvert.DeserializeObject<QUERY_TEACHER>(q);
             IEnumerable<Teacher> teacherList = _chuxinQuery.GetTeacherList(query);
             return teacherList;
         }
 
-        // POST api/teacher
+        // GET api/teacher/getteacherbase
+        [HttpGet("{teacherCode}")]
+        public Teacher GetTeacherBase(string teacherCode)
+        {
+            Teacher  teacher = _chuxinQuery.GetTeacher(teacherCode);
+            if(!String.IsNullOrEmpty(teacher.TeacherAvatarPath))
+            {
+                int id = teacher.Id;
+                teacher.TeacherAvatarPath = "http://localhost:8080/api/course/getimage?id=" + id + "&type=avatar-t&rnd="+ System.Guid.NewGuid().ToString("N");
+            }
+            return teacher;
+        }
+
+        // POST api/teacher/postnewteacher
         [HttpPost]
-        public string Post([FromBody] Teacher teacher)
+        public string PostNewTeacher([FromBody] Teacher teacher)
         {
             string result = string.Empty;
             teacher.TeacherCode = TableCodeHelper.GenerateCode("teacher", "teacher_code", DateTime.Now);
@@ -47,22 +60,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return result;
         }
 
-        // PUT api/teacher/5
+        // PUT api/teacher/updateteacher
         [HttpPut("{id}")]
-        public string Put(int id, [FromBody] SysCoursePackage package)
+        public string UpdateTeacher(int id, [FromBody] Teacher teacher)
         {
             string result = string.Empty;
-            result = _chuxinWorkFlow.UpdateSysCoursePackage(id, package);
-            return result;
-        }
-
-        // DELETE api/coursepackage/5
-        [HttpDelete("{id}")]
-        public string Delete(int id)
-        {
-            string result = string.Empty;
-            result = _chuxinWorkFlow.RemoveSysCoursePackage(id);
-
+            result = _chuxinWorkFlow.UpdateTeacher(id, teacher);
             return result;
         }
     }   

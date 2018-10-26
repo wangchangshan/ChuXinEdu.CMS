@@ -907,16 +907,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
-        public string UploadAvatar(string studentCode, string path)
+        public string UploadAvatar(string code, string path, string type)
         {
             string result = "200";
             try
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var st = context.Student.Where(s => s.StudentCode == studentCode).First();
-                    st.StudentAvatarPath = path;
-                    context.SaveChanges();
+                    if(type == "student")
+                    {
+                        var st = context.Student.Where(s => s.StudentCode == code).First();
+                        st.StudentAvatarPath = path;
+                        context.SaveChanges();
+                    }
+                    else if(type == "teacher")
+                    {
+                        var teacher = context.Teacher.Where(t => t.TeacherCode == code).First();
+                        teacher.TeacherAvatarPath = path;
+                        context.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
@@ -1399,6 +1408,35 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+
+        public string UpdateTeacher(int id, Teacher teacher)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var th = context.Teacher.Where( t => t.Id == id).FirstOrDefault();
+                    th.TeacherSex = teacher.TeacherSex;
+                    th.TeacherBirthday = teacher.TeacherBirthday;
+                    th.TeacherIdentityCardNum = teacher.TeacherIdentityCardNum;
+                    th.TeacherPhone = teacher.TeacherPhone;
+                    th.TeacherAddress = teacher.TeacherAddress;
+                    th.TeacherRegisterDate = teacher.TeacherRegisterDate;
+                    th.TeacherRemark = teacher.TeacherRemark;
+                    th.TeacherStatus = teacher.TeacherStatus;
+
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                result = "500";
+            }
+            return result;
+        }
+
         #endregion
 
         public string AddNewRecommend(StudentRecommend srd)

@@ -238,6 +238,60 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return result;
         }
 
+
+        /// <summary>
+        /// 上传头像 POST api/upload/uploadavatar
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string UploadAvatar()
+        {
+            string result = "201";
+            string code = string.Empty;
+            string name = string.Empty;
+            string type = string.Empty;
+            if(HttpContext.Request.Form.ContainsKey("type"))
+            {
+                type = HttpContext.Request.Form["type"];
+                code = HttpContext.Request.Form["code"];
+                name = HttpContext.Request.Form["name"];
+            }
+            else
+            {
+                return result;
+            }
+
+            string contentRootPath = _hostingEnvironment.ContentRootPath;
+            string documentPath = "/cxdocs/avatars/" + type + "/";
+            
+            if(!Directory.Exists(contentRootPath + documentPath))
+            {
+                Directory.CreateDirectory(contentRootPath + documentPath);            
+            }
+
+            var file =  HttpContext.Request.Form.Files.FirstOrDefault();
+            if(file != null)
+            {  
+                string ext = Path.GetExtension(file.FileName);
+                string newName = string.Format("{0}_{1}{2}", name,code, ext);
+                documentPath = documentPath + newName;
+                string savePath = contentRootPath + documentPath;
+
+                using(var stream = System.IO.File.Create(savePath))
+                {
+                    file.CopyTo(stream);
+                }
+
+                result = _chuxinWorkFlow.UploadAvatar(code, documentPath, type);
+            }
+            else
+            {
+                return result;
+            }
+            return result;
+        }
+
+
         // /// <summary>
         // /// 获取图片 DELETE api/course/getimage
         // /// </summary>

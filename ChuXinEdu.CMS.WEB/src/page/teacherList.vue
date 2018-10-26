@@ -6,7 +6,7 @@
                 <el-input type="text" size="small" v-model="searchField.teacherName" placeholder="请输入姓名" class="search_field"></el-input>
             </el-form-item>
             <el-form-item label="状态：">
-                <el-select size="small" v-model="searchField.teacherStatus" placeholder="请选择学生状态" class="search_field" :clearable="true">
+                <el-select size="small" v-model="searchField.teacherStatus" placeholder="请选择教师状态" class="search_field" :clearable="true">
                     <el-option v-for="item in $store.getters['teacher_status']" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
@@ -139,7 +139,7 @@ export default {
                     }],
                     teacherName: [{
                         required: true,
-                        message: '请输入学生姓名',
+                        message: '请输入教师姓名',
                         trigger: 'blur'
                     }],
                     teacherIdentityCardNum: [{
@@ -172,7 +172,7 @@ export default {
             }
             axios({
                 type: 'get',
-                path: '/api/teacher',
+                path: '/api/teacher/getteacherlist',
                 data: data,
                 fn: function (result) {
                     result.forEach(item => {
@@ -207,7 +207,7 @@ export default {
                 if (valid) {
                     axios({
                         type: 'post',
-                        path: '/api/teacher',
+                        path: '/api/teacher/postnewteacher',
                         data: _this.teacherDialog.baseInfo,
                         fn: function (result) {
                             if (result == 200) {
