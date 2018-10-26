@@ -48,6 +48,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return teacher;
         }
 
+        // GET api/teacher/getcourselist
+        [HttpGet("{teacherCode}")]
+        public IEnumerable<StudentCourseList> getCourseList(string teacherCode)
+        {
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetTeacherCourseList(teacherCode);
+            return courseList;
+        }
+
         // POST api/teacher/postnewteacher
         [HttpPost]
         public string PostNewTeacher([FromBody] Teacher teacher)

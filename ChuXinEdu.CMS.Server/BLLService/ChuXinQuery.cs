@@ -542,6 +542,18 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return context.Teacher.Where(t => t.TeacherCode == teacherCode).FirstOrDefault();
             }
         }
+
+        public IEnumerable<StudentCourseList> GetTeacherCourseList(string teacherCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseList.Where(s => s.TeacherCode == teacherCode
+                                                            && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"))
+                                                .OrderBy(s => s.CoursePeriod)
+                                                .OrderBy(s => s.CourseDate)
+                                                .ToList();
+            }
+        }
         #endregion 
 
         public string GetAvatarTruePath(int id, string type)
