@@ -10,6 +10,7 @@ using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
 using ChuXinEdu.CMS.Server.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -50,11 +51,33 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         // GET api/teacher/getcourselist
         [HttpGet("{teacherCode}")]
-        public IEnumerable<StudentCourseList> getCourseList(string teacherCode, int pageIndex, int pageSize, string q)
+        public ActionResult<string> getCourseList(string teacherCode, int pageIndex, int pageSize, string q)
         {
             QUERY_TEACHER_COURSE query = JsonConvert.DeserializeObject<QUERY_TEACHER_COURSE>(q);            
             int totalCount = 0;
             IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetTeacherCourseList(teacherCode, pageIndex, pageSize, query, out totalCount);
+
+            dynamic obj = new {
+                TotalCount = totalCount,
+                CourseList = courseList
+            };
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.Formatting = Formatting.Indented;
+            string reslutJson = JsonConvert.SerializeObject(obj,settings);
+
+            return reslutJson;
+        }
+
+        /// <summary>
+        /// [导出教师销课列表] 教师销课列表 GET api/teacher/getcourselist2export
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{teacherCode}")]
+        public IEnumerable<StudentCourseList> GetCourseList2Export(string teacherCode, string q)
+        { 
+            QUERY_TEACHER_COURSE query = JsonConvert.DeserializeObject<QUERY_TEACHER_COURSE>(q);            
+            IEnumerable<StudentCourseList>  courseList = _chuxinQuery.GetTeacherCourseList2Export(teacherCode, query);
             return courseList;
         }
 

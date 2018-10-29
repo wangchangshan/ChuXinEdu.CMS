@@ -91,6 +91,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentCourseList> GetTeacherCourseList(string teacherCode, int pageIndex, int pageSize, QUERY_TEACHER_COURSE query, out int totalCount);
 
+        IEnumerable<StudentCourseList> GetTeacherCourseList2Export(string teacherCode, QUERY_TEACHER_COURSE query);
 
 
 

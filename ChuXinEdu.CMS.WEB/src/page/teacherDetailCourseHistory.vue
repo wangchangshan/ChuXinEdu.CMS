@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="list_container">
     <div class="search_container">
         <el-form :inline="true" :model="searchField" size="small" class="demo-form-inline search-form">
             <el-form-item label="开始日期：">
@@ -27,28 +27,30 @@
             </el-table-column>
             <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="110">
             </el-table-column>
+            <el-table-column prop="studentName" label="学生姓名" align='center' min-width="100">
+            </el-table-column>
             <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="100">
             </el-table-column>
             <el-table-column prop="courseSubject" label="课程主题" align='center' min-width="160">
             </el-table-column>
             <el-table-column prop="courseType" label="课程标识" align='center' min-width="85">
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="225">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="125">
                 <template slot-scope='scope'>
                     <el-button type="success" icon='edit' size="small" @click='viewArtwork(scope.row.studentCourseId)'>查看作品</el-button>
                 </template>
             </el-table-column>
         </el-table>
     </div>
-        <el-row>
-            <el-col :span="24">
-                <div class="pagination">
-                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handlePageCurrentChange' @size-change='handlePageSizeChange'>
+    <el-row>
+        <el-col :span="24">
+            <div class="pagination">
+                <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handlePageCurrentChange' @size-change='handlePageSizeChange'>
 
-                    </el-pagination>
-                </div>
-            </el-col>
-        </el-row>
+                </el-pagination>
+            </div>
+        </el-col>
+    </el-row>
 
     <el-dialog :title="viewDialog.title" :visible.sync="viewDialog.isShow" :width="viewDialog.width" :close-on-press-escape='false' :modal-append-to-body="false">
         <el-carousel indicator-position="outside" :autoplay="false" height="550px">
@@ -89,7 +91,7 @@ export default {
             dateRowSpanArray: [],
             loading: false,
             downloadLoading: false,
-            tableHeight: this.$store.state.page.win_content.height - 100,
+            tableHeight: this.$store.state.page.win_content.height - 150,
 
             viewDialog: {
                 width: '900px',
@@ -126,8 +128,8 @@ export default {
             pageSize,
             where,
             fun
-        } = {}){
-        var _this = this;
+        } = {}) {
+            var _this = this;
             var query = this.$route.query;
             this.paginations.current_page_index = page || parseInt(query.page) || 1;
             this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
@@ -140,24 +142,40 @@ export default {
                 data = Object.assign(data, where || {});
             }
 
-        axios({
-            type: 'get',
-            path: '/api/teacher/getcourselist/' + _this.teacherCode,
-            data: data,
-            fn: function (result) {
-                _this.paginations.total = 1;
-                result.forEach(item => {
-                    item.courseDate = item.courseDate.split('T')[0];
-                    item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
-                });
-                _this.courseList = result;
-                _this.getRowSpanInfo();
-                fun && fun();
-            }
-        });
+            axios({
+                type: 'get',
+                path: '/api/teacher/getcourselist/' + _this.teacherCode,
+                data: data,
+                fn: function (result) {
+                    _this.paginations.total = result.totalCount;
+                    result.courseList.forEach(item => {
+                        item.courseDate = item.courseDate.split('T')[0];
+                        item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
+                    });
+                    _this.courseList = result.courseList;
+                    _this.getRowSpanInfo();
+                    fun && fun();
+                }
+            });
         },
-        
-        searchCourse(){
+        handlePageSizeChange(pageSize) {
+            this.getCourseList({
+                pageSize,
+                fun: () => {
+                    this.setPath('page_size', pageSize);
+                }
+            });
+        },
+        handlePageCurrentChange(page) {
+            this.getCourseList({
+                page,
+                fun: () => {
+                    this.setPath('page', page);
+                }
+            });
+        },
+
+        searchCourse() {
             var page = 1;
             this.paginations.current_page_index = 1;
             this.getCourseList({
@@ -259,29 +277,32 @@ export default {
             }
             return week;
         },
-
         export2Excle() {
-            if (this.courseList.length == 0) {
-                this.$message({
-                    message: '没有数据需要导出！',
-                    type: 'success'
-                });
-                return;
+            let data = {
+                q: this.searchField
             }
-            var filename = this.courseList[0].teacherName + "销课记录";
             this.downloadLoading = true
-            import('@/vendor/Export2Excel').then(excel => {
-                const tHeader = ['上课日期', '上课时间', '课程类别', '课程主题', '上课教师'];
-                const filterVal = ['courseDate', 'coursePeriod', 'courseFolderName', 'courseSubject', 'teacherName']
-                const data = this.formatJson(filterVal, this.courseList)
-                excel.export_json_to_excel({
-                    header: tHeader,
-                    data,
-                    filename: filename,
-                    autoWidth: true,
-                    bookType: 'xlsx'
-                })
-                this.downloadLoading = false;
+            var _this = this;
+            var filename = _this.$route.query.teacherName + "销课记录";
+            axios({
+                type: 'get',
+                path: '/api/teacher/getcourselist2export/' + _this.teacherCode,
+                data: data,
+                fn: function (result) {
+                    import('@/vendor/Export2Excel').then(excel => {
+                        const tHeader = ['上课日期', '上课时间','学生姓名', '课程类别', '课程主题'];
+                        const filterVal = ['courseDate', 'coursePeriod','studentName', 'courseFolderName', 'courseSubject']
+                        const data = _this.formatJson(filterVal, result)
+                        excel.export_json_to_excel({
+                            header: tHeader,
+                            data,
+                            filename: filename,
+                            autoWidth: true,
+                            bookType: 'xlsx'
+                        })
+                        _this.downloadLoading = false;
+                    })
+                }
             })
         },
         formatJson(filterVal, jsonData) {
@@ -298,11 +319,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.list_container{
+    overflow-y: hidden;
+}
 
 .btnRight {
     float: right;
     margin-right: 10px !important;
 }
+
 .search_field {
     width: 140px;
 }

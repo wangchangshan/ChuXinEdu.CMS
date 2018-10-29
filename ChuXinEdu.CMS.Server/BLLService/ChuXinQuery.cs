@@ -564,6 +564,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return courseLists.ToList();
             }
         }
+
+        public IEnumerable<StudentCourseList> GetTeacherCourseList2Export(string teacherCode, QUERY_TEACHER_COURSE query)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var courseLists = context.StudentCourseList.Where(s => s.TeacherCode == teacherCode
+                                                            && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"));
+                if (query.startDate != null)
+                {
+                    courseLists = courseLists.Where(s => s.CourseDate >= query.startDate);
+                }
+                if (query.endDate != null)
+                {
+                    courseLists = courseLists.Where(s => s.CourseDate <= query.endDate);
+                }
+                
+                return courseLists.OrderBy(s => s.CoursePeriod).OrderBy(s => s.CourseDate).ToList();
+            }
+        }
         #endregion 
 
         public string GetAvatarTruePath(int id, string type)

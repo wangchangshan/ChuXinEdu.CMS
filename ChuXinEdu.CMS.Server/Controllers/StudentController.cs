@@ -88,7 +88,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// [导出学生列表] 获取待排课学生列表 GET api/student/getstudentlist2export
+        /// [导出学生列表] 学生列表 GET api/student/getstudentlist2export
         /// </summary>
         /// <returns></returns>
         [HttpGet]

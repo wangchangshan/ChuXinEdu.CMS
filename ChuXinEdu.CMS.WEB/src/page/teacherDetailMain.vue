@@ -1,7 +1,6 @@
 <template>
 <div class="fillcontain">
     <el-tabs type="card" v-model="activeLabelCode">
-
         <el-tab-pane :name="'baseinfo'">
             <span slot="label"><i class="fa fa-info-circle"></i> 基础信息</span>
             <teacher-base-info v-if="activeLabelCode === 'baseinfo'" v-bind:teacherCode="teacherCode"></teacher-base-info>
