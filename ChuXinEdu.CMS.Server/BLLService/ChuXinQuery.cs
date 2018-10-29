@@ -543,15 +543,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public IEnumerable<StudentCourseList> GetTeacherCourseList(string teacherCode)
+        public IEnumerable<StudentCourseList> GetTeacherCourseList(string teacherCode, int pageIndex, int pageSize, QUERY_TEACHER_COURSE query, out int totalCount)
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.StudentCourseList.Where(s => s.TeacherCode == teacherCode
-                                                            && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"))
-                                                .OrderBy(s => s.CoursePeriod)
-                                                .OrderBy(s => s.CourseDate)
-                                                .ToList();
+                var courseLists = context.StudentCourseList.Where(s => s.TeacherCode == teacherCode
+                                                            && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"));
+                if (query.startDate != null)
+                {
+                    courseLists = courseLists.Where(s => s.CourseDate >= query.startDate);
+                }
+                if (query.endDate != null)
+                {
+                    courseLists = courseLists.Where(s => s.CourseDate <= query.endDate);
+                }
+                courseLists = courseLists.OrderBy(s => s.CoursePeriod).OrderBy(s => s.CourseDate);
+                totalCount = courseLists.Count();
+                courseLists = courseLists.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
+
+                return courseLists.ToList();
             }
         }
         #endregion 

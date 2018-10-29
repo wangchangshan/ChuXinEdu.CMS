@@ -354,7 +354,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                             .FirstOrDefault();
 
                         // 如果学生这个时间段只排了当前一节课，则删除student_course_arrange表中的记录
-                        if (courseArrange.CourseTotalCount == 1)
+                        if (courseArrange.CourseTotalCount <= 1)
                         {
                             context.Remove(courseArrange);
                         }
@@ -445,7 +445,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                                 && s.CoursePeriod == periodName)
                                                                                     .FirstOrDefault();
                             // 如果学生当前时时间段没有排课，则删除student_course_arrange表中的记录
-                            if (sca.CourseTotalCount == 1)
+                            if (sca.CourseTotalCount <= 1)
                             {
                                 context.Remove(sca);
                             }
@@ -665,7 +665,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                             && s.CourseWeekDay == dayCode
                                                                             && s.CoursePeriod == periodName)
                                                                 .First();
-                        if (sca.CourseRestCount == 1)
+                        if (sca.CourseRestCount <= 1)
                         {
                             context.Remove(sca);
                         }
@@ -779,7 +779,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                 && s.CourseWeekDay == dayCode
                                                                                 && s.CoursePeriod == periodName)
                                                                     .First();
-                            if (sca.CourseRestCount == 1)
+                            if (sca.CourseRestCount <= 1)
                             {
                                 context.Remove(sca);
                             }

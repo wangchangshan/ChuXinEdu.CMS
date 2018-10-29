@@ -236,8 +236,8 @@ export default {
                 day7: [],
             },
             setting: {
-                isShowRestCourseCount: false,
-                btnRestCourseName: '显示剩余课时数',
+                isShowRestCourseCount: true,
+                btnRestCourseName: '隐藏剩余课时数',
                 btnTogglePeriodName: '全部折叠',
                 btnTogglePeriodIcon: 'el-icon-arrow-up',
                 hidTogglePeriodStatus: true, // true : 当前展开
@@ -690,12 +690,12 @@ export default {
         },
 
         toggleRestCourseCount() {
-            if (this.setting.isShowRestCourseCount) {
-                this.setting.isShowRestCourseCount = false;
-                this.setting.btnRestCourseName = "显示剩余课时数";
-            } else {
+            if (!this.setting.isShowRestCourseCount) {
                 this.setting.isShowRestCourseCount = true;
                 this.setting.btnRestCourseName = "隐藏剩余课时数";
+            } else {
+                this.setting.isShowRestCourseCount = false;
+                this.setting.btnRestCourseName = "显示剩余课时数";
             }
         },
 

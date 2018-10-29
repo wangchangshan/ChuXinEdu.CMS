@@ -1,5 +1,22 @@
 <template>
-<div class="info_container">
+<div>
+    <div class="search_container">
+        <el-form :inline="true" :model="searchField" size="small" class="demo-form-inline search-form">
+            <el-form-item label="开始日期：">
+                <el-date-picker v-model="searchField.startDate" size="small" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+            </el-form-item>
+            <el-form-item label="结束日期：">
+                <el-date-picker v-model="searchField.endDate" size="small" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" size="small" @click='searchCourse()'>查 询</el-button>
+                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetCourseList()'>重 置</el-button>
+            </el-form-item>
+            <el-form-item class="btnRight">
+                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
     <div class="table_container">
         <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
             <el-table-column type="index" width="40"></el-table-column>
@@ -23,10 +40,15 @@
             </el-table-column>
         </el-table>
     </div>
-    
-    <div class="footer_container">
-        <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
-    </div>
+        <el-row>
+            <el-col :span="24">
+                <div class="pagination">
+                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handlePageCurrentChange' @size-change='handlePageSizeChange'>
+
+                    </el-pagination>
+                </div>
+            </el-col>
+        </el-row>
 
     <el-dialog :title="viewDialog.title" :visible.sync="viewDialog.isShow" :width="viewDialog.width" :close-on-press-escape='false' :modal-append-to-body="false">
         <el-carousel indicator-position="outside" :autoplay="false" height="550px">
@@ -53,6 +75,17 @@ export default {
     data() {
         return {
             courseList: [],
+            searchField: {
+                startDate: '',
+                endDate: ''
+            },
+            paginations: {
+                current_page_index: 1,
+                total: 0,
+                page_size: 15,
+                page_sizes: [10, 15, 20, 30],
+                layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
+            },
             dateRowSpanArray: [],
             loading: false,
             downloadLoading: false,
@@ -67,21 +100,81 @@ export default {
         }
     },
     created() {
+        this.getCourseList();
+    },
+    methods: {
+        /**
+         * 改变页码和当前页时需要拼装的路径方法
+         * @param {string} field 参数字段名
+         * @param {string} value 参数字段值
+         */
+        setPath(field, value) {
+            var path = this.$route.path,
+                query = Object.assign({}, this.$route.query);
+            if (typeof field === 'object') {
+                query = field;
+            } else {
+                query[field] = value;
+            }
+            this.$router.push({
+                path,
+                query
+            });
+        },
+        getCourseList({
+            page,
+            pageSize,
+            where,
+            fun
+        } = {}){
         var _this = this;
+            var query = this.$route.query;
+            this.paginations.current_page_index = page || parseInt(query.page) || 1;
+            this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
+            var data = {
+                pageIndex: this.paginations.current_page_index,
+                pageSize: this.paginations.page_size,
+                q: this.searchField
+            }
+            if (where) {
+                data = Object.assign(data, where || {});
+            }
+
         axios({
             type: 'get',
             path: '/api/teacher/getcourselist/' + _this.teacherCode,
+            data: data,
             fn: function (result) {
+                _this.paginations.total = 1;
                 result.forEach(item => {
                     item.courseDate = item.courseDate.split('T')[0];
                     item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
                 });
                 _this.courseList = result;
                 _this.getRowSpanInfo();
+                fun && fun();
             }
         });
-    },
-    methods: {
+        },
+        
+        searchCourse(){
+            var page = 1;
+            this.paginations.current_page_index = 1;
+            this.getCourseList({
+                page,
+                fun: () => {
+                    this.setPath('page', page);
+                }
+            });
+        },
+        resetCourseList() {
+            this.searchField = {
+                startDate: '',
+                endDate: '',
+            };
+            this.getCourseList();
+        },
+
         viewArtwork(courseId) {
             var _this = this;
             axios({
@@ -205,9 +298,27 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.footer_container {
+
+.btnRight {
+    float: right;
+    margin-right: 10px !important;
+}
+.search_field {
+    width: 140px;
+}
+
+.search_container {
     height: 36px;
     line-height: 36px;
+}
+
+.search-form {
+    width: 100%;
+    min-width: 750px;
+}
+
+.pagination {
     text-align: left;
+    margin-top: 10px
 }
 </style>

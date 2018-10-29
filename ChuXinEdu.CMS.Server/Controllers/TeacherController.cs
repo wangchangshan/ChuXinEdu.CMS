@@ -50,9 +50,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         // GET api/teacher/getcourselist
         [HttpGet("{teacherCode}")]
-        public IEnumerable<StudentCourseList> getCourseList(string teacherCode)
+        public IEnumerable<StudentCourseList> getCourseList(string teacherCode, int pageIndex, int pageSize, string q)
         {
-            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetTeacherCourseList(teacherCode);
+            QUERY_TEACHER_COURSE query = JsonConvert.DeserializeObject<QUERY_TEACHER_COURSE>(q);            
+            int totalCount = 0;
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetTeacherCourseList(teacherCode, pageIndex, pageSize, query, out totalCount);
             return courseList;
         }
 

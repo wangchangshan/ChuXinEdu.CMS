@@ -89,7 +89,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         Teacher GetTeacher(string teacherCode);
 
-        IEnumerable<StudentCourseList> GetTeacherCourseList(string teacherCode);
+        IEnumerable<StudentCourseList> GetTeacherCourseList(string teacherCode, int pageIndex, int pageSize, QUERY_TEACHER_COURSE query, out int totalCount);
 
 
 
