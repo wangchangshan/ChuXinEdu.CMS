@@ -11,6 +11,7 @@ using ChuXinEdu.CMS.Server.ViewModel;
 using ChuXinEdu.CMS.Server.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -20,17 +21,21 @@ namespace ChuXinEdu.CMS.Server.Controllers
     {
         private readonly IChuXinQuery _chuxinQuery;
         private readonly IChuXinWorkFlow _chuxinWorkFlow;
+        private readonly ILogger<TeacherController> _logger;
 
-        public TeacherController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow)
+        public TeacherController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow, ILogger<TeacherController> logger)
         {
             _chuxinQuery = chuxinQuery;
             _chuxinWorkFlow = chuxinWorkFlow;
+            _logger = logger;
         }
 
         // GET api/teacher/getteacherlist
         [HttpGet]
         public IEnumerable<Teacher> GetTeacherList(string q)
         {
+            _logger.LogInformation("GetTeacherList({param})", q);
+
             QUERY_TEACHER query = JsonConvert.DeserializeObject<QUERY_TEACHER>(q);
             IEnumerable<Teacher> teacherList = _chuxinQuery.GetTeacherList(query);
             return teacherList;

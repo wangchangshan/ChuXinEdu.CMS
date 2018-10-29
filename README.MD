@@ -155,6 +155,8 @@ D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.AspNetCore.All -
 D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Pomelo.EntityFrameworkCore.MySql --version 2.1.1
 
 D:\myproject\ChuXinEdu.CMS.Server> dotnet add package AutoMapper --version 7.0.1
+
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package NLog.Web.AspNetCore --version 4.7.0
 ```
 
 
