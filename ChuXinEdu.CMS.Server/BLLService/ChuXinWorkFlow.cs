@@ -297,7 +297,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                     // 1. 删除学生课程表内排课记录
                     var studentCourse = context.StudentCourseList.FirstOrDefault(s => s.StudentCourseId == studentCourseId);
-                    context.StudentCourseList.Remove(studentCourse);
 
                     // 2. 处理学生排课表  student_course_arrange
                     int studentCoursePackageId = studentCourse.StudentCoursePackageId;
@@ -370,6 +369,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         studentCoursePackage.FlexCourseCount += 1;
                     }
 
+                    
+                    context.StudentCourseList.Remove(studentCourse);
                     // 4. 提交事务
                     context.SaveChanges();
                 }
