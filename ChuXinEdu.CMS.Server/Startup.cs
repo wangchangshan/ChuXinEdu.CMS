@@ -16,6 +16,8 @@ using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.BLLService;
 using ChuXinEdu.CMS.Server.Utils;
+using Microsoft.AspNetCore.Http;
+using NLog.Extensions.Logging;
 
 namespace ChuXinEdu.CMS.Server
 {
@@ -37,6 +39,9 @@ namespace ChuXinEdu.CMS.Server
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            //needed for NLog.Web
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             // 注入服务
             services.AddTransient<IChuXinQuery, ChuXinQuery>(); //每一次GetService都会创建一个新的实例
             services.AddTransient<IChuXinWorkFlow, ChuXinWorkFlow>(); //每一次GetService都会创建一个新的实例
@@ -48,8 +53,10 @@ namespace ChuXinEdu.CMS.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddNLog();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

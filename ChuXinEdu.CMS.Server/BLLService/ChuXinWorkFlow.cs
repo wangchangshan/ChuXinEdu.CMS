@@ -8,11 +8,17 @@ using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.Utils;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.ViewModel;
+using Microsoft.Extensions.Logging;
 
 namespace ChuXinEdu.CMS.Server.BLLService
 {
     public class ChuXinWorkFlow : IChuXinWorkFlow
     {
+        private readonly ILogger<ChuXinWorkFlow> _logger;
+        public ChuXinWorkFlow(ILogger<ChuXinWorkFlow> logger)
+        {
+            _logger = logger;
+        }
         // 排课
         public string BatchStudentsCourseArrange(CA_C_STUDENTS_MAIN caInfo)
         {
@@ -289,6 +295,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public string SingleRemoveCourse(int studentCourseId)
         {
+            _logger.LogInformation("调用了：SingleRemoveCourse({param})", studentCourseId);
             string result = "200";
             try
             {
