@@ -55,7 +55,7 @@ namespace ChuXinEdu.CMS.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddNLog();
+            //loggerFactory.AddNLog();  // 如果不在{Program.cs中配置，那么在此处配置Nlog}
 
             if (env.IsDevelopment())
             {
