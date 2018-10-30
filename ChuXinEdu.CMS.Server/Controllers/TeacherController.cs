@@ -34,8 +34,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public IEnumerable<Teacher> GetTeacherList(string q)
         {
-            _logger.LogInformation("GetTeacherList({param})", q);
-
             QUERY_TEACHER query = JsonConvert.DeserializeObject<QUERY_TEACHER>(q);
             IEnumerable<Teacher> teacherList = _chuxinQuery.GetTeacherList(query);
             return teacherList;

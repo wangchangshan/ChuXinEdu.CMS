@@ -23,6 +23,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         public string BatchStudentsCourseArrange(CA_C_STUDENTS_MAIN caInfo)
         {
             string result = "200";
+            _logger.LogInformation("批量排课开始");
             try
             {
                 string statusCode = "09";
@@ -48,7 +49,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             CourseRestCount = student.CourseCount,
                             CourseType = courseType
                         });
-
+                        _logger.LogInformation("为{0}[{1}]向student_course_arrange中插入 1 条记录. [CourseTotalCount: {2}, CourseRestCount: {3}]", student.StudentName, student.StudentCode, student.CourseCount, student.CourseCount);
 
                         // 2. 向student_course_list表中插入数据（每节课一条记录）
                         DateTime firstCourseDate = student.StartDate.Date;
@@ -87,12 +88,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             });
                         }
 
+                        _logger.LogInformation("为{0}[{1}]向student_course_list中插入 {2} 条记录", student.StudentName, student.StudentCode, courseCount);
                         if (courseType == "正式")
                         {
                             // 3.1 更新student_course_package表中的flex_course_count字段 (如果一个学生续费相同套餐，那么应该等)
                             var scp = context.StudentCoursePackage.Where(s => s.Id == student.StudentCoursePackageId)
                                                                    .FirstOrDefault();
                             scp.FlexCourseCount = scp.FlexCourseCount - courseCount;
+                            _logger.LogInformation("{0}[{1}]student_course_package中未排课数变更为：{2}", student.StudentName, student.StudentCode, scp.FlexCourseCount);
                         }
                         else // 试听
                         {
@@ -117,16 +120,15 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 }
                             }
                         }
-
                         // 4. 提交事务
                         context.SaveChanges();
                     }
-
+                    _logger.LogInformation("批量排课结束");
                 }
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "排课错误, 批量排课撤销");
                 result = "500";
             }
 
@@ -141,9 +143,9 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-
                     // 1. 更新学生课程表
-                    var studentCourse = context.StudentCourseList.FirstOrDefault(s => s.StudentCourseId == studentCourseId);
+                    var studentCourse = context.StudentCourseList.First(s => s.StudentCourseId == studentCourseId && s.AttendanceStatusCode == "09");
+
                     studentCourse.AttendanceStatusCode = "00";
                     studentCourse.AttendanceStatusName = "个人请假";
 
@@ -156,6 +158,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     string coursePeriod = studentCourse.CoursePeriod;
                     string roomCode = studentCourse.Classroom;
 
+                    
+                    _logger.LogInformation("个人请假开始，信息：[姓名：{0}， 时间：{1} {2}]", studentCourse.StudentName, studentCourse.CourseDate, coursePeriod);
                     var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
                                                                                 && s.StudentCode == studentCode
                                                                                 && s.ArrangeTemplateCode == templateCode
@@ -164,29 +168,40 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                 && s.Classroom == roomCode
                                                                                 && s.CoursePeriod == coursePeriod)
                                                                         .FirstOrDefault();
+                    if(courseArrange == null)    
+                    {
+                        _logger.LogWarning("没有找到当前课程的arrange信息！！！！！！");
+                        return "202";
+                    }
+
+                    _logger.LogInformation("课程arrange中的排课课程数为：{0}", courseArrange.CourseTotalCount);
                     // 如果学生当前时时间段没有排课，则删除student_course_arrange表中的记录
-                    if (courseArrange.CourseTotalCount == 1)
+                    if (courseArrange.CourseTotalCount <= 1)
                     {
                         context.Remove(courseArrange);
+                        _logger.LogInformation("已经删除当前课程所在arrange信息");
                     }
                     else
                     {
                         courseArrange.CourseTotalCount -= 1;
                         courseArrange.CourseRestCount -= 1;
+                        _logger.LogInformation("课程arrange中的排课信息变更为：[CourseTotalCount: {0}, CourseRestCount: {1}]", courseArrange.CourseTotalCount, courseArrange.CourseRestCount);
                     }
 
                     // 3. 更新学生套餐表， 套餐内未排课课时数 加 1
                     var studentCoursePackage = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
                                                                             .FirstOrDefault();
                     studentCoursePackage.FlexCourseCount += 1;
+                    _logger.LogInformation("学生套餐表package的待排课数变更为：{0}", studentCoursePackage.FlexCourseCount);
 
                     // 4. 提交事务
                     context.SaveChanges();
+                    _logger.LogInformation("个人请假结束");
                 }
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "请假失败！");
                 result = "500";
             }
             return result;
@@ -287,7 +302,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "撤销请假失败！");
                 result = "500";
             }
             return result;
@@ -295,7 +310,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public string SingleRemoveCourse(int studentCourseId)
         {
-            _logger.LogInformation("调用了：SingleRemoveCourse({param})", studentCourseId);
             string result = "200";
             try
             {
@@ -313,6 +327,9 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     string dayCode = studentCourse.CourseWeekDay;
                     string coursePeriod = studentCourse.CoursePeriod;
                     string roomCode = studentCourse.Classroom;
+
+                    string logFullTime = studentCourse.CourseDate + " [" + coursePeriod + "]";
+                    _logger.LogInformation("删除单节排课课程开始：{0}[{1}] 时间：{2} ", studentCourse.StudentName, studentCourse.StudentCode, logFullTime);
                     if (studentCourse.CourseType == "试听")
                     {
                         // 2.1 删除排课表
@@ -358,33 +375,46 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                     && s.CoursePeriod == coursePeriod
                                                                                     && s.CourseType == "正式")
                                                                             .FirstOrDefault();
-
-                        // 如果学生这个时间段只排了当前一节课，则删除student_course_arrange表中的记录
-                        if (courseArrange.CourseTotalCount <= 1)
+                        if (courseArrange != null)
                         {
-                            context.Remove(courseArrange);
+                            // 如果学生这个时间段只排了当前一节课，则删除student_course_arrange表中的记录
+                            _logger.LogInformation("时间：{0}， {1}[{2}]安排的课程数为：{3}", logFullTime, studentCourse.StudentName, studentCode, courseArrange.CourseTotalCount);
+                            if (courseArrange.CourseTotalCount <= 1)
+                            {
+                                context.Remove(courseArrange);
+                                _logger.LogInformation("时间：{0}，{1}[{2}]只安排了一节课,删除student_course_arrange表中的记录！", logFullTime, studentCourse.StudentName, studentCode);
+                            }
+                            else
+                            {
+                                courseArrange.CourseTotalCount -= 1;
+                                courseArrange.CourseRestCount -= 1;
+                                _logger.LogInformation("时间：{0}，{1}[{2}]student_course_arrange变更为：[CourseTotalCount :{3}, CourseRestCount: {4}]", logFullTime, studentCourse.StudentName, studentCode, courseArrange.CourseTotalCount, courseArrange.CourseRestCount);
+                            }
                         }
                         else
                         {
-                            courseArrange.CourseTotalCount -= 1;
-                            courseArrange.CourseRestCount -= 1;
+                            _logger.LogWarning("找不到StudentCourseArrange中对应当前课程的排课记录！！！！！！！！！！！");
+                            return "202";
                         }
+
 
                         // 3. 更新学生套餐表， 套餐内未排课课时数 加 1
                         var studentCoursePackage = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
                                                                                 .First();
                         studentCoursePackage.FlexCourseCount += 1;
+                        _logger.LogInformation("{1}[{2}]课程套餐表studentCoursePackage剩余未排课记录变更为[FlexCourseCount: {3}]", studentCourse.StudentName, studentCode, studentCoursePackage.FlexCourseCount);
                     }
 
-                    
+
                     context.StudentCourseList.Remove(studentCourse);
                     // 4. 提交事务
                     context.SaveChanges();
+                    _logger.LogInformation("删除单节排课记录结束：{0}[{1}] 时间：{2} ", studentCourse.StudentName, studentCourse.StudentCode, logFullTime);
                 }
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "删除单节排课记录错误");
                 result = "500";
             }
             return result;
@@ -477,7 +507,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "添加假期失败！");
                 result = "500";
             }
 
@@ -617,7 +647,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "删除假期失败");
                 result = "500";
             }
             return result;
@@ -631,9 +661,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 int courseId = course.CourseListId;
                 using (BaseContext context = new BaseContext())
                 {
+                    _logger.LogInformation("单节销课开始");
                     string studentCode = course.StudentCode;
-                    var scl = context.StudentCourseList.Where(s => s.StudentCourseId == courseId).First();
-
+                    var scl = context.StudentCourseList.Where(s => s.StudentCourseId == courseId && s.AttendanceStatusCode == "09").FirstOrDefault();
+                    if (scl == null)
+                    {
+                        _logger.LogInformation("没有找到当前待销课课程!!!!!!!!!! return， courseId: {0}", courseId);
+                        return "201";
+                    }
                     // 1. 更新课程记录表的状态
                     scl.AttendanceStatusCode = "01";
                     scl.AttendanceStatusName = "上课销课";
@@ -672,20 +707,29 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                             && s.PackageCode == packageCode
                                                                             && s.CourseWeekDay == dayCode
                                                                             && s.CoursePeriod == periodName)
-                                                                .First();
+                                                                .FirstOrDefault();
+                        if (sca == null)
+                        {
+                            _logger.LogWarning("没有找到当前课程的arrange信息！！！！！  return. ");
+                            return "202";
+                        }
+                        _logger.LogInformation("当前课程所在arrange剩余课程数为：{0}", sca.CourseRestCount);
                         if (sca.CourseRestCount <= 1)
                         {
                             context.Remove(sca);
+                            _logger.LogInformation("删除当前课程所在arrange");
                         }
                         else
                         {
                             sca.CourseRestCount -= 1;
+                            _logger.LogInformation("变更当前课程所在arrange：[CourseRestCount: {0}]", sca.CourseRestCount);
                         }
 
                         // 2.2.2 更新学生套餐表
                         var scp = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId)
                                                                 .First();
 
+                        _logger.LogInformation("当前课程所在package 剩余课程数为：{0}", scp.RestCourseCount);
                         if (scp.RestCourseCount == 1)
                         {
                             // 2.2.3 如果是套餐的最后一节课， 判断该学生是否还有其他没有完成的套餐
@@ -698,12 +742,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 // 2.2.4 没有其他上课的套餐， 修改学生状态为 ‘03 结束未续费’
                                 var student = context.Student.Where(s => s.StudentCode == studentCode).First();
                                 student.StudentStatus = "03";
+                                _logger.LogInformation("当前是最后一节课，没有其他上课的套餐，修改学生[{0}]状态为 ‘03 结束未续费", scp.StudentName);
                             }
 
                             // 2.2.5 修改当前学生套餐状态为 01已完成
                             scp.ScpStatus = "01";
                         }
                         scp.RestCourseCount -= 1;
+                        _logger.LogInformation("变更当前课程所在package 剩余课程数为：{0}", scp.RestCourseCount);
                     }
 
                     // 3. 更新作品表 
@@ -726,11 +772,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                     // 4. 提交事务
                     context.SaveChanges();
+                    _logger.LogInformation("单节课程签到结束。");
                 }
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "单节销课错误! 课程ID：{0}", course.CourseListId);
                 result = "500";
             }
             return result;
@@ -739,15 +786,24 @@ namespace ChuXinEdu.CMS.Server.BLLService
         public string SignInBatch(List<CL_U_SIGN_IN> courseList)
         {
             string result = "200";
-            try
+            using (BaseContext context = new BaseContext())
             {
-                using (BaseContext context = new BaseContext())
+                _logger.LogInformation("批量销课开始");
+                foreach (var item in courseList)
                 {
-                    foreach (var item in courseList)
+                    try
                     {
                         string studentCode = item.StudentCode;
-                        var scl = context.StudentCourseList.Where(s => s.StudentCourseId == item.CourseListId).First();
+                        var scl = context.StudentCourseList.Where(s => s.StudentCourseId == item.CourseListId && s.AttendanceStatusCode == "09").FirstOrDefault();
 
+                        if (scl == null)
+                        {
+                            _logger.LogWarning("找不到课程Id：{0}", item.CourseListId);
+                            continue;
+                        }
+
+                        string logFullTime = scl.CourseDate + " [" + scl.CoursePeriod + "]";
+                        _logger.LogInformation("开始销课，课程Id：{0}。{1},{2}", item.CourseListId, logFullTime, scl.StudentName);
                         // 1. 更新课程记录表的状态
                         scl.AttendanceStatusCode = "01";
                         scl.AttendanceStatusName = "上课销课";
@@ -786,14 +842,22 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                 && s.PackageCode == packageCode
                                                                                 && s.CourseWeekDay == dayCode
                                                                                 && s.CoursePeriod == periodName)
-                                                                    .First();
+                                                                    .FirstOrDefault();
+                            if (sca == null)
+                            {
+                                _logger.LogWarning("找不到当前课程所在arrange, 课程ID:{0} 的课程不进行销课！！！", item.CourseListId);
+                                continue;
+                            }
+                            _logger.LogInformation("当前课程所在arrange 的待上课课时数为：{0}", sca.CourseRestCount);
                             if (sca.CourseRestCount <= 1)
                             {
                                 context.Remove(sca);
+                                _logger.LogInformation("删除当前课程所在arrange");
                             }
                             else
                             {
                                 sca.CourseRestCount -= 1;
+                                _logger.LogInformation("修改当前课程所在arrange 的待上课课时数为：{0}", sca.CourseRestCount);
                             }
 
                             // 2.2.2 更新学生套餐表
@@ -811,22 +875,26 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                     // 2.2.4 没有其他上课的套餐， 修改学生状态为 ‘03 结束未续费’
                                     var student = context.Student.Where(s => s.StudentCode == studentCode).First();
                                     student.StudentStatus = "03";
+                                    _logger.LogInformation("当前是最后一节课，没有其他上课的套餐，修改学生[{0}]状态为 ‘03 结束未续费", scp.StudentName);
                                 }
 
                                 // 2.2.5 修改当前学生套餐状态为 01已完成 
                                 scp.ScpStatus = "01";
                             }
                             scp.RestCourseCount -= 1;
+                            _logger.LogInformation("变更当前课程所在package 剩余课程数为：{0}", scp.RestCourseCount);
                         }
+                        // 3. 提交事务  需要放到foreach 代码块中，防止某次循环中断 造成数据错乱。
+                        context.SaveChanges();
+                        _logger.LogInformation("销课结束，课程Id：{0}。{1},{2}", item.CourseListId, logFullTime, scl.StudentName);
                     }
-                    // 3. 提交事务
-                    context.SaveChanges();
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "销课出错，课程ID：{0}", item.CourseListId);
+                        result = "202"; // 部分错误
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                ex.Message.ToString();
-                result = "500";
+                _logger.LogInformation("批量销课结束");
             }
             return result;
         }
@@ -862,7 +930,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新作品失败");
                 result = "500";
             }
             return result;
@@ -890,7 +958,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "批量上传作品失败！");
                 result = "500";
             }
             return result;
@@ -910,7 +978,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "上传作品失败");
             }
             return result;
         }
@@ -922,13 +990,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    if(type == "student")
+                    if (type == "student")
                     {
                         var st = context.Student.Where(s => s.StudentCode == code).First();
                         st.StudentAvatarPath = path;
                         context.SaveChanges();
                     }
-                    else if(type == "teacher")
+                    else if (type == "teacher")
                     {
                         var teacher = context.Teacher.Where(t => t.TeacherCode == code).First();
                         teacher.TeacherAvatarPath = path;
@@ -938,7 +1006,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "上传头像");
                 result = "500";
             }
             return result;
@@ -969,7 +1037,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "删除临时作品");
                 result = "500";
             }
             return result;
@@ -997,7 +1065,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "删除作品失败");
                 result = "500";
             }
             return result;
@@ -1016,7 +1084,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "添加学生套餐失败");
                 result = "500";
             }
             return result;
@@ -1063,7 +1131,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "删除学生套餐失败");
                 result = "500";
             }
             return result;
@@ -1091,7 +1159,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新学生套餐失败");
                 result = "500";
             }
             return result;
@@ -1110,7 +1178,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "新增学生失败");
                 result = "500";
             }
             return result;
@@ -1129,7 +1197,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "新增临时学生失败");
                 result = "500";
             }
             return result;
@@ -1158,7 +1226,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新学生基本信息失败");
                 result = "500";
             }
             return result;
@@ -1177,24 +1245,24 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         student.StudentStatus = "02"; // 中途退费
                     }
 
-                    foreach(var package in packageList)
+                    foreach (var package in packageList)
                     {
                         var scp = context.StudentCoursePackage.Where(s => s.Id == package.Id
                                                                             && s.ScpStatus == "00")
                                                             .FirstOrDefault();
-                        if(scp != null)
+                        if (scp != null)
                         {
                             scp.ScpStatus = "02";
                             scp.FeeBackAmount = package.FeeBackAmount;
                         }
                     }
-                    
+
                     context.SaveChanges();
                 }
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "学生退费失败");
                 result = "500";
             }
             return result;
@@ -1217,7 +1285,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新学生开启新试听失败");
                 result = "500";
             }
             return result;
@@ -1244,7 +1312,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新临时学生信息失败");
                 result = "500";
             }
             return result;
@@ -1265,7 +1333,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新学生试听结果失败");
                 result = "500";
             }
             return result;
@@ -1304,7 +1372,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新学生试听结果失败");
                 result = "500";
             }
             return result;
@@ -1324,7 +1392,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "删除临时学生失败");
                 result = "500";
             }
             return result;
@@ -1344,7 +1412,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "添加系统套餐失败");
                 result = "500";
             }
             return result;
@@ -1370,7 +1438,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新系统套餐失败");
                 result = "500";
             }
             return result;
@@ -1390,7 +1458,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "删除系统套餐失败");
                 result = "500";
             }
             return result;
@@ -1411,7 +1479,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "添加教师失败");
                 result = "500";
             }
             return result;
@@ -1424,7 +1492,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var th = context.Teacher.Where( t => t.Id == id).FirstOrDefault();
+                    var th = context.Teacher.Where(t => t.Id == id).FirstOrDefault();
                     th.TeacherSex = teacher.TeacherSex;
                     th.TeacherBirthday = teacher.TeacherBirthday;
                     th.TeacherIdentityCardNum = teacher.TeacherIdentityCardNum;
@@ -1439,7 +1507,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "更新教师失败");
                 result = "500";
             }
             return result;
@@ -1460,7 +1528,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "添加学生介绍信息失败");
                 result = "500";
             }
             return result;
@@ -1483,7 +1551,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                ex.Message.ToString();
+                _logger.LogError(ex, "删除学生介绍信息失败");
                 result = "500";
             }
             return result;
