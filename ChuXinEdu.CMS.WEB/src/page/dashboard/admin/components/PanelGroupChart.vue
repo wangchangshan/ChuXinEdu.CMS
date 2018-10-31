@@ -66,7 +66,7 @@ export default {
             yTotal
         } = {}) {
             this.chart.setOption({
-                backgroundColor: '#344b58', //#344b58
+                backgroundColor: '#fff', //#344b58
                 title: {
                     show: false,
                 },
@@ -218,7 +218,7 @@ export default {
                         symbol: 'circle',
                         itemStyle: {
                             normal: {
-                                color: 'rgba(252,230,48,1)',
+                                color: '#8bf570',//'rgba(252,230,48,1)',
                                 barBorderRadius: 0,
                                 label: {
                                     show: true,
