@@ -235,6 +235,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     {
                         // 3.1 当前时间重新安排了课程，则直接删除当前请假的课程
                         context.Remove(studentCourse);
+                        _logger.LogInformation("当前时间重新安排了课程[{0} {1} {2}]，直接删除当前请假的课程!!", studentCourse.StudentName, theDay, coursePeriod);
                     }
                     else
                     {
@@ -247,6 +248,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         {
                             // 4.1 重新安排完成了所有课程，则直接删除当前请假的课程
                             context.Remove(studentCourse);
+                            _logger.LogInformation("{0}的当前套餐已经重新全部安排完成package.flexcoursecoun=1, 所以删除当前请假课程[ {1} {2}]!!", studentCourse.StudentName, theDay, coursePeriod);
 
                         }
                         else
@@ -425,6 +427,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             string result = "200";
             try
             {
+                _logger.LogInformation("添加假期开始");
                 using (BaseContext context = new BaseContext())
                 {
                     // 1. 向sys_holiday表中插入数据
@@ -439,6 +442,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         course.AttendanceStatusCode = "03";
                         course.AttendanceStatusName = "统一放假";
 
+                        _logger.LogInformation("假期影响学生：{0} [{1} {2}]", course.StudentName, course.CourseDate, course.CoursePeriod);
                         // 3. 试听与正式分开处理
                         string studentCode = course.StudentCode;
                         if (course.CourseType == "试听")
@@ -516,6 +520,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public string RemoveHoliday(string strDay)
         {
+            // 说明： 在一个时间段，一个学生只能排课一次，否则涉及放假逻辑需要修改
             string result = "200";
             try
             {
@@ -597,7 +602,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                     .First();
                             if (scp.FlexCourseCount == 0)
                             {
-                                // 3.1.1 重新拍完了；更新student_course_package 可供排课的课时数 -1
+                                // 3.1.1 重新安排完了；删除当前课程
                                 context.Remove(course);
                                 continue;
                             }
@@ -884,7 +889,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             scp.RestCourseCount -= 1;
                             _logger.LogInformation("变更当前课程所在package 剩余课程数为：{0}", scp.RestCourseCount);
                         }
-                        // 3. 提交事务  需要放到foreach 代码块中，防止某次循环中断 造成数据错乱。
+                        // 3. 提交事务  需要放到foreach 代码块中，防止某次循环中断(比如：需要获取arrange的数据，但是arrange在上次循环应该被删除，但是由于没提交，所以没删除) 造成数据错乱。
                         context.SaveChanges();
                         _logger.LogInformation("销课结束，课程Id：{0}。{1},{2}", item.CourseListId, logFullTime, scl.StudentName);
                     }
