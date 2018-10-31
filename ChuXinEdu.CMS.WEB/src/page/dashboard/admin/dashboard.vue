@@ -1,56 +1,10 @@
 <template>
 <div class="dashboard-editor-container">
 
-    <!-- panel-group -->
-    <el-row class="panel-group" :gutter="20">
-        <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-            <div class='card-panel' @click="handleSetLineChartData('newVisitis')">
-                <div class="card-panel-icon-wrapper icon-people">
-                    <i class="fa fa-users fa-4x" aria-hidden="true"></i>
-                </div>
-                <div class="card-panel-description">
-                    <div class="card-panel-text">学生总数</div>
-                    <count-to class="card-panel-num" :startVal="0" :endVal="100" :duration="3000"></count-to>
-                </div>
-            </div>
-        </el-col>
-        <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-            <div class="card-panel" @click="handleSetLineChartData('messages')">
-                <div class="card-panel-icon-wrapper icon-message">
-                    <i class="fa fa-user-o fa-4x" aria-hidden="true"></i>
-                </div>
-                <div class="card-panel-description">
-                    <div class="card-panel-text">本月试听</div>
-                    <count-to class="card-panel-num" :startVal="0" :endVal="80" :duration="2000"></count-to>
-                </div>
-            </div>
-        </el-col>        
-        <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-            <div class="card-panel" @click="handleSetLineChartData('shoppings')">
-                <div class="card-panel-icon-wrapper icon-shoppingCard">
-                    <i class="fa fa-user fa-4x" aria-hidden="true"></i>
-                </div>
-                <div class="card-panel-description">
-                    <div class="card-panel-text">书法人数</div>
-                    <count-to class="card-panel-num" :startVal="0" :endVal="22" :duration="3600"></count-to>
-                </div>
-            </div>
-        </el-col>
-        <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-            <div class="card-panel" @click="showPurchases()">
-                <div class="card-panel-icon-wrapper icon-money">
-                    <i class="fa fa-rmb fa-4x" aria-hidden="true"></i>
-                </div>
-                <div class="card-panel-description">
-                    <div class="card-panel-text">本月支出</div>
-                    <count-to class="card-panel-num green" :startVal="0" :endVal="expenditure" :duration="3000"></count-to>
-                </div>
-                <div class="card-panel-description">
-                    <div class="card-panel-text">本月收入</div>
-                    <count-to class="card-panel-num red" :startVal="0" :endVal="income" :duration="3000"></count-to>
-                </div>
-            </div>
-        </el-col>
+    <panel-group @handleSetChartData="handleSetChartData"></panel-group>
+
+    <el-row class="chart-container">
+        <panel-group-chart v-bind:height="'460px'" :chart-data="panelGroupChartData"></panel-group-chart>
     </el-row>
 
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
@@ -80,26 +34,56 @@
 </template>
 
 <script>
-import CountTo from 'vue-count-to'
+import PanelGroup from './components/PanelGroup'
+import PanelGroupChart from './components/PanelGroupChart'
 import PieChart from './components/PieChart'
 import BarChart from './components/BarChart'
 
+const chartData = {
+    student:{
+        xMonth:['2017-12', '2018-01', '2018-02', '2018-03', '2018-04', '2018-05', '2018-06', '2018-07', '2018-08', '2018-09', '2018-10'],
+        yMeishu:[20, 30, 40, 41, 40, 41, 50, 52, 51, 61, 70],
+        yShufa:[0, 0, 0, 1, 1, 4, 5, 5, 5, 5, 5],
+        yTotal:[20, 30, 40, 41, 40, 45, 55, 57, 61, 68, 80],
+    },
+    course:{
+        xMonth:[],
+        yMeishu:[],
+        yShufa:[],
+        yTotal:[]
+    },
+    trialStudent:{
+        xMonth:[],
+        yMeishu:[],
+        yShufa:[],
+        yTotal:[]
+    },
+    income:{
+        xMonth:[],
+        yMeishu:[],
+        yShufa:[],
+        yTotal:[]
+    }
+}
 export default {
     data(){
         return{
+            panelGroupChartData: chartData.student,
             purchasesVisible: false,
+            
             income: 0,
             expenditure: 0,
         }
     },
     components: {
-        CountTo,
+        PanelGroup,
+        PanelGroupChart,
         BarChart,
         PieChart
     },
     methods: {
-        handleSetLineChartData(type) {
-            this.$emit('handleSetLineChartData', type)
+        handleSetChartData(type) {
+            this.panelGroupChartData = chartData[type]
         },
         showPurchases(){
             if(!this.purchasesVisible){
@@ -118,6 +102,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.chart-container{
+  position: relative;
+  width: 100%;
+  background:#fff;
+  padding:16px;
+  margin-bottom:32px;
+}
+
 .dashboard-editor-container {
   padding: 20px;
   background-color: rgb(240, 242, 245);

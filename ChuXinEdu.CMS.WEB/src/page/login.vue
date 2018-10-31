@@ -90,7 +90,7 @@ export default {
             const leftMenu = [{
                     path: '/dashboard',
                     name: '首    页',
-                    component: 'dashboard',
+                    component: 'dashboard/admin/dashboard',
                     icon: 'fa-tachometer',
                     noDropdown: true
                 }, 
