@@ -60,6 +60,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return courseArrangeVMList;
         }
 
+        /// <summary>   
+        /// 获取今天排课信息 GET api/coursearrange/getcoursearrangedtoday
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult<string> GetCourseArrangedToday()
+        {
+
+            List<StudentCourseList> scl = _chuxinQuery.GetCoursesToday();        
+
+            return "";
+        }
+
         /// <summary>
         /// 根据时间段获取排课信息，用于局部刷新 GET api/coursearrange/getarrangedinfobyperiod
         /// </summary>

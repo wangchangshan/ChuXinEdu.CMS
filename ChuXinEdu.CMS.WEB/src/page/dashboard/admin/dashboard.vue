@@ -1,127 +1,144 @@
 <template>
 <div class="dashboard-editor-container">
 
-    <panel-group @handleSetChartData="handleSetChartData"></panel-group>
+    <panel-group v-bind:overView="overView" @handleSetChartData="handleSetChartData"></panel-group>
 
     <el-row class="chart-container">
         <panel-group-chart v-bind:height="'460px'" :chart-data="panelGroupChartData"></panel-group-chart>
     </el-row>
 
-    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <bar-chart></bar-chart>
+    <el-row :gutter="10">
+        <el-table :data="arrangeToday" style="width: 100%" border align="center" size="small">
+            <el-table-column prop="coursePeriod" label="上课时间" align='center' width="180">
+            </el-table-column>
+            <el-table-column prop="guohua" label="国 画" align='center'>
+            </el-table-column>
+            <el-table-column prop="xihua" label="西 画" align='center'>
+            </el-table-column>
+            <el-table-column prop="shufa" label="书 法" align='center'>
+            </el-table-column>            
+        </el-table>
     </el-row>
-
-    <!-- charts -->
-    <el-row :gutter="20">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart></pie-chart>
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart></pie-chart>
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart></pie-chart>
-        </div>
-      </el-col>
-    </el-row>
-
 </div>
 </template>
 
 <script>
 import PanelGroup from './components/PanelGroup'
 import PanelGroupChart from './components/PanelGroupChart'
-import PieChart from './components/PieChart'
-import BarChart from './components/BarChart'
+import {
+    axios
+} from '@/utils/index'
 
-const chartData = {
-    student:{
-        xMonth:['2017-12', '2018-01', '2018-02', '2018-03', '2018-04', '2018-05', '2018-06', '2018-07', '2018-08', '2018-09', '2018-10'],
-        yMeishu:[20, 30, 40, 41, 40, 41, 50, 52, 51, 61, 70],
-        yShufa:[0, 0, 0, 1, 1, 4, 5, 5, 5, 5, 5],
-        yTotal:[20, 30, 40, 41, 40, 45, 55, 57, 61, 68, 80],
+let chartData = {
+    student: {
+        xMonth: [],
+        yMeishu: [],
+        yShufa: [],
+        yTotal: [],
     },
-    course:{
-        xMonth:[],
-        yMeishu:[],
-        yShufa:[],
-        yTotal:[]
+    course: {
+        xMonth: [],
+        yMeishu: [],
+        yShufa: [],
+        yTotal: []
     },
-    trialStudent:{
-        xMonth:[],
-        yMeishu:[],
-        yShufa:[],
-        yTotal:[]
+    trialStudent: {
+        xMonth: [],
+        yMeishu: [],
+        yShufa: [],
+        yTotal: []
     },
-    income:{
-        xMonth:[],
-        yMeishu:[],
-        yShufa:[],
-        yTotal:[]
+    income: {
+        xMonth: [],
+        yMeishu: [],
+        yShufa: [],
+        yTotal: []
     }
 }
 export default {
-    data(){
-        return{
+    data() {
+        return {
+            arrangeToday: [],
             panelGroupChartData: chartData.student,
-            purchasesVisible: false,
-            
-            income: 0,
-            expenditure: 0,
+            overView: {
+                studentCount: 0,
+                trialStudentCount: 0,
+                courseCount: 0,
+            }
         }
+    },
+    created() {
+        this.getPanelGroupChartData('student');
     },
     components: {
         PanelGroup,
-        PanelGroupChart,
-        BarChart,
-        PieChart
+        PanelGroupChart
     },
     methods: {
         handleSetChartData(type) {
-            this.panelGroupChartData = chartData[type]
+            if (chartData[type].xMonth.length > 0) {
+                this.panelGroupChartData = chartData[type]
+            } else {
+                this.getPanelGroupChartData();
+            }
         },
-        showPurchases(){
-            if(!this.purchasesVisible){
-                this.income = 20000;
-                this.expenditure = -4000;
-            }
-            else
-            {
-                this.income = 0;
-                this.expenditure = -0;
-            }
-            this.purchasesVisible = !this.purchasesVisible;
+        getPanelGroupChartData(type) {
+            axios({
+                type: 'get',
+                path: '/api/statistics/dashboard',
+                fn: (result) => {
+                    chartData = result;
+                    this.overView = {
+                        studentCount: result.student.yTotal[result.student.yTotal.length - 1],
+                        trialStudentCount: result.trialStudent.yTotal[result.trialStudent.yTotal.length - 1],
+                        courseCount: result.course.yTotal[result.course.yTotal.length - 1],
+                    }
+                    this.panelGroupChartData = chartData[type];
+                }
+            })
+        },
+        getArrangeToday() {
+            axios({
+                type: 'get',
+                path: '/coursearrange/getcoursearrangedtoday',
+                fn: (result) => {
+                    chartData = result;
+                    this.overView = {
+                        studentCount: result.student.yTotal[result.student.yTotal.length - 1],
+                        trialStudentCount: result.trialStudent.yTotal[result.trialStudent.yTotal.length - 1],
+                        courseCount: result.course.yTotal[result.course.yTotal.length - 1],
+                    }
+                    this.panelGroupChartData = chartData[type];
+                }
+            })
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.chart-container{
-  position: relative;
-  width: 100%;
-  background:#fff;
-  padding:16px;
-  margin-bottom:32px;
+.chart-container {
+    position: relative;
+    width: 100%;
+    background: #fff;
+    padding: 16px;
+    margin-bottom: 32px;
 }
 
 .dashboard-editor-container {
-  padding: 20px;
-  background-color: rgb(240, 242, 245);
-  .chart-wrapper {
-    background: #fff;
-    padding: 16px 16px 0;
-    margin-bottom: 32px;
-  }
+    padding: 20px;
+    background-color: rgb(240, 242, 245);
+
+    .chart-wrapper {
+        background: #fff;
+        padding: 16px 16px 0;
+        margin-bottom: 32px;
+    }
 }
 
 .panel-group {
     margin-bottom: 20px;
+
     .card-panel-col {
         margin-bottom: 10px;
     }
@@ -175,7 +192,7 @@ export default {
             color: #f4516c;
         }
 
-        .green{
+        .green {
             color: #34bfa3
         }
 

@@ -6,8 +6,8 @@
                 <i class="fa fa-users fa-4x" aria-hidden="true"></i>
             </div>
             <div class="card-panel-description">
-                <div class="card-panel-text">学生总数</div>
-                <count-to class="card-panel-num" :startVal="0" :endVal="100" :duration="3000"></count-to>
+                <div class="card-panel-text">活跃学生</div>
+                <count-to class="card-panel-num" :startVal="0" :endVal="overView.studentCount" :duration="3000"></count-to>
             </div>
         </div>
     </el-col>
@@ -18,7 +18,7 @@
             </div>
             <div class="card-panel-description">
                 <div class="card-panel-text">本月试听</div>
-                <count-to class="card-panel-num" :startVal="0" :endVal="80" :duration="2000"></count-to>
+                <count-to class="card-panel-num" :startVal="0" :endVal="overView.trialStudentCount" :duration="3000"></count-to>
             </div>
         </div>
     </el-col>
@@ -29,18 +29,18 @@
             </div>
             <div class="card-panel-description">
                 <div class="card-panel-text">本月销课</div>
-                <count-to class="card-panel-num" :startVal="0" :endVal="220" :duration="3600"></count-to>
+                <count-to class="card-panel-num" :startVal="0" :endVal="overView.courseCount" :duration="3000"></count-to>
             </div>
         </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-        <div class="card-panel" @click="handleSetChartData(income)">
+        <div class="card-panel" @click="handleSetChartData('income')">
             <div class="card-panel-icon-wrapper icon-money">
                 <i class="fa fa-rmb fa-4x" aria-hidden="true"></i>
             </div>
             <div class="card-panel-description">
                 <div class="card-panel-text">本月支出</div>
-                <count-to class="card-panel-num green" :startVal="0" :endVal="1000" :duration="3000"></count-to>
+                <count-to class="card-panel-num green" :startVal="0" :endVal="5" :duration="3000"></count-to>
             </div>
             <div class="card-panel-description">
                 <div class="card-panel-text">本月收入</div>
@@ -55,6 +55,16 @@
 import CountTo from 'vue-count-to'
 
 export default {
+    props: {
+        overView: {
+            type: Object,
+            default: {
+                studentCount: 0,
+                trialStudentCount: 0,
+                courseCount: 0,
+            }
+        }
+    },
     components: {
         CountTo
     },

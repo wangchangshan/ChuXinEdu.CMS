@@ -140,13 +140,13 @@ export default {
                         }
                     }
                 },
-                {
-                    path: '/chartAnalysis',
-                    name: '图表统计',
-                    component: 'chartAnalysis',
-                    icon: 'fa-bar-chart',
-                    noDropdown: true,
-                },
+                // {
+                //     path: '/chartAnalysis',
+                //     name: '图表统计',
+                //     component: 'chartAnalysis',
+                //     icon: 'fa-bar-chart',
+                //     noDropdown: true,
+                // },
                 {
                     path: '/activityList',
                     name: '活动列表',
