@@ -9,14 +9,13 @@
 
     <el-row :gutter="10">
         <el-table :data="arrangeToday" style="width: 100%" border align="center" size="small">
+            <el-table-column type="index" width="30"></el-table-column>
             <el-table-column prop="coursePeriod" label="上课时间" align='center' width="180">
             </el-table-column>
-            <el-table-column prop="guohua" label="国 画" align='center'>
+            <el-table-column prop="studentName" label="学生姓名" align='center'>
             </el-table-column>
-            <el-table-column prop="xihua" label="西 画" align='center'>
-            </el-table-column>
-            <el-table-column prop="shufa" label="书 法" align='center'>
-            </el-table-column>            
+            <el-table-column prop="courseFolderName" label="课程内容" align='center'>
+            </el-table-column>           
         </el-table>
     </el-row>
 </div>
@@ -69,6 +68,7 @@ export default {
     },
     created() {
         this.getPanelGroupChartData('student');
+        this.getArrangeToday();
     },
     components: {
         PanelGroup,
@@ -100,15 +100,9 @@ export default {
         getArrangeToday() {
             axios({
                 type: 'get',
-                path: '/coursearrange/getcoursearrangedtoday',
+                path: '/api/coursearrange/getcoursearrangedtoday',
                 fn: (result) => {
-                    chartData = result;
-                    this.overView = {
-                        studentCount: result.student.yTotal[result.student.yTotal.length - 1],
-                        trialStudentCount: result.trialStudent.yTotal[result.trialStudent.yTotal.length - 1],
-                        courseCount: result.course.yTotal[result.course.yTotal.length - 1],
-                    }
-                    this.panelGroupChartData = chartData[type];
+                    this.arrangeToday = result;
                 }
             })
         }

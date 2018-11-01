@@ -65,12 +65,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<string> GetCourseArrangedToday()
+        public List<StudentCourseList> GetCourseArrangedToday()
         {
+            string strGuohua = string.Empty;
+            string strXihua = string.Empty;
+            string strShufa = string.Empty;
 
-            List<StudentCourseList> scl = _chuxinQuery.GetCoursesToday();        
-
-            return "";
+            List<StudentCourseList> scls = _chuxinQuery.GetCoursesToday();        
+            return scls;
         }
 
         /// <summary>

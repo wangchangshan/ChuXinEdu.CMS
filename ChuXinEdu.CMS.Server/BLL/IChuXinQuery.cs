@@ -48,6 +48,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         // 获取时间段内排课信息
         IEnumerable<CA_R_PERIOD_STUDENTS> GetPeriodStudents(string templateCode, string roomCode, string dayCode, string periodName);
 
+        List<StudentCourseList> GetCoursesToday();
+
         // 获取待选课学生列表
         IEnumerable<StudentCoursePackage> GetStudentToSelectCourse(string dayCode, string periodName);
 
