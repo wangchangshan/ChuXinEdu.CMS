@@ -7,15 +7,14 @@
         <panel-group-chart v-bind:height="'460px'" :chart-data="panelGroupChartData"></panel-group-chart>
     </el-row>
 
-    <el-row :gutter="10">
-        <el-table :data="arrangeToday" style="width: 100%" border align="center" size="small">
-            <el-table-column type="index" width="30"></el-table-column>
-            <el-table-column prop="coursePeriod" label="上课时间" align='center' width="180">
+    <el-row>
+        <el-table :span-method="objectSpanMethod" :data="arrangeToday" style="width: 100%" border align="center" size="small">
+            <el-table-column prop="coursePeriod" label="今 天" align='center' width="180">
             </el-table-column>
+            <el-table-column prop="courseFolderName" label="课程内容" width="280" align='center'>
+            </el-table-column> 
             <el-table-column prop="studentName" label="学生姓名" align='center'>
-            </el-table-column>
-            <el-table-column prop="courseFolderName" label="课程内容" align='center'>
-            </el-table-column>           
+            </el-table-column> 
         </el-table>
     </el-row>
 </div>
@@ -63,7 +62,9 @@ export default {
                 studentCount: 0,
                 trialStudentCount: 0,
                 courseCount: 0,
-            }
+            },
+            timeRowSpanArray: [],
+            folderRowSpanArray: []
         }
     },
     created() {
@@ -103,9 +104,64 @@ export default {
                 path: '/api/coursearrange/getcoursearrangedtoday',
                 fn: (result) => {
                     this.arrangeToday = result;
+                    this.getRowSpanInfo();
                 }
             })
-        }
+        },
+        objectSpanMethod({
+            row,
+            column,
+            rowIndex,
+            columnIndex
+        }) {
+            if (columnIndex === 0) {
+                return {
+                    rowspan: this.timeRowSpanArray[rowIndex],
+                    colspan: 1
+                };
+            }
+            if (columnIndex === 1) {
+                return {
+                    rowspan: this.folderRowSpanArray[rowIndex],
+                    colspan: 1
+                };
+            }
+        },
+        getRowSpanInfo() {
+            this.timeRowSpanArray = [];
+            this.folderRowSpanArray = [];
+            let strTime = '';
+            let strFolder = '';
+            let timeIndex = 0;
+            let folderIndex = 0;
+            this.arrangeToday.forEach((item, index, array) => {
+                this.timeRowSpanArray.push(1);
+                this.folderRowSpanArray.push(1);
+                if (index === 0) {
+                    strTime = item.coursePeriod;
+                    strFolder = item.courseFolderCode;
+                } else {
+                    if (item.coursePeriod === strTime) {
+                        this.timeRowSpanArray[timeIndex] += 1;
+                        this.timeRowSpanArray[index] = 0;
+
+                        if (item.courseFolderCode === strFolder) {
+                            this.folderRowSpanArray[folderIndex] += 1;
+                            this.folderRowSpanArray[index] = 0;
+                        } else {
+                            strFolder = item.courseFolderCode;
+                            folderIndex = index;
+                        }
+                    } else {
+                        strTime = item.coursePeriod;
+                        timeIndex = index;
+
+                        strFolder = item.courseFolderCode;
+                        folderIndex = index;
+                    }
+                }
+            });
+        },
     }
 }
 </script>
@@ -115,115 +171,12 @@ export default {
     position: relative;
     width: 100%;
     background: #fff;
-    padding: 16px;
-    margin-bottom: 32px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 .dashboard-editor-container {
-    padding: 20px;
+    padding: 10px;
     background-color: rgb(240, 242, 245);
-
-    .chart-wrapper {
-        background: #fff;
-        padding: 16px 16px 0;
-        margin-bottom: 32px;
-    }
-}
-
-.panel-group {
-    margin-bottom: 20px;
-
-    .card-panel-col {
-        margin-bottom: 10px;
-    }
-
-    .card-panel {
-        height: 108px;
-        cursor: pointer;
-        font-size: 12px;
-        position: relative;
-        overflow: hidden;
-        color: #666;
-        background: #fff;
-        box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
-        border-color: rgba(0, 0, 0, .05);
-
-        &:hover {
-            .card-panel-icon-wrapper {
-                color: #fff;
-            }
-
-            .icon-people {
-                background: #40c9c6;
-            }
-
-            .icon-message {
-                background: #36a3f7;
-            }
-
-            .icon-money {
-                background: #f4516c;
-            }
-
-            .icon-shoppingCard {
-                background: #34bfa3
-            }
-        }
-
-        .icon-people {
-            color: #40c9c6;
-        }
-
-        .icon-message {
-            color: #36a3f7;
-        }
-
-        .icon-money {
-            color: #f4516c;
-        }
-
-        .red {
-            color: #f4516c;
-        }
-
-        .green {
-            color: #34bfa3
-        }
-
-        .icon-shoppingCard {
-            color: #34bfa3
-        }
-
-        .card-panel-icon-wrapper {
-            float: left;
-            margin: 14px 0 0 14px;
-            padding: 16px;
-            transition: all 0.38s ease-out;
-            border-radius: 6px;
-        }
-
-        .card-panel-icon {
-            float: left;
-            font-size: 48px;
-        }
-
-        .card-panel-description {
-            float: right;
-            font-weight: bold;
-            margin: 26px;
-            margin-left: 0px;
-
-            .card-panel-text {
-                line-height: 18px;
-                color: rgba(0, 0, 0, 0.45);
-                font-size: 16px;
-                margin-bottom: 12px;
-            }
-
-            .card-panel-num {
-                font-size: 20px;
-            }
-        }
-    }
 }
 </style>

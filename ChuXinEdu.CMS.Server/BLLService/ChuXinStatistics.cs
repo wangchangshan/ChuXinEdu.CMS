@@ -97,7 +97,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 dt = ADOContext.GetDataTable(@"select DATE_FORMAT(course_date,'%Y-%m') as ym,course_category_code as type,count(distinct student_code) as amount 
                                                 from student_course_list 
-                                                where course_type='正式' and attendance_status_code = '01' group by DATE_FORMAT(course_date,'%Y-%m'), course_category_code 
+                                                where course_type='试听' and attendance_status_code = '01' group by DATE_FORMAT(course_date,'%Y-%m'), course_category_code 
                                                 order by DATE_FORMAT(course_date,'%Y-%m')");
 
             }

@@ -257,7 +257,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.StudentCourseList.Where(c => c.AttendanceStatusCode == "09" && c.CourseDate == DateTime.Now)
+                return context.StudentCourseList.Where(c => c.AttendanceStatusCode == "09" && c.CourseDate == DateTime.Now.Date)
                                                 .OrderBy(c => c.CourseFolderCode)
                                                 .OrderBy(c => c.CoursePeriod)
                                                 .ToList();
