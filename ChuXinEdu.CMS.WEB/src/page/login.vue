@@ -18,8 +18,8 @@
                     <el-button type="primary" @click="submitForm(loginForm)" class="submit_btn">登录</el-button>
                 </el-form-item>
                 <div class="tiparea">
-                    <p class="wxtip">温馨提示：</p>
-                    <p class="tip">内部开发版</p>
+                    <p class="wxtip">内部开发版</p>
+                    <p class="tip"></p>
                     <!-- <p class="tip">注册过的用户可凭账号密码登录</p> -->
                 </div>
             </el-form>
