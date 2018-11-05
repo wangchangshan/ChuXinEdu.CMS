@@ -158,7 +158,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     string coursePeriod = studentCourse.CoursePeriod;
                     string roomCode = studentCourse.Classroom;
 
-                    
+
                     _logger.LogInformation("个人请假开始，信息：[姓名：{0}， 时间：{1} {2}]", studentCourse.StudentName, studentCourse.CourseDate, coursePeriod);
                     var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId
                                                                                 && s.StudentCode == studentCode
@@ -168,7 +168,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                 && s.Classroom == roomCode
                                                                                 && s.CoursePeriod == coursePeriod)
                                                                         .FirstOrDefault();
-                    if(courseArrange == null)    
+                    if (courseArrange == null)
                     {
                         _logger.LogWarning("没有找到当前课程的arrange信息！！！！！！");
                         return "202";
@@ -791,10 +791,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
         public string SignInBatch(List<CL_U_SIGN_IN> courseList)
         {
             string result = "200";
-            using (BaseContext context = new BaseContext())
+
+            _logger.LogInformation("批量销课开始");
+            foreach (var item in courseList)
             {
-                _logger.LogInformation("批量销课开始");
-                foreach (var item in courseList)
+                using (BaseContext context = new BaseContext())
                 {
                     try
                     {

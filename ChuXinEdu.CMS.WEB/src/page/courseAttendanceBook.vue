@@ -320,10 +320,11 @@ export default {
                             message: '批量签到成功！',
                             type: 'success'
                         });
-                        courseList.forEach(item => {
-                            _this.removeTableRow(item.CourseListId);
-                        });
-                        _this.$store.commit('REDUCE_TO_RECORD', courseList.length);
+                        _this.getAttendanceList();
+                        // courseList.forEach(item => {
+                        //     _this.removeTableRow(item.CourseListId);
+                        // });
+                        // _this.$store.commit('REDUCE_TO_RECORD', courseList.length);
                     }
                 }
             });
