@@ -8,6 +8,7 @@ using System.Net.Http;
 using AutoMapper;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using ChuXinEdu.CMS.Server.Context;
@@ -18,6 +19,7 @@ using ChuXinEdu.CMS.Server.ViewModel;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [EnableCors("any")]
     [ApiController]
     public class CourseController : ControllerBase
     {

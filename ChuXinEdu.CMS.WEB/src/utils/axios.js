@@ -26,6 +26,7 @@ export default function ({
     var options = {
         method  : type,
         url     : path,
+        // headers : headers && typeof headers === 'object' ? headers : {'Access-Control-Allow-Origin': '*','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE'}
         headers : headers && typeof headers === 'object' ? headers : {}
     };
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [EnableCors("any")]
     [ApiController]
     public class TeacherController : ControllerBase
     {

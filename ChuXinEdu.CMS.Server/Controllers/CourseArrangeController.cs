@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
@@ -12,6 +13,7 @@ using ChuXinEdu.CMS.Server.ViewModel;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [EnableCors("any")]
     [ApiController]
     public class CourseArrangeController : ControllerBase
     {

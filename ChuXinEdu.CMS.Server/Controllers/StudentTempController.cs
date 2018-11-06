@@ -6,6 +6,7 @@ using System.Linq;
 using System.IO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using ChuXinEdu.CMS.Server.Utils;
@@ -18,6 +19,7 @@ using Newtonsoft.Json.Serialization;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [EnableCors("any")]
     [ApiController]
     public class StudentTempController : ControllerBase
     {

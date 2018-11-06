@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using ChuXinEdu.CMS.Server.BLL;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using ChuXinEdu.CMS.Server.Model;
 using System;
 using ChuXinEdu.CMS.Server.Utils;
@@ -10,6 +11,7 @@ using Newtonsoft.Json;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("any")]
     [ApiController]
     public class CoursePackageController : ControllerBase
     {

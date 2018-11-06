@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.Model;
@@ -14,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [EnableCors("any")]
     [ApiController]
     public class ConfigController : ControllerBase
     {

@@ -33,9 +33,18 @@ namespace ChuXinEdu.CMS.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             // mysql 数据连接配置
             //services.AddDbContext<ADOContext>(options => options.UseMySql(Configuration.GetConnectionString("MySqlConnection")));
+
+            // 跨域处理
+            services.AddCors(Options=> {
+                Options.AddPolicy("any", builder => {
+                    builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials(); //指定处理cookie
+                });
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
