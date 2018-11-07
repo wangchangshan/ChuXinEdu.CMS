@@ -2,7 +2,7 @@
 
 ### 1. 项目打包
 
-#### 1.1 前端项目
+#### 1.1 前端静态web项目
 
 > 运行打包命令`npm run build`, 项目将会被打包生成在根目录 `dist`。也可以在`/config/index.js`文件中修改相应的配置。
 ```bash
@@ -19,7 +19,7 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.Server> dotnet publish -c debug
 
 ---
 
-### 2. 项目部署Windows（前端IIS + 后端IIS）
+### 2. 项目部署Windows（前端 IIS + 后端 IIS）
 
 #### 2.1 前端部署
 
@@ -72,7 +72,129 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.Server> dotnet publish -c debug
 ```
 3. 以上配置成功后，就可以访问项目了`http://localhost:8080`， 但是如果当 `put`|`delete` 的跨域请求报 *405* 错误，则应该是IIS 谓词限制造成的。解决办法：关闭IIS中的 `WebDAV Publishing`功能。（启用或关闭Windows功能 -> Internet Infomation Services -> World Wide Web Services -> Common HTTP Features -> WebDAV Publishing）关闭后，可以查看项目web.config的配置变化。
 
+---
+
+### 3. 项目部署Windows（前端 Nginx + 后端 IIS）
+
+#### 3.1 前端部署 Nginx作为静态web服务器
+
+1. 下载 windows版本 [Nginx](http://nginx.org/en/download.html)（nginx/Windows-1.15.6）。
+2. 安装 Nginx。 [教程](https://www.cnblogs.com/jiangwangxiang/p/8481661.html)。
+3. 将 1.1中生成的前端项目包(dist目录)，拷贝到nginx目录下，重命名dist目录名称为`cxweb`。
+4. 配置`nginx/conf/nginx.conf`文件
+
+``` conf
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+    #gzip  on;
+
+    server {
+        # listen 端口
+        listen       8010;
+        server_name  localhost;
+        # 前端项目路径，root 根目录
+        location / {
+            root   cxweb;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # 反向代理，匹配所有的 api请求。 
+        # http://localhost:8077为部署在IIS上的webapi项目站点
+        location ~ /api/* {
+           proxy_pass   http://localhost:8077;
+        }
+    }
+}
+
+```
+> 说明：也可以将Nginx只作为反向代理服务器，在 location / {} 内配置proxy_pass为 IIS上的前端站点地址（http://localhost:8078）
+
+#### 3.2 后端部署 (IIS)
+
+> 同 2.2配置
+
+#### 3.3 跨域问题
+
+> 同 2.4配置
+
+### 4. 项目部署Windows（前端 Nginx + 后端使用netcore内置的 KestrelServer）
+
+#### 4.1 后端部署 (KestrelServer 通过Nginx转发Http请求)
+
+1. 使用`dotnet publish -c debug`发布程序后，会生成一个publish目录
+2. 使用powershell或者cmd，转到publish所在目录。执行运行命令：
+```bash
+D:\webServer\kestrel\cxweb\publish> dotnet ChuXinEdu.CMS.Server.dll
+
+# 成功后会出现一下提示
+# Hosting environment: Production
+# Content root path: D:\cswang\webServer\kestrel\cxapi
+# Now listening on: http://[::]:5000
+```
+#### 4.2 前端部署 Nginx作为静态web服务器
+
+> 部署同3.1。 配置`nginx/conf/nginx.conf`文件如下：
 
 
+``` conf
+worker_processes  1;
 
+events {
+    worker_connections  1024;
+}
 
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+    #gzip  on;
+
+    server {
+        # listen 端口
+        listen       8010;
+        server_name  localhost;
+        # 前端项目路径，root 根目录
+        location / {
+            root   cxweb;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # 反向代理，匹配所有的 api请求。 
+        # http://localhost:5000为4.1中的api site地址
+        location ~ /api/* {
+           proxy_pass   http://localhost:5000;
+        }
+    }
+}
+
+```
+
+#### 4.3 跨域问题
+
+> 同 2.4配置
+
+---

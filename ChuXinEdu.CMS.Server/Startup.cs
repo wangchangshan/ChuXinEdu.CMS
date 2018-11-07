@@ -18,6 +18,7 @@ using ChuXinEdu.CMS.Server.BLLService;
 using ChuXinEdu.CMS.Server.Utils;
 using Microsoft.AspNetCore.Http;
 using NLog.Extensions.Logging;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace ChuXinEdu.CMS.Server
 {
@@ -80,6 +81,11 @@ namespace ChuXinEdu.CMS.Server
             SiteConfig.SetAppSetting(Configuration.GetSection("CustomSetting"));
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            // 配置支持 nginx
+            app.UseForwardedHeaders(new ForwardedHeadersOptions{
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
         }
     }
 }

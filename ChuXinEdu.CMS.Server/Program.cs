@@ -20,7 +20,12 @@ namespace ChuXinEdu.CMS.Server
             try
             {
                 logger.Debug("init main");
-                CreateWebHostBuilder(args).Build().Run();
+                
+                var config = new ConfigurationBuilder()
+                                    .SetBasePath(Directory.GetCurrentDirectory())
+                                    .AddJsonFile("hosting.json", optional: true)
+                                    .Build();
+                CreateWebHostBuilder(args).UseConfiguration(config).Build().Run();
             }
             catch (Exception ex)
             {
