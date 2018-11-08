@@ -905,6 +905,68 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string SupplementHistoryCourse(List<StudentCourseList> courseList)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    int i = 0;
+                    int studentCoursePackageId = courseList[0].StudentCoursePackageId;
+                    // 1. 向课程记录表中插入数据
+                    foreach (var course in courseList)
+                    {
+                        context.StudentCourseList.Add(course);
+                        i ++;
+                    }
+                    // 2. 获取当前课程套餐
+                    var package = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId && s.FlexCourseCount > 0).FirstOrDefault();
+                    if(package != null)
+                    {
+                        if(package.FlexCourseCount - i == 0)
+                        {
+                            // 2.1 套餐内可以排课的课程数目为 0，进一步判断是否所有课程都已结束
+                            if(package.RestCourseCount - i == 0)
+                            {
+                                // 2.2 套餐内课程全部上完，标记当前课程套餐为结束
+                                package.FlexCourseCount = 0;
+                                package.RestCourseCount = 0;
+                                package.ScpStatus = "01";
+                            }
+                            else if(package.RestCourseCount - i > 0)
+                            {
+                                package.FlexCourseCount -= i;
+                                package.RestCourseCount -= i;
+                            }
+                            else
+                            {
+                                _logger.LogWarning("课程套餐数据异常！！套餐ID: {0}，剩余restCourseCount: {1}， 本次提交补录课程数目：{2}", studentCoursePackageId, package.RestCourseCount, i.ToString());
+                                return "201";
+                            }
+                        }
+                        else if(package.FlexCourseCount - i > 0)
+                        {
+                            package.FlexCourseCount -= i;
+                            package.RestCourseCount -= i;
+                        }
+                        else
+                        {
+                            _logger.LogWarning("课程套餐数据异常！！套餐ID: {0}，剩余FlexCourseCount: {1}， 本次提交补录课程数目：{2}", studentCoursePackageId, package.FlexCourseCount, i.ToString());
+                            return "201";
+                        }
+                        
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "补录课程信息失败");
+                result = "500";
+            }
+            return result;
+        }
         public string SupplementArtWork(CL_U_SIGN_IN course)
         {
             string result = "200";

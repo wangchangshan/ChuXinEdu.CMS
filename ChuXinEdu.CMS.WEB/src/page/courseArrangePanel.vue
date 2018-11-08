@@ -166,6 +166,7 @@
 import {
     axios,
     dicHelper,
+    dateHelper,
     tagTypeHelper
 } from '@/utils/index'
 
@@ -877,7 +878,7 @@ export default {
             let listHolidays = [];
             let weekday = '';
             _this.holidayDialog.newHolidays.forEach(item => {
-                weekday = _this.getDayOfWeek(item);
+                weekday = dateHelper.getWeekNameByDate(item);
                 listHolidays.push({
                     HolidayDate: item,
                     DayOfWeek: weekday
@@ -934,40 +935,6 @@ export default {
             }
             var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate;
             return currentdate;
-        },
-
-        getDayOfWeek(theDay) {
-            let week = '';
-            let code = new Date(theDay).getDay();
-            switch (code) {
-                case 0:
-                    week = '星期日';
-                    break;
-                case 1:
-                    week = '星期一';
-                    break;
-                case 2:
-                    week = '星期二';
-                    break;
-                case 3:
-                    week = '星期三';
-                    break;
-                case 4:
-                    week = '星期四';
-                    break;
-                case 5:
-                    week = '星期五';
-                    break;
-                case 6:
-                    week = '星期六';
-                    break;
-                case 7:
-                    week = '星期日';
-                    break;
-                default:
-                    break;
-            }
-            return week;
         },
 
         courseFolderTag(folderCode) {

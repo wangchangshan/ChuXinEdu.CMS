@@ -109,6 +109,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 提交课程补录信息 POST api/course/coursesupplement
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string CourseSupplement([FromBody] List<StudentCourseList> couseList)
+        {
+            string result = _chuxinWorkFlow.SupplementHistoryCourse(couseList);
+            return result;
+        }
+
+        /// <summary>
         /// 签到 PUT api/course/putsignin
         /// </summary>
         /// <returns></returns>

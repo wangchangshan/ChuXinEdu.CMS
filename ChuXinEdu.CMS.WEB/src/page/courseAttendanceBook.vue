@@ -94,7 +94,8 @@
 <script>
 import {
     axios,
-    dicHelper
+    dicHelper,
+    dateHelper
 } from '@/utils/index'
 
 export default {
@@ -185,7 +186,7 @@ export default {
                 fn: function (result) {
                     for (let item of result) {
                         item.courseDate = item.courseDate.split('T')[0];
-                        item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
+                        item.weekName = dateHelper.getWeekNameByCode(item.courseWeekDay);
                     }
                     _this.attendanceList = result;
                     _this.$store.commit('SET_TO_RECORD', result.length);
@@ -447,7 +448,6 @@ export default {
                         courseTime = item.coursePeriod;
                         timeIndex = index;
                     }
-
                 }
             });
         },
@@ -480,37 +480,7 @@ export default {
                 }
             }
             return name;
-        },
-
-        getWeekNameByCode(code) {
-            let week = '';
-            switch (code) {
-                case 'day1':
-                    week = '星期一';
-                    break;
-                case 'day2':
-                    week = '星期二';
-                    break;
-                case 'day3':
-                    week = '星期三';
-                    break;
-                case 'day4':
-                    week = '星期四';
-                    break;
-                case 'day5':
-                    week = '星期五';
-                    break;
-                case 'day6':
-                    week = '星期六';
-                    break;
-                case 'day7':
-                    week = '星期日';
-                    break;
-                default:
-                    break;
-            }
-            return week;
-        },
+        }
     }
 }
 </script>

@@ -63,6 +63,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>   
+        /// 获取上课时间段 GET api/coursearrange/getpriodlist
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{templateCode}")]
+        public IEnumerable<SysCourseArrangeTemplateDetail> GetPriodList(string templateCode)
+        {
+            return _chuxinQuery.GetCourseArrangePeriod(templateCode);
+        }
+
+        /// <summary>   
         /// 获取今天排课信息 GET api/coursearrange/getcoursearrangedtoday
         /// </summary>
         /// <returns></returns>

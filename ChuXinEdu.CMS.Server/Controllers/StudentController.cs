@@ -233,7 +233,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取学生为完成套餐列表 GET api/student/getnofinishpackage
+        /// 获取学生未完成套餐列表 GET api/student/getnofinishpackage
         /// </summary>
         /// <returns></returns>
         [HttpGet("{studentCode}")]

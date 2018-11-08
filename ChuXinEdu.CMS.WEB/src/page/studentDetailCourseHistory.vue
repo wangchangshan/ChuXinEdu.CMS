@@ -29,10 +29,74 @@
             </el-table-column>
         </el-table>
     </div>
-    
+
     <div class="footer_container">
+        <el-button type="primary" size="small" @click='supplementCourse()' :loading="downloadLoading"><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
         <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
     </div>
+
+    <el-dialog :title="supplementDialog.title" :visible.sync="supplementDialog.isShow" :width="supplementDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
+        <div class="form">
+            <el-form :inline="true" size="mini" class="demo-form-inline">
+                <el-form-item label="">
+                    <el-select placeholder="请选择套餐" v-model="supplementDialog.curPackageId" @change="pacakgeChanged" size='mini' style="width:360px">
+                        <el-option v-for="item in supplementDialog.packageList" :key="item.id" :label="item.packageName" :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="剩余课时数：">
+                    {{ supplementDialog.selectedPackage.flexCourseCount || 0 }} 节
+                </el-form-item>
+            </el-form>
+            <el-table :data="supplementDialog.newCourseList" size="mini" align="left" border stripe :max-height="supplementDialog.tableHeight">
+                <el-table-column property="courseDate" label="上课日期" align='center' width="160">
+                    <template slot-scope="scope">
+                        <el-date-picker class="date-mini" v-model="scope.row.courseDate" @change="calculateWeek" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期">
+                        </el-date-picker>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="coursePeriod" label="时间段" align='center' min-width="130">
+                    <template slot-scope='scope'>
+                        <el-select v-model="scope.row.coursePeriod" placeholder="选择时间段" size='mini'>
+                            <el-option v-for="item in coursePeriodList[scope.row.courseWeekDay]" :key="item" :label="item" :value="item">
+                            </el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="courseFolderCode" label="课程类别" align='center' min-width="130">
+                    <template slot-scope='scope'>
+                        <el-select v-model="scope.row.courseFolderCode" placeholder="请选择" size='mini'>
+                            <el-option v-for="item in $store.getters['course_folder_' + scope.row.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="teacherCode" label="上课教师" align='center' min-width="115">
+                    <template slot-scope='scope'>
+                        <el-select v-model="scope.row.teacherCode" placeholder="请选择" size='mini'>
+                            <el-option v-for="item in teacherList[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
+                            </el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="courseSubject" label="课程主题" align='center' min-width="140">
+                    <template slot-scope='scope'>
+                        <el-input size="mini" v-model="scope.row.courseSubject" placeholder="请输入课程主题"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
+                    <template slot-scope='scope'>
+                        <el-button v-if="supplementDialog.canCreate" type="success" icon="el-icon-plus" size="mini" circle @click='createNewLine()'></el-button>
+                        <el-button type="danger" icon="el-icon-minus" size="mini" circle @click='removeLine(scope.row.index)'></el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="footer_container" style="text-align:center;margin-top:10px">
+                <el-button size="small" @click="supplementDialog.isShow = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="btnSubmitSupplement()">确 定</el-button>
+            </div>
+        </div>
+    </el-dialog>
 
     <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.isShow" :width="uploadDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
@@ -47,7 +111,7 @@
                     <el-input-number v-model="uploadDialog.courseInfo.imgCost" :min="1" size="mini"></el-input-number>
                 </el-form-item>
                 <el-form-item label="作品上传">
-                    <el-upload class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-preview="handleImgPreview" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" list-type="picture">
+                    <el-upload class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" list-type="picture">
                         <el-button size="mini" type="primary">点击上传</el-button>
                     </el-upload>
                 </el-form-item>
@@ -73,6 +137,7 @@
 
 <script>
 import {
+    dateHelper,
     axios
 } from '@/utils/index'
 
@@ -83,12 +148,28 @@ export default {
     },
     data() {
         return {
+            studentName: '',
             courseList: [],
             dateRowSpanArray: [],
             loading: false,
             downloadLoading: false,
             tableHeight: this.$store.state.page.win_content.height - 100,
+            supplementDialog: {
+                width: '850px',
+                tableHeight: 450,
+                isShow: false,
+                title: '补录历史课程（没有完全排课的套餐）',
+                labelPosition: 'right',
+                formLabelWidth: '120px',
+                packageList: [],
+                curPackageId: '',
+                selectedPackage: {
 
+                },
+                newCourseList: [],
+                firstCourse: {}, //用于数据自动填充
+                canCreate: true,
+            },
             uploadDialog: {
                 width: '500px',
                 isShow: false,
@@ -121,28 +202,58 @@ export default {
                 isShow: false,
                 title: '课程作品展示',
                 artWorkList: []
+            },
+            teacherList: {
+                "meishu_00": [{
+                    teacherCode: 'T-000001',
+                    teacherName: '唐得红',
+                }],
+                "meishu_01": [{
+                    teacherCode: 'T-000002',
+                    teacherName: '马朝',
+                }, ],
+                "shufa_00": [{
+                    teacherCode: 'T-000003',
+                    teacherName: '福来',
+                }, ],
+                "shufa_01": [{
+                    teacherCode: 'T-000003',
+                    teacherName: '福来',
+                }, ]
+            },
+            coursePeriodList: {
+                "day1": [],
+                "day2": [],
+                "day3": [],
+                "day4": [],
+                "day5": [],
+                "day6": [],
+                "day7": []
             }
         }
     },
     created() {
-        var _this = this;
-        axios({
-            type: 'get',
-            path: '/api/student/getcourselist',
-            data: {
-                studentCode: _this.studentCode
-            },
-            fn: function (result) {
-                result.forEach(item => {
-                    item.courseDate = item.courseDate.split('T')[0];
-                    item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
-                });
-                _this.courseList = result;
-                _this.getRowSpanInfo();
-            }
-        });
+        this.studentName = this.$route.query.studentname;
+        this.getHistoryCourseList();
     },
     methods: {
+        getHistoryCourseList() {
+            axios({
+                type: 'get',
+                path: '/api/student/getcourselist',
+                data: {
+                    studentCode: this.studentCode
+                },
+                fn: result => {
+                    result.forEach(item => {
+                        item.courseDate = item.courseDate.split('T')[0];
+                        item.weekName = dateHelper.getWeekNameByCode(item.courseWeekDay);
+                    });
+                    this.courseList = result;
+                    this.getRowSpanInfo();
+                }
+            });
+        },
         showUploadDialog(row) {
             this.uploadDialog.courseInfo = {
                 courseId: row.studentCourseId,
@@ -321,37 +432,166 @@ export default {
             }
         },
 
-        handleImgPreview(file) {
-
+        supplementCourse() {
+            this.supplementDialog.curPackageId = '';
+            this.supplementDialog.packageList = [];
+            this.supplementDialog.newCourseList = [];
+            this.supplementDialog.selectedPackage = {};
+            // 获取未完成的套餐
+            axios({
+                type: 'get',
+                path: '/api/student/getnofinishpackage/' + this.studentCode,
+                fn: (result) => {
+                    result.forEach(item => {
+                        if (item.flexCourseCount > 0) {
+                            this.supplementDialog.packageList.push(item);
+                        }
+                    })
+                    if (this.supplementDialog.packageList.length == 0) {
+                        this.$message({
+                            type: "warning",
+                            message: "没有需要补录的课程！"
+                        });
+                    } else {
+                        this.supplementDialog.isShow = true;
+                        if (this.coursePeriodList['day1'].length == 0) {
+                            this.getPeriodList();
+                        }
+                    }
+                }
+            });
         },
-        getWeekNameByCode(code) {
-            let week = '';
-            switch (code) {
-                case 'day1':
-                    week = '星期一';
+        getPeriodList() {
+            axios({
+                type: 'get',
+                path: '/api/coursearrange/getpriodlist/at-001',
+                fn: (result) => {
+                    result.forEach(item => {
+                        this.coursePeriodList[item.courseWeekDay].push(item.coursePeriod);
+                    });
+                }
+            });
+        },
+        pacakgeChanged(selectedValue) {
+            for (let p of this.supplementDialog.packageList) {
+                if (p.id == selectedValue) {
+                    this.supplementDialog.selectedPackage = p;
                     break;
-                case 'day2':
-                    week = '星期二';
-                    break;
-                case 'day3':
-                    week = '星期三';
-                    break;
-                case 'day4':
-                    week = '星期四';
-                    break;
-                case 'day5':
-                    week = '星期五';
-                    break;
-                case 'day6':
-                    week = '星期六';
-                    break;
-                case 'day7':
-                    week = '星期日';
-                    break;
-                default:
-                    break;
+                }
             }
-            return week;
+
+            this.supplementDialog.canCreate = true;
+            // 初始化第一行
+            this.supplementDialog.firstCourse = {
+                index: new Date().getTime(),
+                studentCoursePackageId: this.supplementDialog.selectedPackage.id,
+                arrangeTemplateCode: 'at-001',
+                classroom: 'room1',
+                courseWeekDay: '',
+                courseDate: '',
+                coursePeriod: '',
+                studentCode: this.studentCode,
+                studentName: this.studentName,
+                teacherCode: '',
+                teacherName: '',
+                packageCode: this.supplementDialog.selectedPackage.packageCode,
+                courseCategoryCode: this.supplementDialog.selectedPackage.courseCategoryCode,
+                courseCategoryName: this.supplementDialog.selectedPackage.courseCategoryName,
+                courseFolderCode: this.supplementDialog.selectedPackage.courseFolderCode,
+                courseFolderName: this.supplementDialog.selectedPackage.courseFolderName,
+                courseSubject: '',
+                courseType: '正式',
+                attendanceStatusCode:'01',
+                attendanceStatusName:'上课销课'
+            };
+            this.supplementDialog.newCourseList = [this.supplementDialog.firstCourse];
+        },
+        createNewLine() {
+            this.supplementDialog.newCourseList.push({
+                index: new Date().getTime(),
+                studentCoursePackageId: this.supplementDialog.selectedPackage.id,
+                arrangeTemplateCode: 'at-001',
+                classroom: 'room1',
+                courseWeekDay: '',
+                courseDate: '',
+                coursePeriod: this.supplementDialog.firstCourse.coursePeriod,
+                studentCode: this.studentCode,
+                studentName: this.studentName,
+                teacherCode: this.supplementDialog.firstCourse.teacherCode,
+                teacherName: '',
+                packageCode: this.supplementDialog.selectedPackage.packageCode,
+                courseCategoryCode: this.supplementDialog.selectedPackage.courseCategoryCode,
+                courseCategoryName: this.supplementDialog.selectedPackage.courseCategoryName,
+                courseFolderCode: this.supplementDialog.selectedPackage.courseFolderCode,
+                courseFolderName: this.supplementDialog.selectedPackage.courseFolderName,
+                courseSubject: '',
+                courseType: '正式',
+                attendanceStatusCode:'01',
+                attendanceStatusName:'上课销课'
+            });
+            if (this.supplementDialog.newCourseList.length >= this.supplementDialog.selectedPackage.flexCourseCount) {
+                this.supplementDialog.canCreate = false;
+            }
+        },
+        removeLine(index) {
+            let removedIndex = -1;
+            for (let i = 0; i < this.supplementDialog.newCourseList.length; i++) {
+                if (this.supplementDialog.newCourseList[i].index == index) {
+                    removedIndex = i;
+                    break;
+                }
+            }
+            this.supplementDialog.newCourseList.splice(removedIndex, 1);
+            this.supplementDialog.canCreate = true;
+        },
+        btnSubmitSupplement() {
+            if(this.supplementDialog.newCourseList.length == 0) {
+                return;
+            }
+            for(let item of this.supplementDialog.newCourseList) {
+                if(!item.teacherCode || !item.courseDate || !item.courseWeekDay){
+                    this.$message({
+                        type: "warning",
+                        message: "请为所有的课程选择上课日期、时间段、教师！"
+                    });
+                    return;
+                }
+                item.teacherName = this.getTeacherNameByCode(item.courseFolderCode, item.teacherCode);
+            }
+
+            axios({
+                type: 'post',
+                path: '/api/course/coursesupplement',
+                data: this.supplementDialog.newCourseList,
+                fn: result => {
+                    if (result === 200) {
+                        this.$message({
+                            message: '补录课程成功！',
+                            type: 'success'
+                        });
+                        this.getHistoryCourseList();
+                        this.supplementDialog.isShow = false;
+                    }
+                }
+            })
+        },
+        calculateWeek(curDate) {
+            let weekCode = dateHelper.getWeekCodeByDate(curDate);
+            this.supplementDialog.newCourseList.forEach(item => {
+                if (item.courseDate == curDate) {
+                    item.courseWeekDay = weekCode;
+                }
+            });
+        },
+        getTeacherNameByCode(courseFolderCode, teacherCode) {
+            let name = '';
+            for (let item of this.teacherList[courseFolderCode]) {
+                if (item.teacherCode == teacherCode) {
+                    name = item.teacherName;
+                    break;
+                }
+            }
+            return name;
         },
         export2Excle() {
             if (this.courseList.length == 0) {

@@ -35,6 +35,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [课程签到]
         string SignInBatch(List<CL_U_SIGN_IN> courseList);
 
+        // [课程补录]
+        string SupplementHistoryCourse(List<StudentCourseList> courseList);
+
         // [作品补充上传]
         string SupplementArtWork(CL_U_SIGN_IN course);
 
