@@ -529,10 +529,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                var teachers = context.DIC_R_KEY_VALUE.FromSql($@"select teacher_code as item_code, teacher_name as item_name 
-                                                                  from teacher 
-                                                                  where teacher_status = '01'
-                                                                  order by teacher_name")
+                var teachers = context.DIC_R_KEY_VALUE.FromSql($@"select tr.teacher_code as item_code, t.teacher_name as item_name
+                                                                    from teacher_role tr
+                                                                    left join teacher t on tr.teacher_code = t.teacher_code
+                                                                    where tr.role_code='1009' and t.teacher_status='01'
+                                                                    order by t.teacher_name")
                                                         .ToList();
 
                 return teachers;
@@ -574,7 +575,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             DataTable dtTeacher = ADOContext.GetDataTable($@"select tr.role_code,tr.teacher_code, t.teacher_name,tr.role_level 
                                                             from teacher_role tr 
                                                             left join teacher t on tr.teacher_code = t.teacher_code 
-                                                            where role_level='course'");
+                                                            where role_level='course' and t.teacher_status='01'");
 
             return dtTeacher;
         }
@@ -583,7 +584,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             DataTable dtTeacher = ADOContext.GetDataTable($@"select t.teacher_code,t.teacher_name,tr.role_code 
                                                             from teacher t 
-                                                            left join teacher_role tr on t.teacher_code = tr.teacher_code and tr.role_code='{roleCode}'");
+                                                            left join teacher_role tr on t.teacher_code = tr.teacher_code and tr.role_code='{roleCode}'
+                                                            where t.teacher_status='01'");
 
             return dtTeacher;
         }

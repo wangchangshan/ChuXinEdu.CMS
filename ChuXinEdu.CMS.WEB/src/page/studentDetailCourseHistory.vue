@@ -74,7 +74,7 @@
                 <el-table-column prop="teacherCode" label="上课教师" align='center' min-width="115">
                     <template slot-scope='scope'>
                         <el-select v-model="scope.row.teacherCode" placeholder="请选择" size='mini'>
-                            <el-option v-for="item in teacherList[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
+                            <el-option v-for="item in courseTeachers[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
                             </el-option>
                         </el-select>
                     </template>
@@ -204,24 +204,7 @@ export default {
                 title: '课程作品展示',
                 artWorkList: []
             },
-            teacherList: {
-                "meishu_00": [{
-                    teacherCode: 'T-000001',
-                    teacherName: '唐得红',
-                }],
-                "meishu_01": [{
-                    teacherCode: 'T-000002',
-                    teacherName: '马朝',
-                }, ],
-                "shufa_00": [{
-                    teacherCode: 'T-000003',
-                    teacherName: '福来',
-                }, ],
-                "shufa_01": [{
-                    teacherCode: 'T-000003',
-                    teacherName: '福来',
-                }, ]
-            },
+            courseTeachers: {},
             coursePeriodList: {
                 "day1": [],
                 "day2": [],
@@ -433,11 +416,38 @@ export default {
             }
         },
 
+        getCourseTeacherList(){
+            axios({
+                type: 'get',
+                path: '/api/teacher/getcourseteacherlist',
+                fn: result => {
+                    for(let t of result) {
+                        if(this.courseTeachers.hasOwnProperty(t.role_code)){
+                            this.courseTeachers[t.role_code].push({
+                                teacherCode: t.teacher_code,
+                                teacherName: t.teacher_name
+                            });
+                        }
+                        else{
+                            this.courseTeachers[t.role_code] = [{
+                                teacherCode: t.teacher_code,
+                                teacherName: t.teacher_name
+                            }];
+                        }
+                    }
+                }
+            });
+        },
+
         supplementCourse() {
             this.supplementDialog.curPackageId = '';
             this.supplementDialog.packageList = [];
             this.supplementDialog.newCourseList = [];
             this.supplementDialog.selectedPackage = {};
+
+            if(Object.keys(this.courseTeachers).length == 0) {
+                this.getCourseTeacherList();
+            }
             // 获取未完成的套餐
             axios({
                 type: 'get',
@@ -587,7 +597,7 @@ export default {
         },
         getTeacherNameByCode(courseFolderCode, teacherCode) {
             let name = '';
-            for (let item of this.teacherList[courseFolderCode]) {
+            for (let item of this.courseTeachers[courseFolderCode]) {
                 if (item.teacherCode == teacherCode) {
                     name = item.teacherName;
                     break;

@@ -152,27 +152,7 @@ export default {
                 thumbnailList: [],
                 fileUIds: []
             },
-            courseTeachers: {
-                "meishu_00": [{
-                    teacherCode: 'T-000001',
-                    teacherName: '唐得红',
-                }],
-                "meishu_01": [{
-                    teacherCode: 'T-000002',
-                    teacherName: '马朝',
-                }, {
-                    teacherCode: 'T-000001',
-                    teacherName: '唐得红',
-                }],
-                "shufa_00": [{
-                    teacherCode: 'T-000003',
-                    teacherName: '福来',
-                }, ],
-                "shufa_01": [{
-                    teacherCode: 'T-000003',
-                    teacherName: '福来',
-                }, ]
-            },
+            courseTeachers: {},
             dateRowSpanArray: [],
             timeRowSpanArray: []
         }
@@ -185,11 +165,20 @@ export default {
         getCourseTeacherList(){
             axios({
                 type: 'get',
-                path: '/api/course/getattendancelist',
+                path: '/api/teacher/getcourseteacherlist',
                 fn: result => {
                     for(let t of result) {
                         if(this.courseTeachers.hasOwnProperty(t.role_code)){
-                            //this.courseTeachers
+                            this.courseTeachers[t.role_code].push({
+                                teacherCode: t.teacher_code,
+                                teacherName: t.teacher_name
+                            });
+                        }
+                        else{
+                            this.courseTeachers[t.role_code] = [{
+                                teacherCode: t.teacher_code,
+                                teacherName: t.teacher_name
+                            }];
                         }
                     }
                 }
