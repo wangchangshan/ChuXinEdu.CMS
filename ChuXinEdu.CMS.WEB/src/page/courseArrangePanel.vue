@@ -80,9 +80,9 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column property="firstCourseDate" label="开始上课日期" width="200">
+            <el-table-column property="firstCourseDate" label="开始上课日期" width="160">
                 <template slot-scope="scope">
-                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectZhengShiDialog.pickerDateOptions">
+                    <el-date-picker v-model="scope.row.firstCourseDate" class="date-mini" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectZhengShiDialog.pickerDateOptions">
                     </el-date-picker>
                 </template>
             </el-table-column>
@@ -247,7 +247,7 @@ export default {
             selectZhengShiDialog: {
                 title: '',
                 isShow: false,
-                width: '830px',
+                width: '780px',
                 curDayCode: '',
                 curPeriodName: '',
                 studentList: [],

@@ -112,5 +112,10 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [更新教师]
         string UpdateTeacher(int id, Teacher teacher);
 
+        // [为教师添加角色]
+        string AddTeacherRole(string roleCode, List<string> teacherCodes);
+
+        // [删除教师角色]
+        string RemoveTeacherRole(string roleCode, List<string> teacherCodes);
     } 
 }

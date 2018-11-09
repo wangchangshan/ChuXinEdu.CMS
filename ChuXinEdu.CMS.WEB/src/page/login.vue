@@ -183,9 +183,9 @@ export default {
                     noDropdown: true,
                 },
                 {
-                    path: '/sysSettingMain',
+                    path: '/setting',
                     name: '系统配置',
-                    component: 'sysSettingMain',
+                    component: 'sysSetting/index',
                     icon: 'fa-cogs',
                     noDropdown: true,
                 },

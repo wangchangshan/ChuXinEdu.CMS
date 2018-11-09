@@ -1,7 +1,7 @@
 <template>
 <div class="fillcontain">
     <div class="table_container">
-        <el-table :data="activityList" v-loading="loading" style="width: 100%" align="center" :max-height="tableHeight">
+        <el-table :data="activityList" v-loading="loading" style="width: 100%" align="center" size="mini" :max-height="tableHeight">
             <el-table-column type="expand">
                 <template slot-scope="props">
                     <el-form label-position="left" inline class="demo-table-expand">
@@ -81,7 +81,7 @@ export default {
         return {
             activityList: [{
                     activity_id: '201807001',
-                    activity_title: '活动的后果的萨芬士大夫撒旦是否',
+                    activity_title: '奥林匹克森林公园写生',
                     activity_from_date: '2008-06-19',
                     activity_to_date: '2008-06-20',
                     activity_address: '北京市昌平区天巢园小区',
@@ -89,7 +89,7 @@ export default {
                 },
                 {
                     activity_id: '201807001',
-                    activity_title: '活动的后果的萨芬士大夫撒旦是否',
+                    activity_title: '夜宿海洋馆活动',
                     activity_from_date: '2008-06-19',
                     activity_to_date: '2008-06-20',
                     activity_address: '北京市昌平区天巢园小区',
@@ -97,7 +97,7 @@ export default {
                 },
                 {
                     activity_id: '201807001',
-                    activity_title: '活动的后果的萨芬士大夫撒旦是否',
+                    activity_title: '中国国家美术馆展览',
                     activity_from_date: '2008-06-19',
                     activity_to_date: '2008-06-20',
                     activity_address: '北京市昌平区天巢园小区',

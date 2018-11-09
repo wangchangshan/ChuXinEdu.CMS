@@ -16,5 +16,8 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("role_code")]
         public string RoleCode { get; set; }
+
+        [Column("role_level")]
+        public string RoleLevel { get; set; }
     }
 }

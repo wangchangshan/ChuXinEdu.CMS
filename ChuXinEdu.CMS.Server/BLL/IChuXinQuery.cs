@@ -13,6 +13,10 @@ namespace ChuXinEdu.CMS.Server.BLL
     {
         IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge();
 
+        IEnumerable<SysDictionary> GetSysRoles();
+
+        IEnumerable<SysCourseArrangeTemplate> GetSysArrangeTemplates();
+
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount);
 
         IEnumerable<Student> GetStudentList2Export(QUERY_STUDENT query);
@@ -88,6 +92,10 @@ namespace ChuXinEdu.CMS.Server.BLL
         bool isPackageUsed(int packageId);
 
         IEnumerable<Teacher> GetTeacherList(QUERY_TEACHER query);
+
+        DataTable GetAllCourseRoleTeachers();
+
+        DataTable GetTeacherListWithRole(string roleCode);
 
         Teacher GetTeacher(string teacherCode);
 

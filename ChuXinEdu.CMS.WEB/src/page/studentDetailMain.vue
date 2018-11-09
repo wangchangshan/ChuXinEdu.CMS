@@ -59,9 +59,6 @@ export default {
     methods: {
         handleTabClick() {
             //console.log('activeLabelCode: '+ this.activeLabelCode)
-        },
-        handleChange() {
-
         }
     },
     mounted() {

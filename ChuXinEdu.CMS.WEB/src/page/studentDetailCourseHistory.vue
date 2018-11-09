@@ -168,6 +168,7 @@ export default {
                 },
                 newCourseList: [],
                 firstCourse: {}, //用于数据自动填充
+                previousCourseDate:'',
                 canCreate: true,
             },
             uploadDialog: {
@@ -513,7 +514,7 @@ export default {
                 arrangeTemplateCode: 'at-001',
                 classroom: 'room1',
                 courseWeekDay: '',
-                courseDate: '',
+                courseDate: this.previousCourseDate,
                 coursePeriod: this.supplementDialog.firstCourse.coursePeriod,
                 studentCode: this.studentCode,
                 studentName: this.studentName,
@@ -582,6 +583,7 @@ export default {
                     item.courseWeekDay = weekCode;
                 }
             });
+            this.previousCourseDate = curDate;
         },
         getTeacherNameByCode(courseFolderCode, teacherCode) {
             let name = '';

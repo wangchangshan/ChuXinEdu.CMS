@@ -13,6 +13,7 @@ using ChuXinEdu.CMS.Server.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using System.Data;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -39,6 +40,32 @@ namespace ChuXinEdu.CMS.Server.Controllers
             QUERY_TEACHER query = JsonConvert.DeserializeObject<QUERY_TEACHER>(q);
             IEnumerable<Teacher> teacherList = _chuxinQuery.GetTeacherList(query);
             return teacherList;
+        }
+
+        // GET api/teacher/getcourseteacherlist
+        [HttpGet]
+        public ActionResult<string> GetCourseTeacherList()
+        {
+            string reslutJson = string.Empty;
+            DataTable dt = _chuxinQuery.GetAllCourseRoleTeachers();
+            if(dt!= null)
+            {
+                reslutJson = JsonConvert.SerializeObject(dt);
+            }
+			return reslutJson;
+        }
+
+        // GET api/teacher/getteacherwithrole
+        [HttpGet("{roleCode}")]
+        public ActionResult<string> GetTeacherWithRole(string roleCode)
+        {
+            string reslutJson = string.Empty;
+            DataTable dt = _chuxinQuery.GetTeacherListWithRole(roleCode);
+            if(dt!= null)
+            {
+                reslutJson = JsonConvert.SerializeObject(dt);
+            }
+			return reslutJson;
         }
 
         // GET api/teacher/getteacherbase

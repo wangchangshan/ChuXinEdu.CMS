@@ -1624,5 +1624,63 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+
+        public string AddTeacherRole(string roleCode, List<string> teacherCodes)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var role = context.SysDictionary.Where(d => d.TypeCode == "roles" 
+                                                                && d.ItemCode == roleCode 
+                                                                && d.ItemEnabled == "Y")
+                                                    .First();
+                    string roleDesc = role.ItemDesc;
+                    foreach (var teacherCode in teacherCodes)
+                    {
+                        TeacherRole tr = new TeacherRole {
+                            TeacherCode = teacherCode,
+                            RoleCode = roleCode,
+                            RoleLevel = roleDesc
+                        };
+                        context.TeacherRole.Add(tr);                   
+                    }
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加角色失败");
+                result = "500";
+            }
+            return result;
+        }
+
+        public string RemoveTeacherRole(string roleCode, List<string> teacherCodes)
+        {
+            string result = "200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    foreach (var teacherCode in teacherCodes)
+                    {
+                        var tr = context.TeacherRole.Where(r => r.TeacherCode == teacherCode && r.RoleCode == roleCode).FirstOrDefault(); 
+                        if(tr != null)
+                        {
+                            context.TeacherRole.Remove(tr);   
+                        }
+                    }
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "删除角色失败");
+                result = "500";
+            }
+            return result;
+        }
     }
 }

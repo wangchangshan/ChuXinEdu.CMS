@@ -23,7 +23,7 @@
     </div>
     <div class="table_container">
         <el-table :data="packageList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :max-height="tableHeight">
-            <el-table-column type="index" width="40" fixed></el-table-column>
+            <el-table-column type="index" align='center' width="40" fixed></el-table-column>
             <el-table-column prop="packageCode" label="套餐编码" align='center' width="90" fixed>
             </el-table-column>
             <el-table-column prop="packageName" label="课程套餐名称" align='left' min-width="230" fixed>

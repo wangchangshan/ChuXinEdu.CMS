@@ -30,7 +30,7 @@ namespace ChuXinEdu.CMS.Server.Model
         public string TeacherPhone { get; set; }
 
         [Column("teacher_register_date")]
-        public DateTime TeacherRegisterDate { get; set; }
+        public DateTime? TeacherRegisterDate { get; set; }
 
         [Column("teacher_address")]
         public string TeacherAddress { get; set; }

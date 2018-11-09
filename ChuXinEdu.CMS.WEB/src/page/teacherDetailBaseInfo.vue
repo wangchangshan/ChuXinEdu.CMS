@@ -50,7 +50,7 @@
         <div class="form">
             <el-form ref="baseInfo" :model="teacherDialog.baseInfo" :rules="teacherDialog.baseInfoRules" :label-width="teacherDialog.formLabelWidth" :label-position='teacherDialog.labelPosition' size="mini">
                 <el-form-item label="姓名">
-                    {{ teacherDialog.baseInfo.teacherName }} 
+                    {{ teacherDialog.baseInfo.teacherName }}
                     <el-select v-model="teacherDialog.baseInfo.teacherStatus" placeholder="请选择教师状态">
                         <el-option v-for="item in $store.getters['teacher_status']" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
@@ -197,7 +197,7 @@ export default {
             console.log(jsonData);
             console.log('field: ' + field);
         },
-        
+
         cropUploadFail(status, field) {
             console.log('-------- upload fail --------');
             console.log(status);
@@ -219,7 +219,6 @@ export default {
                 }
             });
         },
-
 
         showUpdateTeacher() {
             this.teacherDialog.isShow = true;

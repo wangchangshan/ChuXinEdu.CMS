@@ -23,7 +23,7 @@
     </div>
     <div class="table_container">
         <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :max-height="tableHeight">
-            <el-table-column type="index" width="30" fixed></el-table-column>
+            <el-table-column type="index" align='center' width="40" fixed></el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="90" fixed>
             </el-table-column>
             <el-table-column prop="studentSex" label="性别" align='center' width="60">

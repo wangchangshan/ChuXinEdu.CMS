@@ -12,21 +12,31 @@ namespace ChuXinEdu.CMS.Server.BLLService
 {
     public class ChuXinQuery : IChuXinQuery
     {
-        #region teacher
-        public IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge()
+        #region config
+        public IEnumerable<SysDictionary> GetSysRoles()
         {
             using (BaseContext context = new BaseContext())
             {
-                var teachers = context.DIC_R_KEY_VALUE.FromSql($@"select teacher_code as item_code, teacher_name as item_name 
-                                                                  from teacher 
-                                                                  where teacher_status = '01'
-                                                                  order by teacher_name")
-                                                        .ToList();
+                var roles = context.SysDictionary.Where(d => d.TypeCode == "roles"
+                                                            && d.ItemEnabled == "Y")
+                                                .OrderBy(d => d.ItemSortWeight)
+                                                .ToList();
 
-                return teachers;
+                return roles;
+            }
+        }
+
+        public IEnumerable<SysCourseArrangeTemplate> GetSysArrangeTemplates()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var templates = context.SysCourseArrangeTemplate.Where(t => t.TemplateEnabled == "Y").ToList();
+
+                return templates;
             }
         }
         #endregion
+
 
         #region student
         public IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount)
@@ -515,6 +525,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #endregion
 
         #region teacher
+        public IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var teachers = context.DIC_R_KEY_VALUE.FromSql($@"select teacher_code as item_code, teacher_name as item_name 
+                                                                  from teacher 
+                                                                  where teacher_status = '01'
+                                                                  order by teacher_name")
+                                                        .ToList();
+
+                return teachers;
+            }
+        }
         public IEnumerable<Teacher> GetTeacherList(QUERY_TEACHER query)
         {
             IEnumerable<Teacher> teachers = null;
@@ -544,6 +567,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 }
                 return teachers;
             }
+        }
+
+        public DataTable GetAllCourseRoleTeachers()
+        {
+            DataTable dtTeacher = ADOContext.GetDataTable($@"select tr.role_code,tr.teacher_code, t.teacher_name,tr.role_level 
+                                                            from teacher_role tr 
+                                                            left join teacher t on tr.teacher_code = t.teacher_code 
+                                                            where role_level='course'");
+
+            return dtTeacher;
+        }
+
+        public DataTable GetTeacherListWithRole(string roleCode)
+        {
+            DataTable dtTeacher = ADOContext.GetDataTable($@"select t.teacher_code,t.teacher_name,tr.role_code 
+                                                            from teacher t 
+                                                            left join teacher_role tr on t.teacher_code = tr.teacher_code and tr.role_code='{roleCode}'");
+
+            return dtTeacher;
         }
 
         public Teacher GetTeacher(string teacherCode)

@@ -27,7 +27,7 @@
             <el-table-column prop="" label="上课教师" align='center' min-width="140">
                 <template slot-scope='scope'>
                     <el-select v-model="scope.row.teacherCode" placeholder="选择上课教师" size='mini'>
-                        <el-option v-for="item in teacherList[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
+                        <el-option v-for="item in courseTeachers[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
                         </el-option>
                     </el-select>
                 </template>
@@ -66,7 +66,7 @@
                 </el-form-item>
                 <el-form-item prop="teacherCode" label="上课教师">
                     <el-select v-model="signInDialog.courseInfo.teacherCode" placeholder="选择上课教师" size='mini'>
-                        <el-option v-for="item in teacherList[signInDialog.courseInfo.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
+                        <el-option v-for="item in courseTeachers[signInDialog.courseInfo.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -152,7 +152,7 @@ export default {
                 thumbnailList: [],
                 fileUIds: []
             },
-            teacherList: {
+            courseTeachers: {
                 "meishu_00": [{
                     teacherCode: 'T-000001',
                     teacherName: '唐得红',
@@ -160,7 +160,10 @@ export default {
                 "meishu_01": [{
                     teacherCode: 'T-000002',
                     teacherName: '马朝',
-                }, ],
+                }, {
+                    teacherCode: 'T-000001',
+                    teacherName: '唐得红',
+                }],
                 "shufa_00": [{
                     teacherCode: 'T-000003',
                     teacherName: '福来',
@@ -175,9 +178,23 @@ export default {
         }
     },
     created() {
+        this.getCourseTeacherList();
         this.getAttendanceList();
     },
     methods: {
+        getCourseTeacherList(){
+            axios({
+                type: 'get',
+                path: '/api/course/getattendancelist',
+                fn: result => {
+                    for(let t of result) {
+                        if(this.courseTeachers.hasOwnProperty(t.role_code)){
+                            //this.courseTeachers
+                        }
+                    }
+                }
+            });
+        },
         getAttendanceList() {
             var _this = this;
             axios({
@@ -473,7 +490,7 @@ export default {
 
         getTeacherNameByCode(courseFolderCode, teacherCode) {
             let name = '';
-            for (let item of this.teacherList[courseFolderCode]) {
+            for (let item of this.courseTeachers[courseFolderCode]) {
                 if (item.teacherCode == teacherCode) {
                     name = item.teacherName;
                     break;

@@ -19,7 +19,7 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("item_code")]
         public string ItemCode { get; set; }
 
-        [Column("item_code")]
+        [Column("item_name")]
         public string ItemName { get; set; }
 
         [Column("item_desc")]

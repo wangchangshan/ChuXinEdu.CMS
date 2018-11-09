@@ -21,11 +21,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
     {
         private readonly IConfigQuery _configQuery;
         private readonly IChuXinQuery _chuxinQuery;
+        private readonly IChuXinWorkFlow _chuxinWorkflow;
 
-        public ConfigController(IChuXinQuery chuxinQuery, IConfigQuery configQuery)
+        public ConfigController(IChuXinQuery chuxinQuery, IConfigQuery configQuery, IChuXinWorkFlow chuxinWorkflow)
         {
             _chuxinQuery = chuxinQuery;
             _configQuery = configQuery;
+            _chuxinWorkflow = chuxinWorkflow;
         }
 
         /// <summary>
@@ -102,6 +104,44 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public IEnumerable<DIC_R_KEY_VALUE> GetFinancer()
         {
             return _chuxinQuery.GetTeacherToCharge();
+        }
+
+        /// <summary>
+        /// 获取系统角色列表 list GET api/config/getroles
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<SysDictionary> GetRoles()
+        {
+            return _chuxinQuery.GetSysRoles();
+        }
+
+        /// <summary>
+        /// 获取排课模板列表 list GET api/config/getarrangetemplates
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<SysCourseArrangeTemplate> GetArrangeTemplates()
+        {
+            return _chuxinQuery.GetSysArrangeTemplates();
+        }
+
+        // POST api/config/addteacherrole
+        [HttpPost("{roleCode}")]
+        public string AddTeacherRole(string roleCode, [FromBody] List<string> teacherCodes)
+        {
+            string result = string.Empty;
+            result = _chuxinWorkflow.AddTeacherRole(roleCode, teacherCodes);
+            return result;
+        }
+
+        // POST api/config/removeteacherrole  使用post传递教师编码列表， 也可以用delete,列表将会放到url
+        [HttpPost("{roleCode}")]
+        public string RemoveTeacherRole(string roleCode, [FromBody] List<string> teacherCodes)
+        {
+            string result = string.Empty;
+            result = _chuxinWorkflow.RemoveTeacherRole(roleCode, teacherCodes);
+            return result;
         }
     }
 }

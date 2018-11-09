@@ -19,7 +19,7 @@
     </div>
     <div class="table_container">
         <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
-            <el-table-column type="index" width="40"></el-table-column>
+            <el-table-column type="index" align='center' width="40"></el-table-column>
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + " " + scope.row.weekName }}
@@ -66,6 +66,7 @@
 
 <script>
 import {
+    dateHelper,
     axios
 } from '@/utils/index'
 
@@ -150,7 +151,7 @@ export default {
                     _this.paginations.total = result.totalCount;
                     result.courseList.forEach(item => {
                         item.courseDate = item.courseDate.split('T')[0];
-                        item.weekName = _this.getWeekNameByCode(item.courseWeekDay);
+                        item.weekName = dateHelper.getWeekNameByCode(item.courseWeekDay);
                     });
                     _this.courseList = result.courseList;
                     _this.getRowSpanInfo();
@@ -248,35 +249,6 @@ export default {
             }
         },
 
-        getWeekNameByCode(code) {
-            let week = '';
-            switch (code) {
-                case 'day1':
-                    week = '星期一';
-                    break;
-                case 'day2':
-                    week = '星期二';
-                    break;
-                case 'day3':
-                    week = '星期三';
-                    break;
-                case 'day4':
-                    week = '星期四';
-                    break;
-                case 'day5':
-                    week = '星期五';
-                    break;
-                case 'day6':
-                    week = '星期六';
-                    break;
-                case 'day7':
-                    week = '星期日';
-                    break;
-                default:
-                    break;
-            }
-            return week;
-        },
         export2Excle() {
             let data = {
                 q: this.searchField
