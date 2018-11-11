@@ -1,7 +1,7 @@
 <template>
 <div class="info_container">
     <div class="table_container">
-        <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
+        <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border :max-height="tableHeight">
             <el-table-column type="index" width="40"></el-table-column>
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
                 <template slot-scope='scope'>
