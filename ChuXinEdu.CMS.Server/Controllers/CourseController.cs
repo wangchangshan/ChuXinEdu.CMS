@@ -15,6 +15,7 @@ using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
+using ChuXinEdu.CMS.Server.Utils;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -97,10 +98,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
             List<ART_WORK_R_LIST> artWorkList = new List<ART_WORK_R_LIST>();
             ART_WORK_R_LIST  aw = null;
 
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var artwork in artworks)
             {
                 aw = mapper.Map<StudentArtwork, ART_WORK_R_LIST>(artwork);
-                aw.ShowURL = "http://localhost:8080/api/course/getimage?id=" + artwork.ArtworkId + "&type=artwork";
+                aw.ShowURL = accessUrlHost + "api/course/getimage?id=" + artwork.ArtworkId + "&type=artwork";
 
                 artWorkList.Add(aw);
             }

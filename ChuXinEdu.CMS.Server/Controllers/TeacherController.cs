@@ -76,7 +76,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
             if(!String.IsNullOrEmpty(teacher.TeacherAvatarPath))
             {
                 int id = teacher.Id;
-                teacher.TeacherAvatarPath = "http://localhost:8080/api/course/getimage?id=" + id + "&type=avatar-t&rnd="+ System.Guid.NewGuid().ToString("N");
+                string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+                teacher.TeacherAvatarPath = accessUrlHost + "api/course/getimage?id=" + id + "&type=avatar-t&rnd="+ System.Guid.NewGuid().ToString("N");
             }
             return teacher;
         }
