@@ -46,8 +46,8 @@ export default {
     data() {
         return {
             loginForm: {
-                username: 'admin',
-                password: '123456'
+                username: '',
+                password: ''
             },
             rules: {
                 username: [{
@@ -211,29 +211,6 @@ export default {
                     hidden: true,
                     noDropdown: true
                 }
-                // {
-                //     path: '/course',
-                //     key:'2',
-                //     name: '课程管理',
-                //     component: 'content',
-                //     icon: 'fa-asterisk',
-                //     children: [{
-                //             path: 'coursePackageList',
-                //             name: '课程套餐',
-                //             component: 'coursePackageList'
-                //         },
-                //         {
-                //             path: 'courseArrangeMain',
-                //             name: '排课安排',
-                //             component: 'courseArrangeMain'
-                //         },
-                //         {
-                //             path: 'courseAttendanceBook',
-                //             name: '签到销课',
-                //             component: 'courseAttendanceBook'
-                //         }
-                //     ]
-                // },
             ];
 
             LocalDB.instance('MENU_').setValue('leftMenu', leftMenu);
@@ -255,30 +232,25 @@ export default {
                 this.loadRouters();
             }
             this.getConfigs();
-            //this.showMessage('success', '登录成功')
             this.$router.push('layout');
         },
         submitForm(loginForm) {
             this.$refs.loginForm.validate((valid) => {
                 if (valid) {
-                    let userInfo = this.loginForm;
-                    let userData = Object.assign(userInfo, this.ip);
-                    // axios({
-                    //     type: 'get',
-                    //     path: '/api/user/login',
-                    //     data: userData, // 需要加密处理
-                    //     fn: data => {
-                    //         if(data.status == 1){
-                    //             this.generateMenu(); // 模拟动态生成菜单并定位到index
-                    //             this.$store.dispatch('initLeftMenu');
-                    //         } else {
-                    //             this.$message.error("登陆失败请重试");
-                    //         }
-                    //     }
-                    // })
-                    this.saveUserInfo(); // 存入缓存，用于显示用户名     
-                    this.generateMenu(); // 模拟动态生成菜单并定位到index
-                    this.$store.dispatch('initLeftMenu');
+                    axios({
+                        type: 'post',
+                        path: '/api/account/login',
+                        data: this.loginForm, 
+                        fn: result => {
+                            if(result == 200){
+                                this.saveUserInfo(); // 存入缓存，用于显示用户名     
+                                this.generateMenu(); // 模拟动态生成菜单并定位到index
+                                this.$store.dispatch('initLeftMenu');
+                            } else {
+                                this.$message.error("用户名或密码错误，请重试！");
+                            }
+                        }
+                    });                   
                 } else {
                     this.$notify.error({
                         title: '错误',

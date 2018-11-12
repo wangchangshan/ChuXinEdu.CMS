@@ -19,6 +19,31 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             _logger = logger;
         }
+
+        #region 登陆模块
+        public string LoginVerify(string loginCode, string pwd)
+        {
+            string result = "";
+            using (BaseContext context = new BaseContext())
+            {
+                var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode
+                                                && u.Pwd == pwd)
+                                            .FirstOrDefault();
+                if(sysUser == null)
+                {
+                    result = "404"; 
+                }
+                else
+                {
+                    result = "200";
+                    sysUser.LastLoginTime = DateTime.Now;
+                    context.SaveChanges();
+                }
+            }
+            return result;
+        }
+
+        #endregion 登陆模块
         // 排课
         public string BatchStudentsCourseArrange(CA_C_STUDENTS_MAIN caInfo)
         {

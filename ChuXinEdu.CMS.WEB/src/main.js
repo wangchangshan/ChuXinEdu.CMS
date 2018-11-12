@@ -54,7 +54,7 @@ router.beforeEach((to, from, next) => {
     NProgress.start() // start progress bar
     // 定位到首页时， 清空缓存数据
     if(to.path === '/') {
-        LocalDB.instance('USER_').remove('userinfo');
+        LocalDB.instance('USER_').remove('userInfo');
         LocalDB.instance('MENU_').remove('leftMenu');
         store.commit('ADD_MENU', []);
     }

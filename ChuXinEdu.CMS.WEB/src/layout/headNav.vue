@@ -169,6 +169,8 @@ export default {
 
         logout() {
             this.$store.state.menu.isCollapse = false;
+            LocalDB.instance('MENU_').remove("leftMenu");
+            LocalDB.instance('USER_').remove('userInfo');
             this.$router.push('/');
         },
 
