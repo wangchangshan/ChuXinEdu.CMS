@@ -479,10 +479,18 @@ export default {
 
         getTeacherNameByCode(courseFolderCode, teacherCode) {
             let name = '';
-            for (let item of this.courseTeachers[courseFolderCode]) {
-                if (item.teacherCode == teacherCode) {
-                    name = item.teacherName;
-                    break;
+            // for (let item of this.courseTeachers[courseFolderCode]) {
+            //     if (item.teacherCode == teacherCode) {
+            //         name = item.teacherName;
+            //         break;
+            //     }
+            // }
+            for(let key in this.courseTeachers){
+                for (let item of this.courseTeachers[key]) {
+                    if (item.teacherCode == teacherCode) {
+                        name = item.teacherName;
+                        break;
+                    }
                 }
             }
             return name;

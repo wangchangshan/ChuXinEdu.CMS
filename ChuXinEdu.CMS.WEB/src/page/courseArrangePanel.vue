@@ -7,7 +7,7 @@
                 <el-collapse v-model="day.activePeriods">
                     <el-collapse-item v-for="period in day.periods" v-bind:key="period.periodCode" :name="period.periodCode">
                         <div slot="title" class="student-list-title">
-                            <a>{{period.periodName}}</a>
+                            <a>{{ '[' + period.periodName + ']'}}</a>
                             <a class="student-title-right" v-bind:class="{ 'full': period.studentList.length > 6,'free': period.studentList.length <= 6 }"> {{ period.thisWeekStudentCount }}/{{ period.studentList.length }}人</a>
                         </div>
                         <div class="student-list-content">

@@ -137,6 +137,7 @@
 
 <script>
 import {
+    dicHelper,
     dateHelper,
     axios
 } from '@/utils/index'
@@ -509,7 +510,7 @@ export default {
                 courseCategoryCode: this.supplementDialog.selectedPackage.courseCategoryCode,
                 courseCategoryName: this.supplementDialog.selectedPackage.courseCategoryName,
                 courseFolderCode: this.supplementDialog.selectedPackage.courseFolderCode,
-                courseFolderName: this.supplementDialog.selectedPackage.courseFolderName,
+                courseFolderName: '',
                 courseSubject: '',
                 courseType: '正式',
                 attendanceStatusCode:'01',
@@ -534,7 +535,7 @@ export default {
                 courseCategoryCode: this.supplementDialog.selectedPackage.courseCategoryCode,
                 courseCategoryName: this.supplementDialog.selectedPackage.courseCategoryName,
                 courseFolderCode: this.supplementDialog.selectedPackage.courseFolderCode,
-                courseFolderName: this.supplementDialog.selectedPackage.courseFolderName,
+                courseFolderName: '',
                 courseSubject: '',
                 courseType: '正式',
                 attendanceStatusCode:'01',
@@ -567,6 +568,7 @@ export default {
                     });
                     return;
                 }
+                item.courseFolderName = dicHelper.getLabelByValue(this.$store.getters['course_folder_' + item.courseCategoryCode], item.courseFolderCode);
                 item.teacherName = this.getTeacherNameByCode(item.courseFolderCode, item.teacherCode);
             }
 
@@ -597,10 +599,18 @@ export default {
         },
         getTeacherNameByCode(courseFolderCode, teacherCode) {
             let name = '';
-            for (let item of this.courseTeachers[courseFolderCode]) {
-                if (item.teacherCode == teacherCode) {
-                    name = item.teacherName;
-                    break;
+            // for (let item of this.courseTeachers[courseFolderCode]) {
+            //     if (item.teacherCode == teacherCode) {
+            //         name = item.teacherName;
+            //         break;
+            //     }
+            // }
+            for(let key in this.courseTeachers){
+                for (let item of this.courseTeachers[key]) {
+                    if (item.teacherCode == teacherCode) {
+                        name = item.teacherName;
+                        break;
+                    }
                 }
             }
             return name;
