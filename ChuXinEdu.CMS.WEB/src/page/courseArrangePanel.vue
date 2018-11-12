@@ -57,10 +57,15 @@
     </el-row>
 
     <el-dialog :title="selectZhengShiDialog.title" :visible.sync="selectZhengShiDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="selectZhengShiDialog.width">
-        <el-table :data="selectZhengShiDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentSelectionChange">
+        <el-form :inline="true" size="mini" class="demo-form-inline">
+            <el-form-item label="学生姓名：">
+                <el-input type="text" v-model="selectZhengShiDialog.search"></el-input>
+            </el-form-item>
+        </el-form>
+        <el-table v-loading="selectZhengShiDialog.loading" :data="selectZhengShiDialog.studentList.filter(data => !selectZhengShiDialog.search ||data.studentName.includes(selectZhengShiDialog.search))" height="400" size="mini" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
-            <!-- <el-table-column property="studentCode" label="学号" width="120"></el-table-column> -->
-            <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
+            <el-table-column property="studentName" label="姓名" width="70">
+            </el-table-column>
             <el-table-column property="" label="课程类别" width="100" align='center'>
                 <template slot-scope="scope">
                     {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
@@ -250,6 +255,8 @@ export default {
                 width: '780px',
                 curDayCode: '',
                 curPeriodName: '',
+                search: '',
+                loading: true,
                 studentList: [],
                 selectedStudents: [],
                 pickerDateOptions: {
@@ -544,8 +551,8 @@ export default {
 
         // 待排课学生列表
         getPickCourseStudentList(dayCode, periodName) {
-            var _this = this;
-            _this.selectZhengShiDialog.studentList = [];
+            this.selectZhengShiDialog.studentList = [];
+            this.selectZhengShiDialog.loading = true;
             axios({
                 type: 'get',
                 path: '/api/student/getstudentstoselectcourse',
@@ -553,8 +560,9 @@ export default {
                     dayCode: dayCode,
                     periodName: periodName
                 },
-                fn: function (result) {
-                    _this.selectZhengShiDialog.studentList = result;
+                fn: result => {
+                    this.selectZhengShiDialog.studentList = result;
+                    this.selectZhengShiDialog.loading = false;
                 }
             })
         },

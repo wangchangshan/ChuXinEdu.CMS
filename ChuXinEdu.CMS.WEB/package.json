@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "echarts": "^4.1.0",
-    "element-ui": "^2.4.4",
+    "element-ui": "^2.4.9",
     "file-saver": "^2.0.0-rc.4",
     "js-xlsx": "^0.8.22",
     "node-sass": "^4.9.3",
