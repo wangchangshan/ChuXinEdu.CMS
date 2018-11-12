@@ -23,8 +23,10 @@ namespace ChuXinEdu.CMS.Server
                 
                 var config = new ConfigurationBuilder()
                                     .SetBasePath(Directory.GetCurrentDirectory())
-                                    .AddJsonFile("hosting.json", optional: true)
+                                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                    .AddJsonFile("hosting.json", optional: true, reloadOnChange: true)
                                     .Build();
+                                    
                 CreateWebHostBuilder(args).UseConfiguration(config).Build().Run();
             }
             catch (Exception ex)

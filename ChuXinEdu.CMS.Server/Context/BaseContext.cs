@@ -9,7 +9,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.ViewModel;
-
+using ChuXinEdu.CMS.Server.Utils;
 
 namespace ChuXinEdu.CMS.Server.Context
 {
@@ -81,7 +81,8 @@ namespace ChuXinEdu.CMS.Server.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql("server=localhost;database=chuxin_dev;user=cswang;password=123456a?;port=3306;sslmode=none;allowPublicKeyRetrieval=true");
+            string conn = CustomConfig.GetSetting("MySqlConnection");
+            optionsBuilder.UseMySql(conn);
         }
     }
 }

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ChuXinEdu.CMS.Server.Utils
 {
-    public class SiteConfig
+    public class CustomConfig
     {
         private static IConfigurationSection _appSection = null;
 
@@ -21,9 +21,9 @@ namespace ChuXinEdu.CMS.Server.Utils
             _appSection = section;
         }
 
-        public static string GetSite(string apiName)
+        public static string GetSetting(string key)
         {
-            return AppSetting(apiName);
+            return AppSetting(key);
         }
     }
 }

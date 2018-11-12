@@ -24,18 +24,20 @@ namespace ChuXinEdu.CMS.Server
 {
     public class Startup
     {
+        public IConfiguration _configuration { get; }
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // mysql 数据连接配置
-            //services.AddDbContext<ADOContext>(options => options.UseMySql(Configuration.GetConnectionString("MySqlConnection")));
+            // mysql 数据连接配置 
+            // string conn = _configuration.GetConnectionString("MySqlConnection");
+            // services.AddDbContext<ADOContext>(options => options.UseMySql(conn));
+            // services.AddDbContext<BaseContext>(options => options.UseMySql(conn));
 
             // 跨域处理
             services.AddCors(Options=> {
@@ -49,16 +51,14 @@ namespace ChuXinEdu.CMS.Server
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            //needed for NLog.Web
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             // 注入服务
             services.AddTransient<IChuXinQuery, ChuXinQuery>(); //每一次GetService都会创建一个新的实例
             services.AddTransient<IChuXinWorkFlow, ChuXinWorkFlow>(); //每一次GetService都会创建一个新的实例
             services.AddTransient<IConfigQuery, ConfigQuery>(); //每一次GetService都会创建一个新的实例
             services.AddTransient<IChuXinStatistics, ChuXinStatistics>(); //每一次GetService都会创建一个新的实例
-            //services.AddSingleton<IChuXinQuery, ChuXinQuery>(); //整个应用程序生命周期以内只创建一个实例 
-            //services.AddScoped<IChuXinQuery, ChuXinQuery>(); //在同一个Scope内只初始化一个实例 ，可以理解为（ 每一个request级别只创建一个实例，同一个http request会在一个 scope内）
+            
+            //NLog.Web
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddDirectoryBrowser();
         }
@@ -78,7 +78,7 @@ namespace ChuXinEdu.CMS.Server
             }
 
             // 绑定自定义配置
-            SiteConfig.SetAppSetting(Configuration.GetSection("CustomSetting"));
+            CustomConfig.SetAppSetting(_configuration.GetSection("CustomSetting"));
             app.UseHttpsRedirection();
             app.UseMvc();
 
