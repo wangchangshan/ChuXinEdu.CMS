@@ -20,7 +20,7 @@ NProgress.configure({ showSpinner: false })// NProgress Configuration
 /**
  * 如果用户刷新页面,导致存入vuex中的菜单数据清空,需要从缓存获取;
  */
-var strMenuData = LocalDB.instance('MENU_').getValue('leftMenu').value;
+var strMenuData = LocalDB.instance('MENU_').getValue('LEFTMENU').value;
 var menuData = '';
 if(strMenuData) {
     menuData = JSON.parse(strMenuData)
@@ -54,13 +54,13 @@ router.beforeEach((to, from, next) => {
     NProgress.start() // start progress bar
     // 定位到首页时， 清空缓存数据
     if(to.path === '/') {
-        LocalDB.instance('USER_').remove('userInfo');
-        LocalDB.instance('MENU_').remove('leftMenu');
+        LocalDB.instance('USER_').remove('BASEINFO');
+        LocalDB.instance('MENU_').remove('LEFTMENU');
         store.commit('ADD_MENU', []);
     }
 
     // 判断是否有用户登录的记录
-    let userinfo = JSON.parse(LocalDB.instance('USER_').getValue('userInfo').value);
+    let userinfo = JSON.parse(LocalDB.instance('USER_').getValue('BASEINFO').value);
     // 没有用户信息，route.path不是定位到登录页面的,直接跳登录页面。
     if(!userinfo && to.path !== '/') {
         next({ path: '/' });

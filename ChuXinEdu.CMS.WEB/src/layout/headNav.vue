@@ -105,7 +105,7 @@ export default {
         }
     },
     created() {
-        this.userinfo = LocalDB.instance('USER_').getValue('userInfo');
+        this.userinfo = LocalDB.instance('USER_').getValue('BASEINFO');
     },
     watch: {
         $route() {
@@ -169,8 +169,8 @@ export default {
 
         logout() {
             this.$store.state.menu.isCollapse = false;
-            LocalDB.instance('MENU_').remove("leftMenu");
-            LocalDB.instance('USER_').remove('userInfo');
+            LocalDB.instance('MENU_').remove("LEFTMENU");
+            LocalDB.instance('USER_').remove('BASEINFO');
             this.$router.push('/');
         },
 

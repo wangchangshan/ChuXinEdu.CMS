@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import axios from 'axios'
 import vueAxios from 'vue-axios'
+import {
+    LocalDB
+} from '@/utils/index'
 
 Vue.use(vueAxios, axios)
 
@@ -10,7 +13,7 @@ Vue.use(vueAxios, axios)
  * @param   {string}    url     请求的接口URL
  * @param   {object}    data    传入的参数，没有则为空对象
  * @param   {Function}  fn      回调函数
- * @param   {boolean}   tokenFlag 是否需要携带token参数。ture：需要；false：不需要。一般除了登陆，都需要。
+ * @param   {boolean}   tokenFlag 是否需要携带token参数。true：需要；false：不需要。一般除了登陆，都需要。
  */
 export default function ({
         type,
@@ -37,10 +40,19 @@ export default function ({
         options[type === 'get' ? 'params' : 'data'] = data;
         options[type === 'delete' ? 'params' : 'data'] = data;
 
-        if(tokenFlag !== true) {
-            // 如果后台不会接受headers里面的参数，则打开这个注释，即实现token通过普通参数方式传递
-            //data.token = this.$store.state.user.useinfo.token;
-            //options.headers.token = this.$store.state.user.userinfo.token;
+        // tokenFlag
+        if(true) {
+            let strUserInfo = LocalDB.instance('USER_').getValue('BASEINFO').value;
+            if(strUserInfo) {
+                let user = JSON.parse(strUserInfo);
+                options.headers.token = user.token || '';
+            }
+            else{
+                options.headers.token = '';
+            }
+
+            // 如果后台不会接受headers里面的参数，则使用普通参数方式传递
+            //data.token = '';
         }
 
         // axios内置属性均可写在这里

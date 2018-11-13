@@ -64,6 +64,8 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install script-loader -S -D
 
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install --save xlsx
 
+ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install jsencrypt --save-d
+
 ```
 
 ### 6. 修改ChuXinEdu.CMS.WEB项目目录结构如下
