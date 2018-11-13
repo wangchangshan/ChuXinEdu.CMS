@@ -15,6 +15,7 @@ using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
 using Newtonsoft.Json.Serialization;
+using ChuXinEdu.CMS.Server.Filters;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -39,6 +40,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [MyAuthenFilter]
         public ActionResult<string> GetStudentList(int pageIndex, int pageSize, string q)
         {
             QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);            

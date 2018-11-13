@@ -204,6 +204,13 @@ export default {
                     component: 'teacherDetailMain',
                     hidden: true,
                     noDropdown: true
+                },{
+                    path: '/401',
+                    name: '401',
+                    hidden: true,
+                    component: '401',
+                    hidden: true,
+                    noDropdown: true
                 },
                 {
                     path: '/404',

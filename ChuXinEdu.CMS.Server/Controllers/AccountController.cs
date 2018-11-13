@@ -69,5 +69,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return reslutJson;
         }
 
+        // GET api/account/login
+        [HttpGet]
+         public ActionResult<string> A401([FromBody] dynamic loginForm)
+         {
+             return "401";
+         }
     }   
 }

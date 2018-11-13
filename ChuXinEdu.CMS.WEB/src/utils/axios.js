@@ -44,8 +44,8 @@ export default function ({
         if(true) {
             let strUserInfo = LocalDB.instance('USER_').getValue('BASEINFO').value;
             if(strUserInfo) {
-                let user = JSON.parse(strUserInfo);
-                options.headers.token = user.token || '';
+                //let user = JSON.parse(strUserInfo);
+                //options.headers.token = user.token || '';
             }
             else{
                 options.headers.token = '';

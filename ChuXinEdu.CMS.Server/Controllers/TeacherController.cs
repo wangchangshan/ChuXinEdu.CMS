@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using System.Data;
+using ChuXinEdu.CMS.Server.Filters;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -35,6 +36,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         // GET api/teacher/getteacherlist
         [HttpGet]
+        [MyAuthenFilter]
         public IEnumerable<Teacher> GetTeacherList(string q)
         {
             QUERY_TEACHER query = JsonConvert.DeserializeObject<QUERY_TEACHER>(q);
