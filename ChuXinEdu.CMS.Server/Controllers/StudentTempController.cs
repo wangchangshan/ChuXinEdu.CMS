@@ -15,11 +15,13 @@ using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
 using Newtonsoft.Json.Serialization;
+using ChuXinEdu.CMS.Server.Filters;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
     [EnableCors("any")]
+    [MyAuthenFilter]
     [ApiController]
     public class StudentTempController : ControllerBase
     {

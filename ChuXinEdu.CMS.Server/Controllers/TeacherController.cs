@@ -20,6 +20,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
     [EnableCors("any")]
+    [MyAuthenFilter]
     [ApiController]
     public class TeacherController : ControllerBase
     {
@@ -36,7 +37,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         // GET api/teacher/getteacherlist
         [HttpGet]
-        [MyAuthenFilter]
         public IEnumerable<Teacher> GetTeacherList(string q)
         {
             QUERY_TEACHER query = JsonConvert.DeserializeObject<QUERY_TEACHER>(q);

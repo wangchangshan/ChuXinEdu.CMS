@@ -14,6 +14,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [登陆]
         string LoginVerify(string loginCode, string pwd);
 
+        // [登陆 签名]
+        string SaveUserToken(string loginCode, string signToken);
+
         // [排课模块] 批量学生排课
         string BatchStudentsCourseArrange(CA_C_STUDENTS_MAIN caInfo);
 

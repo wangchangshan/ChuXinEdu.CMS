@@ -20,7 +20,8 @@ using ChuXinEdu.CMS.Server.Filters;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [EnableCors("any")]
+    [EnableCors("any")]    
+    [MyAuthenFilter]
     [ApiController]
     public class StudentController : ControllerBase
     {
@@ -40,7 +41,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [MyAuthenFilter]
         public ActionResult<string> GetStudentList(int pageIndex, int pageSize, string q)
         {
             QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);            
@@ -80,6 +80,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
 
             dynamic obj = new {
+                Code = "1200",
                 TotalCount = totalCount,
                 StudentList = studentList
             };

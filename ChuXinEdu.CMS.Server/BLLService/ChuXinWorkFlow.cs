@@ -29,16 +29,43 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode
                                                 && u.Pwd == pwd)
                                             .FirstOrDefault();
-                if(sysUser == null)
+                if (sysUser == null)
                 {
-                    result = "404"; 
+                    result = "1401";
                 }
                 else
                 {
-                    result = "200";
+                    result = "1200";
                     sysUser.LastLoginTime = DateTime.Now;
                     context.SaveChanges();
                 }
+            }
+            return result;
+        }
+
+        public string SaveUserToken(string loginCode, string signToken)
+        {
+            string result = "1200";
+            try
+            {
+                string strExpireMinu = CustomConfig.GetSetting("UserExpireTime");
+                if (string.IsNullOrEmpty(strExpireMinu))
+                {
+                    strExpireMinu = "60";
+                }
+                using (BaseContext context = new BaseContext())
+                {
+                    int expireMinu = Int32.Parse(strExpireMinu);
+                    var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode).First();
+                    sysUser.Token = signToken;
+                    sysUser.TokenExpireTime = DateTime.Now.AddMinutes(expireMinu);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                result = "1500";
+                _logger.LogError(ex, "保存token出错");
             }
             return result;
         }
@@ -943,23 +970,23 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     foreach (var course in courseList)
                     {
                         context.StudentCourseList.Add(course);
-                        i ++;
+                        i++;
                     }
                     // 2. 获取当前课程套餐
                     var package = context.StudentCoursePackage.Where(s => s.Id == studentCoursePackageId && s.FlexCourseCount > 0).FirstOrDefault();
-                    if(package != null)
+                    if (package != null)
                     {
-                        if(package.FlexCourseCount - i == 0)
+                        if (package.FlexCourseCount - i == 0)
                         {
                             // 2.1 套餐内可以排课的课程数目为 0，进一步判断是否所有课程都已结束
-                            if(package.RestCourseCount - i == 0)
+                            if (package.RestCourseCount - i == 0)
                             {
                                 // 2.2 套餐内课程全部上完，标记当前课程套餐为结束
                                 package.FlexCourseCount = 0;
                                 package.RestCourseCount = 0;
                                 package.ScpStatus = "01";
                             }
-                            else if(package.RestCourseCount - i > 0)
+                            else if (package.RestCourseCount - i > 0)
                             {
                                 package.FlexCourseCount -= i;
                                 package.RestCourseCount -= i;
@@ -970,7 +997,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 return "201";
                             }
                         }
-                        else if(package.FlexCourseCount - i > 0)
+                        else if (package.FlexCourseCount - i > 0)
                         {
                             package.FlexCourseCount -= i;
                             package.RestCourseCount -= i;
@@ -980,7 +1007,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             _logger.LogWarning("课程套餐数据异常！！套餐ID: {0}，剩余FlexCourseCount: {1}， 本次提交补录课程数目：{2}", studentCoursePackageId, package.FlexCourseCount, i.ToString());
                             return "201";
                         }
-                        
+
                         context.SaveChanges();
                     }
                 }
@@ -1657,19 +1684,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var role = context.SysDictionary.Where(d => d.TypeCode == "roles" 
-                                                                && d.ItemCode == roleCode 
+                    var role = context.SysDictionary.Where(d => d.TypeCode == "roles"
+                                                                && d.ItemCode == roleCode
                                                                 && d.ItemEnabled == "Y")
                                                     .First();
                     string roleDesc = role.ItemDesc;
                     foreach (var teacherCode in teacherCodes)
                     {
-                        TeacherRole tr = new TeacherRole {
+                        TeacherRole tr = new TeacherRole
+                        {
                             TeacherCode = teacherCode,
                             RoleCode = roleCode,
                             RoleLevel = roleDesc
                         };
-                        context.TeacherRole.Add(tr);                   
+                        context.TeacherRole.Add(tr);
                     }
                     context.SaveChanges();
                 }
@@ -1691,10 +1719,10 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 {
                     foreach (var teacherCode in teacherCodes)
                     {
-                        var tr = context.TeacherRole.Where(r => r.TeacherCode == teacherCode && r.RoleCode == roleCode).FirstOrDefault(); 
-                        if(tr != null)
+                        var tr = context.TeacherRole.Where(r => r.TeacherCode == teacherCode && r.RoleCode == roleCode).FirstOrDefault();
+                        if (tr != null)
                         {
-                            context.TeacherRole.Remove(tr);   
+                            context.TeacherRole.Remove(tr);
                         }
                     }
                     context.SaveChanges();

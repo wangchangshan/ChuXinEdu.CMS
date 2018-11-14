@@ -5,7 +5,7 @@
         <div class="bullshit__oops">初心工作室</div>
         <div class="bullshit__headline">{{ message }}</div>
         <div class="bullshit__info">您没有权限访问当前页面</div>
-        <a href="#/" class="bullshit__return-home">重新登陆</a><a href="#/dashboard" class="bullshit__return-home">  返回首页</a>
+        <a href="#/" class="bullshit__return-login">重新登陆</a><a href="#/dashboard" class="bullshit__return-home">  返回首页</a>
       </div>
     </div>
   </div>
@@ -82,6 +82,24 @@ export default {
       width: 110px;
       height: 36px;
       background: #1482f0;
+      border-radius: 100px;
+      text-align: center;
+      color: #ffffff;
+      opacity: 0;
+      font-size: 14px;
+      line-height: 36px;
+      cursor: pointer;
+      animation-name: slideUp;
+      animation-duration: 0.5s;
+      animation-delay: 0.3s;
+      animation-fill-mode: forwards;
+    }
+    &__return-login {
+      display: block;
+      float: left;
+      width: 110px;
+      height: 36px;
+      background: #67C23A;
       border-radius: 100px;
       text-align: center;
       color: #ffffff;

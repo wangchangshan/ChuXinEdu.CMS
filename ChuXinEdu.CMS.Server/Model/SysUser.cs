@@ -20,6 +20,12 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("teacher_code")]
         public string TeacherCode { get; set; }
 
+        [Column("token")]
+        public string Token { get; set; }
+
+        [Column("token_expire_time")]
+        public DateTime? TokenExpireTime { get; set; }
+
         [Column("fail_count")]
         public int FailCount { get; set; }
 

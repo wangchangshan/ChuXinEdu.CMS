@@ -230,13 +230,18 @@ export default {
                 path: '/api/student/getstudentlist',
                 data: data,
                 fn: function (result) {
-                    _this.paginations.total = result.totalCount;
-                    result.studentList.forEach((item) => {
-                        item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
-
-                        item.studentBirthday = item.studentBirthday && item.studentBirthday.split('T')[0];
-                    })
-                    _this.studentsList = result.studentList;
+                    if(result.code == 1200)
+                    {
+                        _this.paginations.total = result.totalCount;
+                        result.studentList.forEach((item) => {
+                            item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
+                            item.studentBirthday = item.studentBirthday && item.studentBirthday.split('T')[0];
+                        });
+                        _this.studentsList = result.studentList;
+                    }
+                    else if(result.code == 1401){
+                        _this.$router.push("/401");
+                    }
                     fun && fun();
                 }
             })

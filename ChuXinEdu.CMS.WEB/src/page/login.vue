@@ -254,10 +254,10 @@ export default {
                         type: 'post',
                         path: '/api/account/login',
                         data: loginData, 
-                        fn: data => {
-                            if(data.result == 200){
-                                this.saveUserInfo(data.token); // 存入缓存，用于显示用户名     
-                                this.generateMenu(); // 模拟动态生成菜单并定位到index
+                        fn: result => {
+                            if(result.code == 1200){
+                                this.saveUserInfo(result.data); // 存入缓存，用于显示用户名     
+                                this.generateMenu(); 
                                 this.$store.dispatch('initLeftMenu');
                             } else {
                                 this.$message.error("用户名或密码错误，请重试！");
