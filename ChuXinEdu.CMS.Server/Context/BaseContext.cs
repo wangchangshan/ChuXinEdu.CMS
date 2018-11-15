@@ -73,6 +73,8 @@ namespace ChuXinEdu.CMS.Server.Context
         public virtual DbSet<SysHoliday> SysHoliday { get; set; }
 
         public virtual DbSet<SysUser> SysUser { get; set; }
+
+        public virtual DbSet<SysLoginHistory> SysLoginHistory { get; set; }
         
         public virtual DbSet<Teacher> Teacher { get; set; }
 

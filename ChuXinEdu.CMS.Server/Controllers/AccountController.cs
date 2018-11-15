@@ -56,9 +56,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string signToken = "";
             if(result == "1200")
             {
-                string ip = HttpContext.Connection.RemoteIpAddress.ToString(); 
+                string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(); 
                 signToken = rsa.Sign(loginCode + ip);
-                result = _chuxinWorkFlow.SaveUserToken(loginCode, signToken);
+                result = _chuxinWorkFlow.SaveUserLoginInfo(loginCode, ip, signToken);
             }
             
             return new JsonResult(new { code = result, data = signToken });

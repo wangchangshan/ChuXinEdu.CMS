@@ -65,7 +65,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
-        public string SaveUserToken(string loginCode, string signToken)
+        public string SaveUserLoginInfo(string loginCode, string ip, string signToken)
         {
             string result = "1200";
             try
@@ -81,6 +81,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode).First();
                     sysUser.Token = signToken;
                     sysUser.TokenExpireTime = DateTime.Now.AddMinutes(expireMinu);
+
+                    context.SysLoginHistory.Add(new SysLoginHistory{
+                        LoginCode = loginCode,
+                        LoginIp = ip,
+                        LoginTime = DateTime.Now
+                    });
+                    
                     context.SaveChanges();
                 }
             }
