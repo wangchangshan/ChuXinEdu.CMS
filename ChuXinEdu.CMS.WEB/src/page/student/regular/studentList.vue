@@ -44,7 +44,7 @@
             </el-table-column>
             <el-table-column prop="studentPhone" label="联系电话" align='center' width="120">
             </el-table-column>
-            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="200">
+            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="160">
             </el-table-column>
             <el-table-column prop="studentCourseCategory" label="学习课程" align='left' min-width="130">
                 <template slot-scope="scope">
