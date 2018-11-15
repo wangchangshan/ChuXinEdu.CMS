@@ -124,6 +124,9 @@ export default {
                 fn: function (result) {
                 }
             });
+        },
+        '$route' (to, from) {
+            this.$router.go(0);
         }
     },
     created() {
@@ -157,7 +160,7 @@ export default {
         },
         showStudentDetail(studentCode, studentName) {
             this.$router.push({
-                path: '/studentDetailMain',
+                path: '/studentDetail',
                 query: {
                     studentcode: studentCode,
                     studentname: studentName
@@ -206,7 +209,7 @@ export default {
                 path: '/api/student/postnewrecommend',
                 data: newRecommend,
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.$message({
                             message: '添加成功',
                             type: 'success'
@@ -229,7 +232,7 @@ export default {
                     type: 'delete',
                     path: '/api/student/delrecommend/' + id,
                     fn: function (result) {
-                        if (result === 200) {
+                        if (result === 1200) {
                             _this.getRecommendStudents();
                             _this.$message({
                                 message: '删除成功！',

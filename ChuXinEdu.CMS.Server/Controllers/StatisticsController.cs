@@ -53,8 +53,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             settings.Formatting = Formatting.Indented;
-            string reslutJson = JsonConvert.SerializeObject(hgc,settings);
-            return reslutJson;
+            string resultJson = JsonConvert.SerializeObject(hgc,settings);
+            return resultJson;
         }
 
         private ClassifyStatistic GetStudentClassifyForHome()

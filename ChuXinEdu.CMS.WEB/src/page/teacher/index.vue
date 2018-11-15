@@ -15,11 +15,10 @@
 </template>
 
 <script>
-import teacherDetailBaseInfo from '@/page/teacherDetailBaseInfo'
-import teacherDetailCourseHistory from '@/page/teacherDetailCourseHistory'
+import baseInfo from './baseInfo'
+import courseHistory from './courseHistory'
 
 export default {
-    name: 'teacherDetailMain',
     data() {
         return { 
             activeLabelCode: 'baseinfo',
@@ -30,8 +29,8 @@ export default {
         this.teacherCode = this.$route.query.teacherCode;
     },
     components: {
-        "teacher-base-info" : teacherDetailBaseInfo,
-        "teacher-course-history" : teacherDetailCourseHistory,
+        "teacher-base-info" : baseInfo,
+        "teacher-course-history" : courseHistory,
     }
 }
 </script>

@@ -32,14 +32,14 @@
 </template>
 
 <script>
-import studentDetailBaseInfo from '@/page/studentDetailBaseInfo'
-import studentDetailCourseHistory from '@/page/studentDetailCourseHistory'
-import studentDetailAchievements from '@/page/studentDetailAchievements'
-import studentDetailFeeBack from '@/page/studentDetailFeeBack'
-import studentDetailAdditionalInfo from '@/page/studentDetailAdditionalInfo'
+// import studentDetailBaseInfo from '@/page/studentDetailBaseInfo'
+import baseInfo from './baseInfo'
+import courseHistory from './courseHistory'
+import achievements from './achievements'
+import feeBack from './feeBack'
+import additionalInfo from './additionalInfo'
 
 export default {
-    name: 'studentDetailMain',
     data() {
         return { 
             activeLabelCode: 'baseinfo',
@@ -50,11 +50,11 @@ export default {
         this.studentCode = this.$route.query.studentcode;
     },
     components: {
-        "student-base-info" : studentDetailBaseInfo,
-        "student-course-history" : studentDetailCourseHistory,
-        "student-achievements": studentDetailAchievements,
-        "student-fee-back": studentDetailFeeBack,
-        "student-additional-info":studentDetailAdditionalInfo
+        "student-base-info" : baseInfo,
+        "student-course-history" : courseHistory,
+        "student-achievements": achievements,
+        "student-fee-back": feeBack,
+        "student-additional-info":additionalInfo
     },
     methods: {
         handleTabClick() {

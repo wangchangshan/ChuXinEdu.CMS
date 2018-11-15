@@ -261,7 +261,7 @@ export default {
                 selectedStudents: [],
                 pickerDateOptions: {
                     firstDayOfWeek: 1,
-                    disabledDate: (time) => { // 为了this指向 使用箭头函数 
+                    disabledDate: (time) => {  
                         let result = false;
                         let curDay = parseInt(this.selectZhengShiDialog.curDayCode.replace('day', ''));
                         if (curDay === 7) {
@@ -287,7 +287,7 @@ export default {
                 selectedStudents: [],
                 pickerDateOptions: {
                     firstDayOfWeek: 1,
-                    disabledDate: (time) => { // 为了this指向 使用箭头函数 
+                    disabledDate: (time) => { 
                         let result = false;
                         let curDay = parseInt(this.selectShiTingDialog.curDayCode.replace('day', ''));
                         if (curDay === 7) {
@@ -528,7 +528,7 @@ export default {
                 path: '/api/coursearrange/postcoursearrange',
                 data: caInfo_shiting,
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.refreshPeriodInfo(dayCode, periodName);
                         _this.$message({
                             message: '试听排课成功！',
@@ -630,7 +630,7 @@ export default {
                 path: '/api/coursearrange/postcoursearrange',
                 data: caInfo,
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.refreshPeriodInfo(dayCode, periodName);
                         _this.$message({
                             message: '排课成功！',
@@ -740,7 +740,7 @@ export default {
                     StudentCourseId: studentCourseId
                 },
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.refreshPeriodInfo(dayCode, periodName);
                         _this.$message({
                             message: '请假成功！',
@@ -763,7 +763,7 @@ export default {
                     StudentCourseId: studentCourseId
                 },
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.refreshPeriodInfo(dayCode, periodName);
                         _this.$message({
                             message: '撤销成功！',
@@ -787,7 +787,7 @@ export default {
                     StudentCourseId: studentCourseId
                 },
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.refreshPeriodInfo(dayCode, periodName);
                         _this.$message({
                             message: '删除成功！',
@@ -820,7 +820,7 @@ export default {
                 path: '/api/coursearrange/removecoursebatch',
                 data: arrStudentCourseId,
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.refreshPeriodInfo(dayCode, periodName);
                         _this.$message({
                             message: '全部删除成功！',
@@ -897,7 +897,7 @@ export default {
                 path: '/api/coursearrange/addholidays',
                 data: listHolidays,
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.$message({
                             message: '添加放假日期成功',
                             type: 'success'
@@ -918,7 +918,7 @@ export default {
                     strDay: day
                 },
                 fn: function (result) {                    
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.$message({
                             message: '删除假期成功',
                             type: 'success'

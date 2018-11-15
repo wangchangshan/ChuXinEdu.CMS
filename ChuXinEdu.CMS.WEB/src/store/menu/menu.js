@@ -54,8 +54,8 @@ const mutations = {
         }
     },
     [menuType.SET_ACTIVE_MENU] (state, toMenu) {
-        if(toMenu.indexOf('studentDetailMain') > -1){
-            state.activeMenu = '/studentList';
+        if(toMenu.indexOf('studentDetail') > -1){
+            state.activeMenu = '/student';
         }
         else {
             state.activeMenu = toMenu;

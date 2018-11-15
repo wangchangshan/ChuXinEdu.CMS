@@ -97,42 +97,37 @@ export default {
                     noDropdown: true
                 }, 
                 {
-                    path: '/studentTempList',
+                    path: '/trialStudent',
                     name: '试听学生',
-                    component: 'studentTempList',
+                    component: 'student/trial/trialStudentList',
                     icon: 'fa-user-circle-o',
                     noDropdown: true,
                 },               
                 {
-                    path: '/studentList',
+                    path: '/student',
                     name: '正式学生',
-                    component: 'studentList',
+                    component: 'student/regular/studentList',
                     icon: 'fa-users',
                     noDropdown: true,
-                    meta: {
-                        breadcrumb:{
-                            title: '',
-                            path: ''
-                        }
-                    }
                 },
                 {
-                    path: '/courseArrangeMain',
+                    path: '/studentDetail',
+                    name: '学生详细',
+                    component: 'student/regular/index',
+                    hidden: true,
+                    noDropdown: true
+                },
+                {
+                    path: '/schedule',
                     name: '排课管理',
-                    component: 'courseArrangeMain',
+                    component: 'schedule/index',
                     icon: 'fa-magic',
-                    noDropdown: true,
-                    meta: {
-                        breadcrumb:{
-                            title: '',
-                            path: ''
-                        }
-                    }
+                    noDropdown: true
                 },
                 {
-                    path: '/courseAttendanceBook',
+                    path: '/courseSignIn',
                     name: '签到销课',
-                    component: 'courseAttendanceBook',
+                    component: 'schedule/courseAttendanceBook',
                     icon: 'fa-calendar-check-o',
                     noDropdown: true,
                     meta: {
@@ -143,16 +138,16 @@ export default {
                     }
                 },
                 // {
-                //     path: '/chartAnalysis',
+                //     path: '/analysis',
                 //     name: '图表统计',
-                //     component: 'chartAnalysis',
+                //     component: 'analysis/chartAnalysis',
                 //     icon: 'fa-bar-chart',
                 //     noDropdown: true,
                 // },
                 {
-                    path: '/activityList',
+                    path: '/activity',
                     name: '活动列表',
-                    component: 'activityList',
+                    component: 'activity/activityList',
                     icon: 'fa-paper-plane-o',
                     noDropdown: true,
                     meta: {
@@ -164,46 +159,39 @@ export default {
                     }
                 },
                 {
-                    path: '/sysCoursePackageList',
+                    path: '/coursePackage',
                     name: '课程套餐',
-                    component: 'sysCoursePackageList',
+                    component: 'setting/coursePackageList',
                     icon: 'fa-shopping-bag',
                     noDropdown: true,
                 },
                 {
-                    path: '/financeList',
+                    path: '/finance',
                     name: '资金流水',
-                    component: 'financeList',
+                    component: 'finance/financeList',
                     icon: 'fa-money',
                     noDropdown: true,
                 },
                 {
-                    path: '/teacherList',
+                    path: '/teacher',
                     name: '教师列表',
-                    component: 'teacherList',
+                    component: 'teacher/teacherList',
                     icon: 'fa-address-card-o',
                     noDropdown: true,
                 },
                 {
+                    path: '/teacherDetail',
+                    name: '教师详细',
+                    component: 'teacher/index',
+                    hidden: true,
+                    noDropdown: true
+                },
+                {
                     path: '/setting',
                     name: '系统配置',
-                    component: 'sysSetting/index',
+                    component: 'setting/index',
                     icon: 'fa-cogs',
                     noDropdown: true,
-                },
-                {
-                    path: '/studentDetailMain',
-                    name: '学生详细',
-                    component: 'studentDetailMain',
-                    hidden: true,
-                    noDropdown: true
-                },
-                {
-                    path: '/teacherDetailMain',
-                    name: '教师详细',
-                    component: 'teacherDetailMain',
-                    hidden: true,
-                    noDropdown: true
                 },{
                     path: '/401',
                     name: '401',

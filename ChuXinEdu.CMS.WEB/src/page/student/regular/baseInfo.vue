@@ -341,13 +341,13 @@ export default {
         },
 
         cropSuccess(imgDataUrl, field) {
-            console.log('-------- crop success --------');
+            //console.log('-------- crop success --------');
             this.avatarPanel.imgDataUrl = imgDataUrl;
         },
         cropUploadSuccess(jsonData, field) {
-            console.log('-------- upload success --------');
-            console.log(jsonData);
-            console.log('field: ' + field);
+            // console.log('-------- upload success --------');
+            // console.log(jsonData);
+            // console.log('field: ' + field);
         },
         /**
          * upload fail
@@ -356,9 +356,9 @@ export default {
          * [param] field
          */
         cropUploadFail(status, field) {
-            console.log('-------- upload fail --------');
-            console.log(status);
-            console.log('field: ' + field);
+            // console.log('-------- upload fail --------');
+            // console.log(status);
+            // console.log('field: ' + field);
         },
 
         GetStudentBaseData() {
@@ -394,14 +394,14 @@ export default {
                         id: _this.packageDialog.courseInfo.id
                     },
                     fn: function (result) {
-                        if (result === 200) {
+                        if (result === 1200) {
                             _this.GetStudentBaseData();
                             _this.$message({
                                 message: '删除成功',
                                 type: 'success'
                             });
                             _this.packageDialog.isShow = false;
-                        } else if (result === 201) {
+                        } else if (result === 1600) {
                             _this.$message({
                                 message: '学生已经开始上课，不能删除此套餐！',
                                 type: 'warning'
@@ -492,7 +492,7 @@ export default {
                 path: '/api/student/postnewpackage',
                 data: newPackage,
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.GetStudentBaseData();
                         _this.$message({
                             message: '添加课程套餐成功',
@@ -550,7 +550,7 @@ export default {
                 path: '/api/student/updatestudentpackage/' + _this.packageDialog.courseInfo.id,
                 data: updatePackage,
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.GetStudentBaseData();
                         _this.$message({
                             message: '修改课程套餐成功',
@@ -587,7 +587,7 @@ export default {
                         path: '/api/student/updatestudent/' + _this.studentCode,
                         data: student,
                         fn: function (result) {
-                            if (result === 200) {
+                            if (result === 1200) {
                                 _this.GetStudentBaseData();
                                 _this.$message({
                                     message: '更新基础信息成功',

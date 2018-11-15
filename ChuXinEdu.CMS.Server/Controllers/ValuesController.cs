@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -19,6 +22,48 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public ActionResult<string> Get(int id)
         {
             return "value";
+        }
+
+        // 返回的context.Result.Value为string
+        [HttpGet("{id}")]
+        public ActionResult<string> test1(int id)
+        {
+            dynamic obj = new {
+                code = "1200",
+                data = "data",
+            };
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.Formatting = Formatting.Indented;
+            string resultJson = JsonConvert.SerializeObject(obj,settings);          
+            return resultJson;
+        }
+
+        //返回的context.Result.Value为jsonobject
+        [HttpGet("{id}")]
+        public ActionResult<JsonResult> test2(int id)
+        {            
+            return new JsonResult(new {
+                code = "1200",
+                data = "data",
+            });
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<JsonResult> test3(int id)
+        {            
+            DataTable dt = new DataTable();
+            string result = JsonConvert.SerializeObject(dt);
+            return new JsonResult(result);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<string> test4(int id)
+        {            
+            DataTable dt = new DataTable();
+            string result = JsonConvert.SerializeObject(dt);
+            return result;
         }
 
         // POST api/values

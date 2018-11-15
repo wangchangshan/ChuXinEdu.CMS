@@ -250,7 +250,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpPost]
         public string UploadAvatar()
         {
-            string result = "201";
+            string result = "1600";
             string code = string.Empty;
             string name = string.Empty;
             string type = string.Empty;

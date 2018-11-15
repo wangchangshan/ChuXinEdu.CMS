@@ -210,7 +210,7 @@ export default {
                         path: '/api/teacher/postnewteacher',
                         data: _this.teacherDialog.baseInfo,
                         fn: function (result) {
-                            if (result == 200) {
+                            if (result == 1200) {
                                 _this.getTeacherList();
                                 _this.teacherDialog.isShow = false;
                             }
@@ -224,7 +224,7 @@ export default {
 
         showTeacherDetail(teacherCode, teacherName) {
             this.$router.push({
-                path: '/teacherDetailMain',
+                path: '/teacherDetail',
                 query: {
                     teacherCode: teacherCode,
                     teacherName: teacherName

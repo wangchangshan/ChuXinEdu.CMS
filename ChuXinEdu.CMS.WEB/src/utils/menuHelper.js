@@ -10,7 +10,7 @@ const menuHelper = {
             const component = menuData[i].component;
             if (component && component !== 'content' && typeof component != 'function') {
                 componentNew = lazyLoading.loadPageComponent(menuData[i].component)
-                //componentNew = () => import('@/page/studentList')
+                //componentNew = () => import('@/page/student')
             } else if(typeof component != 'function') {
                 componentNew = lazyLoading.loadLayoutComponent(menuData[i].component)
             }

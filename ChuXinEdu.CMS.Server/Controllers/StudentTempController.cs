@@ -54,9 +54,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             settings.Formatting = Formatting.Indented;
-            string reslutJson = JsonConvert.SerializeObject(obj,settings);
+            string resultJson = JsonConvert.SerializeObject(obj,settings);
 
-            return reslutJson;
+            return resultJson;
         }
 
         /// <summary>

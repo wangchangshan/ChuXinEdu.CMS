@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import vueAxios from 'vue-axios'
+import router from './../router'
 import {
     LocalDB
 } from '@/utils/index'
@@ -65,7 +66,13 @@ export default function ({
 
         // 发送请求。 一般请求还是表格类型的请求，因为其返回的数据结构是根据api中设定的，这里只需返回就行。
         Vue.axios(options).then((res) => {
-            fn(res.data);
+            // 统一身份验证
+            if(res.data.code && res.data.code == '1401'){
+                router.push("/401");
+            }
+            else{
+                fn(res.data);
+            }
         }).catch((err) => {
             if(typeof errFn === 'function'){
                 errFn();

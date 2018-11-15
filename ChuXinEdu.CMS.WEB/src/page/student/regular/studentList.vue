@@ -230,18 +230,11 @@ export default {
                 path: '/api/student/getstudentlist',
                 data: data,
                 fn: function (result) {
-                    if(result.code == 1200)
-                    {
-                        _this.paginations.total = result.totalCount;
-                        result.studentList.forEach((item) => {
-                            item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
-                            item.studentBirthday = item.studentBirthday && item.studentBirthday.split('T')[0];
-                        });
-                        _this.studentsList = result.studentList;
-                    }
-                    else if(result.code == 1401){
-                        _this.$router.push("/401");
-                    }
+                    _this.paginations.total = result.totalCount;
+                    result.data.forEach((item) => {
+                        item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
+                    });
+                    _this.studentsList = result.data;
                     fun && fun();
                 }
             })
@@ -289,7 +282,7 @@ export default {
                                 });
                                 _this.studentDialog.isShow = false;
                                 _this.$router.push({
-                                    path: '/studentDetailMain',
+                                    path: '/studentDetail',
                                     query: {
                                         studentcode: result
                                     }
@@ -303,7 +296,7 @@ export default {
 
         showStudentDetail(studentCode, studentName) {
             this.$router.push({
-                path: '/studentDetailMain',
+                path: '/studentDetail',
                 query: {
                     studentcode: studentCode,
                     studentname: studentName

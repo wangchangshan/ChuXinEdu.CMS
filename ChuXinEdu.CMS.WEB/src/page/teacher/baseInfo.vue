@@ -189,19 +189,19 @@ export default {
         },
 
         cropSuccess(imgDataUrl, field) {
-            console.log('-------- crop success --------');
+            //console.log('-------- crop success --------');
             this.avatarPanel.imgDataUrl = imgDataUrl;
         },
         cropUploadSuccess(jsonData, field) {
-            console.log('-------- upload success --------');
-            console.log(jsonData);
-            console.log('field: ' + field);
+            // console.log('-------- upload success --------');
+            // console.log(jsonData);
+            // console.log('field: ' + field);
         },
 
         cropUploadFail(status, field) {
-            console.log('-------- upload fail --------');
-            console.log(status);
-            console.log('field: ' + field);
+            // console.log('-------- upload fail --------');
+            // console.log(status);
+            // console.log('field: ' + field);
         },
 
         GetTeacherBaseData() {
@@ -245,7 +245,7 @@ export default {
                         path: '/api/teacher/updateteacher/' + _this.teacherDialog.curId,
                         data: teacher,
                         fn: function (result) {
-                            if (result === 200) {
+                            if (result === 1200) {
                                 _this.GetTeacherBaseData();
                                 _this.$message({
                                     message: '更新基础信息成功',

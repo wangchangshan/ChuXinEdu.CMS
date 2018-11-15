@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System.Data;
 using System.Net.Http;
 using System.Text;
+using ChuXinEdu.CMS.Server.Filters;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -55,25 +56,23 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string signToken = "";
             if(result == "1200")
             {
-                signToken = rsa.Sign(loginCode);
+                string ip = HttpContext.Connection.RemoteIpAddress.ToString(); 
+                signToken = rsa.Sign(loginCode + ip);
                 result = _chuxinWorkFlow.SaveUserToken(loginCode, signToken);
             }
-
-            // dynamic obj = new {
-            //     code = "1200",
-            //     data = result,
-            // };
-            // string reslutJson = JsonConvert.SerializeObject(obj);            
-            // return reslutJson;
             
             return new JsonResult(new { code = result, data = signToken });
         }
 
-        // GET api/account/login
-        [HttpGet]
-         public ActionResult<string> A401([FromBody] dynamic loginForm)
-         {
-             return "401";
-         }
+        // POST api/account/logout
+        [HttpPost("{logincode}")]
+        [MyAuthenFilter]
+        public ActionResult<string> LogOut(string loginCode)
+        {
+            string result = string.Empty;
+            result = _chuxinWorkFlow.LogOut(loginCode);
+            
+            return new JsonResult(new { code = result});
+        }
     }   
 }

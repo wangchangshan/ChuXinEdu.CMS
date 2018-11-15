@@ -14,6 +14,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [登陆]
         string LoginVerify(string loginCode, string pwd);
 
+         // [登出]
+        string LogOut(string loginCode);
+
         // [登陆 签名]
         string SaveUserToken(string loginCode, string signToken);
 

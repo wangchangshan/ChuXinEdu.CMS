@@ -200,7 +200,7 @@ export default {
                 path: '/api/upload/artwork2yes',
                 data: fileUIds,
                 fn: function (result) {
-                    if (result == 200) {
+                    if (result == 1200) {
                         _this.getAllArtWorks();
                         _this.$message({
                             message: '全部上传成功',
@@ -239,7 +239,7 @@ export default {
                     type: 'delete',
                     path: '/api/upload/delachievement/' + achievementId,
                     fn: function (result) {
-                        if (result === 200) {
+                        if (result === 1200) {
                             _this.getAllArtWorks();
                             _this.$message({
                                 message: '删除成功！',

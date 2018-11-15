@@ -79,8 +79,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             // 只显示 当前学生正常在学的，课时数1到5节的学生。（课时数为0，并且没有其他可用套餐，则学生状态会在签到的时候修改为03 结束未续费）
             DataTable dt = _chuxinQuery.GetCourseToFinishList();
-            string reslutJson = JsonConvert.SerializeObject(dt);        
-            return reslutJson;   
+            string resultJson = JsonConvert.SerializeObject(dt);        
+            return resultJson;   
         }
 
         /// <summary>

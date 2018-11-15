@@ -51,7 +51,7 @@
                 </a>
             </li>
             <li class="li-badge">
-                <a href='#/courseAttendanceBook'>
+                <a href='#/courseSignIn'>
                     <el-badge :value="$store.state.header.toRecordCount" class="item two">
                         <i class="fa fa-calendar-check-o"></i>
                             <!-- 待签到数目 -->
@@ -91,21 +91,24 @@
 
 <script>
 import {
+    axios,
     LocalDB
 } from '@/utils/'
+
 export default {
     name: "head-nav",
     data() {
         return {
             isVertical: false,
             isHorizontal: true,
-            userinfo: '',
+            userInfo: '',
             path: '',
             breadcrumbList: '',
         }
     },
     created() {
-        this.userinfo = LocalDB.instance('USER_').getValue('BASEINFO');
+        let strUser = LocalDB.instance('USER_').getValue('BASEINFO').value;
+        this.userInfo = JSON.parse(strUser);
     },
     watch: {
         $route() {
@@ -124,23 +127,23 @@ export default {
 
             if (current.path == '/dashboard') {
                 this.breadcrumbList = [current];
-            } else if (current.path == '/studentDetailMain') {
+            } else if (current.path == '/studentDetail') {
                 current.title = this.$route.query.studentname
                 this.breadcrumbList = [{
                     title: '首 页',
                     path: '/dashboard'
                 }, {
                     title: '学生列表',
-                    path: '/studentList'
+                    path: '/student'
                 }].concat(current);
-            } else if (current.path == '/teacherDetailMain') {
+            } else if (current.path == '/teacherDetail') {
                 current.title = this.$route.query.teacherName
                 this.breadcrumbList = [{
                     title: '首 页',
                     path: '/dashboard'
                 }, {
                     title: '教师列表',
-                    path: '/teacherList'
+                    path: '/teacher'
                 }].concat(current);
             } else {
                 this.breadcrumbList = [{
@@ -159,7 +162,7 @@ export default {
 
         showStudentDetail(studentCode, studentName) {
             this.$router.push({
-                path: '/studentDetailMain',
+                path: '/studentDetail',
                 query: {
                     studentcode: studentCode,
                     studentname: studentName
@@ -168,6 +171,12 @@ export default {
         },
 
         logout() {
+            axios({
+                type: 'post',
+                path: '/api/account/logout/' + this.userInfo.username,
+                fn: result => {}
+            });
+            
             this.$store.state.menu.isCollapse = false;
             LocalDB.instance('MENU_').remove("LEFTMENU");
             LocalDB.instance('USER_').remove('BASEINFO');

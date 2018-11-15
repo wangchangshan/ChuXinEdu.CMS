@@ -207,7 +207,7 @@ export default {
                         path: '/api/coursepackage',
                         data: _this.dialog.packageDetail,
                         fn: function (result) {
-                            if (result == 200) {
+                            if (result == 1200) {
                                 _this.getPackageList();
                                 _this.dialog.isShow = false;
                             }
@@ -263,7 +263,7 @@ export default {
                         path: '/api/coursepackage/' + _this.dialog.currentId,
                         data: _this.dialog.packageDetail,
                         fn: function (result) {
-                            if (result == 200) {
+                            if (result == 1200) {
                                 _this.$message({
                                     type: 'success',
                                     message: '修改成功！'
@@ -283,7 +283,7 @@ export default {
                 type: 'delete',
                 path: '/api/coursepackage/' + _this.dialog.currentId,
                 fn: function (result) {
-                    if (result == 200) {
+                    if (result == 1200) {
                         _this.$message({
                             type: 'success',
                             message: '删除成功！'

@@ -47,6 +47,7 @@ namespace ChuXinEdu.CMS.Server
             {
                 // 实例注册
                 // options.Filters.Add(new MyAuthenFilter());
+                options.Filters.Add(new MyReturnValueFilter());
                 // 类型注册
                 // options.Filters.Add(typeof(MyAuthenFilter)); // 添加自定义过滤器 （全局）
             })

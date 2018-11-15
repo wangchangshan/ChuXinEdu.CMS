@@ -173,7 +173,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             foreach (int studentCourseId in studentCourseIds)
             {
                 result = _chuxinWorkFlow.SingleRemoveCourse(studentCourseId);
-                if(result != "200")
+                if(result != "1200")
                 {
                     break;
                 }

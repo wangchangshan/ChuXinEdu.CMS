@@ -263,7 +263,7 @@ export default {
                         path: '/api/studenttemp/addstudent',
                         data: _this.studentDialog.baseInfo,
                         fn: function (result) {
-                            if (result == 200) {
+                            if (result == 1200) {
                                 _this.getList();
                                 _this.$message({
                                     message: '添加试听学生成功',
@@ -300,7 +300,7 @@ export default {
                         path: '/api/studenttemp/updatestudent/' + _this.studentDialog.curId,
                         data: _this.studentDialog.baseInfo,
                         fn: function (result) {
-                            if (result == 200) {
+                            if (result == 1200) {
                                 _this.getList();
                                 _this.$message({
                                     message: '修改成功',
@@ -320,7 +320,7 @@ export default {
                 type: 'delete',
                 path: '/api/studenttemp/removestudent/' + id,
                 fn: function (result) {
-                    if (result == 200) {
+                    if (result == 1200) {
                         _this.getList();
                         _this.$message({
                             message: '删除成功',
@@ -337,7 +337,7 @@ export default {
                 type: 'put',
                 path: '/api/studenttemp/trialsuccess/' + id,
                 fn: function (result) {
-                    if (result == 200) {
+                    if (result == 1200) {
                         _this.getList();
                         _this.$message({
                             message: '已经变更为正式学员！',
@@ -354,7 +354,7 @@ export default {
                 type: 'put',
                 path: '/api/studenttemp/trialfail/' + id,
                 fn: function (result) {
-                    if (result == 200) {
+                    if (result == 1200) {
                         _this.getList();
                         _this.$message({
                             message: '已经标记为试听失败学生',
@@ -367,7 +367,7 @@ export default {
 
         showStudentDetail(studentCode, studentName) {
             this.$router.push({
-                path: '/studentDetailMain',
+                path: '/studentDetail',
                 query: {
                     studentcode: studentCode,
                     studentname: studentName

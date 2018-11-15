@@ -106,7 +106,7 @@ export default {
                     path: '/api/student/feeback/' + this.studentCode,
                     data: _this.feeBackData,
                     fn: function (result) {
-                        if (result == 200) {
+                        if (result == 1200) {
                             _this.prepareFeeback();
                             _this.$message({
                                 message: '退费成功',

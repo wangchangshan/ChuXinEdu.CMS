@@ -268,7 +268,7 @@ export default {
                         path: '/api/course/putsignin',
                         data: course,
                         fn: function (result) {
-                            if (result == 200) {
+                            if (result == 1200) {
                                 _this.$message({
                                     message: '签到成功',
                                     type: 'success'
@@ -322,7 +322,7 @@ export default {
                 path: '/api/course/putsigninbatch',
                 data: courseList,
                 fn: function (result) {
-                    if (result === 200) {
+                    if (result === 1200) {
                         _this.$message({
                             message: '批量签到成功！',
                             type: 'success'
@@ -351,7 +351,7 @@ export default {
                         StudentCourseId: studentCourseId
                     },
                     fn: function (result) {
-                        if (result === 200) {
+                        if (result === 1200) {
                             _this.$message({
                                 message: '请假成功！',
                                 type: 'success'

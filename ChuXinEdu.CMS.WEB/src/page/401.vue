@@ -4,8 +4,8 @@
       <div class="bullshit">
         <div class="bullshit__oops">初心工作室</div>
         <div class="bullshit__headline">{{ message }}</div>
-        <div class="bullshit__info">您没有权限访问当前页面</div>
-        <a href="#/" class="bullshit__return-login">重新登陆</a><a href="#/dashboard" class="bullshit__return-home">  返回首页</a>
+        <div class="bullshit__info">您太久没有活动了，请重新登陆</div>
+        <a href="#/" class="bullshit__return-login">重新登陆</a>
       </div>
     </div>
   </div>
@@ -74,24 +74,6 @@ export default {
       animation-name: slideUp;
       animation-duration: 0.5s;
       animation-delay: 0.2s;
-      animation-fill-mode: forwards;
-    }
-    &__return-home {
-      display: block;
-      float: left;
-      width: 110px;
-      height: 36px;
-      background: #1482f0;
-      border-radius: 100px;
-      text-align: center;
-      color: #ffffff;
-      opacity: 0;
-      font-size: 14px;
-      line-height: 36px;
-      cursor: pointer;
-      animation-name: slideUp;
-      animation-duration: 0.5s;
-      animation-delay: 0.3s;
       animation-fill-mode: forwards;
     }
     &__return-login {

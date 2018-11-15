@@ -48,26 +48,26 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public ActionResult<string> GetCourseTeacherList()
         {
-            string reslutJson = string.Empty;
+            string resultJson = string.Empty;
             DataTable dt = _chuxinQuery.GetAllCourseRoleTeachers();
             if(dt!= null)
             {
-                reslutJson = JsonConvert.SerializeObject(dt);
+                resultJson = JsonConvert.SerializeObject(dt);
             }
-			return reslutJson;
+			return resultJson;
         }
 
         // GET api/teacher/getteacherwithrole
         [HttpGet("{roleCode}")]
         public ActionResult<string> GetTeacherWithRole(string roleCode)
         {
-            string reslutJson = string.Empty;
+            string resultJson = string.Empty;
             DataTable dt = _chuxinQuery.GetTeacherListWithRole(roleCode);
             if(dt!= null)
             {
-                reslutJson = JsonConvert.SerializeObject(dt);
+                resultJson = JsonConvert.SerializeObject(dt);
             }
-			return reslutJson;
+			return resultJson;
         }
 
         // GET api/teacher/getteacherbase
@@ -99,9 +99,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             settings.Formatting = Formatting.Indented;
-            string reslutJson = JsonConvert.SerializeObject(obj,settings);
+            string resultJson = JsonConvert.SerializeObject(obj,settings);
 
-            return reslutJson;
+            return resultJson;
         }
 
         /// <summary>

@@ -79,18 +79,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 studentList.Add(studentVM);
             }
 
-            dynamic obj = new {
-                Code = "1200",
-                TotalCount = totalCount,
-                StudentList = studentList
+            var settings = new JsonSerializerSettings()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                DateFormatString = "yyyy-MM-dd"
             };
 
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            settings.Formatting = Formatting.Indented;
-            string reslutJson = JsonConvert.SerializeObject(obj,settings);
-
-            return reslutJson;
+            return new JsonResult(new {
+                TotalCount = totalCount,
+                Data = studentList
+            }, settings);
         }
 
         /// <summary>
@@ -113,13 +111,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet("{studentName}")]
         public ActionResult<string> GetStudentForRecommend(string studentName)
         {
-            string reslutJson = string.Empty;
+            string resultJson = string.Empty;
             DataTable dt = _chuxinQuery.GetStudentForRecommend(studentName);
             if(dt!= null)
             {
-                reslutJson = JsonConvert.SerializeObject(dt);
+                resultJson = JsonConvert.SerializeObject(dt);
             }
-			return reslutJson;   
+            return resultJson;
         }
         
          /// <summary>
@@ -233,8 +231,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public ActionResult<string> GetAuxiliaryInfo(string studentCode)
         {
             DataTable dt = _chuxinQuery.GetStudentAuxiliaryInfo(studentCode);
-            string reslutJson = JsonConvert.SerializeObject(dt);
-            return reslutJson;
+            string resultJson = JsonConvert.SerializeObject(dt);
+            return resultJson;
         }
 
         /// <summary>
@@ -296,9 +294,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public ActionResult<string> GetBirthdayNotify()
         {
             DataTable dt = _chuxinQuery.GetBirthdayIn7Days();
-            string reslutJson = JsonConvert.SerializeObject(dt);
-			//return Json(new { result = "Success", returnObj = reslutJson });            
-            return reslutJson;            
+            string resultJson = JsonConvert.SerializeObject(dt);           
+            return resultJson;            
         }
 
         /// <summary>

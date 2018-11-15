@@ -335,7 +335,7 @@ export default {
                 path: '/api/course/artworksupplement',
                 data: course,
                 fn: function (result) {
-                    if (result == 200) {
+                    if (result == 1200) {
                         _this.$message({
                             message: '全部上传成功',
                             type: 'success'
@@ -577,7 +577,7 @@ export default {
                 path: '/api/course/coursesupplement',
                 data: this.supplementDialog.newCourseList,
                 fn: result => {
-                    if (result === 200) {
+                    if (result === 1200) {
                         this.$message({
                             message: '补录课程成功！',
                             type: 'success'

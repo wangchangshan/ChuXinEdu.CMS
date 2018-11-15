@@ -43,6 +43,28 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string LogOut(string loginCode)
+        {
+            string result = "";
+            using (BaseContext context = new BaseContext())
+            {
+                var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode)
+                                            .FirstOrDefault();
+                if (sysUser == null)
+                {
+                    result = "1401";
+                }
+                else
+                {
+                    result = "1200";
+                    sysUser.LastLoginTime = DateTime.Now;
+                    sysUser.Token = "";
+                    context.SaveChanges();
+                }
+            }
+            return result;
+        }
+
         public string SaveUserToken(string loginCode, string signToken)
         {
             string result = "1200";
@@ -74,7 +96,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         // 排课
         public string BatchStudentsCourseArrange(CA_C_STUDENTS_MAIN caInfo)
         {
-            string result = "200";
+            string result = "1200";
             _logger.LogInformation("批量排课开始");
             try
             {
@@ -181,7 +203,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "排课错误, 批量排课撤销");
-                result = "500";
+                result = "1500";
             }
 
             return result;
@@ -190,7 +212,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         // 说明：试听学生没有请假入口，只有正式学生可以请假
         public string SingleQingJia(int studentCourseId)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -223,7 +245,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     if (courseArrange == null)
                     {
                         _logger.LogWarning("没有找到当前课程的arrange信息！！！！！！");
-                        return "202";
+                        return "1409";
                     }
 
                     _logger.LogInformation("课程arrange中的排课课程数为：{0}", courseArrange.CourseTotalCount);
@@ -254,7 +276,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "请假失败！");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
@@ -262,7 +284,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         // 说明：试听学生没有请假入口，只有正式学生可以请假
         public string RestoreSingleQingJia(int studentCourseId)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -357,14 +379,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "撤销请假失败！");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string SingleRemoveCourse(int studentCourseId)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -448,7 +470,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         else
                         {
                             _logger.LogWarning("找不到StudentCourseArrange中对应当前课程的排课记录！！！！！！！！！！！");
-                            return "202";
+                            return "1409";
                         }
 
 
@@ -469,14 +491,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除单节排课记录错误");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string AddHoliday(SysHoliday holiday)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 _logger.LogInformation("添加假期开始");
@@ -564,7 +586,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "添加假期失败！");
-                result = "500";
+                result = "1500";
             }
 
             return result;
@@ -573,7 +595,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         public string RemoveHoliday(string strDay)
         {
             // 说明： 在一个时间段，一个学生只能排课一次，否则涉及放假逻辑需要修改
-            string result = "200";
+            string result = "1200";
             try
             {
                 DateTime theDay = DateTime.Parse(strDay);
@@ -705,14 +727,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除假期失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string SignInSingle(CL_U_SIGN_IN course)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 int courseId = course.CourseListId;
@@ -724,7 +746,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     if (scl == null)
                     {
                         _logger.LogInformation("没有找到当前待销课课程!!!!!!!!!! return， courseId: {0}", courseId);
-                        return "201";
+                        return "1409";
                     }
                     // 1. 更新课程记录表的状态
                     scl.AttendanceStatusCode = "01";
@@ -768,7 +790,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         if (sca == null)
                         {
                             _logger.LogWarning("没有找到当前课程的arrange信息！！！！！  return. ");
-                            return "202";
+                            return "1409";
                         }
                         _logger.LogInformation("当前课程所在arrange剩余课程数为：{0}", sca.CourseRestCount);
                         if (sca.CourseRestCount <= 1)
@@ -835,14 +857,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "单节销课错误! 课程ID：{0}", course.CourseListId);
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string SignInBatch(List<CL_U_SIGN_IN> courseList)
         {
-            string result = "200";
+            string result = "1200";
 
             _logger.LogInformation("批量销课开始");
             foreach (var item in courseList)
@@ -949,7 +971,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "销课出错，课程ID：{0}", item.CourseListId);
-                        result = "202"; // 部分错误
+                        result = "1500"; // 部分错误
                     }
                 }
                 _logger.LogInformation("批量销课结束");
@@ -959,7 +981,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public string SupplementHistoryCourse(List<StudentCourseList> courseList)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -994,7 +1016,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             else
                             {
                                 _logger.LogWarning("课程套餐数据异常！！套餐ID: {0}，剩余restCourseCount: {1}， 本次提交补录课程数目：{2}", studentCoursePackageId, package.RestCourseCount, i.ToString());
-                                return "201";
+                                return "1409";
                             }
                         }
                         else if (package.FlexCourseCount - i > 0)
@@ -1005,7 +1027,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         else
                         {
                             _logger.LogWarning("课程套餐数据异常！！套餐ID: {0}，剩余FlexCourseCount: {1}， 本次提交补录课程数目：{2}", studentCoursePackageId, package.FlexCourseCount, i.ToString());
-                            return "201";
+                            return "1409";
                         }
 
                         context.SaveChanges();
@@ -1015,13 +1037,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "补录课程信息失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
         public string SupplementArtWork(CL_U_SIGN_IN course)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 int courseId = course.CourseListId;
@@ -1051,14 +1073,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新作品失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string SupplementArtWork(string[] uids)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1079,7 +1101,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "批量上传作品失败！");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
@@ -1105,7 +1127,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public string UploadAvatar(string code, string path, string type)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1127,14 +1149,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "上传头像");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string RemoveTempArtWork(int courseId, string uid, string rootPath)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1158,14 +1180,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除临时作品");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string RemoveArtWorkById(int id, string rootPath)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1186,14 +1208,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除作品失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string AddStudentCoursePackage(StudentCoursePackage scp)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1205,14 +1227,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "添加学生套餐失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string RemoveStudentCoursePackage(int studentCoursePackageId)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1223,7 +1245,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     if (courseList.Count > 0)
                     {
                         // 已经上课 不能删除
-                        result = "201";
+                        result = "1600";
                     }
                     else
                     {
@@ -1252,13 +1274,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除学生套餐失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
         public string UpdateStudentCoursePackage(int id, StudentCoursePackage package)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1280,14 +1302,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新学生套餐失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string AddStudentBaseInfo(Student student)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1299,14 +1321,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "新增学生失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string AddTempStudent(StudentTemp student)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1318,14 +1340,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "新增临时学生失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string UpdateStudentBaseInfo(string studentCode, Student student)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1347,14 +1369,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新学生基本信息失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string SetStudentFeeBack(string studentCode, List<StudentCoursePackage> packageList)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1383,14 +1405,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "学生退费失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string UpdateStudentTrialOtherCourse(string studentCode, string curVal)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1406,14 +1428,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新学生开启新试听失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string UpdateTempStudent(int id, StudentTemp student)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1433,14 +1455,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新临时学生信息失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string TempStudentTrialFail(int id)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1454,14 +1476,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新学生试听结果失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string TempStudentTrialSuccess(int id)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1493,14 +1515,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新学生试听结果失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string RemoveTempStudent(int id)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1513,7 +1535,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除临时学生失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
@@ -1521,7 +1543,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #region sys course package
         public string AddSysCoursePackage(SysCoursePackage newPackage)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1533,14 +1555,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "添加系统套餐失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string UpdateSysCoursePackage(int id, SysCoursePackage package)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1559,14 +1581,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新系统套餐失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string RemoveSysCoursePackage(int id)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1579,7 +1601,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除系统套餐失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
@@ -1588,7 +1610,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #region teacher
         public string AddTeacher(Teacher teacher)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1600,14 +1622,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "添加教师失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string UpdateTeacher(int id, Teacher teacher)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1628,7 +1650,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新教师失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
@@ -1637,7 +1659,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public string AddNewRecommend(StudentRecommend srd)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1649,14 +1671,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "添加学生介绍信息失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string RemoveStudentRecommend(int id)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1672,14 +1694,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除学生介绍信息失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string AddTeacherRole(string roleCode, List<string> teacherCodes)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1705,14 +1727,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "添加角色失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
 
         public string RemoveTeacherRole(string roleCode, List<string> teacherCodes)
         {
-            string result = "200";
+            string result = "1200";
             try
             {
                 using (BaseContext context = new BaseContext())
@@ -1731,7 +1753,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "删除角色失败");
-                result = "500";
+                result = "1500";
             }
             return result;
         }
