@@ -23,7 +23,7 @@
 
 ```bash
 ## 安装
-[root@izm5e17v57iiomu87 downloads]#sudo yum -y install mysql-community-server
+[root@izm5e17v57iiomu87 downloads]# sudo yum -y install mysql-community-server
 
 ## 重启服务
 service mysqld restart
@@ -80,6 +80,17 @@ GRANT ALL PRIVILEGES ON *.* TO 'test'@'localhost';
 
 ## 刷新权限
 FLUSH PRIVILEGES;
+```
+> 设置防火墙，允许远程访问：
+``` bash
+## 设置一下防火墙，允许远程连接，mysql端口为3306
+[root@izm5e17v57iiomu87 ~]# iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 3306 -j ACCEPT
+
+## 查看防火墙状态，3306端口是否可以访问
+[root@izm5e17v57iiomu87 ~]# iptables -L -n
+
+## 如果想要限制访问：
+[root@izm5e17v57iiomu87 ~]# iptables -D INPUT -p tcp -m state --state NEW -m tcp --dport 3306 -j ACCEPT
 ```
 
 #### 1.6 权限示例(mysql-shell)
