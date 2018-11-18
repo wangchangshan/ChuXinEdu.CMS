@@ -133,3 +133,30 @@ collation-server=utf8mb4_general_ci
 ## 重启服务已使配置生效
 [root@izm5e17v57iiomu87 ~]# service mysqld restart
 ```
+
+#### 1.8 配置阿里云上的安全组规则，使MySQL(3306)可远程访问
+
+---
+
+### 2. .Net Core运行环境安装
+
+#### 2.1 注册微软产品，安装需要的依赖
+
+```bash
+sudo rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm
+```
+
+### 2.2 安装.Net RunTime
+
+>官方参考 :[为支持的 CentOS 和 Oracle Linux 分发/版本（64 位）安装 .NET Core](https://docs.microsoft.com/zh-cn/dotnet/core/linux-prerequisites?tabs=netcore2x)
+
+```bash
+## 更新yum，使其含有最新的 Net运行时
+sudo yum update
+
+## 通过yum安装运行时
+sudo yum install aspnetcore-runtime-2.1
+```
+> 说明：The previous command will install the .NET Core Runtime Bundle, which includes the .NET Core runtime and the ASP.NET Core runtime. To install just the .NET Core runtime, use the dotnet-runtime-2.1 package.
+
+### 2.3 安装Nginx

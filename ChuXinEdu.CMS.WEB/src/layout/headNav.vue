@@ -61,11 +61,11 @@
             <li class="li-badge">
                 <a>
                 <el-popover
-                    width="430"
+                    width="450"
                     trigger="hover">
                     <el-table :data="$store.state.header.toFinishList" stripe size="mini">                        
                         <el-table-column width="80" property="student_name" label="姓名"></el-table-column>
-                        <el-table-column width="190" property="package_name" label="套餐名称"></el-table-column>
+                        <el-table-column width="210" property="package_name" label="套餐名称"></el-table-column>
                         <el-table-column width="70" property="rest_course_count" label="剩余课时" align='center'>
                             <template slot-scope="scope">  
                                 <span style="color:#f56767;font-weight:600"> {{ scope.row.rest_course_count }}</span>
