@@ -21,7 +21,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
     [EnableCors("any")]
-    [MyAuthenFilter]
     [ApiController]
     public class UploadController : ControllerBase
     {
@@ -295,9 +294,59 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return result;
         }
 
+        /// <summary>
+        /// 获取图片 Get api/upload/getimage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetImage(int id, string type)
+        {
+            string docPath = string.Empty;
+            type = type.ToLower();
+            switch (type)
+            {
+                case "artwork":
+                    docPath = _chuxinQuery.GetArtWorkTruePath(id);
+                break;
+                
+                case "avatar-s":
+                    docPath = _chuxinQuery.GetAvatarTruePath(id, "student");
+                break;
+                case "avatar-t":
+                    docPath = _chuxinQuery.GetAvatarTruePath(id, "teacher");
+                break;
+
+                default:
+                break;
+            }
+            if(string.IsNullOrEmpty(docPath))
+            {
+                if(type.IndexOf("avatar") > -1 )
+                {
+                    docPath = "/image/avatar-default.png";
+                }
+                else 
+                {
+                    return NotFound();
+                }
+            }
+            string truePath = _hostingEnvironment.ContentRootPath + docPath;
+
+            if(System.IO.File.Exists(truePath))
+            {
+                var imgByte = System.IO.File.ReadAllBytes(truePath);
+                //从图片中读取流
+                var imgStream = new MemoryStream(await System.IO.File.ReadAllBytesAsync(truePath));
+                return File(imgStream, "image/jpg");
+            }
+            else
+            {
+                return NotFound();
+            }    
+        }
 
         // /// <summary>
-        // /// 获取图片 DELETE api/course/getimage
+        // /// 获取图片 
         // /// </summary>
         // /// <returns></returns>
         // [HttpGet]

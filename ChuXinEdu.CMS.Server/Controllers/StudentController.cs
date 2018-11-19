@@ -74,7 +74,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     dtScpSimplify.Rows.Remove(dr);
                     ssList.Add(ss);
                 }
-                studentVM.StudentAvatarPath = accessUrlHost + "api/course/getimage?id=" + student.Id + "&type=avatar-s";
+                studentVM.StudentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + student.Id + "&type=avatar-s";
                 studentVM.StudentCourseCategory = ssList;
                 studentList.Add(studentVM);
             }
@@ -174,7 +174,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 int id = baseInfo.StudentInfo.Id;
                 string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-                baseInfo.StudentInfo.StudentAvatarPath = accessUrlHost + "api/course/getimage?id=" + id + "&type=avatar-s&rnd="+ System.Guid.NewGuid().ToString("N");
+                baseInfo.StudentInfo.StudentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s&rnd="+ System.Guid.NewGuid().ToString("N");
             }
 
             baseInfo.CoursePackageList =  _chuxinQuery.GetStudentCoursePackage(studentCode);
@@ -278,7 +278,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             foreach (var artwork in artworks)
             {
                 aw = mapper.Map<StudentArtwork, ART_WORK_R_LIST>(artwork);
-                aw.ShowURL = accessUrlHost + "api/course/getimage?id=" + artwork.ArtworkId + "&type=artwork";
+                aw.ShowURL = accessUrlHost + "api/upload/getimage?id=" + artwork.ArtworkId + "&type=artwork";
 
                 artWorkList.Add(aw);
             }

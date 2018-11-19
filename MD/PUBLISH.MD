@@ -117,11 +117,21 @@ http {
         # 反向代理，匹配所有的 api请求。 
         # http://localhost:8077为部署在IIS上的webapi项目站点
         location ~ /api/* {
-           proxy_pass   http://localhost:8077;
+            proxy_pass   http://localhost:8077;
+
+            # 配置远程地址，以便后端项目能够获取真实的客户端ip地址
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header REMOTE-HOST $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
     }
 }
 
+```
+```bash
+## 重启nginx 使配置生效
+nginx -s reload
 ```
 > 说明：也可以将Nginx只作为反向代理服务器，在 location / {} 内配置proxy_pass为 IIS上的前端站点地址（http://localhost:8078）
 
@@ -186,15 +196,52 @@ http {
         # 反向代理，匹配所有的 api请求。 
         # http://localhost:5000为4.1中的api site地址
         location ~ /api/* {
-           proxy_pass   http://localhost:5000;
+            proxy_pass   http://localhost:5000;
+
+            # 配置远程地址，以便后端项目能够获取真实的客户端ip地址
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header REMOTE-HOST $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
     }
 }
-
 ```
-
+```bash
+## 重启nginx 使配置生效
+nginx -s reload
+```
 #### 4.3 跨域问题
 
 > 同 2.4配置
 
+---
+
+### 5. 项目部署 CentOS7.4（前端 Nginx + 后端使用netcore内置的 KestrelServer）
+
+#### 5.1 前期准备
+1. 修改前后端项目的公钥和私钥
+2. 前后端项目分别打包。`npm run build` `dotnet publish`
+3. 修改api项目的配置文件。包括：数据库链接串、AccessUrl。
+4. Windows下通过 xftp（linux下通过 scp）将前后端项目上传到 CentOS服务器（创建目录 `/home/myproject/chuxin_live`）
+5. Windows下通过 xshell（linux下通过ssh）远程centos，准备部署环境：MySql、Nginx、NetCore RunTime。
+6. 远程连接CentOS数据库，创建所需数据库。
+
+#### 5.2 配置Nginx（前端以及后端反向代理）
+> 说明：通过yum安装的nginx，配置文件在/etc/nginx/下
+```bash
+cd /etc/nginx
+# 配置nginx 参见：4.2
+vi nginx.config
+```
+```bash
+## 重启nginx 使配置生效
+nginx -s reload
+```
+
+#### 5.3 转到后端项目目录运行项目
+```bash
+dotnet xxx.dll
+```
+#### 5.4 OK
 ---

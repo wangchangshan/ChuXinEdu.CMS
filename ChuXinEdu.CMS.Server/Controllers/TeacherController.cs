@@ -79,7 +79,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 int id = teacher.Id;
                 string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-                teacher.TeacherAvatarPath = accessUrlHost + "api/course/getimage?id=" + id + "&type=avatar-t&rnd="+ System.Guid.NewGuid().ToString("N");
+                teacher.TeacherAvatarPath = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-t&rnd="+ System.Guid.NewGuid().ToString("N");
             }
             return teacher;
         }

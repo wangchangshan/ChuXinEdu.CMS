@@ -31,6 +31,7 @@ service mysqld restart
 ## 查看版本信息
 mysql -V
 ```
+> 说明：MySql默认是自启动的
 
 #### 1.3 root账号密码修改
 ```bash
@@ -134,7 +135,55 @@ collation-server=utf8mb4_general_ci
 [root@izm5e17v57iiomu87 ~]# service mysqld restart
 ```
 
-#### 1.8 配置阿里云上的安全组规则，使MySQL(3306)可远程访问
+#### 1.8 定时备份
+1. 创建备份目录
+```bash
+mkdir /home/dbback
+cd /home/dbback
+```
+2. 编写数据库备份脚本 database_mysql_shell.sh
+```bash
+vi database_mysql_shell.sh
+
+#!/bin/bash
+DATE=`date +%Y%m%d_%H%M%S`          #every minute
+DATABASE=dbname                     #database name
+BACKUP_PATH=/backup/mysqldata       #backup path
+
+#backup command 备份并压缩 （Mysql5.6以后命令行界面上使用明文密码）
+/usr/bin/mysqldump $DATABASE | gzip > ${BACKUP_PATH}\/${DATABASE}_${DATE}.sql.gz
+
+#just backup the latest 10 days
+
+find ${BACKUP_PATH} -mtime +10 -name "${DATABASE}_*.sql.gz" -exec rm -f {} \;
+```
+3. 修改my.cnf配置文件
+```bash
+vi /etc/my.cnf
+
+## 添加以下内容，数据库用户名和密码。保存退出。
+[mysqldump]
+user=root
+password=root
+```
+4. 重启mysql服务
+```bash
+service mysqld retart
+```
+5. 为备份脚本添加可执行权限
+```bash
+chmod u+x database_mysql_shell.sh
+```
+6. 添加计划任务
+```bash
+crontab -e
+
+## 在页面中编写以下内容并保存退出
+00 3 * * * /root/database_backup_shell.sh
+```
+> 以上实现每天凌晨三点自动执行编写的备份脚本，备份mysql数据库到/backup/mysqldata，且只保留最近10天的数据库备份。
+
+#### 1.9 配置阿里云上的安全组规则，使MySQL(3306)可远程访问
 
 ---
 
@@ -146,9 +195,9 @@ collation-server=utf8mb4_general_ci
 sudo rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm
 ```
 
-### 2.2 安装.Net RunTime
+#### 2.2 安装.Net RunTime
 
->官方参考 :[为支持的 CentOS 和 Oracle Linux 分发/版本（64 位）安装 .NET Core](https://docs.microsoft.com/zh-cn/dotnet/core/linux-prerequisites?tabs=netcore2x)
+> 官方参考：[为支持的 CentOS 和 Oracle Linux 分发/版本（64 位）安装 .NET Core](https://docs.microsoft.com/zh-cn/dotnet/core/linux-prerequisites?tabs=netcore2x)
 
 ```bash
 ## 更新yum，使其含有最新的 Net运行时
@@ -159,4 +208,56 @@ sudo yum install aspnetcore-runtime-2.1
 ```
 > 说明：The previous command will install the .NET Core Runtime Bundle, which includes the .NET Core runtime and the ASP.NET Core runtime. To install just the .NET Core runtime, use the dotnet-runtime-2.1 package.
 
-### 2.3 安装Nginx
+---
+### 3 安装Nginx
+
+#### 3.1 环境准备
+```bash
+## gcc 安装 nginx 需要先将官网下载的源码进行编译，编译依赖 gcc 环境 
+yum install gcc-c++
+
+## PCRE pcre-devel 是一个Perl库，包括 perl 兼容的正则表达式库。nginx 的 http 模块使用 pcre 来解析正则表达式，所以需要在 linux 上安装 pcre 库，pcre-devel 是使用 pcre 开发的一个二次开发库。
+yum install -y pcre pcre-devel
+
+## zlib 提供了很多种压缩和解压缩的方式， nginx 使用 zlib 对 http 包的内容进行 gzip
+yum install -y zlib zlib-devel
+
+## OpenSSL 是一个强大的安全套接字层密码库，囊括主要的密码算法、常用的密钥和证书封装管理功能及 SSL 协议，并提供丰富的应用程序供测试或其它目的使用。nginx 不仅支持 http 协议，还支持 https（即在ssl协议上传输http）
+yum install -y openssl openssl-devel
+
+## 查看已经安装过的软件包
+yum list installed
+```
+#### 3.2 yum包准备
+> 这里我们通过简单的yum包管理器进行安装Nginx
+```bash
+## 查看yum 中是否含有nginx的安装包 
+## 更新当前yum包 
+sudo yum update
+
+## 查看是否有nginx包
+yum search nginx
+
+## 如果没有nginx包，可以通过Nginx官网提供的Centos源地址，添加nginx源
+sudo rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+```
+
+#### 3.3 通过yum安装
+```bash
+## 安装
+sudo yum install -y nginx
+
+## 启动Nginx服务
+sudo systemctl start nginx.service  
+# or 
+service nginx start
+
+## 设置nginx开机启动
+sudo systemctl enable nginx.service
+```
+> 说明：Nginx的默认安装配置文件在 `/etc/nginx`路径下的 `nginx.conf`
+
+#### 3.4 配置阿里云上的安全组规则，开放 HTTP(80)端口
+
+Finish
+---

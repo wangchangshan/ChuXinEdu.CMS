@@ -31,7 +31,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                             .FirstOrDefault();
                 if (sysUser == null)
                 {
-                    result = "1401";
+                    result = "1101";
                 }
                 else
                 {
