@@ -2,7 +2,7 @@
 <div class="info_container">
     <el-row class="info_row row" :gutter="10" style="margin:10px">
         <el-container>
-            <el-aside width="260px">
+            <el-aside width="220px">
                 <div class="avatar-panel">
                     <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="300" :height="300" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
                     </my-avatar>
@@ -12,7 +12,7 @@
             </el-aside>
             <el-main style="padding:10px; padding-bottom:0">
                 <el-row :gutter="10">
-                    <el-col :span="12" style="min-width:250px">
+                    <el-col :xs="18" :sm="12" :lg="12" style="min-width:250px">
                         <el-card shadow="never" class="card-student-base">
                             <el-form :label-width="studentDialog.formLabelWidth" :label-position='studentDialog.labelPosition' size="mini" label-suffix="：">
                                 <el-form-item label="姓名">
@@ -42,16 +42,16 @@
                             </el-form>
                         </el-card>
                     </el-col>
-                    <el-col :span="12">
+                    <el-col :xs="6" :sm="12" :lg="12" >
                         <el-card shadow="never" class="card-student-course">
                             <div class="dataarea">
                                 <p class="gtitle"><i class="el-icon-date el-icon--left"></i>课程数据</p>
                                 <el-table :data="pageData.courseOverview" border size="mini" :summary-method="getSummaries" show-summary style="width: 100%; margin-top: 20px">
-                                    <el-table-column prop="courseCategoryName" label="课程名称" align="center" width="70">
+                                    <el-table-column prop="courseCategoryName" label="类别" align="center" width="60">
                                     </el-table-column>
-                                    <el-table-column prop="totalCourseCount" label="总课时数" align="center" min-width="70">
+                                    <el-table-column prop="totalCourseCount" label="总课时" align="center" min-width="60">
                                     </el-table-column>
-                                    <el-table-column prop="totalRestCourseCount" label="剩余课时数" align="center" min-width="90">
+                                    <el-table-column prop="totalRestCourseCount" label="剩余课时" align="center" min-width="70">
                                     </el-table-column>
                                     <el-table-column prop="totalTuition" label="缴费金额" align="center" min-width="70">
                                         <!-- <template slot-scope='scope'>
@@ -672,11 +672,11 @@ export default {
     .avatar-panel {
         overflow: hidden;
         text-align: center;
-        margin-top: 20px;
+        margin-top: 10px;
 
         img {
-            width: 210px;
-            height: 210px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
         }
     }

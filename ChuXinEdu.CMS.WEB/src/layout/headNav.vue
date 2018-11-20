@@ -231,7 +231,7 @@ export default {
 
 .bread-container {
     vertical-align: middle;
-    min-width: 270px;
+    min-width: 220px;
     display: inline-block;
 }
 

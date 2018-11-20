@@ -1,8 +1,9 @@
 <template>
 <div class="login_page">
     <transition name="form-fade" mode="in-out">
+        <div class="login_content">
         <section class="form_container" v-show="showLogin">
-            <div class="manager_tip">
+            <div class="form_name">
                 <span class="title">初心教育后台管理系统</span>
             </div>
             <el-form :model="loginForm" :rules="rules" ref="loginForm" class="login_form">
@@ -24,6 +25,7 @@
                 </div>
             </el-form>
         </section>
+        </div>
     </transition>
 </div>
 </template>
@@ -296,7 +298,7 @@ export default {
             LocalDB.instance('USER_').setValue('BASEINFO', userinfo);
         },
         encryptPwd(password){
-            let publicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAztJWvmn//yWTxEWg5934cftfCumAKUG7D74bsrGjaiTjq6YiL0SE3kYDgpnxJALWui2AXwqej5TItcGlFzS0Kk7MleQT9F3S37rpsI8lPIRL/1iHY2sSLnip9Nu3WDmaZVP54K8uK28NkWImB03J/Qio6o6aUpMyyu9Qt08QPNjB3jcKxGB5XpvfxTcflNEXA7UL86+S4RPL+YbMP2PYGOS0JtWUg/3Rtst3OBq6CZSTt+vRUvDNc37lgcHVVwTZBR44/W+PtfdxiWzIAXGMhhZwfVNB3pwrzsDaL8HEN8KGjDoT6cnqsgRHwB9QnMX2o8uRZgD60Lxl84qbb2qj7QIDAQAB';            
+            let publicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAztJWvmn//yWTxEWg5934cftfCumAKUG7D74bsrGjaiTjq6YiL0SE3kYDgpnxJALWui2AXwqej5TItcGlFzS0Kk7MleQT9F3S37rpsI8lPIRL/1iHY2sSLnip9Nu3WDmaZVP54K8uK28NkWImB03J/Qio6o6aUpMyyu9Qt08QPNjB3jcKxGB5XpvfxTcflNEXA7UL86+S4RPL+YbMP2PYGOS0JtWUg/3Rtst3OBq6CZSTt+vRUvDNc37lgcHVVwTZBR44/W+PtfdxiWzIAXGMhhZwfVNB3pwrzsDaL8HEN8KGjDoT6cnqsgRHwB9QnMX2o8uRZgD60Lxl84qbb2qj7QIDAQAB';
             let encryptor = new JSEncrypt();
             encryptor.setPublicKey(publicKey);
             let sPwd = encryptor.encrypt(password);
@@ -315,6 +317,25 @@ export default {
     background-size: 100% 100%;
 }
 
+.login_content{    
+    top: 50%;
+    width: 370px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.form_container {
+    width: 370px;
+    border-radius: 5px;
+    text-align: center;
+    transform: translateY(-50%);
+    .submit_btn {
+        width: 100%;
+        font-size: 16px;
+        letter-spacing: 20px;
+    }
+}
+
 .login_form {
     background-color: #fff;
     padding: 20px;
@@ -330,7 +351,8 @@ export default {
     }
 }
 
-.manager_tip {
+
+.form_name {
     margin-bottom: 20px;
     .title {
         font-family: cursive;
@@ -344,21 +366,6 @@ export default {
     }
 }
 
-.form_container {
-    width: 370px;
-    height: 210px;
-    position: absolute;
-    top: 20%;
-    left: 34%;
-    padding: 25px;
-    border-radius: 5px;
-    text-align: center;
-    .submit_btn {
-        width: 100%;
-        font-size: 16px;
-        letter-spacing: 20px;
-    }
-}
 
 .tiparea {
     text-align: left;

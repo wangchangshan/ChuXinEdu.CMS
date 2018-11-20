@@ -2,9 +2,9 @@
 <div class="fillcontain">
     <div class="search_container">
         <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
-            <el-form-item label="学号">
+            <!-- <el-form-item label="学号">not show for ipad UI
                 <el-input type="text" size="small" v-model="searchField.studentCode" placeholder="请输入学号" class="search_field"></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="姓名">
                 <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名" class="search_field"></el-input>
             </el-form-item>
@@ -26,9 +26,9 @@
     </div>
     <div class="table_container">
         <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :max-height="tableHeight">
-            <el-table-column prop="studentCode" label="学号" align='center' min-width="110" sortable fixed>
+            <el-table-column prop="studentCode" label="学号" align='center' min-width="105" sortable fixed>
             </el-table-column>
-            <el-table-column prop="studentName" label="姓名" align='center' min-width="80" fixed>
+            <el-table-column prop="studentName" label="姓名" align='center' min-width="75" fixed>
                 <template slot-scope="scope">
                     <el-popover trigger="hover" placement="right-end" width="150">
                         <img :src="scope.row.studentAvatarPath" class='avatar-min'>
@@ -40,27 +40,27 @@
             </el-table-column>
             <el-table-column prop="studentSex" label="性别" align='center' width="50">
             </el-table-column>
-            <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="100" sortable>
+            <el-table-column prop="studentBirthday" label="生日" align='center' min-width="90">
             </el-table-column>
             <el-table-column prop="studentPhone" label="联系电话" align='center' width="110">
             </el-table-column>
-            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="150">
+            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="145">
             </el-table-column>
-            <el-table-column prop="studentCourseCategory" label="学习课程" align='left' min-width="130">
+            <el-table-column prop="studentCourseCategory" label="学习课程" align='left' min-width="129">
                 <template slot-scope="scope">
                     <el-tag :type="courseCategoryTag(item.code)" v-for="item in scope.row.studentCourseCategory" :key="item.id" :disable-transitions="false">
                         {{item.name}}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="studentStatus" label="学生状态" align='center' min-width="100">
+            <el-table-column prop="studentStatus" label="学生状态" align='center' min-width="70">
                 <template slot-scope="scope">
                     <el-tag :type="studentStatusTag(scope.row.studentStatus)" :disable-transitions="false">
                         {{scope.row.studentStatusDesc}}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="90">
                 <template slot-scope='scope'>
                     <el-button type="success" size="mini" @click='showStudentDetail(scope.row.studentCode,scope.row.studentName)'>详 细</el-button>
                 </template>

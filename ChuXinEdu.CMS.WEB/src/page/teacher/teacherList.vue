@@ -24,15 +24,13 @@
     <div class="table_container">
         <el-table :data="teacherList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :max-height="tableHeight">
             <el-table-column type="index" align='center' width="40" fixed></el-table-column>
-            <el-table-column prop="teacherCode" label="教师编号" align='center' width="90" fixed>
-            </el-table-column>
-            <el-table-column prop="teacherName" label="教师姓名" align='center' min-width="110" fixed>
+            <el-table-column prop="teacherName" label="教师姓名" align='center' min-width="110" fixed sortable>
             </el-table-column>
             <el-table-column prop="teacherSex" label="性别" align='center' width="70">
             </el-table-column>
             <el-table-column prop="teacherPhone" label="联系电话" align='center' min-width="110">
             </el-table-column>
-            <el-table-column prop="teacherAddress" label="家庭地址" align='left' min-width="170">
+            <el-table-column prop="teacherAddress" label="家庭地址" align='left' min-width="150">
             </el-table-column>
             <el-table-column prop="teacherStatus" label="状态"  align='center' width="100">
                 <template slot-scope="scope">

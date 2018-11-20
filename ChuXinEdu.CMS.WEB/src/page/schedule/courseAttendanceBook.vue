@@ -3,12 +3,12 @@
 <div class="fillcontain">
     <div class="table_container">
         <el-table :data="attendanceList" :span-method="objectSpanMethod" v-loading="loading" border :max-height="tableHeight" @selection-change="handleSelectionChange" size='mini'>
-            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
+            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="135">
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + ' ' + scope.row.weekName }}
                 </template>
             </el-table-column>
-            <el-table-column prop="coursePeriod" label="时间段" align='center' min-width="100">
+            <el-table-column prop="coursePeriod" label="时间段" align='center' min-width="90">
             </el-table-column>
             <el-table-column type="selection" label="选择" align='center' min-width="40"></el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="100">
@@ -16,7 +16,7 @@
                     {{ scope.row.studentName + ' (' + scope.row.courseType + ')' }}
                 </template>
             </el-table-column>
-            <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="100">
+            <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="95">
                 <template slot-scope="scope">
                     <el-select v-model="scope.row.courseFolderCode" size='mini'>
                         <el-option v-for="item in $store.getters['course_folder_' + scope.row.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
@@ -24,7 +24,7 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column prop="" label="上课教师" align='center' min-width="120">
+            <el-table-column prop="" label="上课教师" align='center' min-width="110">
                 <template slot-scope='scope'>
                     <el-select v-model="scope.row.teacherCode" placeholder="请选择" size='mini'>
                         <el-option v-for="item in courseTeachers[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
@@ -32,9 +32,9 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column prop="" label="课程主题" align='center' min-width="140">
+            <el-table-column prop="" label="课程主题" align='center' min-width="130">
                 <template slot-scope='scope'>
-                    <el-input size="mini" v-model="scope.row.courseSubject" placeholder="请输入课程主题"></el-input>
+                    <el-input size="mini" v-model="scope.row.courseSubject" placeholder="课程主题"></el-input>
                 </template>
             </el-table-column>
             <el-table-column prop="operation" align='left' label="操作" fixed="right" width="160">

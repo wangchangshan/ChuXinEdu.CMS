@@ -28,12 +28,14 @@
             </el-table-column>
             <el-table-column prop="studentSex" label="性别" align='center' width="50">
             </el-table-column>
-            <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="100">
-            </el-table-column>
+            <!-- <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="100"> 
+                not show for ipad UI
+            </el-table-column> -->
             <el-table-column prop="studentPhone" label="联系电话" align='center' width="110">
             </el-table-column>
-            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="150">
-            </el-table-column>
+            <!-- <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="150"> 
+                not show for ipad UI
+            </el-table-column> -->
             <el-table-column prop="trialFolderName" label="试听课程" align='left' min-width="90">
             </el-table-column>
             <el-table-column prop="studentStatusDesc" label="当前状态" align='left' width="140" :filters="$store.getters['student_temp_status']" :filter-method="filterStudentStatus">
