@@ -12,7 +12,7 @@ const state = {
     isRouterLoaded: false,
     sidebar: {
         opened: true,
-        width: 150
+        width: 130
     },
     isCollapse: false,
     isHidMenuName: false
@@ -41,7 +41,7 @@ const mutations = {
     [menuType.INIT_LEFT_MENU] (state) {
         state.sidebar = {
             opened: true,
-            width: 150
+            width: 130
         }
     },
     [menuType.SET_LEFT_COLLAPSE] (state) {
@@ -50,7 +50,7 @@ const mutations = {
             state.sidebar.width = 40
         }
         else{
-            state.sidebar.width = 150
+            state.sidebar.width = 130
         }
     },
     [menuType.SET_ACTIVE_MENU] (state, toMenu) {

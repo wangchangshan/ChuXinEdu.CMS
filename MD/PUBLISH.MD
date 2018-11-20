@@ -13,7 +13,7 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm run build
 
 > 运行打包命令`dotnet publish`， 相关[dotnet 命令](https://docs.microsoft.com/zh-cn/dotnet/core/tools/dotnet?tabs=netcore21)。
 ```bash
-D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.Server> dotnet publish -c debug
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.Server> dotnet publish -c release
 ```
 > 运行命令后，会在 .vscode/launch.json配置文件中program配置的同级目录生成一个 `/publish`。
 
@@ -147,7 +147,7 @@ nginx -s reload
 
 #### 4.1 后端部署 (KestrelServer 通过Nginx转发Http请求)
 
-1. 使用`dotnet publish -c debug`发布程序后，会生成一个publish目录
+1. 使用`dotnet publish -c release`发布程序后，会生成一个publish目录
 2. 使用powershell或者cmd，转到publish所在目录。执行运行命令：
 ```bash
 D:\webServer\kestrel\cxweb\publish> dotnet ChuXinEdu.CMS.Server.dll
@@ -219,6 +219,7 @@ nginx -s reload
 
 ### 5. 项目部署 CentOS7.4（前端 Nginx + 后端使用netcore内置的 KestrelServer）
 
+> 参考：[使用 Nginx 在 Linux 上托管 ASP.NET Core](https://docs.microsoft.com/zh-cn/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-2.1)
 #### 5.1 前期准备
 1. 修改前后端项目的公钥和私钥
 2. 前后端项目分别打包。`npm run build` `dotnet publish`
@@ -243,5 +244,80 @@ nginx -s reload
 ```bash
 dotnet xxx.dll
 ```
-#### 5.4 OK
+#### 5.4 使用守护进程supervisor 托管netcore
+```bash
+## 1. 通过yum安装
+yum install supervisor
+
+## 2. 创建supervisor的配置目录
+mkdir /ect/supervisor
+
+## 3. 根据现有的配置文件模板，创建新的配置文件
+echo_supervisord_conf > /etc/supervisor/supervisord.conf
+
+## 4. 创建目录 confg.d，存放待托管程序的配置文件
+mkdir /etc/supervisor/confg.d
+
+## 5. 在 confg.d目录下创建托管程序配置文件
+vi /etc/supervisor/confg.d/chuxin_live_netcore.conf
+## 内容：
+[program:chuxin_live_netcore]
+command=dotnet xxxxx.dll 
+directory=/home/wwwroot 
+environment=ASPNETCORE_ENVIRONMENT=Production
+user=www-data 
+stopsignal=INT
+autostart=true 
+autorestart=true
+startsecs=1
+stderr_logfile=/var/log/xxxxx.err.log 
+stdout_logfile=/var/log/xxxxx.out.log
+
+## 6. 配置 step-3中supervisord.conf文件，在其底部添加以下内容
+[include]
+files = /etc/supervisor/conf.d/*.conf
+
+## 7. 指定配置文件启动supervisor
+cd /etc/supervisor
+supervisord -c /etc/supervisor/supervisord.conf
+
+## 8. 通过以上配置就已经将应用程序托管到 supervisor中了， 以下为一些常用命令
+ps -ef | grep dotnet    # 查看dotnet 是否运行
+supervisorctl status    # 查看所有任务状态
+supervisorctl shutdown  # 关闭所有任务
+supervisorctl stop all  # 停止全部进程
+supervisorctl stop|start program_name  # 开启或者停止任务
+supervisorctl restart program_name  # 重启某个进程
+supervisorctl stop groupworker:  # 结束所有属于名为 groupworker 这个分组的进程 (start，restart 同理)
+supervisorctl stop groupworker:name1  # 结束 groupworker:name1 这个进程 (start，restart 同理)
+supervisorctl reload  # 载入最新的配置文件，停止原有进程并按新的配置启动、管理所有进程
+supervisorctl update  # 根据最新的配置文件，启动新配置或有改动的进程，配置没有改动的进程不会受影响而重启
+```
+#### 5.5 设置upervisor开机启动
+> 设置开机启动，这样就不用每次重启服务器还需要启用守护进程了
+```bash
+## 1. 在/usr/lib/systemd/system/目录新建个supervisord.service文件
+vi /usr/lib/systemd/system/supervisord.service
+
+## 2. 添加以下内容
+　　# dservice for systemd (CentOS 7.0+)
+　　# by ET-CS (https://github.com/ET-CS)
+　　[Unit]
+　　Description=Supervisor daemon
+
+　　[Service]
+　　Type=forking
+　　ExecStart=/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+　　ExecStop=/usr/bin/supervisorctl shutdown
+　　ExecReload=/usr/bin/supervisorctl reload
+　　KillMode=process
+　　Restart=on-failure
+　　RestartSec=42s
+
+　　[Install]
+　　WantedBy=multi-user.target
+
+## 3. 设置开机启动
+systemctl enable supervisord
+```
 ---

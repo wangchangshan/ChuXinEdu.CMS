@@ -8,10 +8,10 @@
                     {{ scope.row.courseDate + ' ' + scope.row.weekName }}
                 </template>
             </el-table-column>
-            <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="140">
+            <el-table-column prop="coursePeriod" label="时间段" align='center' min-width="100">
             </el-table-column>
-            <el-table-column type="selection" label="选择" align='center' width="60"></el-table-column>
-            <el-table-column prop="studentName" label="姓名" align='center' min-width="120">
+            <el-table-column type="selection" label="选择" align='center' min-width="40"></el-table-column>
+            <el-table-column prop="studentName" label="姓名" align='center' min-width="100">
                 <template slot-scope='scope'>
                     {{ scope.row.studentName + ' (' + scope.row.courseType + ')' }}
                 </template>
@@ -24,9 +24,9 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column prop="" label="上课教师" align='center' min-width="140">
+            <el-table-column prop="" label="上课教师" align='center' min-width="120">
                 <template slot-scope='scope'>
-                    <el-select v-model="scope.row.teacherCode" placeholder="选择上课教师" size='mini'>
+                    <el-select v-model="scope.row.teacherCode" placeholder="请选择" size='mini'>
                         <el-option v-for="item in courseTeachers[scope.row.courseFolderCode]" :key="item.teacherCode" :label="item.teacherName" :value="item.teacherCode">
                         </el-option>
                     </el-select>

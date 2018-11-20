@@ -12,7 +12,7 @@
             </el-aside>
             <el-main style="padding:10px; padding-bottom:0">
                 <el-row :gutter="10">
-                    <el-col :span="12" style="min-width:280px">
+                    <el-col :span="12" style="min-width:250px">
                         <el-card shadow="never" class="card-student-base">
                             <el-form :label-width="studentDialog.formLabelWidth" :label-position='studentDialog.labelPosition' size="mini" label-suffix="：">
                                 <el-form-item label="姓名">
@@ -42,7 +42,7 @@
                             </el-form>
                         </el-card>
                     </el-col>
-                    <el-col :span="12" style="min-width:340px">
+                    <el-col :span="12">
                         <el-card shadow="never" class="card-student-course">
                             <div class="dataarea">
                                 <p class="gtitle"><i class="el-icon-date el-icon--left"></i>课程数据</p>

@@ -2,37 +2,37 @@
 <div class="fillcontain">
     <div class="search_container">
         <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
-            <el-form-item label="姓名：">
+            <el-form-item label="姓名">
                 <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名"></el-input>
             </el-form-item>
-            <el-form-item label="状态：">
+            <el-form-item label="状态">
                 <el-select size="small" v-model="searchField.studentTempStatus" multiple placeholder="请选择" style="width:320px">
                     <el-option v-for="item in $store.getters['student_temp_status']" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查 询</el-button>
-                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重 置</el-button>
+                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查询</el-button>
+                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重置</el-button>
             </el-form-item>
 
             <el-form-item class="btnRight">
-                <el-button type="primary" icon="el-icon-plus" size="small" @click='showAddStudent()'>添加</el-button>
+                <el-button type="primary" size="small" @click='showAddStudent()'><i class="fa fa-user-plus" aria-hidden="true"></i> 添加</el-button>
             </el-form-item>
         </el-form>
     </div>
     <div class="table_container">
         <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :max-height="tableHeight">
             <el-table-column type="index" align='center' width="40" fixed></el-table-column>
-            <el-table-column prop="studentName" label="姓名" align='center' min-width="90" fixed>
+            <el-table-column prop="studentName" label="姓名" align='center' min-width="80" fixed>
             </el-table-column>
-            <el-table-column prop="studentSex" label="性别" align='center' width="60">
+            <el-table-column prop="studentSex" label="性别" align='center' width="50">
             </el-table-column>
-            <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="110">
+            <el-table-column prop="studentBirthday" label="出生日期" align='center' min-width="100">
             </el-table-column>
-            <el-table-column prop="studentPhone" label="联系电话" align='center' width="120">
+            <el-table-column prop="studentPhone" label="联系电话" align='center' width="110">
             </el-table-column>
-            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="160">
+            <el-table-column prop="studentAddress" label="家庭地址" align='left' min-width="150">
             </el-table-column>
             <el-table-column prop="trialFolderName" label="试听课程" align='left' min-width="90">
             </el-table-column>
