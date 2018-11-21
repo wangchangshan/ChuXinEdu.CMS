@@ -1,10 +1,10 @@
 <template>
 <div class="schedule-panel">
     <el-row class="schedule-area row">
-        <el-col :span="3" v-for="day in coursePeriods" v-bind:key="day.dayCode">
-            <div class="week-panel" :style="{height: pageHeight + 'px'}">
+        <el-col :span="3" v-for="day in coursePeriods" v-bind:key="day.dayCode" v-show="setting.weekdays[day.dayCode]">
+            <div class="week-panel" :style="{'height': pageHeight + 'px'}">
                 <p class="title">{{day.dayName}}</p>
-                <el-collapse v-model="day.activePeriods">
+                <el-collapse v-model="day.activePeriods" class="collapse-panle" v-loading='coursePeriodsLoading' :style="{'height': pageHeight - 31 + 'px'}">
                     <el-collapse-item v-for="period in day.periods" v-bind:key="period.periodCode" :name="period.periodCode">
                         <div slot="title" class="student-list-title">
                             <a>{{ '[' + period.periodName + ']'}}</a>
@@ -36,7 +36,7 @@
             </div>
         </el-col>
         <el-col :span="3">
-            <div class="week-panel" :style="{height: pageHeight + 'px'}">
+            <div class="week-panel border-right" :style="{'height': pageHeight + 'px'}">
                 <p class="title">其他操作</p>
                 <ul class="side-button-group">
                     <li>
@@ -51,6 +51,34 @@
                     <li>
                         <el-button plain icon="el-icon-tickets" type="primary" size="mini" @click="toggleRestCourseCount()">{{ setting.btnRestCourseName }}</el-button>
                     </li>
+                    <li>
+                        <el-card class="box-card card-mini" shadow="never" style="border-right:none">
+                            <div slot="header" class="clearfix">
+                                <span>排课日期展示：</span>
+                            </div>
+                            <div class="ckb-line">
+                                <el-checkbox v-model="setting.weekdays.day1" size="mini" label="星期一" border></el-checkbox>
+                            </div>
+                            <div class="ckb-line">
+                                <el-checkbox v-model="setting.weekdays.day2" size="mini" label="星期二" border></el-checkbox>
+                            </div>
+                            <div class="ckb-line">
+                                <el-checkbox v-model="setting.weekdays.day3" size="mini" label="星期三" border></el-checkbox>
+                            </div>
+                            <div class="ckb-line">
+                                <el-checkbox v-model="setting.weekdays.day4" size="mini" label="星期四" border></el-checkbox>
+                            </div>
+                            <div class="ckb-line">
+                                <el-checkbox v-model="setting.weekdays.day5" size="mini" label="星期五" border></el-checkbox>
+                            </div>
+                            <div class="ckb-line">
+                                <el-checkbox v-model="setting.weekdays.day6" size="mini" label="星期六" border></el-checkbox>
+                            </div>
+                            <div>
+                                <el-checkbox v-model="setting.weekdays.day7" size="mini" label="星期日" border></el-checkbox>
+                            </div>
+                        </el-card>
+                    </li>
                 </ul>
             </div>
         </el-col>
@@ -64,14 +92,14 @@
         </el-form>
         <el-table v-loading="selectZhengShiDialog.loading" :data="selectZhengShiDialog.studentList.filter(data => !selectZhengShiDialog.search ||data.studentName.includes(selectZhengShiDialog.search))" height="400" size="mini" @selection-change="handleStudentSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
-            <el-table-column property="studentName" label="姓名" width="70">
+            <el-table-column property="studentName" label="姓名" width="75">
             </el-table-column>
             <el-table-column property="" label="课程类别" width="100" align='center'>
                 <template slot-scope="scope">
                     {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
                 </template>
             </el-table-column>
-            <el-table-column property="flexCourseCount" label="可选课时数" align='center' width="80"></el-table-column>
+            <el-table-column property="flexCourseCount" label="可选课时" align='center' width="80"></el-table-column>
             <el-table-column property="selectedCourseCount" label="选择课时数" width="140">
                 <template slot-scope="scope">
                     <el-input-number v-model="scope.row.selectedCourseCount" :min="1" :max="scope.row.flexCourseCount" label="描述文字" size="mini"></el-input-number>
@@ -87,7 +115,7 @@
             </el-table-column>
             <el-table-column property="firstCourseDate" label="开始上课日期" width="160">
                 <template slot-scope="scope">
-                    <el-date-picker v-model="scope.row.firstCourseDate" class="date-mini" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectZhengShiDialog.pickerDateOptions">
+                    <el-date-picker v-model="scope.row.firstCourseDate" class="date-mini" :editable="false" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectZhengShiDialog.pickerDateOptions">
                     </el-date-picker>
                 </template>
             </el-table-column>
@@ -110,7 +138,7 @@
             </el-table-column>
             <el-table-column property="firstCourseDate" label="试听日期" min-width="200">
                 <template slot-scope="scope">
-                    <el-date-picker v-model="scope.row.firstCourseDate" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectShiTingDialog.pickerDateOptions">
+                    <el-date-picker v-model="scope.row.firstCourseDate" :editable="false" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期" :picker-options="selectShiTingDialog.pickerDateOptions">
                     </el-date-picker>
                 </template>
             </el-table-column>
@@ -124,7 +152,7 @@
     <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="studentCourseDialog.width">
         <el-table :data="studentCourseDialog.courseList" max-height="400" size="mini" @selection-change="handleCourseListChange">
             <el-table-column :selectable='courseCheckboxControl' type="selection" width="30"></el-table-column>
-            <el-table-column type="index" :index="indexGernerate" width="40"> </el-table-column>
+            <el-table-column type="index" :index="indexGernerate" width="40" align='center'> </el-table-column>
             <el-table-column property="courseDate" label="上课日期" width="110"></el-table-column>
             <el-table-column property="courseCategoryName" label="课程类别" width="110" align='center'>
                 <template slot-scope="scope">
@@ -148,7 +176,7 @@
 
     <el-dialog :title="holidayDialog.title" :visible.sync="holidayDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="holidayDialog.width">
         <el-table :data="holidayDialog.holidayList" max-height="400" size="mini">
-            <el-table-column type="index" :index="indexGernerate" width="35"> </el-table-column>
+            <el-table-column type="index" :index="indexGernerate" width="35" align='center'> </el-table-column>
             <el-table-column property="holidayDate" label="今年放假日期" min-width="120"></el-table-column>
             <el-table-column property="dayOfWeek" label="星期 ？" min-width="90"></el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
@@ -159,7 +187,7 @@
         </el-table>
         <div class="footer-botton-area">
             选择添加放假日期：
-            <el-date-picker type="dates" value-format="yyyy-MM-dd" v-model="holidayDialog.newHolidays" :picker-options="holidayDialog.pickerDateOptions" size="small"></el-date-picker>
+            <el-date-picker type="dates" :editable="false" value-format="yyyy-MM-dd" v-model="holidayDialog.newHolidays" :picker-options="holidayDialog.pickerDateOptions" size="small"></el-date-picker>
             <el-button type="success" size="small" @click='submitHolidays()'>确定</el-button>
             <el-button @click="holidayDialog.isShow = false" size="small">取消</el-button>
         </div>
@@ -181,7 +209,8 @@ export default {
     },
     data() {
         return {
-            pageHeight: this.$store.state.page.win_content.height - 85,
+            pageHeight: this.$store.state.page.win_content.height - 73,
+            coursePeriodsLoading: true,
             coursePeriods: [{
                     dayCode: 'day1',
                     dayName: '星期一',
@@ -247,12 +276,21 @@ export default {
                 btnTogglePeriodName: '全部折叠',
                 btnTogglePeriodIcon: 'el-icon-arrow-up',
                 hidTogglePeriodStatus: true, // true : 当前展开
-                holidayList:[]
+                holidayList:[],
+                weekdays:{
+                    day1: true,
+                    day2: true,
+                    day3: true,
+                    day4: false,
+                    day5: true,
+                    day6: true,
+                    day7: true,
+                }
             },
             selectZhengShiDialog: {
                 title: '',
                 isShow: false,
-                width: '780px',
+                width: '770px',
                 curDayCode: '',
                 curPeriodName: '',
                 search: '',
@@ -364,22 +402,20 @@ export default {
 
         // 排课模板展示信息
         getTemplatePeriod() {
-            var _this = this;
             var templateCode = 'at-001';
-
             axios({
                 type: 'get',
                 path: '/api/coursearrange/getcoursearranged',
                 data: {
                     templateCode: templateCode,
-                    roomCode: _this.roomCode
+                    roomCode: this.roomCode
                 },
-                fn: function (result) {
+                fn: result => {
                     result.forEach((item) => {
                         // 构造coursePeriods数据
-                        for (let day of _this.coursePeriods) {
+                        for (let day of this.coursePeriods) {
                             if (day.dayCode === item.courseWeekDay) {
-                                _this.activePeriods_bak[day.dayCode].push(item.id);
+                                this.activePeriods_bak[day.dayCode].push(item.id);
                                 day.activePeriods.push(item.id); //默认展开的时间段
                                 day.periods.push({
                                     periodCode: item.id,
@@ -390,7 +426,8 @@ export default {
                                 break;
                             }
                         }
-                    })
+                    });
+                    this.coursePeriodsLoading = false;
                 }
             })
         },
@@ -432,6 +469,7 @@ export default {
 
         // 刷新所有
         refreshAll() {
+            this.coursePeriodsLoading = true;
             // 初始化数据
             for (let day of this.coursePeriods) {
                 day.periods = [];
@@ -956,10 +994,11 @@ export default {
 .schedule-panel {
     overflow-x: auto;
     .schedule-area {
-        min-width: 1300px;
+        min-width: 1410px;
         overflow-y: auto;
         overflow-x: hidden;
         .week-panel {
+            // height: 600px;
             border-left: 1px solid #dfdfdf;
             border-bottom: 1px solid #dfdfdf;
             border-top: 1px solid #dfdfdf;
@@ -987,7 +1026,7 @@ export default {
                     padding-right: 3px;
                 }
                 .full {
-                    color: #f56c6c;
+                    color: #FF4040;
                 }
                 .free {
                     color: #E6A23C;
@@ -1016,7 +1055,20 @@ export default {
                 }
             }
         }
+        .border-right {
+            border-right: 1px solid #dfdfdf;
+        }
     }
+}
+
+.collapse-panle{
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: none;
+}
+
+.ckb-line{
+    margin: 0 0 10px 0;
 }
 
 .footer-botton-area {

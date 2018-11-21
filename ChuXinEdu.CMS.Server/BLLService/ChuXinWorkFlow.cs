@@ -20,7 +20,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             _logger = logger;
         }
 
-        #region 登陆模块
+        #region 登录模块
         public string LoginVerify(string loginCode, string pwd)
         {
             string result = "";
@@ -35,9 +35,16 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 }
                 else
                 {
-                    result = "1200";
-                    sysUser.LastLoginTime = DateTime.Now;
-                    context.SaveChanges();
+                    if(!String.IsNullOrEmpty(sysUser.Token) && sysUser.TokenExpireTime > DateTime.Now)
+                    {
+                        result = "1701";
+                    }
+                    else
+                    { 
+                        result = "1200";
+                        sysUser.LastLoginTime = DateTime.Now;
+                        context.SaveChanges();
+                    }
                 }
             }
             return result;

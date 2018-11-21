@@ -293,7 +293,7 @@ supervisorctl stop groupworker:name1  # 结束 groupworker:name1 这个进程 (s
 supervisorctl reload  # 载入最新的配置文件，停止原有进程并按新的配置启动、管理所有进程
 supervisorctl update  # 根据最新的配置文件，启动新配置或有改动的进程，配置没有改动的进程不会受影响而重启
 ```
-> 说明：更新程序dll后，需要重启一下任务：`supervisorctl stop|start program_name`
+> 说明：更新程序dll后，需要重启一下任务：`supervisorctl restart chuxin_live_api_netcore`
 #### 5.5 设置supervisor开机启动
 > 设置开机启动，这样就不用每次重启服务器还需要启用守护进程了
 ```bash

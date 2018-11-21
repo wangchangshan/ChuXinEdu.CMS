@@ -146,7 +146,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="缴费日期" v-show="packageDialog.courseInfo.isPayed == 'Y'">
-                    <el-date-picker v-model="packageDialog.courseInfo.payDate" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="packageDialog.courseInfo.payDate" :editable="false" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item label="收款人" v-show="packageDialog.courseInfo.isPayed == 'Y'">
                     <el-select v-model="packageDialog.courseInfo.payeeCode" placeholder="请选择">
@@ -181,7 +181,7 @@
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="出生日期">
-                    <el-date-picker v-model="studentDialog.baseInfo.studentBirthday" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="studentDialog.baseInfo.studentBirthday" :editable="false" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item label="身份证号码">
                     <el-input v-model="studentDialog.baseInfo.studentIdentityCardNum"></el-input>
@@ -196,7 +196,7 @@
                     <el-input type="textarea" v-model="studentDialog.baseInfo.studentRemark"></el-input>
                 </el-form-item>
                 <el-form-item label="报名时间">
-                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" :editable="false" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
@@ -370,7 +370,7 @@ export default {
                     studentCode: _this.studentCode
                 },
                 fn: function (result) {
-                    result.studentInfo.studentBirthday = result.studentInfo.studentBirthday.split('T')[0];
+                    result.studentInfo.studentBirthday = result.studentInfo.studentBirthday && result.studentInfo.studentBirthday.split('T')[0] || '';
                     result.studentInfo.studentRegisterDate = result.studentInfo.studentRegisterDate.split('T')[0];
                     result.studentInfo.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], result.studentInfo.studentStatus);
                     _this.avatarPanel.imgDataUrl = result.studentInfo.studentAvatarPath;

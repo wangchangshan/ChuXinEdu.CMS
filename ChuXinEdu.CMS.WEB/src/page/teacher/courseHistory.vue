@@ -2,40 +2,40 @@
 <div class="list_container">
     <div class="search_container">
         <el-form :inline="true" :model="searchField" size="small" class="demo-form-inline search-form">
-            <el-form-item label="开始日期：">
-                <el-date-picker v-model="searchField.startDate" size="small" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+            <el-form-item label="开始日期">
+                <el-date-picker class="date-small" v-model="searchField.startDate" :editable="false" size="small" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
             </el-form-item>
-            <el-form-item label="结束日期：">
-                <el-date-picker v-model="searchField.endDate" size="small" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+            <el-form-item label="结束日期">
+                <el-date-picker class="date-small" v-model="searchField.endDate" :editable="false" size="small" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="small" @click='searchCourse()'>查 询</el-button>
                 <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetCourseList()'>重 置</el-button>
             </el-form-item>
             <el-form-item class="btnRight">
-                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
+                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出</el-button>
             </el-form-item>
         </el-form>
     </div>
     <div class="table_container">
         <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
-            <el-table-column type="index" align='center' width="40"></el-table-column>
-            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
+            <el-table-column type="index" align='center' width="40" fixed></el-table-column>
+            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140" fixed>
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + " " + scope.row.weekName }}
                 </template>
             </el-table-column>
-            <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="110">
+            <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="100">
             </el-table-column>
-            <el-table-column prop="studentName" label="学生姓名" align='center' min-width="100">
+            <el-table-column prop="studentName" label="学生姓名" align='center' min-width="90">
             </el-table-column>
-            <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="100">
+            <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="90">
             </el-table-column>
-            <el-table-column prop="courseSubject" label="课程主题" align='center' min-width="160">
+            <el-table-column prop="courseSubject" label="课程主题" align='center' min-width="150">
             </el-table-column>
             <el-table-column prop="courseType" label="课程标识" align='center' min-width="85">
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="125">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
                 <template slot-scope='scope'>
                     <el-button type="success" icon='edit' size="small" @click='viewArtwork(scope.row.studentCourseId)'>查看作品</el-button>
                 </template>

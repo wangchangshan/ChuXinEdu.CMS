@@ -62,7 +62,7 @@
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="出生日期">
-                    <el-date-picker v-model="teacherDialog.baseInfo.teacherBirthday" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="teacherDialog.baseInfo.teacherBirthday" :editable="false" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item prop="teacherIdentityCardNum" label="身份证号码">
                     <el-input v-model="teacherDialog.baseInfo.teacherIdentityCardNum"></el-input>
@@ -77,7 +77,7 @@
                     <el-input type="textarea" v-model="teacherDialog.baseInfo.teacherRemark"></el-input>
                 </el-form-item>
                 <el-form-item label="入职日期">
-                    <el-date-picker v-model="teacherDialog.baseInfo.teacherRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="teacherDialog.baseInfo.teacherRegisterDate" :editable="false" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="teacherDialog.isShow = false">取 消</el-button>

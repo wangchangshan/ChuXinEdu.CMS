@@ -2,26 +2,26 @@
 <div class="info_container">
     <div class="table_container">
         <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border :max-height="tableHeight">
-            <el-table-column type="index" width="40"></el-table-column>
-            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140">
+            <el-table-column type="index" width="40" align='center'></el-table-column>
+            <el-table-column prop="courseDate" label="上课日期" align='center' min-width="135">
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + " " + scope.row.weekName }}
                 </template>
             </el-table-column>
-            <el-table-column prop="coursePeriod" label="上课时间段" align='center' min-width="110">
+            <el-table-column prop="coursePeriod" label="时间段" align='center' min-width="90">
             </el-table-column>
-            <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="100">
+            <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="90">
                 <template slot-scope='scope'>
                     {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
                 </template>
             </el-table-column>
-            <el-table-column prop="courseSubject" label="课程主题" align='center' min-width="160">
+            <el-table-column prop="courseSubject" label="课程主题" align='center' min-width="140">
             </el-table-column>
-            <el-table-column prop="teacherName" label="上课教师" align='center' min-width="85">
+            <el-table-column prop="teacherName" label="上课教师" align='center' min-width="80">
             </el-table-column>
-            <el-table-column prop="courseType" label="课程标识" align='center' min-width="85">
+            <el-table-column prop="courseType" label="课程标识" align='center' min-width="70">
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="225">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="220">
                 <template slot-scope='scope'>
                     <el-button type="warning" size="small" @click='showUploadDialog(scope.row)'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
                     <el-button type="success" icon='edit' size="small" @click='viewArtwork(scope.row.studentCourseId)'>查看作品</el-button>
@@ -51,7 +51,7 @@
             <el-table :data="supplementDialog.newCourseList" size="mini" align="left" border stripe :max-height="supplementDialog.tableHeight">
                 <el-table-column property="courseDate" label="上课日期" align='center' width="160">
                     <template slot-scope="scope">
-                        <el-date-picker class="date-mini" v-model="scope.row.courseDate" @change="calculateWeek" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期">
+                        <el-date-picker class="date-mini" v-model="scope.row.courseDate" @change="calculateWeek" :editable="false" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期">
                         </el-date-picker>
                     </template>
                 </el-table-column>

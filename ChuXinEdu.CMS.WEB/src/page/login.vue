@@ -19,9 +19,9 @@
                     <el-button type="primary" @click="submitForm(loginForm)" class="submit_btn">登录</el-button>
                 </el-form-item>
                 <div class="tiparea">
-                    <p class="wxtip">内部开发版</p>
-                    <p class="tip"></p>
-                    <!-- <p class="tip">注册过的用户可凭账号密码登录</p> -->
+                    <!-- <p class="wxtip">内部开发版</p>
+                    <p class="tip"></p> -->
+                    <!-- <p class="tip">测试</p> -->
                 </div>
             </el-form>
         </section>
@@ -249,7 +249,14 @@ export default {
                                 this.saveUserInfo(result.data); // 存入缓存，用于显示用户名     
                                 this.generateMenu(); 
                                 this.$store.dispatch('initLeftMenu');
-                            } else {
+                            } 
+                            else if(result.code == 1700){
+                                this.$message.error("不合法的请求，请不要重复尝试！");
+                            }
+                            else if(result.code == 1701){
+                                this.$message.error("当前用户已在其他地方登陆，请稍后重试！");
+                            }
+                            else {
                                 this.$message.error("用户名或密码错误，请重试！");
                             }
                         }

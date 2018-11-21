@@ -48,7 +48,7 @@
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="出生日期">
-                    <el-date-picker v-model="studentInfo.student_birthday" type="date" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="studentInfo.student_birthday" :editable="false" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item label="身份证号码">
                     <el-input v-model="studentInfo.student_identity_card_num"></el-input>
@@ -63,7 +63,7 @@
                     <el-input type="textarea" v-model="studentInfo.student_remark"></el-input>
                 </el-form-item>
                 <el-form-item label="报名时间">
-                    <el-date-picker v-model="studentInfo.student_register_date" type="date" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="studentInfo.student_register_date" :editable="false" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item class="text_right">
                     <el-button @click="dialog.show = false">取 消</el-button>

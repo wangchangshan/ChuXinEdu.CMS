@@ -89,7 +89,7 @@
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="出生日期">
-                    <el-date-picker v-model="studentDialog.baseInfo.studentBirthday" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="studentDialog.baseInfo.studentBirthday" :editable="false" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item prop="studentPhone" label="联系电话">
                     <el-input v-model="studentDialog.baseInfo.studentPhone"></el-input>
@@ -98,7 +98,7 @@
                     <el-input v-model="studentDialog.baseInfo.studentAddress"></el-input>
                 </el-form-item>
                 <el-form-item prop="studentRegisterDate" label="报名时间">
-                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+                    <el-date-picker v-model="studentDialog.baseInfo.studentRegisterDate" :editable="false" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
                 </el-form-item>
                 <el-form-item label="身份证号码">
                     <el-input v-model="studentDialog.baseInfo.studentIdentityCardNum"></el-input>
