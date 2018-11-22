@@ -22,7 +22,7 @@
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="packageList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :max-height="tableHeight">
+        <el-table :data="packageList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :height="tableHeight">
             <el-table-column type="index" align='center' width="40" fixed></el-table-column>
             <el-table-column prop="packageCode" label="套餐编码" align='center' width="80" fixed>
             </el-table-column>
@@ -98,7 +98,7 @@ import {
 export default {
     data() {
         return {
-            loading: false,
+            loading: true,
             downloadLoading: false,
             packageList: [],
             tableHeight: this.$store.state.page.win_content.height - 60,
@@ -162,19 +162,20 @@ export default {
         },
 
         getPackageList() {
-            var _this = this;
+            this.loading = true;
             var data = {
-                q: _this.searchField
+                q: this.searchField
             }
             axios({
                 type: 'get',
                 path: '/api/coursepackage',
                 data: data,
-                fn: function (result) {
+                fn: result => {
                     result.forEach(item => {
                         item.packageCreateTime = item.packageCreateTime.split('T')[0];
                     })
-                    _this.packageList = result;
+                    this.packageList = result;
+                    this.loading = false;
                 }
             })
         },

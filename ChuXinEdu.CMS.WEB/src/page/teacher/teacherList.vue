@@ -22,7 +22,7 @@
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="teacherList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :max-height="tableHeight">
+        <el-table :data="teacherList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :height="tableHeight">
             <el-table-column type="index" align='center' width="40" fixed></el-table-column>
             <el-table-column prop="teacherName" label="教师姓名" align='center' min-width="110" fixed sortable>
             </el-table-column>
@@ -99,7 +99,7 @@ import {
 export default {
     data() {
         return {
-            loading: false,
+            loading: true,
             downloadLoading: false,
             teacherList: [],
             tableHeight: this.$store.state.page.win_content.height - 60,
@@ -164,20 +164,21 @@ export default {
             this.getTeacherList();
         },
         getTeacherList() {
-            var _this = this;
+            this.loading = true;
             var data = {
-                q: _this.searchField
+                q: this.searchField
             }
             axios({
                 type: 'get',
                 path: '/api/teacher/getteacherlist',
                 data: data,
-                fn: function (result) {
+                fn: result => {
                     result.forEach(item => {
-                        item.teacherStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['teacher_status'], item.teacherStatus);
+                        item.teacherStatusDesc = dicHelper.getLabelByValue(this.$store.getters['teacher_status'], item.teacherStatus);
                         item.teacherRegisterDate = item.teacherRegisterDate.split('T')[0];
                     });
-                    _this.teacherList = result;
+                    this.teacherList = result;
+                    this.loading = false;
                 }
             })
         },

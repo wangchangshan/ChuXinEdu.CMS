@@ -25,7 +25,7 @@
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :max-height="tableHeight">
+        <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :height="tableHeight">
             <el-table-column prop="studentCode" label="学号" align='center' min-width="105" sortable fixed>
             </el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="75" fixed>
@@ -126,7 +126,7 @@ import {
 export default {
     data() {
         return {
-            loading: false,
+            loading: true,
             downloadLoading: false,
             tableHeight: this.$store.state.page.win_content.height - 106,
             lookup: null,
@@ -213,7 +213,7 @@ export default {
             where,
             fun
         } = {}) {
-            var _this = this;
+            this.loading = true;
             var query = this.$route.query;
             this.paginations.current_page_index = page || parseInt(query.page) || 1;
             this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
@@ -229,12 +229,13 @@ export default {
                 type: 'get',
                 path: '/api/student/getstudentlist',
                 data: data,
-                fn: function (result) {
-                    _this.paginations.total = result.totalCount;
+                fn: result => {
+                    this.paginations.total = result.totalCount;
                     result.data.forEach((item) => {
-                        item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], item.studentStatus);
+                        item.studentStatusDesc = dicHelper.getLabelByValue(this.$store.getters['student_status'], item.studentStatus);
                     });
-                    _this.studentsList = result.data;
+                    this.studentsList = result.data;
+                    this.loading = false;
                     fun && fun();
                 }
             })

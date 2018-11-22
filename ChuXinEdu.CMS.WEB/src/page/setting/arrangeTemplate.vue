@@ -1,7 +1,7 @@
 <template>
 <div class="list_container">
     <div class="table_container">
-        <el-table :data="templateList" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
+        <el-table :data="templateList" v-loading="loading" size="mini" align="left" border stripe :height="tableHeight">
             <el-table-column type="index" align='center' width="40"></el-table-column>
             <el-table-column prop="arrangeTemplateName" label="排课模板名称" align='center' min-width="220">
             </el-table-column>
@@ -30,7 +30,7 @@ export default {
     data() {
         return {
             templateList: [],
-            loading: false,
+            loading: true,
             tableHeight: this.$store.state.page.win_content.height - 150,
 
             curRoleCode: '',
@@ -46,11 +46,13 @@ export default {
     },
     methods: {
         getTemplateList() {
+            this.loading = true;
             axios({
                 type: 'get',
                 path: '/api/config/getarrangetemplates',
                 fn: result => {
                     this.templateList = result;
+                    this.loading = false;
                 }
             });
         },

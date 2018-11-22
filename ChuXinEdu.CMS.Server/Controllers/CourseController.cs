@@ -113,6 +113,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取课程作品 GET api/course/removecourse
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]        
+        public string RemoveCourse(int courseId)
+        {
+            string result = _chuxinWorkFlow.RemoveStudentCourse(courseId);
+            return result;
+        }
+
+        /// <summary>
         /// 提交课程补录信息 POST api/course/coursesupplement
         /// </summary>
         /// <returns></returns>

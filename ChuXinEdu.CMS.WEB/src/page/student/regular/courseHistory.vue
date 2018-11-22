@@ -1,8 +1,8 @@
 <template>
 <div class="info_container">
     <div class="table_container">
-        <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border :max-height="tableHeight">
-            <el-table-column type="index" width="40" align='center'></el-table-column>
+        <el-table ref="courseTable" :data="filteredCourseList" :span-method="objectSpanMethod" :row-class-name="packageColorFlag" v-loading="loading" size="mini" align="left" border :height="tableHeight">
+            <el-table-column type="index" width="50" align='center'></el-table-column>
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="135">
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + " " + scope.row.weekName }}
@@ -21,16 +21,25 @@
             </el-table-column>
             <el-table-column prop="courseType" label="课程标识" align='center' min-width="70">
             </el-table-column>
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="220">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="160">
                 <template slot-scope='scope'>
-                    <el-button type="warning" size="small" @click='showUploadDialog(scope.row)'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
-                    <el-button type="success" icon='edit' size="small" @click='viewArtwork(scope.row.studentCourseId)'>查看作品</el-button>
+                    <el-button-group>
+                        <el-button type="success" size="mini" icon='el-icon-upload' @click='showUploadDialog(scope.row)'></el-button>
+                        <el-button type="primary" size="mini" icon='el-icon-picture' @click='viewArtwork(scope.row.studentCourseId)'></el-button>
+                    </el-button-group>
+                    <el-button type="danger" size="mini" icon='el-icon-delete' @click='removeCourse(scope.row)'></el-button>
+
                 </template>
             </el-table-column>
         </el-table>
     </div>
 
     <div class="footer_container">
+        <el-radio-group v-model="curCourseCategory" size="small" type="success">
+            <el-radio-button label="all">全部 <span style="font-weight:600">{{ this.badges.all }}</span>节</el-radio-button>
+            <el-radio-button label="meishu">美术 <span style="font-weight:600">{{ this.badges.meishu }}</span>节</el-radio-button>
+            <el-radio-button label="shufa">书法 <span style="font-weight:600">{{ this.badges.shufa }}</span>节</el-radio-button>
+        </el-radio-group>
         <el-button type="primary" size="small" @click='supplementCourse()' :loading="downloadLoading"><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
         <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
     </div>
@@ -151,8 +160,16 @@ export default {
         return {
             studentName: '',
             courseList: [],
+            filteredCourseList:[],
+            badges: {
+                all: 0,
+                meishu: 0,
+                shufa: 0
+            },
+            packages: [],
+            curCourseCategory: 'all',
             dateRowSpanArray: [],
-            loading: false,
+            loading: true,
             downloadLoading: false,
             tableHeight: this.$store.state.page.win_content.height - 100,
             supplementDialog: {
@@ -169,7 +186,7 @@ export default {
                 },
                 newCourseList: [],
                 firstCourse: {}, //用于数据自动填充
-                previousCourseDate:'',
+                previousCourseDate: '',
                 canCreate: true,
             },
             uploadDialog: {
@@ -217,12 +234,19 @@ export default {
             }
         }
     },
+    watch:{
+        'curCourseCategory'(cur){
+            this.filteredCourseList = this.courseList.filter(item => this.curCourseCategory == 'all' || item.courseCategoryCode == cur);
+            this.getRowSpanInfo();
+        }
+    },
     created() {
         this.studentName = this.$route.query.studentname;
         this.getHistoryCourseList();
     },
     methods: {
         getHistoryCourseList() {
+            this.loading = true;
             axios({
                 type: 'get',
                 path: '/api/student/getcourselist',
@@ -233,9 +257,18 @@ export default {
                     result.forEach(item => {
                         item.courseDate = item.courseDate.split('T')[0];
                         item.weekName = dateHelper.getWeekNameByCode(item.courseWeekDay);
+                        if (this.packages.indexOf(item.studentCoursePackageId) == -1) {
+                            this.packages.push(item.studentCoursePackageId);
+                        }
                     });
                     this.courseList = result;
+                    this.filteredCourseList = result.filter(item => this.curCourseCategory == 'all' || item.courseCategoryCode == this.curCourseCategory);
                     this.getRowSpanInfo();
+                    this.loading = false;
+
+                    this.badges.all = this.courseList.length;
+                    this.badges.shufa = this.courseList.filter(item => item.courseCategoryCode == 'shufa').length;
+                    this.badges.meishu = this.badges.all - this.badges.shufa;
                 }
             });
         },
@@ -363,19 +396,18 @@ export default {
 
         },
         viewArtwork(courseId) {
-            var _this = this;
             axios({
                 type: 'get',
                 path: '/api/course/getcourseartwork',
                 data: {
                     courseId: courseId
                 },
-                fn: function (result) {
-                    _this.viewDialog.artWorkList = result;
+                fn: result => {
+                    this.viewDialog.artWorkList = result;
                     if (result.length > 0) {
-                        _this.viewDialog.isShow = true;
+                        this.viewDialog.isShow = true;
                     } else {
-                        _this.$message({
+                        this.$message({
                             message: '还没有上传作品',
                             type: 'warning'
                         });
@@ -384,11 +416,34 @@ export default {
             });
         },
 
+        removeCourse(row) {
+            this.$confirm('是否确定删除该节课程['+ row.courseDate +': ' + row.coursePeriod + ']？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                axios({
+                    type: 'delete',
+                    path: '/api/course/removecourse',
+                    data: {
+                        courseId: row.studentCourseId
+                    },
+                    fn: result => {
+                        if(result == 1200){
+                            this.getHistoryCourseList();
+                        }
+                    }
+                });
+            }).catch(() => {
+                //
+            });
+        },
+
         getRowSpanInfo() {
             this.dateRowSpanArray = [];
             let cDate = '';
             let dateIndex = 0;
-            this.courseList.forEach((item, index, array) => {
+            this.filteredCourseList.forEach((item, index, array) => {
                 this.dateRowSpanArray.push(1);
                 if (index === 0) {
                     cDate = item.courseDate;
@@ -416,20 +471,28 @@ export default {
                 };
             }
         },
-
-        getCourseTeacherList(){
+        packageColorFlag({
+            row,
+            rowIndex
+        }) {
+            let i = this.packages.indexOf(row.studentCoursePackageId);
+            if (i > -1) {
+                return 'row' + i;
+            }
+            return '';
+        },
+        getCourseTeacherList() {
             axios({
                 type: 'get',
                 path: '/api/teacher/getcourseteacherlist',
                 fn: result => {
-                    for(let t of result) {
-                        if(this.courseTeachers.hasOwnProperty(t.role_code)){
+                    for (let t of result) {
+                        if (this.courseTeachers.hasOwnProperty(t.role_code)) {
                             this.courseTeachers[t.role_code].push({
                                 teacherCode: t.teacher_code,
                                 teacherName: t.teacher_name
                             });
-                        }
-                        else{
+                        } else {
                             this.courseTeachers[t.role_code] = [{
                                 teacherCode: t.teacher_code,
                                 teacherName: t.teacher_name
@@ -446,7 +509,7 @@ export default {
             this.supplementDialog.newCourseList = [];
             this.supplementDialog.selectedPackage = {};
 
-            if(Object.keys(this.courseTeachers).length == 0) {
+            if (Object.keys(this.courseTeachers).length == 0) {
                 this.getCourseTeacherList();
             }
             // 获取未完成的套餐
@@ -491,8 +554,11 @@ export default {
                     break;
                 }
             }
-
-            this.supplementDialog.canCreate = true;
+            if (this.supplementDialog.selectedPackage.flexCourseCount == 1) {
+                this.supplementDialog.canCreate = false;
+            } else {
+                this.supplementDialog.canCreate = true;
+            }
             // 初始化第一行
             this.supplementDialog.firstCourse = {
                 index: new Date().getTime(),
@@ -513,8 +579,8 @@ export default {
                 courseFolderName: '',
                 courseSubject: '',
                 courseType: '正式',
-                attendanceStatusCode:'01',
-                attendanceStatusName:'上课销课'
+                attendanceStatusCode: '01',
+                attendanceStatusName: '上课销课'
             };
             this.supplementDialog.newCourseList = [this.supplementDialog.firstCourse];
         },
@@ -538,8 +604,8 @@ export default {
                 courseFolderName: '',
                 courseSubject: '',
                 courseType: '正式',
-                attendanceStatusCode:'01',
-                attendanceStatusName:'上课销课'
+                attendanceStatusCode: '01',
+                attendanceStatusName: '上课销课'
             });
             if (this.supplementDialog.newCourseList.length >= this.supplementDialog.selectedPackage.flexCourseCount) {
                 this.supplementDialog.canCreate = false;
@@ -557,11 +623,11 @@ export default {
             this.supplementDialog.canCreate = true;
         },
         btnSubmitSupplement() {
-            if(this.supplementDialog.newCourseList.length == 0) {
+            if (this.supplementDialog.newCourseList.length == 0) {
                 return;
             }
-            for(let item of this.supplementDialog.newCourseList) {
-                if(!item.teacherCode || !item.courseDate || !item.courseWeekDay){
+            for (let item of this.supplementDialog.newCourseList) {
+                if (!item.teacherCode || !item.courseDate || !item.courseWeekDay) {
                     this.$message({
                         type: "warning",
                         message: "请为所有的课程选择上课日期、时间段、教师！"
@@ -605,7 +671,7 @@ export default {
             //         break;
             //     }
             // }
-            for(let key in this.courseTeachers){
+            for (let key in this.courseTeachers) {
                 for (let item of this.courseTeachers[key]) {
                     if (item.teacherCode == teacherCode) {
                         name = item.teacherName;
@@ -618,17 +684,17 @@ export default {
         export2Excle() {
             if (this.courseList.length == 0) {
                 this.$message({
-                    message: '没有数据需要导出！',
+                    message: '没有数据（' + this.curCourseCategory + '）需要导出！',
                     type: 'success'
                 });
                 return;
             }
-            var filename = this.courseList[0].studentName + "上课记录";
+            var filename = this.courseList[0].studentName + "上课记录_" + this.curCourseCategory;
             this.downloadLoading = true
             import('@/vendor/Export2Excel').then(excel => {
                 const tHeader = ['上课日期', '上课时间', '课程类别', '课程主题', '上课教师'];
                 const filterVal = ['courseDate', 'coursePeriod', 'courseFolderName', 'courseSubject', 'teacherName']
-                const data = this.formatJson(filterVal, this.courseList)
+                const data = this.formatJson(filterVal, this.courseList.filter(item => this.curCourseCategory == 'all' || item.courseCategoryCode == this.curCourseCategory))
                 excel.export_json_to_excel({
                     header: tHeader,
                     data,

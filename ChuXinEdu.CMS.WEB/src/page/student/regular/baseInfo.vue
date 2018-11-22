@@ -70,14 +70,14 @@
         <el-col :span="24">
             <template>
                 <el-table :data="pageData.coursePackageList" stripe border style="width: 100%" size="mini">
-                    <el-table-column prop="packageName" align='left' label="课程套餐" min-width="200">
+                    <el-table-column prop="packageName" align='left' label="课程套餐" min-width="210">
                     </el-table-column>
-                    <el-table-column prop="" align='center' label="课程类别" min-width="120">
+                    <el-table-column prop="" align='center' label="课程类别" min-width="90">
                         <template slot-scope='scope'>
                             {{ scope.row.courseCategoryName  + "/" + scope.row.courseFolderName }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="restCourseCount" align='center' label="剩余课时数" min-width="90">
+                    <el-table-column prop="restCourseCount" align='center' label="剩余课时" min-width="80">
                         <template slot-scope='scope'>
                             {{ scope.row.restCourseCount  + "/" + scope.row.actualCourseCount }}
                         </template>
@@ -87,16 +87,16 @@
                             {{ scope.row.payDate && scope.row.payDate.split('T')[0] }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="actualPrice" align='center' label="缴费金额" min-width="80">
+                    <el-table-column prop="actualPrice" align='center' label="缴费金额" min-width="70">
                         <template slot-scope='scope'>
                             <span style="color:#f56767;">{{ scope.row.actualPrice }}</span> 
                         </template>
                     </el-table-column>
-                    <el-table-column prop="payPatternName" align='center' label="缴费方式" min-width="80">
+                    <el-table-column prop="payPatternName" align='center' label="缴费方式" min-width="70">
                     </el-table-column>
-                    <el-table-column prop="payeeName" align='center' label="收款人" min-width="90">
+                    <el-table-column prop="payeeName" align='center' label="收款人" min-width="70">
                     </el-table-column>
-                    <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
+                    <el-table-column prop="operation" align='center' label="操作" fixed="right" width="110">
                         <template slot-scope='scope'>
                             <el-button type="warning" icon="el-icon-edit" size="mini" @click='showUpdateCoursePackage(scope.row)'>更新</el-button>
                         </template>

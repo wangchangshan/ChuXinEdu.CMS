@@ -37,6 +37,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode);
 
+        IEnumerable<StudentCourseList> GetStudentDayOffList(string studentCode);
+
         DataTable GetScpSimplify();
 
         //获取已经上课的数目

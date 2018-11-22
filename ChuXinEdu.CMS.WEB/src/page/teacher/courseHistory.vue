@@ -18,7 +18,7 @@
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
+        <el-table :data="courseList" :span-method="objectSpanMethod" v-loading="loading" size="mini" align="left" border stripe :height="tableHeight">
             <el-table-column type="index" align='center' width="40" fixed></el-table-column>
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="140" fixed>
                 <template slot-scope='scope'>
@@ -90,7 +90,7 @@ export default {
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
             },
             dateRowSpanArray: [],
-            loading: false,
+            loading: true,
             downloadLoading: false,
             tableHeight: this.$store.state.page.win_content.height - 150,
 
@@ -130,7 +130,6 @@ export default {
             where,
             fun
         } = {}) {
-            var _this = this;
             var query = this.$route.query;
             this.paginations.current_page_index = page || parseInt(query.page) || 1;
             this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
@@ -145,16 +144,17 @@ export default {
 
             axios({
                 type: 'get',
-                path: '/api/teacher/getcourselist/' + _this.teacherCode,
+                path: '/api/teacher/getcourselist/' + this.teacherCode,
                 data: data,
-                fn: function (result) {
-                    _this.paginations.total = result.totalCount;
+                fn: result => {
+                    this.paginations.total = result.totalCount;
                     result.courseList.forEach(item => {
                         item.courseDate = item.courseDate.split('T')[0];
                         item.weekName = dateHelper.getWeekNameByCode(item.courseWeekDay);
                     });
-                    _this.courseList = result.courseList;
-                    _this.getRowSpanInfo();
+                    this.courseList = result.courseList;
+                    this.getRowSpanInfo();
+                    this.loading = false;
                     fun && fun();
                 }
             });

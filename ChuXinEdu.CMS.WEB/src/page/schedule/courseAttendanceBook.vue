@@ -2,7 +2,7 @@
 <!-- <div>展示今日以及过往没有签到的学生上课列表</div> -->
 <div class="fillcontain">
     <div class="table_container">
-        <el-table :data="attendanceList" :span-method="objectSpanMethod" v-loading="loading" border :max-height="tableHeight" @selection-change="handleSelectionChange" size='mini'>
+        <el-table :data="attendanceList" :span-method="objectSpanMethod" v-loading="loading" border :height="tableHeight" @selection-change="handleSelectionChange" size='mini'>
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="135">
                 <template slot-scope='scope'>
                     {{ scope.row.courseDate + ' ' + scope.row.weekName }}
@@ -101,7 +101,7 @@ import {
 export default {
     data() {
         return {
-            loading: false,
+            loading: true,
             tableHeight: this.$store.state.page.win_content.height - 63,
 
             attendanceList: [],
@@ -184,19 +184,20 @@ export default {
                 }
             });
         },
-        getAttendanceList() {
-            var _this = this;
+        getAttendanceList() {            
+            this.loading = true;
             axios({
                 type: 'get',
                 path: '/api/course/getattendancelist',
-                fn: function (result) {
+                fn: result => {
                     for (let item of result) {
                         item.courseDate = item.courseDate.split('T')[0];
                         item.weekName = dateHelper.getWeekNameByCode(item.courseWeekDay);
                     }
-                    _this.attendanceList = result;
-                    _this.$store.commit('SET_TO_RECORD', result.length);
-                    _this.getRowSpanInfo();
+                    this.attendanceList = result;
+                    this.$store.commit('SET_TO_RECORD', result.length);
+                    this.getRowSpanInfo();
+                    this.loading = false;
                 }
             });
         },
@@ -339,7 +340,7 @@ export default {
         // 请假
         qingJiaCourse(studentCourseId) {
             var _this = this;
-            this.$confirm('是否确定该学员已请假?', '提示', {
+            this.$confirm('是否确定该学员已请假？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'

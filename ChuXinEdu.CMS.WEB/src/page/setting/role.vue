@@ -1,7 +1,7 @@
 <template>
 <div class="list_container">
     <div class="table_container">
-        <el-table :data="roleList" v-loading="loading" size="mini" align="left" border stripe :max-height="tableHeight">
+        <el-table :data="roleList" v-loading="loading" size="mini" align="left" border stripe :height="tableHeight">
             <el-table-column type="index" align='center' width="40"></el-table-column>
             <el-table-column prop="itemName" label="角色名称" align='center' min-width="150">
             </el-table-column>
@@ -38,7 +38,7 @@ export default {
     data() {
         return {
             roleList: [],
-            loading: false,
+            loading: true,
             tableHeight: this.$store.state.page.win_content.height - 150,
 
             curRoleCode: '',
@@ -57,11 +57,13 @@ export default {
     },
     methods: {
         getRoleList() {
+            this.loading = true;
             axios({
                 type: 'get',
                 path: '/api/config/getroles',
                 fn: result => {
                     this.roleList = result;
+                    this.loading = false;
                 }
             });
         },

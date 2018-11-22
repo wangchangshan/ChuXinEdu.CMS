@@ -22,7 +22,7 @@
         </el-form>
     </div>
     <div class="table_container">
-        <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :max-height="tableHeight">
+        <el-table :data="studentsList" v-loading="loading" style="width: 100%" border stripe align="center" size="mini" :height="tableHeight">
             <el-table-column type="index" align='center' width="40" fixed></el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="80" fixed>
             </el-table-column>
@@ -114,7 +114,7 @@ export default {
                 studentName: '',
                 studentTempStatus:[]
             },
-            loading: false,
+            loading: true,
             tableHeight: this.$store.state.page.win_content.height - 106,
             paginations: {
                 current_page_index: 1,
@@ -188,7 +188,7 @@ export default {
             where,
             fun
         } = {}) {
-            var _this = this;
+            this.loading = true;
             var query = this.$route.query;
             this.paginations.current_page_index = page || parseInt(query.page) || 1;
             this.paginations.page_size = pageSize || parseInt(query.page_size) || this.paginations.page_size;
@@ -204,13 +204,14 @@ export default {
                 type: 'get',
                 path: '/api/studenttemp/getstudentlist',
                 data: data,
-                fn: function (result) {
-                    _this.paginations.total = result.totalCount;
+                fn: result => {
+                    this.paginations.total = result.totalCount;
                     result.studentList.forEach((item) => {
-                        item.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_temp_status'], item.studentTempStatus);
+                        item.studentStatusDesc = dicHelper.getLabelByValue(this.$store.getters['student_temp_status'], item.studentTempStatus);
                         item.studentBirthday = item.studentBirthday && item.studentBirthday.split('T')[0];
                     })
-                    _this.studentsList = result.studentList;
+                    this.studentsList = result.studentList;
+                    this.loading = false;
                     fun && fun();
                 }
             })

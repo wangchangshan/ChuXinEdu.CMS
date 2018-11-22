@@ -62,13 +62,23 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 return new JsonResult(new { code = result });
             }
-            result = _chuxinWorkFlow.LoginVerify(loginCode, pwd);
-
+            
+            string signToken = ""; 
+            string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(); 
+            result = _chuxinWorkFlow.LoginVerify(loginCode, pwd, out signToken);
+            if(result == "1701")
+            {
+                // 处理当前用户浏览器后退到登录页面，无法重新登录的问题
+                bool signVerify = rsa.Verify(loginCode + ip, signToken);
+                if(signVerify)
+                {
+                    result = "1200";
+                    return new JsonResult(new { code = result, data = signToken });
+                }
+            }
             // 当前用户名签名
-            string signToken = "";
             if(result == "1200")
             {
-                string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(); 
                 signToken = rsa.Sign(loginCode + ip);
                 result = _chuxinWorkFlow.SaveUserLoginInfo(loginCode, ip, signToken);
             }

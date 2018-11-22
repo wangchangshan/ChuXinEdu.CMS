@@ -12,8 +12,13 @@
             <student-course-history v-if="activeLabelCode === 'history'" v-bind:studentCode="studentCode"></student-course-history>
         </el-tab-pane>
 
+        <el-tab-pane :name="'dayoff'">
+            <span slot="label"><i class="fa fa-fax"></i> 请假记录</span> 
+            <student-offday-history v-if="activeLabelCode === 'dayoff'" v-bind:studentCode="studentCode"></student-offday-history>
+        </el-tab-pane>        
+
         <el-tab-pane :name="'achievement'">
-            <span slot="label"><i class="fa fa-image"></i> 作品展示</span> 
+            <span slot="label"><i class="fa fa-image"></i> 宝贝画集</span> 
             <student-achievements 
                 v-if="activeLabelCode === 'achievement'" 
                 v-bind:studentCode="studentCode">
@@ -35,6 +40,7 @@
 // import studentDetailBaseInfo from '@/page/studentDetailBaseInfo'
 import baseInfo from './baseInfo'
 import courseHistory from './courseHistory'
+import dayoffHistory from './dayoffHistory'
 import achievements from './achievements'
 import feeBack from './feeBack'
 import additionalInfo from './additionalInfo'
@@ -52,6 +58,7 @@ export default {
     components: {
         "student-base-info" : baseInfo,
         "student-course-history" : courseHistory,
+        "student-offday-history" : dayoffHistory,
         "student-achievements": achievements,
         "student-fee-back": feeBack,
         "student-additional-info":additionalInfo

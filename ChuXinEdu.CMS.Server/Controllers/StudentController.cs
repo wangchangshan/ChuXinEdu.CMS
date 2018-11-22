@@ -258,6 +258,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取学生上课列表 GET api/student/getdayofflist
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<StudentCourseList> GetDayOffList(string studentCode)
+        {
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentDayOffList(studentCode);
+            return courseList;
+        }
+
+        /// <summary>
         /// 获取学生所有的课程作品 GET api/student/getartworklist
         /// </summary>
         /// <returns></returns>

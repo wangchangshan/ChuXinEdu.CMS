@@ -21,9 +21,10 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
 
         #region 登录模块
-        public string LoginVerify(string loginCode, string pwd)
+        public string LoginVerify(string loginCode, string pwd, out string token)
         {
             string result = "";
+            token = "";
             using (BaseContext context = new BaseContext())
             {
                 var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode
@@ -37,6 +38,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 {
                     if(!String.IsNullOrEmpty(sysUser.Token) && sysUser.TokenExpireTime > DateTime.Now)
                     {
+                        token = sysUser.Token;
                         result = "1701";
                     }
                     else
@@ -510,6 +512,40 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        // 删除已销课的课程
+        public string RemoveStudentCourse(int courseId)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    // 1. 删除学生课程表内课程
+                    var studentCourse = context.StudentCourseList.FirstOrDefault(s => s.StudentCourseId == courseId);
+                    if(studentCourse != null)
+                    {
+                        int studentPackageId = studentCourse.StudentCoursePackageId;
+                        if(studentPackageId > 0)
+                        {
+                            // 2. 正式课程，需要更新student_course_package表
+                            var coursePackage = context.StudentCoursePackage.Where( p => p.Id == studentPackageId).First();
+                            coursePackage.FlexCourseCount += 1;
+                            coursePackage.RestCourseCount += 1;
+                            coursePackage.ScpStatus = "00";
+                        }
+                    }
+                    context.StudentCourseList.Remove(studentCourse);
+                    // 3. 提交事务
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "删除已销课的单节课程记录错误");
+                result = "1500";
+            }
+            return result;
+        }
         public string AddHoliday(SysHoliday holiday)
         {
             string result = "1200";

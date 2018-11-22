@@ -224,6 +224,18 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<StudentCourseList> GetStudentDayOffList(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseList.Where(s => s.StudentCode == studentCode
+                                                            && s.AttendanceStatusCode == "00")
+                                                .OrderBy(s => s.CoursePeriod)
+                                                .OrderBy(s => s.CourseDate)
+                                                .ToList();
+            }
+        }
+
         // public int GetStudentSignInCourseCount(string studentCode)
         // {
         //     int count = 0;
@@ -369,8 +381,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return context.Simplify_StudentCourseList.FromSql($@"select student_course_id,course_category_name,course_folder_name,course_date,attendance_status_code,attendance_status_name,course_type 
                                                                     from student_course_list
                                                                     where student_code={studentCode} and course_week_day={dayCode} and course_period={coursePeriod} 
-                                                                          and (attendance_status_code = '00' or attendance_status_code = '03' or attendance_status_code = '09')
-                                                                    order by course_date;")
+                                                                          and (((attendance_status_code = '00' or attendance_status_code = '03') and course_date >= DATE_FORMAT(now(),'%Y-%m-%d')) or attendance_status_code = '09')
+                                                                    order by course_date")
                                                                 .ToList();
             }
         }

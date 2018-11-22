@@ -12,7 +12,7 @@ namespace ChuXinEdu.CMS.Server.BLL
     public interface IChuXinWorkFlow
     {
         // [登陆]
-        string LoginVerify(string loginCode, string pwd);
+        string LoginVerify(string loginCode, string pwd, out string token);
 
          // [登出]
         string LogOut(string loginCode);
@@ -126,5 +126,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [删除教师角色]
         string RemoveTeacherRole(string roleCode, List<string> teacherCodes);
+
+        // [删除签到后的学生课程记录]
+        string RemoveStudentCourse(int courseId);
     } 
 }
