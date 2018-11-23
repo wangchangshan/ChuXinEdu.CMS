@@ -15,6 +15,12 @@
             <span slot="label"><i class="fa fa-table"></i> 排课模板配置</span> 
             <arrange-template-setting v-if="activeLabelCode === 'arrange-template'"></arrange-template-setting>
         </el-tab-pane>
+
+        <el-tab-pane :name="'dirty'">
+            <span slot="label"><i class="fa fa-table"></i> 异常数据</span> 
+            <dirty-data v-if="activeLabelCode === 'dirty'"></dirty-data>
+        </el-tab-pane>
+
         <!-- <el-tab-pane :name="'dictionary'">
             <span slot="label"><i class="fa fa-book"></i> 字典展示</span> 
             <dictionary-setting v-if="activeLabelCode === 'dictionary'"></dictionary-setting>
@@ -26,6 +32,7 @@
 <script>
 import roleSetting from './role'
 import arrangeTemplateSetting from './arrangeTemplate'
+import dirtyData from './dirtyData'
 
 export default {
     data() {
@@ -38,7 +45,8 @@ export default {
     },
     components: {
         "role-setting" : roleSetting,
-        "arrange-template-setting" : arrangeTemplateSetting
+        "arrange-template-setting" : arrangeTemplateSetting,
+        "dirty-data": dirtyData
     }
 }
 </script>

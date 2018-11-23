@@ -485,7 +485,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         }
                         else
                         {
-                            _logger.LogWarning("找不到StudentCourseArrange中对应当前课程的排课记录！！！！！！！！！！！");
+                            _logger.LogWarning("找不到 {0} 在StudentCourseArrange[packageId: {1}, dayCode：{2}，时间段：{3}]中对应当前课程的排课记录！！！！", studentCourse.StudentName,studentCoursePackageId, dayCode, coursePeriod);
+                            context.Dispose();
                             return "1409";
                         }
 
@@ -796,6 +797,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     if (scl == null)
                     {
                         _logger.LogInformation("没有找到当前待销课课程!!!!!!!!!! return， courseId: {0}", courseId);
+                        context.Dispose();
                         return "1409";
                     }
                     // 1. 更新课程记录表的状态
@@ -839,7 +841,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                 .FirstOrDefault();
                         if (sca == null)
                         {
-                            _logger.LogWarning("没有找到当前课程的arrange信息！！！！！  return. ");
+                            _logger.LogWarning("没有找到当前课程的arrange信息（{0}，packageId: {1}）！！！！！  return. ", studentCode, studentCoursePackageId);
+                            context.Dispose();
                             return "1409";
                         }
                         _logger.LogInformation("当前课程所在arrange剩余课程数为：{0}", sca.CourseRestCount);
@@ -1066,6 +1069,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             else
                             {
                                 _logger.LogWarning("课程套餐数据异常！！套餐ID: {0}，剩余restCourseCount: {1}， 本次提交补录课程数目：{2}", studentCoursePackageId, package.RestCourseCount, i.ToString());
+                                context.Dispose();
                                 return "1409";
                             }
                         }
@@ -1077,6 +1081,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         else
                         {
                             _logger.LogWarning("课程套餐数据异常！！套餐ID: {0}，剩余FlexCourseCount: {1}， 本次提交补录课程数目：{2}", studentCoursePackageId, package.FlexCourseCount, i.ToString());
+                            context.Dispose();
                             return "1409";
                         }
 
@@ -1807,5 +1812,64 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+
+        #region 脏数据处理
+        public string ClearDirtyForPackage(int id)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var package = context.StudentCoursePackage.FirstOrDefault(p => p.Id == id && p.RestCourseCount == 0 && p.ScpStatus == "00");
+                    if(package != null)
+                    {
+                        int finishCourseCount = context.StudentCourseList.Where(c => c.StudentCoursePackageId == id 
+                                                                            && (c.AttendanceStatusCode == "01" || c.AttendanceStatusCode == "02"))
+                                                                    .Count();
+
+                        if(finishCourseCount == package.ActualCourseCount)
+                        {
+                            package.ScpStatus = "01";                            
+                            context.SaveChanges();
+                        }
+                        else
+                        {
+                            result = "销课数目与套餐实际课时数目不相符，请管理员检查课时数据！";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "脏数据处理失败Package");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string ClearDirtyForArrange(int id)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var arrange = context.StudentCourseArrange.FirstOrDefault(a => a.Id == id && a.CourseRestCount == 0);
+                    if(arrange != null)
+                    {
+                        context.Remove(arrange);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "脏数据处理失败Arrange");
+                result = "1500";
+            }
+            return result;
+        }
+        #endregion 
     }
 }

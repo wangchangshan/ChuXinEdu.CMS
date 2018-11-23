@@ -11,7 +11,7 @@
             <el-table-column prop="coursePeriod" label="时间段" align='center' min-width="90">
             </el-table-column>
             <el-table-column type="selection" label="选择" align='center' min-width="40"></el-table-column>
-            <el-table-column prop="studentName" label="姓名" align='center' min-width="100">
+            <el-table-column prop="studentName" label="姓名" align='center' min-width="110">
                 <template slot-scope='scope'>
                     {{ scope.row.studentName + ' (' + scope.row.courseType + ')' }}
                 </template>

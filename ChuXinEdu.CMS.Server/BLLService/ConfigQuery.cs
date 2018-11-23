@@ -36,5 +36,23 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return dicList;
 			}
         }
+
+        public IEnumerable<StudentCourseArrange> GetArrangeDirty()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var arrange = context.StudentCourseArrange.Where(a => a.CourseRestCount == 0).ToList();
+                return arrange;
+            }
+        }
+
+        public IEnumerable<StudentCoursePackage> GetPackageDirty()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var packages = context.StudentCoursePackage.Where(p => p.RestCourseCount == 0 && p.ScpStatus == "00").ToList();
+                return packages;
+            }
+        }
     }
 }

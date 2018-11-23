@@ -279,7 +279,7 @@ export default {
                 courseDate: row.courseDate,
                 weekName: row.weekName,
                 coursePeriod: row.coursePeriod,
-                imgDesc: "",
+                imgDesc: row.courseSubject,
                 imgCost: null,
             }
             this.uploadDialog.params = {
@@ -650,6 +650,18 @@ export default {
                         });
                         this.getHistoryCourseList();
                         this.supplementDialog.isShow = false;
+                    }
+                    else if(result == 1409){
+                        this.$message({
+                            message: '课程套餐数据异常！！请检查数据！',
+                            type: 'error'
+                        });
+                    }
+                    else {
+                        this.$message({
+                            message: '补录出错，请查看相关日志！',
+                            type: 'error'
+                        });
                     }
                 }
             })

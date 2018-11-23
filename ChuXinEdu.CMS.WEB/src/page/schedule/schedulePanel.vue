@@ -150,7 +150,7 @@
     </el-dialog>
 
     <el-dialog :title="studentCourseDialog.title" :visible.sync="studentCourseDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="studentCourseDialog.width">
-        <el-table :data="studentCourseDialog.courseList" max-height="400" size="mini" @selection-change="handleCourseListChange">
+        <el-table v-loading="studentCourseDialog.loading" :data="studentCourseDialog.courseList" height="400" size="mini" @selection-change="handleCourseListChange">
             <el-table-column :selectable='courseCheckboxControl' type="selection" width="30"></el-table-column>
             <el-table-column type="index" :index="indexGernerate" width="40" align='center'> </el-table-column>
             <el-table-column property="courseDate" label="上课日期" width="110"></el-table-column>
@@ -344,6 +344,7 @@ export default {
             studentCourseDialog: {
                 title: '',
                 isShow: false,
+                loading: false,
                 width: '600px',
                 curDayCode: '',
                 curPeriodName: '',
@@ -682,10 +683,10 @@ export default {
 
         // 查看学生已选课程列表
         getStudentCourseList(studentCode, studentName, dayCode, dayName, periodName) {
+            this.studentCourseDialog.loading = true;
             this.studentCourseDialog.curDayCode = dayCode;
             this.studentCourseDialog.curPeriodName = periodName;
-            var _this = this;
-            _this.studentCourseDialog.courseList = [];
+            this.studentCourseDialog.courseList = [];
             axios({
                 type: 'get',
                 path: 'api/course/getarrangedcourselist',
@@ -694,11 +695,12 @@ export default {
                     dayCode: dayCode,
                     coursePeriod: periodName
                 },
-                fn: function (result) {
+                fn: result => {
                     result.forEach((item) => {
                         item.courseDate = item.courseDate.split('T')[0];
                     })
-                    _this.studentCourseDialog.courseList = result;
+                    this.studentCourseDialog.courseList = result;                    
+                    this.studentCourseDialog.loading = false;
                 }
             })
             this.studentCourseDialog.isShow = true;

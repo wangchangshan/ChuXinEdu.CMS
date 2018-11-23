@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Newtonsoft.Json.Serialization;
 using ChuXinEdu.CMS.Server.Filters;
+using System.Data;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -143,6 +144,81 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string result = string.Empty;
             result = _chuxinWorkflow.RemoveTeacherRole(roleCode, teacherCodes);
+            return result;
+        }
+
+        /// <summary>
+        /// [脏数据] GET api/config/getdirty
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult<string> GetDirty(string typeCode)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("tablename");
+            dt.Columns.Add("id", typeof(Int32));
+            dt.Columns.Add("packagecode");
+            dt.Columns.Add("studentcode");
+            dt.Columns.Add("studentname");
+            dt.Columns.Add("restcoursecount", typeof(Int32));
+
+            var packages =_configQuery.GetPackageDirty();
+            foreach (var package in packages)
+            {
+                DataRow dr = dt.NewRow();
+                dr["tablename"] = "package";
+                dr["id"] = package.Id;
+                dr["packagecode"] = package.PackageCode;
+                dr["studentcode"] = package.StudentCode;
+                dr["studentname"] = package.StudentName;
+                dr["restcoursecount"] = 0;
+                dt.Rows.Add(dr);
+            }
+            
+            var arranges = _configQuery.GetArrangeDirty();
+            foreach (var arrange in arranges)
+            {
+                DataRow dr = dt.NewRow();
+                dr["tablename"] = "arrange";
+                dr["id"] = arrange.Id;
+                dr["packagecode"] = arrange.PackageCode;
+                dr["studentcode"] = arrange.StudentCode;
+                dr["studentname"] = arrange.StudentName;
+                dr["restcoursecount"] = 0;
+                dt.Rows.Add(dr);
+            }
+
+
+            string result = string.Empty;
+            if(dt != null)
+            {
+                result = JsonConvert.SerializeObject(dt);
+            }
+            return result;
+        }
+
+        // [处理脏数据] POST api/config/cleardirty 
+        [HttpPost]
+        public string ClearDirty([FromBody] dynamic dirtyData)
+        {
+            string result = string.Empty;
+            
+            string tableName = dirtyData.tablename.ToString();
+            int id = Convert.ToInt32(dirtyData.id.ToString());
+
+            switch (tableName)
+            {
+                case "package":
+                    result = _chuxinWorkflow.ClearDirtyForPackage(id);
+                break;
+
+                case "arrange":
+                    result = _chuxinWorkflow.ClearDirtyForArrange(id);
+                break;
+
+                default:
+                break;
+            }
             return result;
         }
     }

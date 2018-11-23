@@ -129,5 +129,11 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [删除签到后的学生课程记录]
         string RemoveStudentCourse(int courseId);
+
+        // [脏数据处理]
+        string ClearDirtyForPackage(int id);
+
+        // [脏数据处理]
+        string ClearDirtyForArrange(int id);
     } 
 }
