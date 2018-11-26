@@ -16,6 +16,7 @@ using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
 using ChuXinEdu.CMS.Server.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -27,14 +28,15 @@ namespace ChuXinEdu.CMS.Server.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChuXinQuery _chuxinQuery;
         private readonly IChuXinWorkFlow _chuxinWorkFlow;
-
-        public UploadController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow, IHostingEnvironment hostingEnvironment)
+        private readonly ILogger<UploadController> _logger;
+        public UploadController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow, IHostingEnvironment hostingEnvironment, ILogger<UploadController> logger)
         {
             _chuxinQuery = chuxinQuery;
             _chuxinWorkFlow = chuxinWorkFlow;
             _hostingEnvironment = hostingEnvironment;
+            _logger = logger;
         }
-       
+
 
         /// <summary>
         /// 签到 上传作品 POST api/upload/uploadartwork
@@ -48,7 +50,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string studentCode = string.Empty;
             string studentName = string.Empty;
             string uid = string.Empty;
-            if(HttpContext.Request.Form.ContainsKey("courseId"))
+            if (HttpContext.Request.Form.ContainsKey("courseId"))
             {
                 courseId = Int32.Parse(HttpContext.Request.Form["courseId"]);
                 studentCode = HttpContext.Request.Form["studentCode"];
@@ -63,38 +65,39 @@ namespace ChuXinEdu.CMS.Server.Controllers
             //string webRootPath = _hostingEnvironment.WebRootPath;
             //Environment.CurrentDirectory;
             string contentRootPath = _hostingEnvironment.ContentRootPath;
-            string documentPath = "/cxdocs/" + studentCode + "/" ;
-            
-            if(!Directory.Exists(contentRootPath + documentPath))
+            string documentPath = "/cxdocs/" + studentCode + "/";
+
+            if (!Directory.Exists(contentRootPath + documentPath))
             {
-                Directory.CreateDirectory(contentRootPath + documentPath);            
+                Directory.CreateDirectory(contentRootPath + documentPath);
             }
 
-            var file =  HttpContext.Request.Form.Files.FirstOrDefault();
-            if(file != null)
-            {  
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
+            if (file != null)
+            {
                 string ext = Path.GetExtension(file.FileName);
-                string newName = string.Format("{0}_{1}_{2}{3}", studentName,System.Guid.NewGuid().ToString("N"),courseId.ToString(), ext);
+                string newName = string.Format("{0}_{1}_{2}{3}", studentName, System.Guid.NewGuid().ToString("N"), courseId.ToString(), ext);
                 documentPath = documentPath + newName;
                 string savePath = contentRootPath + documentPath;
 
-                using(var stream = System.IO.File.Create(savePath))
+                using (var stream = System.IO.File.Create(savePath))
                 {
                     file.CopyTo(stream);
                 }
 
                 string fileSize = System.Math.Ceiling(file.Length / 1024.0 / 1024.0) + " MB";
                 // 数据入库
-                StudentArtwork artWork = new StudentArtwork {
+                StudentArtwork artWork = new StudentArtwork
+                {
                     TempUId = uid,
                     StudentCourseId = courseId,
                     StudentCode = studentCode,
                     StudentName = studentName,
-                    DocumentPath = documentPath,  
+                    DocumentPath = documentPath,
                     DocumentType = ext,
-                    DocumentSize = fileSize, 
+                    DocumentSize = fileSize,
                     ArtworkStatus = "00",
-                    CreateDate = DateTime.Now             
+                    CreateDate = DateTime.Now
                 };
                 result = _chuxinWorkFlow.UploadArtWork(artWork);
             }
@@ -116,56 +119,65 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string studentCode = string.Empty;
             string studentName = string.Empty;
             string uid = string.Empty;
-            if(HttpContext.Request.Form.ContainsKey("studentCode"))
+            if (HttpContext.Request.Form.ContainsKey("studentCode"))
             {
-                studentCode = HttpContext.Request.Form["studentCode"];
-                studentName = HttpContext.Request.Form["studentName"];
-                uid = HttpContext.Request.Form["uid"];
+                studentCode = HttpContext.Request.Form["studentCode"] + "";
+                studentName = HttpContext.Request.Form["studentName"] + "";
+                uid = HttpContext.Request.Form["uid"] + "";
             }
             else
             {
+                _logger.LogWarning("批量上传：无法获取studentCode");
                 return result;
             }
-
-            string contentRootPath = _hostingEnvironment.ContentRootPath;
-            string documentPath = "/cxdocs/" + studentCode + "/" ;
-            
-            if(!Directory.Exists(contentRootPath + documentPath))
+            try
             {
-                Directory.CreateDirectory(contentRootPath + documentPath);            
-            }
+                string contentRootPath = _hostingEnvironment.ContentRootPath;
+                string documentPath = "/cxdocs/" + studentCode + "/";
 
-            var file =  HttpContext.Request.Form.Files.FirstOrDefault();
-            if(file != null)
-            {  
-                string ext = Path.GetExtension(file.FileName);
-                string newName = string.Format("{0}_{1}_x{2}", studentName,System.Guid.NewGuid().ToString("N"), ext);
-                documentPath = documentPath + newName;
-                string savePath = contentRootPath + documentPath;
-
-                using(var stream = System.IO.File.Create(savePath))
+                if (!Directory.Exists(contentRootPath + documentPath))
                 {
-                    file.CopyTo(stream);
+                    Directory.CreateDirectory(contentRootPath + documentPath);
                 }
 
-                string fileSize = System.Math.Ceiling(file.Length / 1024.0 / 1024.0) + " MB";
-                // 数据入库
-                StudentArtwork artWork = new StudentArtwork {
-                    TempUId = uid,
-                    StudentCourseId = 0,
-                    StudentCode = studentCode,
-                    StudentName = studentName,
-                    DocumentPath = documentPath,  
-                    DocumentType = ext,
-                    DocumentSize = fileSize, 
-                    ArtworkStatus = "00",
-                    CreateDate = DateTime.Now             
-                };
-                result = _chuxinWorkFlow.UploadArtWork(artWork);
+                var file = HttpContext.Request.Form.Files.FirstOrDefault();
+                if (file != null)
+                {
+                    string ext = Path.GetExtension(file.FileName);
+                    string newName = string.Format("{0}_{1}_x{2}", studentName, System.Guid.NewGuid().ToString("N"), ext);
+                    documentPath = documentPath + newName;
+                    string savePath = contentRootPath + documentPath;
+
+                    using (var stream = System.IO.File.Create(savePath))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    string fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                    // 数据入库
+                    StudentArtwork artWork = new StudentArtwork
+                    {
+                        TempUId = uid,
+                        StudentCourseId = 0,
+                        StudentCode = studentCode,
+                        StudentName = studentName,
+                        DocumentPath = documentPath,
+                        DocumentType = ext,
+                        DocumentSize = fileSize,
+                        ArtworkStatus = "00",
+                        CreateDate = DateTime.Now
+                    };
+                    result = _chuxinWorkFlow.UploadArtWork(artWork);
+                }
+                else
+                {
+                    _logger.LogWarning("批量上传：无法获取文件");
+                    return result;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return result;
+                _logger.LogError(ex, "批量上传：错误！{0}", ex.Message.ToString());
             }
             return result;
         }
@@ -193,7 +205,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string result = string.Empty;
             string contentRootPath = _hostingEnvironment.ContentRootPath;
-            foreach(string uid in uids)
+            foreach (string uid in uids)
             {
                 result = _chuxinWorkFlow.RemoveTempArtWork(0, uid, contentRootPath);
             }
@@ -209,7 +221,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string result = string.Empty;
             string contentRootPath = _hostingEnvironment.ContentRootPath;
-            foreach(string uid in uids)
+            foreach (string uid in uids)
             {
                 result = _chuxinWorkFlow.RemoveTempArtWork(courseId, uid, contentRootPath);
             }
@@ -253,7 +265,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string code = string.Empty;
             string name = string.Empty;
             string type = string.Empty;
-            if(HttpContext.Request.Form.ContainsKey("type"))
+            if (HttpContext.Request.Form.ContainsKey("type"))
             {
                 type = HttpContext.Request.Form["type"];
                 code = HttpContext.Request.Form["code"];
@@ -266,21 +278,21 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             string contentRootPath = _hostingEnvironment.ContentRootPath;
             string documentPath = "/cxdocs/avatars/" + type + "/";
-            
-            if(!Directory.Exists(contentRootPath + documentPath))
+
+            if (!Directory.Exists(contentRootPath + documentPath))
             {
-                Directory.CreateDirectory(contentRootPath + documentPath);            
+                Directory.CreateDirectory(contentRootPath + documentPath);
             }
 
-            var file =  HttpContext.Request.Form.Files.FirstOrDefault();
-            if(file != null)
-            {  
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
+            if (file != null)
+            {
                 string ext = Path.GetExtension(file.FileName);
-                string newName = string.Format("{0}_{1}{2}", name,code, ext);
+                string newName = string.Format("{0}_{1}{2}", name, code, ext);
                 documentPath = documentPath + newName;
                 string savePath = contentRootPath + documentPath;
 
-                using(var stream = System.IO.File.Create(savePath))
+                using (var stream = System.IO.File.Create(savePath))
                 {
                     file.CopyTo(stream);
                 }
@@ -307,32 +319,32 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 case "artwork":
                     docPath = _chuxinQuery.GetArtWorkTruePath(id);
-                break;
-                
+                    break;
+
                 case "avatar-s":
                     docPath = _chuxinQuery.GetAvatarTruePath(id, "student");
-                break;
+                    break;
                 case "avatar-t":
                     docPath = _chuxinQuery.GetAvatarTruePath(id, "teacher");
-                break;
+                    break;
 
                 default:
-                break;
+                    break;
             }
-            if(string.IsNullOrEmpty(docPath))
+            if (string.IsNullOrEmpty(docPath))
             {
-                if(type.IndexOf("avatar") > -1 )
+                if (type.IndexOf("avatar") > -1)
                 {
                     docPath = "/image/avatar-default.png";
                 }
-                else 
+                else
                 {
                     return NotFound();
                 }
             }
             string truePath = _hostingEnvironment.ContentRootPath + docPath;
 
-            if(System.IO.File.Exists(truePath))
+            if (System.IO.File.Exists(truePath))
             {
                 var imgByte = System.IO.File.ReadAllBytes(truePath);
                 //从图片中读取流
@@ -342,7 +354,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             else
             {
                 return NotFound();
-            }    
+            }
         }
 
         // /// <summary>
@@ -381,5 +393,5 @@ namespace ChuXinEdu.CMS.Server.Controllers
         //         return resp;
         //     }    
         // }
-    }   
+    }
 }

@@ -6,7 +6,7 @@
             <div class="form_name">
                 <span class="title">初心教育后台管理系统</span>
             </div>
-            <el-form :model="loginForm" :rules="rules" ref="loginForm" class="login_form">
+            <el-form :model="loginForm" :rules="rules" ref="loginForm" class="login_form"  v-loading="loading" element-loading-text="登录验证中...">
                 <el-form-item prop="username">
                     <span class="fa-tips"><i class="fa fa-user"></i></span>
                     <el-input class="area" type="text" placeholder="用户名" v-model="loginForm.username"></el-input>
@@ -49,6 +49,7 @@ import Home from '@/layout/home'
 export default {
     data() {
         return {
+            loading: false,
             loginForm: {
                 username: '',
                 password: ''
@@ -236,6 +237,7 @@ export default {
         submitForm(loginForm) {
             this.$refs.loginForm.validate((valid) => {
                 if (valid) {
+                    this.loading = true;
                     let loginData = {
                         username: this.loginForm.username,
                         password: this.encryptPwd(this.loginForm.password)
@@ -259,6 +261,7 @@ export default {
                             else {
                                 this.$message.error("用户名或密码错误，请重试！");
                             }
+                            this.loading = false;
                         }
                     });                   
                 } else {

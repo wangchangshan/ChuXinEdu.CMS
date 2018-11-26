@@ -83,7 +83,7 @@ namespace ChuXinEdu.CMS.Server
             // 绑定自定义配置
             CustomConfig.SetAppSetting(_configuration.GetSection("CustomSetting"));
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
 
             // 配置支持反向代理nginx. 配置中间件以转接 X-Forwarded-For 和 X-Forwarded-Proto 标头,防止转接的默认表头为none

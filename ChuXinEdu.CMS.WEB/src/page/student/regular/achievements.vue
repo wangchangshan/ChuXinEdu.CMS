@@ -8,6 +8,7 @@
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
                         <time class="time">{{ achievement.finishDate }}</time>
+                        <span class="time">{{achievement.documentSize}}</span>
                         <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(achievement.artworkId)"></el-button>
                         <!-- <el-rate v-model="achievement.achievement_rate" :allow-half = "true" class="right"></el-rate> -->
                     </div>
@@ -21,6 +22,7 @@
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
                         <time class="time">{{ achievement.finishDate }}</time>
+                        <span class="time">{{achievement.documentSize}}</span>
                         <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(achievement.artworkId)"></el-button>
                     </div>
                 </div>
@@ -33,6 +35,7 @@
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
                         <time class="time">{{ achievement.finishDate }}</time>
+                        <span class="time">{{achievement.documentSize}}</span>
                         <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(achievement.artworkId)"></el-button>
                     </div>
                 </div>
@@ -45,6 +48,7 @@
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
                         <time class="time">{{ achievement.finishDate }}</time>
+                        <span class="time">{{achievement.documentSize}}</span>
                         <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(achievement.artworkId)"></el-button>
                     </div>
                 </div>
@@ -58,7 +62,7 @@
 
     <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.isShow" :width="uploadDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
-            <el-upload class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" list-type="picture">
+            <el-upload :on-error="handleError" class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" list-type="picture">
                 <el-button size="mini" type="primary">选择上传<i class="el-icon-upload el-icon--right"></i></el-button>
             </el-upload>
             <el-form style="margin:10px;width:auto;">
@@ -164,9 +168,24 @@ export default {
             this.uploadDialog.params.uid = file.uid;
         },
 
-        uploadSuccess(response, file, fileList) {
-            if (response != -1 && response != -2) {
-                // -1 文件存储错误； -2 数据库插入错误                
+        handleError(err, file, fileList){
+            this.$notify({
+                title: '上传失败',
+                message: err,
+                type: 'error'
+            });
+        },
+
+        uploadSuccess(response, file, fileList) {            
+            // -1 文件存储错误； -2 数据库插入错误   
+            if(response == -1 || response == -2){
+                this.$notify({
+                    title: '上传失败',
+                    message: '返回值：' + response,
+                    type: 'error'
+                });
+            }
+            else{             
                 this.uploadDialog.fileCount = fileList.length;
                 this.uploadDialog.fileUIds = [];
                 for (let f of fileList) {
@@ -194,20 +213,19 @@ export default {
         },
         btnSubmitUpload() {
             let fileUIds = this.uploadDialog.fileUIds;
-            let _this = this;
             axios({
                 type: 'put',
                 path: '/api/upload/artwork2yes',
                 data: fileUIds,
-                fn: function (result) {
+                fn: result => {
                     if (result == 1200) {
-                        _this.getAllArtWorks();
-                        _this.$message({
+                        this.getAllArtWorks();
+                        this.$message({
                             message: '全部上传成功',
                             type: 'success'
                         });
-                        _this.uploadDialog.thumbnailList = [];
-                        _this.uploadDialog.isShow = false;
+                        this.uploadDialog.thumbnailList = [];
+                        this.uploadDialog.isShow = false;
                     }
                 }
             });

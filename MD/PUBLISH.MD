@@ -235,6 +235,7 @@ cd /etc/nginx
 # 配置nginx 参见：4.2
 vi nginx.config
 ```
+> 在http{}或server{}或location{}节点下添加client_max_body_size `client_max_body_size 10m;`
 ```bash
 ## 重启nginx 使配置生效
 nginx -s reload
