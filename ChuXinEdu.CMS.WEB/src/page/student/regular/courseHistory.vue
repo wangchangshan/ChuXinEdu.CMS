@@ -40,7 +40,7 @@
             <el-radio-button label="meishu">美术 <span style="font-weight:600">{{ this.badges.meishu }}</span>节</el-radio-button>
             <el-radio-button label="shufa">书法 <span style="font-weight:600">{{ this.badges.shufa }}</span>节</el-radio-button>
         </el-radio-group>
-        <el-button type="primary" size="small" @click='supplementCourse()' :loading="downloadLoading"><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
+        <el-button type="primary" size="small" @click='supplementCourse()'><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
         <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
     </div>
 
