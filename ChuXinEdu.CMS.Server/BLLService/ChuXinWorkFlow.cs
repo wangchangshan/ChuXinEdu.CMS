@@ -478,9 +478,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             }
                             else
                             {
-                                courseArrange.CourseTotalCount -= 1;
-                                courseArrange.CourseRestCount -= 1;
-                                _logger.LogInformation("时间：{0}，{1}[{2}]student_course_arrange变更为：[CourseTotalCount :{3}, CourseRestCount: {4}]", logFullTime, studentCourse.StudentName, studentCode, courseArrange.CourseTotalCount, courseArrange.CourseRestCount);
+                                if(courseArrange.CourseRestCount <= 1)
+                                {
+                                    context.Remove(courseArrange);
+                                    _logger.LogInformation("时间：{0}，{1}[{2}]剩余课时数为一节课,删除student_course_arrange表中的记录！", logFullTime, studentCourse.StudentName, studentCode);
+                                }
+                                else
+                                {
+                                    courseArrange.CourseTotalCount -= 1;
+                                    courseArrange.CourseRestCount -= 1;
+                                    _logger.LogInformation("时间：{0}，{1}[{2}]student_course_arrange变更为：[CourseTotalCount :{3}, CourseRestCount: {4}]", logFullTime, studentCourse.StudentName, studentCode, courseArrange.CourseTotalCount, courseArrange.CourseRestCount);
+                                }
                             }
                         }
                         else
@@ -1027,8 +1035,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         result = "1500"; // 部分错误
                     }
                 }
-                _logger.LogInformation("批量销课结束");
             }
+            _logger.LogInformation("批量销课结束");
             return result;
         }
 
