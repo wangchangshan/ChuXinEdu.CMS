@@ -286,6 +286,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public List<StudentCourseList> GetCoursesByday(DateTime theDay)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseList.Where(c => c.AttendanceStatusCode == "09" && c.CourseDate == theDay)
+                                                .OrderBy(c => c.CourseFolderCode)
+                                                .OrderBy(c => c.CoursePeriod)
+                                                .ToList();
+            }
+        }
+
         public IEnumerable<CA_R_PERIOD_STUDENTS> GetAllPeriodStudents(string templateCode, string roomCode)
         {
             using (BaseContext context = new BaseContext())

@@ -56,6 +56,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         List<StudentCourseList> GetCoursesToday();
 
+        List<StudentCourseList> GetCoursesByday(DateTime theDay);
+
         // 获取待选课学生列表
         IEnumerable<StudentCoursePackage> GetStudentToSelectCourse(string dayCode, string periodName);
 
