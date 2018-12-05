@@ -21,6 +21,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
     [EnableCors("any")] 
+    [OuterAuthenFilter]
     [ApiController]
     public class OpenController : ControllerBase
     {
