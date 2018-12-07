@@ -703,7 +703,10 @@ export default {
                 fn: result => {
                     //this.download(result);
                     var fileDownload = require('js-file-download');
+                    //fileDownload(result, '上课记录.xlsx');
+                    console.log(result);
                     fileDownload(result, '上课记录.xlsx');
+                    
                 }
             })
         },

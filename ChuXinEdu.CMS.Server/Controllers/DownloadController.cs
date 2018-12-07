@@ -12,6 +12,7 @@ using ChuXinEdu.CMS.Server.Filters;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OfficeOpenXml;
@@ -59,16 +60,24 @@ namespace ChuXinEdu.CMS.Server.Controllers
            // Response.Headers.Add("Content-Disposition", cd.ToString());
             //Response.Headers.Add("X-Content-Type-Options", "nosniff");
 
-            Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
-            {
-                FileName = "test.xlsx"
-            }.ToString();
+            // Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
+            // {
+            //     FileName = "test.xlsx"
+            // }.ToString();
 
             if (System.IO.File.Exists(docPath))
             {
                 var stream = new MemoryStream(await System.IO.File.ReadAllBytesAsync(docPath));
-                byte[] result = System.IO.File.ReadAllBytes(docPath);
-                return File(result, "application/ms-excel", "Employee.xlsx");
+                return File(stream, "application/vnd.ms-excel");
+
+                // byte[] result = System.IO.File.ReadAllBytes(docPath);
+                // return File(result, "application/vnd.ms-excel", "Employee.xlsx");
+
+                // IFileProvider provider = new PhysicalFileProvider(_hostingEnvironment.ContentRootPath + "/cxdocs/temp/");
+                // IFileInfo fileInfo = provider.GetFileInfo(fileName);
+                // var readStream = fileInfo.CreateReadStream();
+                // return File(readStream, "application/vnd.ms-excel", fileName);
+
                 //return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 //return File(stream, "application/ms-excel", "Employee.xlsx");
                 //return File(stream, "application/octet-stream");
