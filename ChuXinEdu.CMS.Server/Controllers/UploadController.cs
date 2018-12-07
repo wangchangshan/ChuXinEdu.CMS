@@ -346,7 +346,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             if (System.IO.File.Exists(truePath))
             {
-                var imgByte = System.IO.File.ReadAllBytes(truePath);
                 //从图片中读取流
                 var imgStream = new MemoryStream(await System.IO.File.ReadAllBytesAsync(truePath));
                 return File(imgStream, "image/jpg");

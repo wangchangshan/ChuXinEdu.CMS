@@ -64,7 +64,9 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install script-loader -S -D
 
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install --save xlsx
 
- D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install jsencrypt --save-d
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install jsencrypt --save-d
+
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install js-file-download --save
 
 ```
 
@@ -160,7 +162,8 @@ D:\myproject\ChuXinEdu.CMS.Server> dotnet add package AutoMapper --version 7.0.1
 
 D:\myproject\ChuXinEdu.CMS.Server> dotnet add package NLog.Web.AspNetCore --version 4.7.0
 
-D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.AspNet.WebApi.Cors --version 5.2.6 (不需要，netcore中自带跨域处理)
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package EPPlus.Core --version 1.5.4
+
 
 ```
 

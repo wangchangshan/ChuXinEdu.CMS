@@ -693,7 +693,37 @@ export default {
             }
             return name;
         },
+
         export2Excle() {
+            axios({
+                type: 'get',
+                path: '/api/download/studentcourse',
+                data: {studentCode: this.studentCode},
+                responseType: 'blob',
+                fn: result => {
+                    //this.download(result);
+                    var fileDownload = require('js-file-download');
+                    fileDownload(result, '上课记录.xlsx');
+                }
+            })
+        },
+
+        download (data) {
+            if (!data) {
+                return
+            }
+            let url = window.URL.createObjectURL(new Blob([data]))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', this.studentName + '的上课记录.xlsx')
+
+            document.body.appendChild(link);
+            link.click();
+        },
+
+        // 前端导出，无法适配 iPad 暂时不使用
+        export2Excle1() {
             if (this.courseList.length == 0) {
                 this.$message({
                     message: '没有数据（' + this.curCourseCategory + '）需要导出！',
