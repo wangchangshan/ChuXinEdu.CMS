@@ -259,5 +259,81 @@ sudo systemctl enable nginx.service
 
 #### 3.4 配置阿里云上的安全组规则，开放 HTTP(80)端口
 
+---
+### 4 使用 EPPlus.Core 1.5.4
+> 说明：[参考](https://www.myget.org/feed/guadzilah/package/nuget/EPPlus.Core)   
+
+Notes:
+To run this project on non-Windows-based operating systems, you will need to install libgdiplus too:
+
+**Ubuntu 16.04 and above:**
+```bash
+apt-get install libgdiplus
+cd /usr/lib
+ln -s libgdiplus.so gdiplus.dll
+```   
+
+**Fedora 23 and above:**
+```bash
+dnf install libgdiplus
+cd /usr/lib64/
+ln -s libgdiplus.so.0 gdiplus.dll
+```
+
+**CentOS 7 and above:**
+```bash
+yum install autoconf automake libtool
+yum install freetype-devel fontconfig libXft-devel
+yum install libjpeg-turbo-devel libpng-devel giflib-devel libtiff-devel libexif-devel
+yum install glib2-devel cairo-devel
+git clone https://github.com/mono/libgdiplus
+cd libgdiplus
+./autogen.sh
+make
+make install
+cd /usr/lib64/
+ln -s /usr/local/lib/libgdiplus.so gdiplus.dll
+```
+
+> 安装完libgdiplus之后，还需要运行动态链接库的管理命令 ldconfig，使其可以被找到。
+```bash
+vi /etc/ld.so.conf
+
+##将 /usr/local/lib 加入
+
+ldconfig #配置生效。
+
+## 查看关联情况
+ldconfig -p | grep libgdiplus
+
+```
+ldconfig几个需要注意的地方（[详解](https://www.cnblogs.com/leijiangtao/p/4801336.html)）：
+1. 往/lib和/usr/lib里面加东西，是不用修改/etc/ld.so.conf的，但是完了之后要调一下ldconfig，不然这个library会找不到 
+2. 想往上面两个目录以外加东西的时候，一定要修改/etc/ld.so.conf，然后再调用ldconfig，不然也会找不到 
+比如安装了一个mysql到/usr/local/mysql，mysql有一大堆library在/usr/local/mysql/lib下面，这时 就需要在/etc/ld.so.conf下面加一行/usr/local/mysql/lib，保存过后ldconfig一下，新的library才能在 程序运行时被找到。 
+3. 如果想在这两个目录以外放lib，但是又不想在/etc/ld.so.conf中加东西（或者是没有权限加东西）。那也可以，就是export一个全局变 量LD_LIBRARY_PATH，然后运行程序的时候就会去这个目录中找library。一般来讲这只是一种临时的解决方案，在没有权限或临时需要的时 候使用。 
+4. ldconfig做的这些东西都与运行程序时有关，跟编译时一点关系都没有。编译的时候还是该加-L就得加，不要混淆了。 
+5. 总之，就是不管做了什么关于library的变动后，最好都ldconfig一下，不然会出现一些意想不到的结果。不会花太多的时间，但是会省很多的事。
+
+
+**Docker**
+```bash
+RUN apt-get update \
+
+&& apt-get install -y libgdiplus
+```
+**MacOS**
+```bash
+brew install mono-libgdiplus
+```
+After installing the Mono MDK, Copy Mono MDK Files:
+
+/Library/Frameworks/Mono.framework/Versions/4.6.2/lib/libgdiplus.0.dylib
+/Library/Frameworks/Mono.framework/Versions/4.6.2/lib/libgdiplus.0.dylib.dSYM
+/Library/Frameworks/Mono.framework/Versions/4.6.2/lib/libgdiplus.dylib
+/Library/Frameworks/Mono.framework/Versions/4.6.2/lib/libgdiplus.la
+And paste them to: /usr/local/lib
+
+
 Finish
 ---

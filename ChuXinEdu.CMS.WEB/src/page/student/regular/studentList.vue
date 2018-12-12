@@ -29,14 +29,14 @@
             <el-table-column prop="studentCode" label="学号" align='center' min-width="105" sortable fixed>
             </el-table-column>
             <el-table-column prop="studentName" label="姓名" align='center' min-width="75" fixed>
-                <template slot-scope="scope">
+                <!-- <template slot-scope="scope">
                     <el-popover trigger="hover" placement="right-end" width="150">
                         <img :src="scope.row.studentAvatarPath" class='avatar-min'>
                         <div slot="reference" class="name-wrapper" style="display:inline">
                             {{ scope.row.studentName }}
                         </div>
                     </el-popover>
-                </template>
+                </template> -->
             </el-table-column>
             <el-table-column prop="studentSex" label="性别" align='center' width="50">
             </el-table-column>

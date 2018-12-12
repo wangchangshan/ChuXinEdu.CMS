@@ -20,6 +20,7 @@ export default function ({
         type,
         path,
         data,
+        responseType,
         fn,
         errFn,
         tokenFlag,
@@ -31,7 +32,8 @@ export default function ({
         method  : type,
         url     : path,
         // headers : headers && typeof headers === 'object' ? headers : {'Access-Control-Allow-Origin': '*','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE'}
-        headers : headers && typeof headers === 'object' ? headers : {}
+        headers : headers && typeof headers === 'object' ? headers : {},
+        responseType : responseType
     };
 
     // 检测接口权限

@@ -1211,7 +1211,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "上传头像");
+                _logger.LogError(ex, "{0}上传头像，path:{1}", code, path);
                 result = "1500";
             }
             return result;

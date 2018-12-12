@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OfficeOpenXml;
@@ -22,107 +23,61 @@ namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
     [EnableCors("any")]
-    //[MyAuthenFilter]
+    [MyAuthenFilter]
     [ApiController]
     public class DownloadController : ControllerBase
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IChuXinQuery _chuxinQuery;
-        public DownloadController(IChuXinQuery chuxinQuery, IHostingEnvironment hostingEnvironment)
+        private readonly ILogger<DownloadController> _logger;
+
+        public DownloadController(IChuXinQuery chuxinQuery, IHostingEnvironment hostingEnvironment, ILogger<DownloadController> logger)
         {
             _chuxinQuery = chuxinQuery;
             _hostingEnvironment = hostingEnvironment;
+            _logger = logger;
         }
 
         /// <summary>
         /// [导出] 导出学生上课记录 GET api/download/studentcourse
         /// </summary>
         /// <returns></returns>
-        [HttpGet()]
-        public async Task<IActionResult> StudentCourse(string studentCode)
+        [HttpGet]
+        public IActionResult StudentCourse(string studentCode)
         {
-            string docPath = string.Empty;
-            string fileName = studentCode + "_course_history.xlsx";
+            byte[] result = null;
+            try
+            {
+                string docPath = string.Empty;
+                string fileName = studentCode + "_course_history.xlsx";
 
-            DataTable dtCourse = ADOContext.GetDataTable($@"select package_name as '套餐名称',scl.course_date as '日期', scl.course_period as '时间',scl.course_folder_name as '课程类别',course_subject as '课程内容',teacher_name '上课教师' 
+                DataTable dtCourse = ADOContext.GetDataTable($@"select package_name as '套餐名称',scl.course_date as '日期', scl.course_period as '时间',scl.course_folder_name as '课程类别',course_subject as '课程内容',teacher_name '上课教师' 
                                                                         from student_course_list scl
                                                                         left join student_course_package scp on scl.student_course_package_id = scp.id
                                                                         where scl.student_code='{studentCode}' and (attendance_status_code = '01' or attendance_status_code = '02') and course_type='正式' 
                                                                         order by student_course_package_id,course_period,course_date");
 
-            docPath = GenerateExcel_StudentCourse(dtCourse, fileName);
-
-            // Response...
-            ContentDisposition cd = new ContentDisposition
-            {
-                Inline = false  // false = prompt the user for downloading;  true = browser to try to show the file inline
-            };
-           // Response.Headers.Add("Content-Disposition", cd.ToString());
-            //Response.Headers.Add("X-Content-Type-Options", "nosniff");
-
-            // Response.Headers["Content-Disposition"] = new ContentDispositionHeaderValue("attachment")
-            // {
-            //     FileName = "test.xlsx"
-            // }.ToString();
-
-            if (System.IO.File.Exists(docPath))
-            {
-                var stream = new MemoryStream(await System.IO.File.ReadAllBytesAsync(docPath));
-                return File(stream, "application/vnd.ms-excel");
-
-                // byte[] result = System.IO.File.ReadAllBytes(docPath);
-                // return File(result, "application/vnd.ms-excel", "Employee.xlsx");
-
-                // IFileProvider provider = new PhysicalFileProvider(_hostingEnvironment.ContentRootPath + "/cxdocs/temp/");
-                // IFileInfo fileInfo = provider.GetFileInfo(fileName);
-                // var readStream = fileInfo.CreateReadStream();
-                // return File(readStream, "application/vnd.ms-excel", fileName);
-
-                //return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                //return File(stream, "application/ms-excel", "Employee.xlsx");
-                //return File(stream, "application/octet-stream");
-
-                /*
-                https://gist.github.com/javilobo8/097c30a233786be52070986d8cdb1743
-                https://stackoverflow.com/questions/43136185/asp-net-core-return-excel-file-xlsx-directly-in-one-call-to-the-server-on-the?rq=1
-                https://forums.asp.net/t/2123126.aspx?Download+file+using+ASP+NET+Core
-                https://hk.saowen.com/a/5ccc9ba55e48329b63304c8096b563abb117cdfe62acedeb95ab2e85a490632b
-                https://github.com/axios/axios/issues/1660
-                https://github.com/kennethjiang/js-file-download
-
-                 */
+                result = GenerateExcel_StudentCourse(dtCourse, fileName);
             }
-            else
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError(ex, "学生上课记录导出失败！");
             }
+
+            return File(result, "application/vnd.ms-excel");
         }
 
-        private string GenerateExcel_StudentCourse(DataTable dt, string fileName)
+        private Byte[] GenerateExcel_StudentCourse(DataTable dt, string fileName)
         {
-            string path = _hostingEnvironment.ContentRootPath + "/cxdocs/temp/";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            
-            path = Path.Combine(path, fileName);
-            FileInfo file = new FileInfo(path);
-            if (file.Exists)
-            {
-                file.Delete();
-                file = new FileInfo(path);
-            }
-
             DataTable dtPackages = dt.DefaultView.ToTable(true, "套餐名称");
-            using (ExcelPackage package = new ExcelPackage(file))
+            using (ExcelPackage package = new ExcelPackage())
             {
                 foreach (DataRow dr in dtPackages.Rows)
                 {
                     // 构造当前套餐的数据源
                     DataTable dtCourse = dt.Clone();
                     DataRow[] drs = dt.Select("套餐名称 = '" + dr[0].ToString() + "'");
-                    foreach (DataRow row in drs) 
+                    foreach (DataRow row in drs)
                     {
                         dtCourse.Rows.Add(row.ItemArray);
                     }
@@ -139,7 +94,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                         rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                         rng.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(234, 241, 246));  //Set color to dark blue
                         rng.Style.Font.Color.SetColor(Color.FromArgb(51, 51, 51));
-                    }                    
+                    }
 
                     //Format 正文 从第二行开始
                     ExcelBorderStyle borderStyle = ExcelBorderStyle.Thin;
@@ -169,11 +124,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
                     // 所有单元格自适应
                     worksheet.Cells.AutoFitColumns();
-                }
+                }                
 
-                package.Save();
+                var result = package.GetAsByteArray();
+                return result;
             }
-            return path;
         }
 
         private string GenerateTempExcel1<T>(IEnumerable<T> collection)

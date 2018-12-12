@@ -164,6 +164,9 @@ D:\myproject\ChuXinEdu.CMS.Server> dotnet add package NLog.Web.AspNetCore --vers
 
 D:\myproject\ChuXinEdu.CMS.Server> dotnet add package EPPlus.Core --version 1.5.4
 
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package System.Drawing.Common --version 4.5.1
+
+
 
 ```
 
