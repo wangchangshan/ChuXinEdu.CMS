@@ -63,7 +63,7 @@
                 <el-popover
                     width="450"
                     trigger="hover">
-                    <el-table :data="$store.state.header.toFinishList" stripe size="mini">                        
+                    <el-table :data="$store.state.header.toFinishList" stripe size="mini" :max-height="tableHeight">                        
                         <el-table-column width="80" property="student_name" label="姓名"></el-table-column>
                         <el-table-column width="210" property="package_name" label="套餐名称"></el-table-column>
                         <el-table-column width="70" property="rest_course_count" label="剩余课时" align='center'>
@@ -99,6 +99,7 @@ export default {
     name: "head-nav",
     data() {
         return {
+            tableHeight: this.$store.state.page.win_content.height - 53,
             isVertical: false,
             isHorizontal: true,
             userInfo: '',
