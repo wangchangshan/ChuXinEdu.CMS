@@ -266,7 +266,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                     _logger.LogInformation("课程arrange中的排课课程数为：{0}", courseArrange.CourseTotalCount);
                     // 如果学生当前时时间段没有排课，则删除student_course_arrange表中的记录
-                    if (courseArrange.CourseTotalCount <= 1)
+                    if (courseArrange.CourseTotalCount <= 1 || courseArrange.CourseRestCount <= 1)
                     {
                         context.Remove(courseArrange);
                         _logger.LogInformation("已经删除当前课程所在arrange信息");
@@ -620,7 +620,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                                 && s.CoursePeriod == periodName)
                                                                                     .FirstOrDefault();
                             // 如果学生当前时时间段没有排课，则删除student_course_arrange表中的记录
-                            if (sca.CourseTotalCount <= 1)
+                            if (sca.CourseTotalCount <= 1 || sca.CourseRestCount <= 1)
                             {
                                 context.Remove(sca);
                             }

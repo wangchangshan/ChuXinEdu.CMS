@@ -41,7 +41,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                var arrange = context.StudentCourseArrange.Where(a => a.CourseRestCount == 0).ToList();
+                var arrange = context.StudentCourseArrange.Where(a => a.CourseRestCount <= 0).ToList();
                 return arrange;
             }
         }

@@ -229,7 +229,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 return context.StudentCourseList.Where(s => s.StudentCode == studentCode
-                                                            && s.AttendanceStatusCode == "00")
+                                                            && (s.AttendanceStatusCode == "00" || s.AttendanceStatusCode == "03"))
                                                 .OrderBy(s => s.CoursePeriod)
                                                 .OrderBy(s => s.CourseDate)
                                                 .ToList();

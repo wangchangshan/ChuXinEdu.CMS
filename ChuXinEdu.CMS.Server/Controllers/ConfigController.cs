@@ -184,7 +184,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 dr["packagecode"] = arrange.PackageCode;
                 dr["studentcode"] = arrange.StudentCode;
                 dr["studentname"] = arrange.StudentName;
-                dr["restcoursecount"] = 0;
+                dr["restcoursecount"] = arrange.CourseRestCount;
                 dt.Rows.Add(dr);
             }
 

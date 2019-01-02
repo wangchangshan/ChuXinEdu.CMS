@@ -15,6 +15,8 @@
                     {{ scope.row.courseCategoryName + " / " + scope.row.courseFolderName }}
                 </template>
             </el-table-column>
+            <el-table-column prop="holidayType" label="假期类型" align='center' min-width="100">
+            </el-table-column>
         </el-table>
     </div>
 </div>
@@ -56,6 +58,12 @@ export default {
                     result.forEach(item => {
                         item.courseDate = item.courseDate.split('T')[0];
                         item.weekName = dateHelper.getWeekNameByCode(item.courseWeekDay);
+                        if(item.attendanceStatusCode == "00"){
+                            item.holidayType = "个人请假";
+                        }
+                        else if(item.attendanceStatusCode == "03"){
+                            item.holidayType = "统一放假";
+                        }
                     });
                     this.dayoffList = result;
                     this.getRowSpanInfo();
