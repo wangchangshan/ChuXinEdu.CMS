@@ -1863,7 +1863,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var arrange = context.StudentCourseArrange.FirstOrDefault(a => a.Id == id && a.CourseRestCount == 0);
+                    var arrange = context.StudentCourseArrange.FirstOrDefault(a => a.Id == id && a.CourseRestCount <= 0);
                     if(arrange != null)
                     {
                         context.Remove(arrange);
