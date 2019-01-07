@@ -68,6 +68,8 @@ D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install jsencrypt --save-d
 
 D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install js-file-download --save
 
+D:\myproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB> npm install html2canvas --save
+
 ```
 
 ### 6. 修改ChuXinEdu.CMS.WEB项目目录结构如下

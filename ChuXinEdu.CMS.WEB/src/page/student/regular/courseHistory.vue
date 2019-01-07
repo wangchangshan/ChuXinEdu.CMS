@@ -1,7 +1,7 @@
 <template>
 <div class="info_container">
     <div class="table_container">
-        <el-table ref="courseTable" :data="filteredCourseList" :span-method="objectSpanMethod" :row-class-name="packageColorFlag" v-loading="loading" size="mini" align="left" border :height="tableHeight">
+        <el-table id="capture" ref="courseTable" :data="filteredCourseList" :span-method="objectSpanMethod" :row-class-name="packageColorFlag" v-loading="loading" size="mini" align="left" border :height="tableHeight">
             <el-table-column type="index" width="50" align='center'></el-table-column>
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="135">
                 <template slot-scope='scope'>
@@ -42,6 +42,7 @@
         </el-radio-group>
         <el-button type="primary" size="small" @click='supplementCourse()'><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
         <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
+        <el-button type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 截屏</el-button>
     </div>
 
     <el-dialog :title="supplementDialog.title" :visible.sync="supplementDialog.isShow" :width="supplementDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
@@ -149,7 +150,9 @@ import {
     dicHelper,
     dateHelper,
     axios
-} from '@/utils/index'
+} from '@/utils/index';
+
+import html2canvas from 'html2canvas';
 
 export default {
     name: 'student-course-history',
@@ -171,6 +174,7 @@ export default {
             dateRowSpanArray: [],
             loading: true,
             downloadLoading: false,
+            captureLoading: false,
             tableHeight: this.$store.state.page.win_content.height - 100,
             supplementDialog: {
                 width: '850px',
@@ -694,6 +698,60 @@ export default {
             return name;
         },
 
+        captureCourse() {
+            this.captureLoading = true;
+            let dom = document.querySelector("#capture");
+            let width = dom.offsetWidth;
+
+            let cloneDom = dom.cloneNode(true);    
+            cloneDom.style.height = 'auto';                    
+            cloneDom.childNodes[2].style.height = 'auto';
+            cloneDom.style.zIndex = "-1";
+
+            document.body.appendChild(cloneDom);
+            let height = cloneDom.offsetHeight;
+
+            var canvas = document.createElement("canvas"); //创建一个canvas节点
+            var scale = 2; //定义任意放大倍数 支持小数
+            canvas.width = width * scale; //定义canvas 宽度 * 缩放
+            canvas.height = height * scale; //定义canvas高度 *缩放
+            canvas.getContext("2d").scale(scale, scale); //获取context,设置scale
+
+            var opts = {
+                scale: scale, // 添加的scale 参数
+                canvas: canvas, //自定义 canvas
+                width: width - 165,
+                height: height,
+                useCORS: true, // 【重要】开启跨域配置
+                dpi: window.devicePixelRatio * 2
+            };
+
+            html2canvas(cloneDom, opts).then(canvas => {
+                var context = canvas.getContext('2d');
+                // 【重要】关闭抗锯齿
+                context.mozImageSmoothingEnabled = false;
+                context.webkitImageSmoothingEnabled = false;
+                context.msImageSmoothingEnabled = false;
+                context.imageSmoothingEnabled = false;
+
+                this.downloadScreenShot(canvas);
+                document.body.removeChild(cloneDom);
+                this.captureLoading = false;
+            });
+        },
+
+        downloadScreenShot (canvas) {
+            let url = canvas.toDataURL("image/png", 1.0)
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', this.studentName + '的上课记录.png')
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        },
+
         export2Excle() {
             axios({
                 type: 'get',
@@ -720,6 +778,7 @@ export default {
 
             document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         },
 
         // 前端导出，无法适配 iPad 暂时不使用
@@ -732,7 +791,7 @@ export default {
                 return;
             }
             var filename = this.courseList[0].studentName + "上课记录_" + this.curCourseCategory;
-            this.downloadLoading = true
+            this.downloadLoading = true;
             import('@/vendor/Export2Excel').then(excel => {
                 const tHeader = ['上课日期', '上课时间', '课程类别', '课程主题', '上课教师'];
                 const filterVal = ['courseDate', 'coursePeriod', 'courseFolderName', 'courseSubject', 'teacherName']
