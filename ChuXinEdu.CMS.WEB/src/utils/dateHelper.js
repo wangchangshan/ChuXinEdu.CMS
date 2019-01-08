@@ -95,8 +95,14 @@ const dateHelper = {
         return week;
     },
     
-    getDate(theDay){
-        var date = new Date(theDay);
+    getDate(theDay){        
+        var date;
+        if(!theDay){
+            date = new Date();
+        }
+        else{
+            date = new Date(theDay);
+        }
         var seperator1 = "-";
         var year = date.getFullYear();
         var month = date.getMonth() + 1;

@@ -42,7 +42,7 @@
         </el-radio-group>
         <el-button type="primary" size="small" @click='supplementCourse()'><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
         <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
-        <el-button type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 截屏</el-button>
+        <el-button type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 导出图片</el-button>
     </div>
 
     <el-dialog :title="supplementDialog.title" :visible.sync="supplementDialog.isShow" :width="supplementDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
@@ -703,40 +703,69 @@ export default {
             let dom = document.querySelector("#capture");
             let width = dom.offsetWidth;
 
+            // clone dom
             let cloneDom = dom.cloneNode(true);    
             cloneDom.style.height = 'auto';                    
             cloneDom.childNodes[2].style.height = 'auto';
             cloneDom.style.zIndex = "-1";
-
             document.body.appendChild(cloneDom);
             let height = cloneDom.offsetHeight;
 
-            var canvas = document.createElement("canvas"); //创建一个canvas节点
-            var scale = 2; //定义任意放大倍数 支持小数
+            // create canvas
+            let canvas = document.createElement("canvas"); 
+            let scale = 1.8; //定义比例
             canvas.width = width * scale; //定义canvas 宽度 * 缩放
-            canvas.height = height * scale; //定义canvas高度 *缩放
-            canvas.getContext("2d").scale(scale, scale); //获取context,设置scale
+            canvas.height = height * scale; //定义canvas高度 * 缩放
+            canvas.getContext("2d").scale(scale, scale); //获取context,设置比例
 
-            var opts = {
-                scale: scale, // 添加的scale 参数
+            let h2cOpts = {
+                scale: scale, // 比例
                 canvas: canvas, //自定义 canvas
-                width: width - 165,
-                height: height,
-                useCORS: true, // 【重要】开启跨域配置
+                width: width - 165, // 原始宽度 - 按钮区域宽度， HTML2canvas后的canvas宽度，会 * scale
+                height: height, // 原始高度
+                useCORS: true, // 开启跨域配置
                 dpi: window.devicePixelRatio * 2
             };
 
-            html2canvas(cloneDom, opts).then(canvas => {
-                var context = canvas.getContext('2d');
-                // 【重要】关闭抗锯齿
-                context.mozImageSmoothingEnabled = false;
-                context.webkitImageSmoothingEnabled = false;
-                context.msImageSmoothingEnabled = false;
-                context.imageSmoothingEnabled = false;
+            let waterMarkOpts = {
+                fontStyle: "76px 幼圆", //水印字体设置
+                rotateAngle: -20 * Math.PI / 180, //水印字体倾斜角度设置
+                fontColor: "#7eb00a", //水印字体颜色设置
+                linePositionX: (width - 165) * scale / 2, //canvas第一行文字起始X坐标
+                firstLinePositionY: height * scale  - 220,
+                secondLinePositionY: height * scale - 130,
+                thirdLinePositionY: height * scale - 40,
+            };
 
-                this.downloadScreenShot(canvas);
-                document.body.removeChild(cloneDom);
-                this.captureLoading = false;
+            html2canvas(cloneDom, h2cOpts).then(canvas => {
+                var img = new Image();
+                var ctx = canvas.getContext('2d');
+                if(img.complete) {
+                    img.src = canvas.toDataURL("image/png", 1.0);
+                    img.onload = () => {  
+                        ctx.drawImage(img, 0, 0);
+                        ctx.font = waterMarkOpts.fontStyle;  
+                        //文字倾斜角度
+                        //ctx.rotate(waterMarkOpts.rotateAngle);
+                        ctx.fillStyle = waterMarkOpts.fontColor;
+                        
+                        ctx.fillText(this.studentName, waterMarkOpts.linePositionX, waterMarkOpts.firstLinePositionY);
+                        ctx.fillText("初心工作室", waterMarkOpts.linePositionX, waterMarkOpts.secondLinePositionY);
+                        ctx.fillText(dateHelper.getDate(), waterMarkOpts.linePositionX, waterMarkOpts.thirdLinePositionY);
+                        //坐标系还原
+                        //ctx.rotate(-waterMarkOpts.rotateAngle);
+                        
+                        // 关闭抗锯齿
+                        ctx.mozImageSmoothingEnabled = false;
+                        ctx.webkitImageSmoothingEnabled = false;
+                        ctx.msImageSmoothingEnabled = false;
+                        ctx.imageSmoothingEnabled = false;
+
+                        this.downloadScreenShot(canvas);
+                        document.body.removeChild(cloneDom);
+                        this.captureLoading = false;
+                    }
+                }
             });
         },
 
