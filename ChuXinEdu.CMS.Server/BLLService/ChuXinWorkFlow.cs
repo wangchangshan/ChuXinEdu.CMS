@@ -36,17 +36,44 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 }
                 else
                 {
-                    if(!String.IsNullOrEmpty(sysUser.Token) && sysUser.TokenExpireTime > DateTime.Now)
+                    if(sysUser.FailCount >= 10)
                     {
-                        token = sysUser.Token;
-                        result = "1701";
+                        result = "1103";
                     }
                     else
-                    { 
-                        result = "1200";
-                        sysUser.LastLoginTime = DateTime.Now;
-                        context.SaveChanges();
+                    {
+                        if(!String.IsNullOrEmpty(sysUser.Token) && sysUser.TokenExpireTime > DateTime.Now)
+                        {
+                            token = sysUser.Token;
+                            result = "1701";
+                        }
+                        else
+                        { 
+                            result = "1200";
+                            sysUser.LastLoginTime = DateTime.Now;
+                            context.SaveChanges();
+                        }
                     }
+                }
+            }
+            return result;
+        }
+
+        public string ChangePassword(string loginCode, string newPwd)
+        {
+            string result = "";
+            using (BaseContext context = new BaseContext())
+            {
+                var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode).FirstOrDefault();
+                if (sysUser == null)
+                {
+                    result = "1101";
+                }
+                else
+                {
+                    sysUser.Pwd = newPwd;
+                    context.SaveChanges();
+                    result = "1200";
                 }
             }
             return result;
@@ -124,6 +151,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 {
                     foreach (var student in caInfo.StudentList)
                     {
+                        string guid = Guid.NewGuid().ToString("N");
                         // 1. 向student_course_arrange表中插入数据
                         context.StudentCourseArrange.Add(new StudentCourseArrange
                         {

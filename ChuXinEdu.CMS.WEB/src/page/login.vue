@@ -34,10 +34,11 @@
 import {
     axios,
     LocalDB,
+    RSAHelper,
     menuHelper
 } from '@/utils/index'
 
-import JSEncrypt from 'jsencrypt'
+//import JSEncrypt from 'jsencrypt'
 
 import {
     mapActions,
@@ -168,13 +169,13 @@ export default {
                     icon: 'fa-shopping-bag',
                     noDropdown: true,
                 },
-                {
-                    path: '/finance',
-                    name: '资金流水',
-                    component: 'finance/financeList',
-                    icon: 'fa-money',
-                    noDropdown: true,
-                },
+                // {
+                //     path: '/finance',
+                //     name: '资金流水',
+                //     component: 'finance/financeList',
+                //     icon: 'fa-money',
+                //     noDropdown: true,
+                // },
                 {
                     path: '/teacher',
                     name: '教师列表',
@@ -240,7 +241,7 @@ export default {
                     this.loading = true;
                     let loginData = {
                         username: this.loginForm.username,
-                        password: this.encryptPwd(this.loginForm.password)
+                        password: RSAHelper.encrypt(this.loginForm.password)
                     }
                     axios({
                         type: 'post',
@@ -257,6 +258,9 @@ export default {
                             }
                             else if(result.code == 1701){
                                 this.$message.error("当前用户已在其他地方登陆，请稍后重试！");
+                            }
+                            else if(result.code == 1103){
+                                this.$message.error("当前账户已被锁，请联系管理员。");
                             }
                             else {
                                 this.$message.error("用户名或密码错误，请重试！");
@@ -306,13 +310,6 @@ export default {
                      
             //console.log("用户 " + this.loginForm.username + " 的token为："+ curToken);
             LocalDB.instance('USER_').setValue('BASEINFO', userinfo);
-        },
-        encryptPwd(password){
-            let publicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAztJWvmn//yWTxEWg5934cftfCumAKUG7D74bsrGjaiTjq6YiL0SE3kYDgpnxJALWui2AXwqej5TItcGlFzS0Kk7MleQT9F3S37rpsI8lPIRL/1iHY2sSLnip9Nu3WDmaZVP54K8uK28NkWImB03J/Qio6o6aUpMyyu9Qt08QPNjB3jcKxGB5XpvfxTcflNEXA7UL86+S4RPL+YbMP2PYGOS0JtWUg/3Rtst3OBq6CZSTt+vRUvDNc37lgcHVVwTZBR44/W+PtfdxiWzIAXGMhhZwfVNB3pwrzsDaL8HEN8KGjDoT6cnqsgRHwB9QnMX2o8uRZgD60Lxl84qbb2qj7QIDAQAB';
-            let encryptor = new JSEncrypt();
-            encryptor.setPublicKey(publicKey);
-            let sPwd = encryptor.encrypt(password);
-            return sPwd;
         }
     }
 }
