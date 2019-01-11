@@ -74,6 +74,8 @@ namespace ChuXinEdu.CMS.Server.Context
 
         public virtual DbSet<SysUser> SysUser { get; set; }
 
+        public virtual DbSet<SysMenu> SysMenu { get; set; }
+
         public virtual DbSet<SysOutUser> SysOutUser { get; set; }
 
 

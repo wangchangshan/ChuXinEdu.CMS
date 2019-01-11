@@ -21,10 +21,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
 
         #region 登录模块
-        public string LoginVerify(string loginCode, string pwd, out string token)
+        public string LoginVerify(string loginCode, string pwd, string ip, out string token, out string teacherCode)
         {
             string result = "";
             token = "";
+            teacherCode = "-1";
+
             using (BaseContext context = new BaseContext())
             {
                 var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode
@@ -36,16 +38,23 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 }
                 else
                 {
+                    teacherCode = sysUser.TeacherCode;
                     if (sysUser.FailCount >= 10)
                     {
                         result = "1103";
                     }
                     else
                     {
+                        // 是否已经登录了
                         if (!String.IsNullOrEmpty(sysUser.Token) && sysUser.TokenExpireTime > DateTime.Now)
                         {
-                            token = sysUser.Token;
-                            result = "1701";
+                            // ip 相同，则直接登录
+                            if(ip == sysUser.LastLoginIP)
+                            {
+                                result = "1200";
+                                sysUser.LastLoginTime = DateTime.Now;
+                                context.SaveChanges();
+                            }
                         }
                         else
                         {
@@ -115,6 +124,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 {
                     int expireMinu = Int32.Parse(strExpireMinu);
                     var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode).First();
+                    sysUser.LastLoginIP = ip;
                     sysUser.Token = signToken;
                     sysUser.TokenExpireTime = DateTime.Now.AddMinutes(expireMinu);
 

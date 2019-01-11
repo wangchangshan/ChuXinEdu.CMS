@@ -48,13 +48,12 @@ export default function ({
             let strUserInfo = LocalDB.instance('USER_').getValue('BASEINFO').value;
             if(strUserInfo) {
                 let user = JSON.parse(strUserInfo);
-                options.headers.logincode = user.username || '';
+                options.headers.logincode = encodeURIComponent(user.username) || '';
                 options.headers.token = user.token || '';
             }
             else{
                 options.headers.token = '';
             }
-
             // 如果后台不会接受headers里面的参数，则使用普通参数方式传递
             //data.token = '';
         }
@@ -79,11 +78,7 @@ export default function ({
             if(typeof errFn === 'function'){
                 errFn();
             }
-            // this.$message({
-            //     showClose: true,
-            //     message:    '请求错误：Internal Server Error',
-            //     type:       'error'
-            // });
+            console.log(err);
         })
     }
     else{

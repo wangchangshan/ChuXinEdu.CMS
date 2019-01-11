@@ -2,29 +2,29 @@
 <div class="login_page">
     <transition name="form-fade" mode="in-out">
         <div class="login_content">
-        <section class="form_container" v-show="showLogin">
-            <div class="form_name">
-                <span class="title">初心教育后台管理系统</span>
-            </div>
-            <el-form :model="loginForm" :rules="rules" ref="loginForm" class="login_form"  v-loading="loading" element-loading-text="登录验证中...">
-                <el-form-item prop="username">
-                    <span class="fa-tips"><i class="fa fa-user"></i></span>
-                    <el-input class="area" type="text" placeholder="用户名" v-model="loginForm.username"></el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <span class="fa-tips"><i class="fa fa-lock"></i></span>
-                    <el-input class="area" type="password" placeholder="密码" v-model="loginForm.password"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm(loginForm)" class="submit_btn">登录</el-button>
-                </el-form-item>
-                <div class="tiparea">
-                    <!-- <p class="wxtip">内部开发版</p>
-                    <p class="tip"></p> -->
-                    <!-- <p class="tip">测试</p> -->
+            <section class="form_container" v-show="showLogin">
+                <div class="form_name">
+                    <span class="title">初心教育后台管理系统</span>
                 </div>
-            </el-form>
-        </section>
+                <el-form :model="loginForm" :rules="rules" ref="loginForm" class="login_form" v-loading="loading" element-loading-text="登录验证中...">
+                    <el-form-item prop="username">
+                        <span class="fa-tips"><i class="fa fa-user"></i></span>
+                        <el-input class="area" type="text" placeholder="用户名" v-model="loginForm.username"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="password">
+                        <span class="fa-tips"><i class="fa fa-lock"></i></span>
+                        <el-input class="area" type="password" placeholder="密码" v-model="loginForm.password"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm(loginForm)" class="submit_btn">登录</el-button>
+                    </el-form-item>
+                    <div class="tiparea">
+                        <!-- <p class="wxtip">内部开发版</p>
+                    <p class="tip"></p> -->
+                        <!-- <p class="tip">测试</p> -->
+                    </div>
+                </el-form>
+            </section>
         </div>
     </transition>
 </div>
@@ -37,8 +37,6 @@ import {
     RSAHelper,
     menuHelper
 } from '@/utils/index'
-
-//import JSEncrypt from 'jsencrypt'
 
 import {
     mapActions,
@@ -78,6 +76,14 @@ export default {
             ip: ''
         }
     },
+    created() {
+        document.onkeydown = (e) => {
+            let _key = window.event.keyCode;
+            if(_key === 13){
+                this.submitForm('loginForm');
+            }
+        }
+    },  
     mounted() {
         this.showLogin = true;
     },
@@ -92,148 +98,41 @@ export default {
                 message: message
             })
         },
-        generateMenu() {
-            const leftMenu = [{
-                    path: '/dashboard',
-                    name: '首    页',
-                    component: 'dashboard/admin/dashboard',
-                    icon: 'fa-tachometer',
-                    noDropdown: true
-                }, 
-                {
-                    path: '/trialStudent',
-                    name: '试听学生',
-                    component: 'student/trial/trialStudentList',
-                    icon: 'fa-user-circle-o',
-                    noDropdown: true,
-                },               
-                {
-                    path: '/student',
-                    name: '正式学生',
-                    component: 'student/regular/studentList',
-                    icon: 'fa-users',
-                    noDropdown: true,
-                },
-                {
-                    path: '/studentDetail',
-                    name: '学生详细',
-                    component: 'student/regular/index',
-                    hidden: true,
-                    noDropdown: true
-                },
-                {
-                    path: '/schedule',
-                    name: '排课管理',
-                    component: 'schedule/index',
-                    icon: 'fa-magic',
-                    noDropdown: true
-                },
-                {
-                    path: '/courseSignIn',
-                    name: '签到销课',
-                    component: 'schedule/courseAttendanceBook',
-                    icon: 'fa-calendar-check-o',
-                    noDropdown: true,
-                    meta: {
-                        breadcrumb:{
-                            title: '',
-                            path: ''
+        generateMenu(roles) {
+            let arrRole = roles && roles.split(',') || [];
+            axios({
+                type: 'get',
+                path: '/api/config/getmenus',
+                fn: result => {
+                    // 菜单按角色权限生成
+                    let menuList = result.filter((item) => {
+                        item.roles = ',' + item.roles + ','
+                        for(let r of arrRole){
+                            if(item.roles.indexOf(',' + r + ',') > -1){
+                                return true;
+                            }
                         }
+                        return false;
+                    })
+                    LocalDB.instance('MENU_').setValue('LEFTMENU', menuList);
+                    this.addMenu(menuList);
+                    if (true) { //!this.getRouterLoadedStatus
+                        const routers = menuHelper.generateRoutesFromMenu(menuList);
+                        const asyncRouterMap = [{
+                            path: '/layout',
+                            name: '',
+                            hidden: true,
+                            component: Home,
+                            redirect: '/dashboard',
+                            children: routers
+                        }];
+
+                        this.$router.addRoutes(asyncRouterMap);
+                        this.loadRouters();
                     }
-                },
-                // {
-                //     path: '/analysis',
-                //     name: '图表统计',
-                //     component: 'analysis/chartAnalysis',
-                //     icon: 'fa-bar-chart',
-                //     noDropdown: true,
-                // },
-                {
-                    path: '/activity',
-                    name: '活动列表',
-                    component: 'activity/activityList',
-                    icon: 'fa-paper-plane-o',
-                    noDropdown: true,
-                    meta: {
-                        title: "tett",
-                        breadcrumb:{
-                            title: '',
-                            path: ''
-                        }
-                    }
-                },
-                {
-                    path: '/coursePackage',
-                    name: '课程套餐',
-                    component: 'setting/coursePackageList',
-                    icon: 'fa-shopping-bag',
-                    noDropdown: true,
-                },
-                // {
-                //     path: '/finance',
-                //     name: '资金流水',
-                //     component: 'finance/financeList',
-                //     icon: 'fa-money',
-                //     noDropdown: true,
-                // },
-                {
-                    path: '/teacher',
-                    name: '教师列表',
-                    component: 'teacher/teacherList',
-                    icon: 'fa-address-card-o',
-                    noDropdown: true,
-                },
-                {
-                    path: '/teacherDetail',
-                    name: '教师详细',
-                    component: 'teacher/index',
-                    hidden: true,
-                    noDropdown: true
-                },
-                {
-                    path: '/setting',
-                    name: '系统配置',
-                    component: 'setting/index',
-                    icon: 'fa-cogs',
-                    noDropdown: true,
-                },{
-                    path: '/401',
-                    name: '401',
-                    hidden: true,
-                    component: '401',
-                    hidden: true,
-                    noDropdown: true
-                },
-                {
-                    path: '/404',
-                    name: '404',
-                    hidden: true,
-                    component: '404',
-                    hidden: true,
-                    noDropdown: true
+                    this.$router.push('layout');
                 }
-            ];
-
-            LocalDB.instance('MENU_').setValue('LEFTMENU', leftMenu);
-            this.addMenu(leftMenu);
-            if (!this.getRouterLoadedStatus) { 
-                const routers = menuHelper.generateRoutesFromMenu(leftMenu);
-                const asyncRouterMap = [
-                    {
-                        path: '/layout',
-                        name: '',
-                        hidden: true,
-                        component: Home,
-                        redirect: '/dashboard',
-                        children: routers
-                    }
-                ];
-
-                this.$router.addRoutes(asyncRouterMap);
-                this.loadRouters();
-            }
-            this.getConfigs();
-            this.$router.push('layout');
+            });
         },
         submitForm(loginForm) {
             this.$refs.loginForm.validate((valid) => {
@@ -246,28 +145,25 @@ export default {
                     axios({
                         type: 'post',
                         path: '/api/account/login',
-                        data: loginData, 
+                        data: loginData,
                         fn: result => {
-                            if(result.code == 1200){
-                                this.saveUserInfo(result.data); // 存入缓存，用于显示用户名     
-                                this.generateMenu(); 
+                            if (result.code == 1200) {
+                                this.saveUserInfo(result);
+                                this.getConfigs();
+                                this.generateMenu(result.roles);
                                 this.$store.dispatch('initLeftMenu');
-                            } 
-                            else if(result.code == 1700){
+                            } else if (result.code == 1700) {
                                 this.$message.error("不合法的请求，请不要重复尝试！");
-                            }
-                            else if(result.code == 1701){
+                            } else if (result.code == 1701) {
                                 this.$message.error("当前用户已在其他地方登陆，请稍后重试！");
-                            }
-                            else if(result.code == 1103){
+                            } else if (result.code == 1103) {
                                 this.$message.error("当前账户已被锁，请联系管理员。");
-                            }
-                            else {
+                            } else {
                                 this.$message.error("用户名或密码错误，请重试！");
                             }
                             this.loading = false;
                         }
-                    });                   
+                    });
                 } else {
                     this.$notify.error({
                         title: '错误',
@@ -278,19 +174,21 @@ export default {
                 }
             });
         },
-        getConfigs(){
-            var _this = this;
+        getConfigs() {
+            var test = 'student_temp_status,student_status,teacher_status,course_category,course_folder,pay_pattern';
             axios({
                 type: 'get',
                 path: '/api/config/getdics',
-                data: {codes : _this.$store.getters['all_dic_code']},
-                fn: function (result) {
-                    if(result){
-                        _this.$store.commit('set_all_dic', result); 
+                data: {
+                    codes: test
+                },
+                fn: result => {
+                    if (result) {
+                        this.$store.commit('set_all_dic', result);
                         LocalDB.instance('DIC_').setValue('ALL', result);
-                    } 
+                    }
                 }
-            })
+            });
         },
         getIP() {
             axios({
@@ -302,13 +200,13 @@ export default {
                 }
             })
         },
-        saveUserInfo(curToken) {
+        saveUserInfo(info) {
             const userinfo = {
                 username: this.loginForm.username,
-                token: curToken
+                token: info.data,
+                roles: info.roles
             }
-                     
-            //console.log("用户 " + this.loginForm.username + " 的token为："+ curToken);
+
             LocalDB.instance('USER_').setValue('BASEINFO', userinfo);
         }
     }
@@ -324,7 +222,7 @@ export default {
     background-size: 100% 100%;
 }
 
-.login_content{    
+.login_content {
     top: 50%;
     width: 370px;
     position: relative;
@@ -336,6 +234,7 @@ export default {
     border-radius: 5px;
     text-align: center;
     transform: translateY(-50%);
+
     .submit_btn {
         width: 100%;
         font-size: 16px;
@@ -348,6 +247,7 @@ export default {
     padding: 20px;
     border-radius: 3px;
     box-shadow: 5px 5px 10px #01144c;
+
     .fa-tips {
         position: absolute;
         top: 0px;
@@ -358,26 +258,27 @@ export default {
     }
 }
 
-
 .form_name {
     margin-bottom: 20px;
+
     .title {
         font-family: cursive;
         font-weight: bold;
         font-size: 30px;
         color: #fff;
     }
+
     .logo {
         width: 60px;
         height: 60px;
     }
 }
 
-
 .tiparea {
     text-align: left;
     font-size: 12px;
     color: #4cbb15;
+
     .tip {
         margin-left: 54px;
     }

@@ -12,7 +12,7 @@ namespace ChuXinEdu.CMS.Server.BLL
     public interface IChuXinWorkFlow
     {
         // [登陆]
-        string LoginVerify(string loginCode, string pwd, out string token);
+        string LoginVerify(string loginCode, string pwd, string ip, out string token, out string teacherCode);
 
         // [修改密码]
         string ChangePassword(string loginCode, string newPwd);

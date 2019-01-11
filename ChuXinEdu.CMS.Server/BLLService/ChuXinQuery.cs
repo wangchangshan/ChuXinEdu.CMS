@@ -13,6 +13,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
     public class ChuXinQuery : IChuXinQuery
     {
         #region config
+
+        public string GetRoles(string teacherCode)
+        {
+            string strRoles = string.Empty;
+            using (BaseContext context = new BaseContext())
+            {
+                var roles = context.TeacherRole.Where(r => r.TeacherCode == teacherCode).ToList();
+                foreach (TeacherRole role in roles)
+                {
+                    strRoles += role.RoleCode + ",";
+                }
+            }
+            if(strRoles.Length > 1)
+            {
+                strRoles = strRoles.TrimEnd(',');
+            }
+            return strRoles;
+        }
+
         public IEnumerable<SysDictionary> GetSysRoles()
         {
             using (BaseContext context = new BaseContext())
@@ -23,6 +42,18 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                 .ToList();
 
                 return roles;
+            }
+        }
+
+        public IEnumerable<SysMenu> GetSysMenus()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var menu = context.SysMenu.Where(m => m.IsEnable == "Y")
+                                                .OrderBy(m => m.SortWeight)
+                                                .ToList();
+
+                return menu;
             }
         }
 

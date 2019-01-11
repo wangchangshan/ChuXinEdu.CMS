@@ -120,6 +120,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取系统菜单列表 list GET api/config/getmenus
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<SysMenu> GetMenus()
+        {
+            return _chuxinQuery.GetSysMenus();
+        }
+
+        /// <summary>
         /// 获取排课模板列表 list GET api/config/getarrangetemplates
         /// </summary>
         /// <returns></returns>

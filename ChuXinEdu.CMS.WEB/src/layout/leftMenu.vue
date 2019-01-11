@@ -3,9 +3,9 @@
     active-text-color="#42b983" 
     :default-active="$store.state.menu.activeMenu" 
     :style="{height: $store.state.page.win_content.height + 63 + 'px'}">
-    <template v-for="(item) in $store.state.menu.menuItems" v-if="item.hidden !== true">
+    <template v-for="(item) in $store.state.menu.menuItems">
         <!-- 拥有二级菜单 -->
-        <el-submenu v-if="item.children && !item.noDropdpwn && item.children.length > 0" :index="item.path" :key="item.key" class="dropItem">
+        <el-submenu v-if="item.children && (item.isFolder == 'Y') && item.children.length > 0" :index="item.sortWeight" :key="item.key" class="dropItem">
             <template slot="title">
                 <i :class="'fa fa-margin ' + item.icon"></i>
                 <span slot="title">{{item.name}}</span>
@@ -18,8 +18,8 @@
         </el-submenu>
 
         <!-- 没有二级菜单 -->
-        <router-link v-bind:to="item.path" :key="item.path">
-            <el-menu-item v-if="item.noDropdown" :index="item.path">
+        <router-link v-bind:to="item.path" :key="item.id">
+            <el-menu-item v-if="item.isFolder == 'N' && !item.hidden" :index="item.sortWeight">
                 <template solt="title">
                     <i :class="'fa fa-margin ' + item.icon" @mouseover="showDropdown"></i>
                     <span :class="{'hiddenDropname':$store.state.menu.menuItems.isHidMenuName}" slot="title">{{item.name}}</span>

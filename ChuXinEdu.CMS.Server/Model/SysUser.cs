@@ -30,6 +30,9 @@ namespace ChuXinEdu.CMS.Server.Model
         public int FailCount { get; set; }
 
         [Column("last_login_time")]
-        public DateTime LastLoginTime { get; set; }
+        public DateTime? LastLoginTime { get; set; }
+
+        [Column("last_login_ip")]
+        public string LastLoginIP { get; set; }
     }
 }

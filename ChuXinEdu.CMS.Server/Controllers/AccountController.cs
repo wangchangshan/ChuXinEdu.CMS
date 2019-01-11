@@ -64,26 +64,28 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
             
             string signToken = ""; 
+            string teacherCode = "";
             string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(); 
-            result = _chuxinWorkFlow.LoginVerify(loginCode, pwd, out signToken);
-            if(result == "1701")
-            {
-                // 处理当前用户浏览器后退到登录页面，无法重新登录的问题
-                bool signVerify = rsa.Verify(loginCode + ip, signToken);
-                if(signVerify)
-                {
-                    result = "1200";
-                    return new JsonResult(new { code = result, data = signToken });
-                }
-            }
+            result = _chuxinWorkFlow.LoginVerify(loginCode, pwd, ip, out signToken, out teacherCode);
+
+            string roles = string.Empty;
             // 当前用户名签名
             if(result == "1200")
             {
-                signToken = rsa.Sign(loginCode + ip);
+                if(teacherCode == "0")
+                {
+                    roles = "1007";
+                }
+                else 
+                {
+                    roles = _chuxinQuery.GetRoles(teacherCode);
+                }
+                //signToken = rsa.Sign(loginCode + ip);
+                signToken = Guid.NewGuid().ToString("N");
                 result = _chuxinWorkFlow.SaveUserLoginInfo(loginCode, ip, signToken);
             }
             
-            return new JsonResult(new { code = result, data = signToken });
+            return new JsonResult(new { code = result, data = signToken, roles = roles });
         }
 
           // POST api/account/login

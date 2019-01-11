@@ -13,7 +13,11 @@ namespace ChuXinEdu.CMS.Server.BLL
     {
         IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge();
 
+        string GetRoles(string teacherCode);
+
         IEnumerable<SysDictionary> GetSysRoles();
+
+        IEnumerable<SysMenu> GetSysMenus();
 
         IEnumerable<SysCourseArrangeTemplate> GetSysArrangeTemplates();
 
