@@ -51,27 +51,46 @@ if(dics){
 }
 
 router.beforeEach((to, from, next) => {
-    NProgress.start() // start progress bar
-    // 定位到首页时， 清空缓存数据
+    NProgress.start() 
+    let hasPermission = false;
+    // 定位到登录页面时， 清空缓存数据
     if(to.path === '/') {
         LocalDB.instance('USER_').remove('BASEINFO');
         LocalDB.instance('MENU_').remove('LEFTMENU');
         store.commit('ADD_MENU', []);
+        hasPermission = true;
     }
 
     // 判断是否有用户登录的记录
-    let userinfo = JSON.parse(LocalDB.instance('USER_').getValue('BASEINFO').value);
+    let userInfo = JSON.parse(LocalDB.instance('USER_').getValue('BASEINFO').value);
     // 没有用户信息，route.path不是定位到登录页面的,直接跳登录页面。
-    if(!userinfo && to.path !== '/') {
+    if(!userInfo && to.path !== '/') {
         next({ path: '/' });
         NProgress.done()
     } else {
         // 有用户信息和路由名称的，直接跳要路由的页面。
-        store.commit('SET_ACTIVE_MENU', to.path);  
-        if(to.name) {
-            next();
-        } else {
-            next({ path: '/404' })
+        if(!hasPermission && to.meta.roles){
+            let pageRoles = to.meta.roles;
+            let arrUserRole = userInfo.roles && userInfo.roles.split(',') || [];
+            
+            for(let r of arrUserRole){
+                if(pageRoles.indexOf(',' + r + ',') > -1){
+                    hasPermission = true;
+                    break;
+                }
+            }
+        }
+
+        if(hasPermission){
+            store.commit('SET_ACTIVE_MENU', to.path);
+            if(to.name) {
+                next();
+            } else {
+                next({ path: '/404' })
+            }
+        }
+        else{
+            next({ path: '/403' })
         }
     }
 });

@@ -160,7 +160,7 @@ export default {
                     }
                     axios({
                         type: 'post',
-                        path: '/api/account/login',
+                        path: '/api/account/checkpwd',
                         data: verifyData, 
                         fn: result => {
                             if(result.code != 1200){

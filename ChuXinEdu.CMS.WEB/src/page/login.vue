@@ -104,6 +104,7 @@ export default {
                 type: 'get',
                 path: '/api/config/getmenus',
                 fn: result => {
+                    result.forEach(item => item.meta = {roles: ',' + item.roles + ','})
                     // 菜单按角色权限生成
                     let menuList = result.filter((item) => {
                         item.roles = ',' + item.roles + ','

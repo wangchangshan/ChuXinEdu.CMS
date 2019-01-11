@@ -68,6 +68,27 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string PwdVerify(string loginCode, string pwd)
+        {
+            string result = "";
+
+            using (BaseContext context = new BaseContext())
+            {
+                var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode
+                                                && u.Pwd == pwd)
+                                            .FirstOrDefault();
+                if (sysUser == null)
+                {
+                    result = "1101";
+                }
+                else
+                {
+                    result = "1200";
+                }
+            }
+            return result;
+        }
+
         public string ChangePassword(string loginCode, string newPwd)
         {
             string result = "";
