@@ -36,19 +36,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 }
                 else
                 {
-                    if(sysUser.FailCount >= 10)
+                    if (sysUser.FailCount >= 10)
                     {
                         result = "1103";
                     }
                     else
                     {
-                        if(!String.IsNullOrEmpty(sysUser.Token) && sysUser.TokenExpireTime > DateTime.Now)
+                        if (!String.IsNullOrEmpty(sysUser.Token) && sysUser.TokenExpireTime > DateTime.Now)
                         {
                             token = sysUser.Token;
                             result = "1701";
                         }
                         else
-                        { 
+                        {
                             result = "1200";
                             sysUser.LastLoginTime = DateTime.Now;
                             context.SaveChanges();
@@ -118,12 +118,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     sysUser.Token = signToken;
                     sysUser.TokenExpireTime = DateTime.Now.AddMinutes(expireMinu);
 
-                    context.SysLoginHistory.Add(new SysLoginHistory{
+                    context.SysLoginHistory.Add(new SysLoginHistory
+                    {
                         LoginCode = loginCode,
                         LoginIp = ip,
                         LoginTime = DateTime.Now
                     });
-                    
+
                     context.SaveChanges();
                 }
             }
@@ -506,7 +507,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             }
                             else
                             {
-                                if(courseArrange.CourseRestCount <= 1)
+                                if (courseArrange.CourseRestCount <= 1)
                                 {
                                     context.Remove(courseArrange);
                                     _logger.LogInformation("时间：{0}，{1}[{2}]剩余课时数为一节课,删除student_course_arrange表中的记录！", logFullTime, studentCourse.StudentName, studentCode);
@@ -521,7 +522,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         }
                         else
                         {
-                            _logger.LogWarning("找不到 {0} 在StudentCourseArrange[packageId: {1}, dayCode：{2}，时间段：{3}]中对应当前课程的排课记录！！！！", studentCourse.StudentName,studentCoursePackageId, dayCode, coursePeriod);
+                            _logger.LogWarning("找不到 {0} 在StudentCourseArrange[packageId: {1}, dayCode：{2}，时间段：{3}]中对应当前课程的排课记录！！！！", studentCourse.StudentName, studentCoursePackageId, dayCode, coursePeriod);
                             context.Dispose();
                             return "1409";
                         }
@@ -559,13 +560,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 {
                     // 1. 删除学生课程表内课程
                     var studentCourse = context.StudentCourseList.FirstOrDefault(s => s.StudentCourseId == courseId);
-                    if(studentCourse != null)
+                    if (studentCourse != null)
                     {
                         int studentPackageId = studentCourse.StudentCoursePackageId;
-                        if(studentPackageId > 0)
+                        if (studentPackageId > 0)
                         {
                             // 2. 正式课程，需要更新student_course_package表
-                            var coursePackage = context.StudentCoursePackage.Where( p => p.Id == studentPackageId).First();
+                            var coursePackage = context.StudentCoursePackage.Where(p => p.Id == studentPackageId).First();
                             coursePackage.FlexCourseCount += 1;
                             coursePackage.RestCourseCount += 1;
                             coursePackage.ScpStatus = "00";
@@ -1811,6 +1812,36 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             RoleLevel = roleDesc
                         };
                         context.TeacherRole.Add(tr);
+
+                        #region 普通教师登录角色处理
+                        if (roleCode == "2000") 
+                        {
+                            var sysUser = context.SysUser.FirstOrDefault(s => s.TeacherCode == teacherCode);
+                            if (sysUser != null)
+                            {
+                                sysUser.FailCount = 0;
+                            }
+                            else
+                            {
+                                var teacher = context.Teacher.FirstOrDefault(t => t.TeacherCode == teacherCode);
+                                if (teacher != null)
+                                {
+                                    SysUser user = new SysUser
+                                    {
+                                        LoginCode = teacher.TeacherName,
+                                        Pwd = "hello",
+                                        TeacherCode = teacherCode,
+                                        FailCount = 0,
+                                        Token = "",
+                                        TokenExpireTime = DateTime.Parse("1900-01-01"),
+                                        LastLoginTime = DateTime.Parse("1900-01-01")
+                                    };
+                                    context.SysUser.Add(user);
+                                }
+
+                            }
+                        }
+                        #endregion
                     }
                     context.SaveChanges();
                 }
@@ -1837,6 +1868,16 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         {
                             context.TeacherRole.Remove(tr);
                         }
+                        #region 普通教师登录角色处理
+                        if (roleCode == "2000") 
+                        {
+                            var sysUser = context.SysUser.FirstOrDefault(s => s.TeacherCode == teacherCode);
+                            if (sysUser != null)
+                            {
+                                context.SysUser.Remove(sysUser);
+                            }
+                        }
+                        #endregion
                     }
                     context.SaveChanges();
                 }
@@ -1858,15 +1899,15 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 using (BaseContext context = new BaseContext())
                 {
                     var package = context.StudentCoursePackage.FirstOrDefault(p => p.Id == id && p.RestCourseCount == 0 && p.ScpStatus == "00");
-                    if(package != null)
+                    if (package != null)
                     {
-                        int finishCourseCount = context.StudentCourseList.Where(c => c.StudentCoursePackageId == id 
+                        int finishCourseCount = context.StudentCourseList.Where(c => c.StudentCoursePackageId == id
                                                                             && (c.AttendanceStatusCode == "01" || c.AttendanceStatusCode == "02"))
                                                                     .Count();
 
-                        if(finishCourseCount == package.ActualCourseCount)
+                        if (finishCourseCount == package.ActualCourseCount)
                         {
-                            package.ScpStatus = "01";                            
+                            package.ScpStatus = "01";
                             context.SaveChanges();
                         }
                         else
@@ -1892,7 +1933,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 using (BaseContext context = new BaseContext())
                 {
                     var arrange = context.StudentCourseArrange.FirstOrDefault(a => a.Id == id && a.CourseRestCount <= 0);
-                    if(arrange != null)
+                    if (arrange != null)
                     {
                         context.Remove(arrange);
                         context.SaveChanges();
