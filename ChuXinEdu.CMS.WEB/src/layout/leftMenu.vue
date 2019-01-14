@@ -5,7 +5,7 @@
     :style="{height: $store.state.page.win_content.height + 63 + 'px'}">
     <template v-for="(item) in $store.state.menu.menuItems">
         <!-- 拥有二级菜单 -->
-        <el-submenu v-if="item.children && (item.isFolder == 'Y') && item.children.length > 0" :index="item.sortWeight" :key="item.key" class="dropItem">
+        <el-submenu v-if="item.children && (item.isFolder == 'Y') && item.children.length > 0" :index="item.path" :key="item.key" class="dropItem">
             <template slot="title">
                 <i :class="'fa fa-margin ' + item.icon"></i>
                 <span slot="title">{{item.name}}</span>
@@ -19,7 +19,7 @@
 
         <!-- 没有二级菜单 -->
         <router-link v-bind:to="item.path" :key="item.id">
-            <el-menu-item v-if="item.isFolder == 'N' && !item.hidden" :index="item.sortWeight">
+            <el-menu-item v-if="item.isFolder == 'N' && !item.hidden" :index="item.path">
                 <template solt="title">
                     <i :class="'fa fa-margin ' + item.icon" @mouseover="showDropdown"></i>
                     <span :class="{'hiddenDropname':$store.state.menu.menuItems.isHidMenuName}" slot="title">{{item.name}}</span>
