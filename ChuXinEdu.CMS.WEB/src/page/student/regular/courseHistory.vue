@@ -27,7 +27,7 @@
                         <el-button type="success" size="mini" icon='el-icon-upload' @click='showUploadDialog(scope.row)'></el-button>
                         <el-button type="primary" size="mini" icon='el-icon-picture' @click='viewArtwork(scope.row.studentCourseId)'></el-button>
                     </el-button-group>
-                    <el-button type="danger" size="mini" icon='el-icon-delete' @click='removeCourse(scope.row)'></el-button>
+                    <el-button v-noRepeatClick type="danger" size="mini" icon='el-icon-delete' @click='removeCourse(scope.row)'></el-button>
 
                 </template>
             </el-table-column>
@@ -40,9 +40,9 @@
             <el-radio-button label="meishu">美术 <span style="font-weight:600">{{ this.badges.meishu }}</span>节</el-radio-button>
             <el-radio-button label="shufa">书法 <span style="font-weight:600">{{ this.badges.shufa }}</span>节</el-radio-button>
         </el-radio-group>
-        <el-button type="primary" size="small" @click='supplementCourse()'><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
-        <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
-        <el-button type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 导出图片</el-button>
+        <el-button v-noRepeatClick type="primary" size="small" @click='supplementCourse()'><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
+        <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
+        <el-button v-noRepeatClick type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 导出图片</el-button>
     </div>
 
     <el-dialog :title="supplementDialog.title" :visible.sync="supplementDialog.isShow" :width="supplementDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
@@ -103,7 +103,7 @@
             </el-table>
             <div class="footer_container" style="text-align:center;margin-top:10px">
                 <el-button size="small" @click="supplementDialog.isShow = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="btnSubmitSupplement()">确 定</el-button>
+                <el-button v-noRepeatClick size="small" type="primary" @click="btnSubmitSupplement()">确 定</el-button>
             </div>
         </div>
     </el-dialog>
@@ -127,7 +127,7 @@
                 </el-form-item>
                 <el-form-item class="text_right">
                     <el-button size="small" @click="btnCancelUpload()">取 消</el-button>
-                    <el-button size="small" type="primary" @click="btnSubmitUpload()">确 定</el-button>
+                    <el-button v-noRepeatClick size="small" type="primary" @click="btnSubmitUpload()">确 定</el-button>
                 </el-form-item>
             </el-form>
         </div>

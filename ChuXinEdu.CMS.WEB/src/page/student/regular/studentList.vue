@@ -20,7 +20,7 @@
             </el-form-item>
             <el-form-item class="btnRight">
                 <el-button type="primary" size="small" @click='showAddStudent()'><i class="fa fa-user-plus" aria-hidden="true"></i> 添加</el-button>
-                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出</el-button>
+                <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -108,7 +108,7 @@
                 </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
-                    <el-button size="small" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
+                    <el-button v-noRepeatClick size="small" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>

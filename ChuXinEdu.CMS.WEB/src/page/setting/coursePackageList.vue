@@ -78,9 +78,9 @@
                 </el-form-item>
                 <el-form-item class="text_right">
                     <el-button @click="dialog.isShow = false">取 消</el-button>
-                    <el-button v-show="!dialog.isUpdate" type="primary" @click="submitNewPackage('packageDetail')">提 交</el-button>
-                    <el-button v-show="dialog.isUpdate && !dialog.isPackageUsed" type="danger" @click='submitRemovePackage()'>删 除</el-button>
-                    <el-button v-show="dialog.isUpdate" type="primary" @click="submitEditPackage('packageDetail')">保 存</el-button>
+                    <el-button v-noRepeatClick v-show="!dialog.isUpdate" type="primary" @click="submitNewPackage('packageDetail')">提 交</el-button>
+                    <el-button v-noRepeatClick v-show="dialog.isUpdate && !dialog.isPackageUsed" type="danger" @click='submitRemovePackage()'>删 除</el-button>
+                    <el-button v-noRepeatClick v-show="dialog.isUpdate" type="primary" @click="submitEditPackage('packageDetail')">保 存</el-button>
                 </el-form-item>
             </el-form>
         </div>

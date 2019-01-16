@@ -82,7 +82,7 @@
                 </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="teacherDialog.isShow = false">取 消</el-button>
-                    <el-button size="small" type="primary" @click="submitUpdateTeacher('baseInfo')">提 交</el-button>
+                    <el-button v-noRepeatClick size="small" type="primary" @click="submitUpdateTeacher('baseInfo')">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>

@@ -65,7 +65,7 @@
                 </el-table-column>
                 <el-table-column prop="operation" align='center' label="操作" width="100">
                     <template slot-scope='scope'>
-                        <el-button type="success" size="mini" @click='addToRecommend(scope.row)'>添 加</el-button>
+                        <el-button v-noRepeatClick type="success" size="mini" @click='addToRecommend(scope.row)'>添 加</el-button>
                     </template>
                 </el-table-column>
             </el-table>

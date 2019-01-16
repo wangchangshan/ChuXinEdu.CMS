@@ -39,14 +39,14 @@
             </el-table-column>
             <el-table-column prop="operation" align='left' label="操作" fixed="right" width="160">
                 <template slot-scope='scope'>
-                    <el-button type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
-                    <el-button type="success" icon='edit' size="mini" @click='showSingleSignInDialog(scope.row)'>签到</el-button>
+                    <el-button v-noRepeatClick type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
+                    <el-button v-noRepeatClick type="success" icon='edit' size="mini" @click='showSingleSignInDialog(scope.row)'>签到</el-button>
                 </template>
             </el-table-column>
         </el-table>
     </div>
     <div class="footer_container">
-        <el-button size="small" type="success" icon="" @click='submitBatchSignIn()'>批量签到</el-button>
+        <el-button v-noRepeatClick size="small" type="success" icon="" @click='submitBatchSignIn()'>批量签到</el-button>
     </div>
 
     <el-dialog :title="signInDialog.title" :visible.sync="signInDialog.isShow" :width="signInDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
@@ -83,7 +83,7 @@
                 </el-form-item>
                 <el-form-item class="text_right">
                     <el-button @click="cancelSignIn()" size="small">取 消</el-button>
-                    <el-button type="primary" @click="submitSignIn('courseInfo')" size="small">签 到</el-button>
+                    <el-button v-noRepeatClick type="primary" @click="submitSignIn('courseInfo')" size="small">签 到</el-button>
                 </el-form-item>
             </el-form>
         </div>

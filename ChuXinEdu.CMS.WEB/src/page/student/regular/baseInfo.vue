@@ -156,9 +156,9 @@
                 </el-form-item>
                 <el-form-item style="text-align:right; margin-right:20px">
                     <el-button @click="packageDialog.isShow = false" size="small">取 消</el-button>
-                    <el-button v-show="packageDialog.uploadPanel == 'N'" type="primary" size="small" @click="submitAddPackage()">提 交</el-button>
-                    <el-button v-show="packageDialog.uploadPanel == 'Y'" type="danger" size="small" @click="DelPackage()">删 除</el-button>
-                    <el-button v-show="packageDialog.uploadPanel == 'Y'" type="primary" size="small" @click="UpdatePackage()">保 存</el-button>
+                    <el-button v-noRepeatClick v-show="packageDialog.uploadPanel == 'N'" type="primary" size="small" @click="submitAddPackage()">提 交</el-button>
+                    <el-button v-noRepeatClick v-show="packageDialog.uploadPanel == 'Y'" type="danger" size="small" @click="DelPackage()">删 除</el-button>
+                    <el-button v-noRepeatClick v-show="packageDialog.uploadPanel == 'Y'" type="primary" size="small" @click="UpdatePackage()">保 存</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -200,7 +200,7 @@
                 </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
-                    <el-button size="small" type="primary" @click="submitUpdateStudent('baseInfo')">提 交</el-button>
+                    <el-button v-noRepeatClick size="small" type="primary" @click="submitUpdateStudent('baseInfo')">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>

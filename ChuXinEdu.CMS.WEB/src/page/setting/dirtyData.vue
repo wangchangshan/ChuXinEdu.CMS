@@ -16,7 +16,7 @@
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="125">
                 <template slot-scope='scope'>
-                    <el-button type="success" icon='edit' size="small" @click='clearDirty(scope.row)'>修 正</el-button>
+                    <el-button v-noRepeatClick type="success" icon='edit' size="small" @click='clearDirty(scope.row)'>修 正</el-button>
                 </template>
             </el-table-column>
         </el-table>

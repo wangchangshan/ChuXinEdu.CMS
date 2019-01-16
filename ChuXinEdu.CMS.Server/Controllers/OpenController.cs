@@ -20,8 +20,7 @@ using ChuXinEdu.CMS.Server.Filters;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [EnableCors("any")] 
-    [OuterAuthenFilter]
+    [EnableCors("any")]
     [ApiController]
     public class OpenController : ControllerBase
     {
@@ -32,6 +31,57 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             _chuxinQuery = chuxinQuery;
             _chuxinWorkFlow = chuxinWorkFlow;
+        }
+
+
+
+        /// <summary>
+        /// [配置] arrange_guid 数据迁移接口 GET api/open/migrate
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public string Migrate()
+        {
+            string result = "200";
+            using (BaseContext context = new BaseContext())
+            {
+                var arrangeList = context.StudentCourseArrange.Where(a => a.ArrangeGuid == null).ToList();
+                if (arrangeList.Count > 0)
+                {
+                    foreach (StudentCourseArrange arrange in arrangeList)
+                    {
+                        string guid = Guid.NewGuid().ToString("N");
+                        var courseList = context.StudentCourseList.Where(c => c.StudentCoursePackageId == arrange.StudentCoursePackageId
+                                                                               && c.StudentCode == arrange.StudentCode
+                                                                               && c.CourseWeekDay == arrange.CourseWeekDay
+                                                                               && c.CoursePeriod == arrange.CoursePeriod
+                                                                               && c.Classroom == arrange.Classroom
+                                                                               && c.ArrangeTemplateCode == arrange.ArrangeTemplateCode
+                                                                        ).ToList();
+                        foreach (StudentCourseList course in courseList)
+                        {
+                            course.ArrangeGuid = guid;
+                        }
+                        arrange.ArrangeGuid = guid;
+                        context.SaveChanges();
+                    }
+
+                    var otherCourseList = context.StudentCourseList.Where(c => c.ArrangeGuid == null).ToList();
+                    foreach (var otherCourse in otherCourseList)
+                    {
+                        otherCourse.ArrangeGuid = "0";
+                    }
+
+                    context.SaveChanges();
+                }
+                else
+                {
+                    result = "no record need to migrate.";
+                }
+
+            }
+
+            return result;
         }
 
         // GET api/open/getpackages
@@ -51,7 +101,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public List<StudentCourseList> GetCourseArrangedbyDay(string day)
         {
             DateTime theDay = Convert.ToDateTime(day).Date;
-            List<StudentCourseList> scls = _chuxinQuery.GetCoursesByday(theDay);        
+            List<StudentCourseList> scls = _chuxinQuery.GetCoursesByday(theDay);
             return scls;
         }
 
@@ -70,10 +120,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取学生所有的课程作品 GET api/student/getartworklist
         /// </summary>
         /// <returns></returns>
-        [HttpGet]        
+        [HttpGet]
         public IEnumerable<ART_WORK_R_LIST> GetArtworkList(string studentCode)
         {
-            var config = new MapperConfiguration(cfg => {
+            var config = new MapperConfiguration(cfg =>
+            {
                 cfg.CreateMap<StudentArtwork, ART_WORK_R_LIST>();
             });
             IMapper mapper = config.CreateMapper();
@@ -81,7 +132,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             IEnumerable<StudentArtwork> artworks = _chuxinQuery.GetArkworkByStudent(studentCode);
 
             List<ART_WORK_R_LIST> artWorkList = new List<ART_WORK_R_LIST>();
-            ART_WORK_R_LIST  aw = null;
+            ART_WORK_R_LIST aw = null;
 
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var artwork in artworks)
@@ -102,9 +153,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public ActionResult<string> GetStudentList(int pageIndex, int pageSize, string q)
         {
-            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);            
-            
-            var config = new MapperConfiguration(cfg => {
+            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);
+
+            var config = new MapperConfiguration(cfg =>
+            {
                 cfg.CreateMap<Student, STUDENT_R_LIST>();
             });
             IMapper mapper = config.CreateMapper();
@@ -116,16 +168,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             STUDENT_R_LIST studentVM = null;
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-            foreach(Student student in students)
+            foreach (Student student in students)
             {
                 var studentCode = student.StudentCode;
                 studentVM = mapper.Map<Student, STUDENT_R_LIST>(student);
 
                 DataRow[] drArr = dtScpSimplify.Select("student_code = '" + studentCode + "'");
                 List<Simplify_StudentCourse> ssList = new List<Simplify_StudentCourse>();
-                foreach(DataRow dr in drArr)
+                foreach (DataRow dr in drArr)
                 {
-                    Simplify_StudentCourse ss = new Simplify_StudentCourse{
+                    Simplify_StudentCourse ss = new Simplify_StudentCourse
+                    {
                         StudentCode = studentCode,
                         Code = dr["course_category_code"].ToString(),
                         Name = dr["course_category_name"].ToString()
@@ -144,7 +197,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 DateFormatString = "yyyy-MM-dd"
             };
 
-            return new JsonResult(new {
+            return new JsonResult(new
+            {
                 TotalCount = totalCount,
                 Data = studentList
             }, settings);

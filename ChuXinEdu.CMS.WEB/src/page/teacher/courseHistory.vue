@@ -13,7 +13,7 @@
                 <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetCourseList()'>重 置</el-button>
             </el-form-item>
             <el-form-item class="btnRight">
-                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出</el-button>
+                <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出</el-button>
             </el-form-item>
         </el-form>
     </div>

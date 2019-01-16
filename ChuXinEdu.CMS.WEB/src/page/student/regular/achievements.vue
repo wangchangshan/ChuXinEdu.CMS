@@ -68,7 +68,7 @@
             <el-form style="margin:10px;width:auto;">
                 <el-form-item class="text_right">
                     <el-button size="small" @click="btnCancelUpload()">取 消</el-button>
-                    <el-button size="small" type="primary" @click="btnSubmitUpload()">确 定</el-button>
+                    <el-button v-noRepeatClick size="small" type="primary" @click="btnSubmitUpload()">确 定</el-button>
                 </el-form-item>
             </el-form>
         </div>

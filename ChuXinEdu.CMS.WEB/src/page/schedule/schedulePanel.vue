@@ -121,7 +121,7 @@
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            <el-button @click="submitStudents_xuanke()" type="success" size="small">确定</el-button>
+            <el-button v-noRepeatClick @click="submitStudents_xuanke()" type="success" size="small">确定</el-button>
             <el-button @click="selectZhengShiDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
@@ -144,7 +144,7 @@
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            <el-button @click="submitStudents_shiting()" type="success" size="small">确定</el-button>
+            <el-button v-noRepeatClick @click="submitStudents_shiting()" type="success" size="small">确定</el-button>
             <el-button @click="selectShiTingDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
@@ -162,14 +162,14 @@
             <el-table-column property="attendanceStatusName" label="状态" width="80" align='center'></el-table-column>
             <el-table-column prop="operation" align='left' label="操作" fixed="right" width="190">
                 <template slot-scope='scope'>
-                    <el-button v-if="scope.row.attendanceStatusCode == '09' && scope.row.courseType == '正式'" plain type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
-                    <el-button v-if="scope.row.attendanceStatusCode == '09'" plain type="danger" icon='edit' size="mini" @click='removeCourse(scope.row.studentCourseId)'>删除</el-button>
-                    <el-button v-if="scope.row.attendanceStatusCode == '00'" plain type="success" icon='edit' size="mini" @click='restoreQingJia(scope.row.studentCourseId)'>撤销请假</el-button>
+                    <el-button v-noRepeatClick v-if="scope.row.attendanceStatusCode == '09' && scope.row.courseType == '正式'" plain type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
+                    <el-button v-noRepeatClick v-if="scope.row.attendanceStatusCode == '09'" plain type="danger" icon='edit' size="mini" @click='removeCourse(scope.row.studentCourseId)'>删除</el-button>
+                    <el-button v-noRepeatClick v-if="scope.row.attendanceStatusCode == '00'" plain type="success" icon='edit' size="mini" @click='restoreQingJia(scope.row.studentCourseId)'>撤销请假</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            <el-button type="danger" size="small" @click='removeCourseBatch()'>批量删除</el-button>
+            <el-button v-noRepeatClick type="danger" size="small" @click='removeCourseBatch()'>批量删除</el-button>
             <el-button @click="studentCourseDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
@@ -181,14 +181,14 @@
             <el-table-column property="dayOfWeek" label="星期 ？" min-width="90"></el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
                 <template slot-scope='scope'>
-                    <el-button plain type="danger" v-show="scope.row.showDelete" @click="removeHoliday(scope.row.holidayDate)" icon='edit' size="mini">删除</el-button>
+                    <el-button v-noRepeatClick plain type="danger" v-show="scope.row.showDelete" @click="removeHoliday(scope.row.holidayDate)" icon='edit' size="mini">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
             选择添加放假日期：
             <el-date-picker type="dates" :editable="false" value-format="yyyy-MM-dd" v-model="holidayDialog.newHolidays" :picker-options="holidayDialog.pickerDateOptions" size="small"></el-date-picker>
-            <el-button type="success" size="small" @click='submitHolidays()'>确定</el-button>
+            <el-button v-noRepeatClick type="success" size="small" @click='submitHolidays()'>确定</el-button>
             <el-button @click="holidayDialog.isShow = false" size="small">取消</el-button>
         </div>
     </el-dialog>
@@ -661,21 +661,20 @@ export default {
                 });
             }
             
-            var _this = this;
-            var dayCode = _this.selectZhengShiDialog.curDayCode;
-            var periodName = _this.selectZhengShiDialog.curPeriodName;
+            var dayCode = this.selectZhengShiDialog.curDayCode;
+            var periodName = this.selectZhengShiDialog.curPeriodName;
             axios({
                 type: 'post',
                 path: '/api/coursearrange/postcoursearrange',
                 data: caInfo,
-                fn: function (result) {
+                fn: result => {
                     if (result === 1200) {
-                        _this.refreshPeriodInfo(dayCode, periodName);
-                        _this.$message({
+                        this.refreshPeriodInfo(dayCode, periodName);
+                        this.$message({
                             message: '排课成功！',
                             type: 'success'
                         });
-                        _this.selectZhengShiDialog.isShow = false;
+                        this.selectZhengShiDialog.isShow = false;
                     }
                 }
             })

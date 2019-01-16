@@ -19,7 +19,7 @@
             </el-table-column>
             
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
-                <template slot-scope='scope'>
+                <template>
                     <el-button type="success" icon='edit' size="small" @click='showStudentDetail()'>查看详细</el-button>
                 </template>
             </el-table-column>

@@ -118,7 +118,6 @@ export default {
                     LocalDB.instance('MENU_').setValue('LEFTMENU', menuList);
                     this.addMenu(menuList);
                     let defaultPage = "/dashboard";
-                    console.log("roles:" + roles)
                     if((',' + roles + ',').indexOf(',1007,') == -1){
                         defaultPage = "/courseSignIn";
                     }

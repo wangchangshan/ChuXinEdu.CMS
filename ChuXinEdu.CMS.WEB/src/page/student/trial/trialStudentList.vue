@@ -51,9 +51,9 @@
                 <template slot-scope='scope'>
                     <el-button v-if="scope.row.result != '成功'" @click="showEditPanel(scope.row)" type="primary" size="mini">编辑</el-button>
                     <el-button v-if="scope.row.result == '成功'" @click="showStudentDetail(scope.row.studentCode, scope.row.studentName)" type="success" size="mini">查看</el-button>
-                    <el-button v-if="scope.row.studentTempStatus == '02' && scope.row.result == '待定'" @click="submitTrialSuccess(scope.row.id)" type="success" size="mini">成功</el-button>
-                    <el-button v-if="scope.row.studentTempStatus == '02' && scope.row.result == '待定'" @click="submitTrialFail(scope.row.id)" type="info" size="mini">失败</el-button>
-                    <el-button v-if="scope.row.studentTempStatus == '00'" @click="removeTempStudent(scope.row.id)" type="danger" size="mini">删除</el-button>
+                    <el-button v-noRepeatClick v-if="scope.row.studentTempStatus == '02' && scope.row.result == '待定'" @click="submitTrialSuccess(scope.row.id)" type="success" size="mini">成功</el-button>
+                    <el-button v-noRepeatClick v-if="scope.row.studentTempStatus == '02' && scope.row.result == '待定'" @click="submitTrialFail(scope.row.id)" type="info" size="mini">失败</el-button>
+                    <el-button v-noRepeatClick v-if="scope.row.studentTempStatus == '00'" @click="removeTempStudent(scope.row.id)" type="danger" size="mini">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -90,8 +90,8 @@
                 </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
-                    <el-button size="small" v-if="studentDialog.isUpdate == true" type="primary" @click="submitUpdateStudent('baseInfo')">保 存</el-button>
-                    <el-button size="small" v-if="studentDialog.isUpdate == false" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
+                    <el-button v-noRepeatClick size="small" v-if="studentDialog.isUpdate == true" type="primary" @click="submitUpdateStudent('baseInfo')">保 存</el-button>
+                    <el-button v-noRepeatClick size="small" v-if="studentDialog.isUpdate == false" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>

@@ -101,6 +101,20 @@ router.afterEach(() => {
 
 Vue.config.productionTip = false
 
+Vue.directive('noRepeatClick', {
+    inserted(el, binding) {
+        el.addEventListener('click', e => {
+            el.classList.add('is-disabled');
+            el.disabled = true;
+            setTimeout(() => {
+                el.disabled = false;
+                el.classList.remove('is-disabled');
+            }, 1000)
+        })
+    }
+})
+
+
 /* eslint-disable no-new */
 new Vue({
     el: '#app',

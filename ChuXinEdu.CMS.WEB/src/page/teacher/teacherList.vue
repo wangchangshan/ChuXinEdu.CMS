@@ -17,7 +17,7 @@
             </el-form-item>
             <el-form-item class="btnRight">
                 <el-button type="primary" size="small" icon="el-icon-plus" @click='showAddTeacherPanel()'>添加</el-button>
-                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
+                <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -81,7 +81,7 @@
                 </el-form-item>
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="teacherDialog.isShow = false">取 消</el-button>
-                    <el-button size="small" type="primary" @click="submitNewTeacher('baseInfo')">提 交</el-button>
+                    <el-button v-noRepeatClick size="small" type="primary" @click="submitNewTeacher('baseInfo')">提 交</el-button>
                 </el-form-item>
             </el-form>
         </div>

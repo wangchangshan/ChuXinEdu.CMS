@@ -342,6 +342,7 @@ export default {
             LocalDB.instance("MENU_").remove("LEFTMENU");
             LocalDB.instance("USER_").remove("BASEINFO");
             this.$router.push("/");
+            document.location.reload();
         },
 
         setDialogInfo(cmdItem) {

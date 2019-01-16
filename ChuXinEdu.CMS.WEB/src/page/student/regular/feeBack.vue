@@ -4,7 +4,7 @@
         <div class="tiparea1">
                 {{feebackFormula}}
             </div>
-        <el-button size="small" type="primary" @click="prepareFeeback()">退费计算</el-button>
+        <el-button v-noRepeatClick size="small" type="primary" @click="prepareFeeback()">退费计算</el-button>
     </el-row>
     <el-row v-if="feeBackPackage.length > 0">
         <el-card class="box-card" shadow="never">
@@ -35,7 +35,7 @@
                 <a class="big-title">总计退费 <span style="color:#f56767">{{totalFeeback}}</span> 元</a>
             </div>
             <div>
-                <el-button type="primary" @click="submitFeeback()">退 费</el-button>
+                <el-button v-noRepeatClick type="primary" @click="submitFeeback()">退 费</el-button>
             </div>
         </el-card>
     </el-row>
