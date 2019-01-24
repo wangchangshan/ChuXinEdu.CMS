@@ -9,14 +9,51 @@
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="125">
                 <template slot-scope='scope'>
-                    <el-button type="primary" icon='edit' size="small" @click='templateManage(scope.row)'>管 理</el-button>
+                    <el-button type="primary" icon='edit' size="small" @click='templateManage(scope.row.arrangeTemplateCode)'>管 理</el-button>
                 </template>
             </el-table-column>
         </el-table>
     </div>
+    <div class="footer_container">
+        <el-button type="success" icon="el-icon-plus" size="small" @click="showAddArrangeTemplate()">添加排课模板</el-button>
+    </div>
 
     <el-dialog :title="templateDialog.title" :visible.sync="templateDialog.isShow" :width="templateDialog.width" :close-on-press-escape='false' :modal-append-to-body="false">
-        
+        <el-table :data="templateDialog.periodList" size="mini" align="left" border stripe height="480px">
+            <el-table-column property="dayName" label="星期" align='center' width="120">
+            </el-table-column>
+            <el-table-column property="coursePeriod" label="课程时间段" align='left'>
+                <template slot-scope='scope'>
+                    <div v-for="period in scope.row.coursePeriod" v-bind:key="period.id">
+                        <el-time-select class="time-mini" placeholder="上课时间" v-model="period.startTime" :picker-options="{
+                                    start: '09:00',
+                                    step: '00:30',
+                                    end: '20:00'
+                            }" size="mini">
+                        </el-time-select>
+                        <el-time-select class="time-mini" placeholder="下课时间" v-model="period.endTime" :picker-options="{
+                                    start: '09:00',
+                                    step: '00:30',
+                                    end: '20:00',
+                                    minTime: period.startTime
+                            }" size="mini">
+                        </el-time-select>
+                        <el-button type="success" icon="el-icon-plus" size="mini" circle @click='createNewPeriod(scope.row.dayCode)'></el-button>
+                        <el-button type="danger" icon="el-icon-minus" size="mini" circle @click='removeLine(scope.row.dayCode, period.id)'></el-button>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column label="休息？" align='center' width="90">
+                <template slot-scope='scope'>
+                    <el-switch @change="setDayFlag(scope.row.dayCode)" v-model="scope.row.isActive" active-color="#13ce66" active-value="N" inactive-value="Y">
+                    </el-switch>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="footer_container" style="text-align:center;margin-top:10px">
+            <el-button size="small" @click="templateDialog.isShow = false">取 消</el-button>
+            <el-button v-noRepeatClick size="small" type="primary" @click="btnSubmit()">确 定</el-button>
+        </div>
     </el-dialog>
 </div>
 </template>
@@ -31,13 +68,79 @@ export default {
         return {
             templateList: [],
             loading: true,
-            tableHeight: this.$store.state.page.win_content.height - 150,
+            tableHeight: this.$store.state.page.win_content.height - 100,
 
             curRoleCode: '',
             templateDialog: {
-                width: '700px',
+                width: '600px',
                 isShow: false,
-                title: '',
+                title: '模板信息',
+                type: 'edit',
+                templateCode: '',
+                periodList: [{
+                    dayCode: 'day1',
+                    dayName: '星期一',
+                    isActive: 'Y',
+                    coursePeriod: [{
+                        id: Math.random().toString(),
+                        startTime: '',
+                        endTime: ''
+                    }]
+                }, {
+                    dayCode: 'day2',
+                    dayName: '星期二',
+                    isActive: 'Y',
+                    coursePeriod: [{
+                        id: Math.random().toString(),
+                        startTime: '',
+                        endTime: ''
+                    }]
+                }, {
+                    dayCode: 'day3',
+                    dayName: '星期三',
+                    isActive: 'Y',
+                    coursePeriod: [{
+                        id: Math.random().toString(),
+                        startTime: '',
+                        endTime: ''
+                    }]
+                }, {
+                    dayCode: 'day4',
+                    dayName: '星期四',
+                    isActive: 'Y',
+                    coursePeriod: [{
+                        id: Math.random().toString(),
+                        startTime: '',
+                        endTime: ''
+                    }]
+                }, {
+                    dayCode: 'day5',
+                    dayName: '星期五',
+                    isActive: 'Y',
+                    coursePeriod: [{
+                        id: Math.random().toString(),
+                        startTime: '',
+                        endTime: ''
+                    }]
+                }, {
+                    dayCode: 'day6',
+                    dayName: '星期六',
+                    isActive: 'Y',
+                    coursePeriod: [{
+                        id: Math.random().toString(),
+                        startTime: '',
+                        endTime: ''
+                    }]
+                }, {
+                    dayCode: 'day7',
+                    dayName: '星期日',
+                    isActive: 'Y',
+                    coursePeriod: [{
+                        id: Math.random().toString(),
+                        startTime: '',
+                        endTime: ''
+                    }]
+                }, ]
             }
         }
     },
@@ -57,9 +160,133 @@ export default {
             });
         },
 
-        templateManage(row) {
-            alert("待开发，敬请期待")
+        templateManage(templateCode) {
+            this.templateDialog.type = 'edit';
+            this.templateDialog.templateCode = templateCode;
+            this.templateDialog.isShow = true;
+            this.getTemplateDetail(templateCode);
+        },
+
+        getTemplateDetail(templateCode) {
+            axios({
+                type: 'get',
+                path: '/api/config/getarrangetemplatedetail/' + templateCode,
+                fn: result => {
+                    for (let i = 0; i < 7; i++) {
+                        this.templateDialog.periodList[i].coursePeriod = [];
+                    }
+                    result.forEach(item => {
+                        let index = parseInt(item.courseWeekDay.charAt(3)) - 1;
+                        this.templateDialog.periodList[index].coursePeriod.push({
+                            id: Math.random().toString(),
+                            startTime: item.coursePeriod.split('-')[0],
+                            endTime: item.coursePeriod.split('-')[1]
+                        });
+                    });
+                }
+            });
+        },
+
+        createNewPeriod(dayCode) {
+            let index = parseInt(dayCode.charAt(3)) - 1;
+            this.templateDialog.periodList[index].coursePeriod.push({
+                id: Math.random().toString(),
+                startTime: '',
+                endTime: ''
+            })
+        },
+
+        removeLine(dayCode, periodId) {
+            let index = parseInt(dayCode.charAt(3)) - 1;
+            let arr = this.templateDialog.periodList[index].coursePeriod;
+            if (arr.length == 1 && this.templateDialog.periodList[index].isActive == 'Y') {
+                this.$message({
+                    type: 'warning',
+                    message: '请保留至少一个时间段！'
+                });
+            } else {
+                this.templateDialog.periodList[index].coursePeriod = arr.filter(item => item.id != periodId);
+            }
+        },
+
+        showAddArrangeTemplate() {
+            for (let i = 0; i < 7; i++) {
+                this.templateDialog.periodList[i].coursePeriod = [{
+                    id: Math.random().toString(),
+                    startTime: '',
+                    endTime: ''
+                }];
+            }
+            this.templateDialog.templateCode = '';
+            this.templateDialog.type = 'add';
+            this.templateDialog.isShow = true;
+        },
+
+        btnSubmit() {
+            let listTemplateDetails = [];
+            let templateCode = this.templateDialog.templateCode;
+            for (let i = 0; i < 7; i++) {
+                let dayCode = this.templateDialog.periodList[i].dayCode;
+                this.templateDialog.periodList[i].coursePeriod.forEach(item => {
+                    listTemplateDetails.push({
+                        arrangeTemplateCode: templateCode,
+                        coursePeriod: item.startTime + '-' + item.endTime,
+                        courseWeekDay: dayCode
+                    });
+                })
+            }
+            if (this.templateDialog.type == 'add') {
+                axios({
+                    type: 'post',
+                    path: '/api/arrangetemplate/addnewtemplate',
+                    data: listTemplateDetails,
+                    fn: result => {
+                        if (result === 1200) {
+                            this.$message({
+                                message: '添加排课模板成功',
+                                type: 'success'
+                            });
+                            this.templateDialog.isShow = false;
+                        }
+                    }
+                });
+            } else if (this.templateDialog.type == 'edit') {
+                axios({
+                    type: 'post',
+                    path: '/api/arrangetemplate/updatetemplate',
+                    data: listTemplateDetails,
+                    fn: result => {
+                        if (result === 1200) {
+                            this.$message({
+                                message: '更新排课模板成功',
+                                type: 'success'
+                            });
+                            this.templateDialog.isShow = false;
+                        }
+                    }
+                });
+            } else {
+                this.$message({
+                    message: '无法添加或更新排课模板，请联系系统管理人员',
+                    type: 'warning'                  
+                });
+            }
+        },
+
+        setDayFlag(dayCode) {
+            let index = parseInt(dayCode.charAt(3)) - 1;
+            let isActive = this.templateDialog.periodList[index].isActive;
+            if (isActive == 'N') {
+                this.templateDialog.periodList[index].coursePeriod = [];
+            } else {
+                this.templateDialog.periodList[index].coursePeriod = [{
+                    id: Math.random().toString(),
+                    startTime: '',
+                    endTime: ''
+                }];
+            }
         }
+
     }
 }
 </script>
@@ -67,5 +294,11 @@ export default {
 <style lang="less" scoped>
 .list_container {
     overflow-y: hidden;
+}
+
+.footer_container {
+    height: 36px;
+    line-height: 36px;
+    text-align: left;
 }
 </style>

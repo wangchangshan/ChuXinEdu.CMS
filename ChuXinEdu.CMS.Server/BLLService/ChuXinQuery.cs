@@ -66,6 +66,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 return templates;
             }
         }
+
+        public IEnumerable<SysCourseArrangeTemplateDetail> GetArrangeTemplateDetail(string templateCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var templates = context.SysCourseArrangeTemplateDetail.Where(t => t.ArrangeTemplateCode == templateCode)
+                                                                    .OrderBy(t => t.CoursePeriod)
+                                                                    .OrderBy(t => t.CourseWeekDay)
+                                                                    .ToList();
+
+                return templates;
+            }
+        }
         #endregion
 
 

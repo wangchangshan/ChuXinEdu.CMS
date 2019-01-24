@@ -21,6 +21,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<SysCourseArrangeTemplate> GetSysArrangeTemplates();
 
+        IEnumerable<SysCourseArrangeTemplateDetail> GetArrangeTemplateDetail(string templateCode);
+
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount);
 
         IEnumerable<Student> GetStudentList2Export(QUERY_STUDENT query);

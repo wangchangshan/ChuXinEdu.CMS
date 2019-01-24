@@ -139,6 +139,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return _chuxinQuery.GetSysArrangeTemplates();
         }
 
+        /// <summary>
+        /// 获取排课模板详细 list GET api/config/getarrangetemplatedetail
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{templateCode}")]
+        public IEnumerable<SysCourseArrangeTemplateDetail> GetArrangeTemplateDetail(string templateCode)
+        {
+            return _chuxinQuery.GetArrangeTemplateDetail(templateCode);
+        }
+
         // POST api/config/addteacherrole
         [HttpPost("{roleCode}")]
         public string AddTeacherRole(string roleCode, [FromBody] List<string> teacherCodes)

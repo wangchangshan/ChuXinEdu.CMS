@@ -157,7 +157,7 @@ E:\mynewproject\ChuXinEdu.CMS\ChuXinEdu.CMS.WEB > npm install --save-dev
 由于MySql.Data.EntityFrameworkCore无法支持netcore.2.1，因此使用[Pomelo.EntityFrameworkCore.MySql](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql)
 ```bash
 ## EFcore for mysql （）
-D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.AspNetCore.All --version 2.1.2
+D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Microsoft.AspNetCore.All --version 2.1.4
 D:\myproject\ChuXinEdu.CMS.Server> dotnet add package Pomelo.EntityFrameworkCore.MySql --version 2.1.1
 
 D:\myproject\ChuXinEdu.CMS.Server> dotnet add package AutoMapper --version 7.0.1
