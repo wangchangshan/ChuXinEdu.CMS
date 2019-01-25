@@ -189,7 +189,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                                     && s.CoursePeriod == caInfo.PeriodName
                                                                                     && s.CourseWeekDay == caInfo.DayCode)
                                                                         .FirstOrDefault();
-                        if(arrangeExisted != null)
+                        if (arrangeExisted != null)
                         {
                             _logger.LogWarning("当前学生（{0}）已经在此时间段（{1} {2}）安排了课程，不能重复添加。", student.StudentName, caInfo.DayCode, caInfo.PeriodName);
                             continue;
@@ -460,7 +460,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                     // 1. 删除学生课程表内排课记录
                     var studentCourse = context.StudentCourseList.FirstOrDefault(s => s.StudentCourseId == studentCourseId);
-                    if(studentCourse == null)
+                    if (studentCourse == null)
                     {
                         return result;
                     }
@@ -598,7 +598,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     List<StudentCourseList> studentcourseList = context.StudentCourseList.Where(s => s.CourseDate == holiday.HolidayDate
                                                                                                     && s.AttendanceStatusCode == "09")
                                                                                         .ToList();
-                    string arrangeGuid = string.Empty;    
+                    string arrangeGuid = string.Empty;
                     foreach (var course in studentcourseList)
                     {
                         arrangeGuid = course.ArrangeGuid;
@@ -694,7 +694,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     var scl = context.StudentCourseList.Where(s => s.CourseDate == theDay
                                                                    && s.AttendanceStatusCode == "03")
                                                         .ToList();
-                    string arrangeGuid = string.Empty;     
+                    string arrangeGuid = string.Empty;
                     foreach (var course in scl)
                     {
                         arrangeGuid = course.ArrangeGuid;
@@ -862,7 +862,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     else  //正式
                     {
                         // 2.2.1 课程安排表信息      
-                        int studentCoursePackageId = scl.StudentCoursePackageId;                  
+                        int studentCoursePackageId = scl.StudentCoursePackageId;
                         var sca = context.StudentCourseArrange.Where(s => s.ArrangeGuid == arrangeGuid).FirstOrDefault();
                         if (sca == null)
                         {
@@ -1868,6 +1868,114 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+
+        #region arrange template 
+        public string AddArrangeTemplate(string templateCode, string templateName, string templateEnabled, List<SysCourseArrangeTemplateDetail> details)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    SysCourseArrangeTemplate template = new SysCourseArrangeTemplate
+                    {
+                        ArrangeTemplateCode = templateCode,
+                        ArrangeTemplateName = templateName,
+                        TemplateEnabled = templateEnabled,
+                        CreateTime = DateTime.Now
+                    };
+
+                    context.SysCourseArrangeTemplate.Add(template);
+
+                    foreach (var detail in details)
+                    {
+                        detail.ArrangeTemplateCode = templateCode;
+                        context.SysCourseArrangeTemplateDetail.Add(detail);
+                    }
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加排课模板出错");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string UpdateArrangeTemplate(string templateCode, string templateName, string templateEnabled, List<SysCourseArrangeTemplateDetail> details)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    SysCourseArrangeTemplate template = context.SysCourseArrangeTemplate.FirstOrDefault(t => t.ArrangeTemplateCode == templateCode);
+                    if (template != null)
+                    {
+                        template.ArrangeTemplateName = templateName;
+                        template.TemplateEnabled = templateEnabled;
+
+                        var templateDetails = context.SysCourseArrangeTemplateDetail.Where(t => t.ArrangeTemplateCode == templateCode).ToList();
+                        foreach (var item in templateDetails)
+                        {
+                            context.Remove(item);
+                        }
+
+                        foreach (var detail in details)
+                        {
+                            context.SysCourseArrangeTemplateDetail.Add(detail);
+                        }
+
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加排课模板出错");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string RemoveArrangeTemplate(string templateCode)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    int count = context.StudentCourseArrange.Where(s => s.ArrangeTemplateCode == templateCode).Count();
+                    if (count == 0)
+                    {
+                        SysCourseArrangeTemplate template = context.SysCourseArrangeTemplate.FirstOrDefault(t => t.ArrangeTemplateCode == templateCode);
+                        if (template != null)
+                        {
+                            context.Remove(template);
+
+                            var templateDetails = context.SysCourseArrangeTemplateDetail.Where(t => t.ArrangeTemplateCode == templateCode).ToList();
+                            foreach (var item in templateDetails)
+                            {
+                                context.Remove(item);
+                            }
+                            context.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        result = "1600";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加排课模板出错");
+                result = "1500";
+            }
+            return result;
+        }
+        #endregion
 
         #region 脏数据处理
         public string ClearDirtyForPackage(int id)

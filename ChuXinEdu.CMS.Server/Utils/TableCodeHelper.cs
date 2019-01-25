@@ -34,6 +34,12 @@ namespace ChuXinEdu.CMS.Server.Utils
                     length = 6;
                     break;
                 }
+                case "sys_course_arrange_template":
+                {
+                    perfix = "AT-";
+                    length = 3;
+                    break;
+                }
             }
 
             using (BaseContext context = new BaseContext())

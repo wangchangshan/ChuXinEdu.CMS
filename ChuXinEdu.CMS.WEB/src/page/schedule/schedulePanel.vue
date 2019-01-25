@@ -40,6 +40,16 @@
                 <p class="title">其他操作</p>
                 <ul class="side-button-group">
                     <li>
+                        <el-select v-model="curArrangeTemplateCode" placeholder="请选择" size="mini">
+                            <el-option
+                                v-for="item in arrangeTemplateOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </li>
+                    <li>
                         <el-button plain icon="el-icon-refresh" type="success" size="mini" @click="refreshAll()">全部刷新</el-button>
                     </li>
                     <li>
@@ -372,6 +382,8 @@ export default {
                     }
                 }
             },
+            curArrangeTemplateCode: '',
+            arrangeTemplateOptions:[],
             courseOptions: [{
                 value: 'meishu',
                 label: '美术',
@@ -396,22 +408,56 @@ export default {
         };
     },
     created() {
-        this.getTemplatePeriod();
-        this.holidaysInit();
+        axios({
+                type: 'get',
+                path: '/api/arrangetemplate/getarrangetemplates',
+                fn: result => {
+                    this.arrangeTemplateOptions = [];
+                    result.forEach((item) => {
+                        if(item.templateEnabled == 'Y') {
+                            this.arrangeTemplateOptions.push({
+                                value: item.arrangeTemplateCode,
+                                label: item.arrangeTemplateName
+                            });
+                        }                        
+                    });
+                    if(this.arrangeTemplateOptions.length > 0){
+                        this.curArrangeTemplateCode = this.arrangeTemplateOptions[0].value;                        
+                        this.getTemplatePeriod();
+                        this.holidaysInit();
+                    }
+                    else{
+                        this.$message({
+                            type: 'warning',
+                            message: '没有可用的排课模板，请先在系统管理中添加排课模板！'
+                        });
+                    }
+                }
+            })
+    },
+    watch: {
+        'curArrangeTemplateCode'(curVal,oldVal){
+            if(oldVal != ''){
+                this.getTemplatePeriod();
+            }
+        },
     },
     methods: {
 
         // 排课模板展示信息
         getTemplatePeriod() {
-            var templateCode = 'at-001';
             axios({
                 type: 'get',
                 path: '/api/coursearrange/getcoursearranged',
                 data: {
-                    templateCode: templateCode,
+                    templateCode: this.curArrangeTemplateCode,
                     roomCode: this.roomCode
                 },
                 fn: result => {
+                    for (let day of this.coursePeriods) {
+                        day.activePeriods = [];
+                        day.periods = [];
+                    }
                     result.forEach((item) => {
                         // 构造coursePeriods数据
                         for (let day of this.coursePeriods) {
@@ -435,24 +481,22 @@ export default {
 
         // 刷新时间段内的排课信息
         refreshPeriodInfo(dayCode, periodName) {
-            var _this = this;
-            var templateCode = 'at-001';
             axios({
                 type: 'get',
                 path: '/api/coursearrange/getarrangedinfobyperiod',
                 data: {
-                    templateCode: templateCode,
-                    roomCode: _this.roomCode,
+                    templateCode: this.curArrangeTemplateCode,
+                    roomCode: this.roomCode,
                     dayCode: dayCode,
                     periodName: periodName
                 },
-                fn: function (result) {
+                fn: result => {
                     let count = 0;
                     result.forEach(item => {
                         item.isThisWeek == 'Y' ? count++ : '';
                     });
                     // 构建局部数据
-                    for (let day of _this.coursePeriods) {
+                    for (let day of this.coursePeriods) {
                         if (day.dayCode === dayCode) {
                             for (let p of day.periods) {
                                 if (p.periodName === periodName) {
@@ -523,7 +567,7 @@ export default {
                 return;
             }
             var caInfo_shiting = {
-                'templateCode': 'at-001',
+                'templateCode': this.curArrangeTemplateCode,
                 'roomCode': this.roomCode,
                 'DayCode': this.selectShiTingDialog.curDayCode,
                 'PeriodName': this.selectShiTingDialog.curPeriodName,
@@ -616,7 +660,7 @@ export default {
                 return;
             }
             var caInfo = {
-                'templateCode': 'at-001',
+                'templateCode': this.curArrangeTemplateCode,
                 'roomCode': this.roomCode,
                 'DayCode': this.selectZhengShiDialog.curDayCode,
                 'PeriodName': this.selectZhengShiDialog.curPeriodName,

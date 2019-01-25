@@ -7,9 +7,11 @@
             </el-table-column>
             <el-table-column prop="arrangeTemplateCode" label="模板代码" align='center' min-width="150">
             </el-table-column>
+            <el-table-column prop="templateEnabled" label="是否启用" align='center' min-width="150">
+            </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="125">
                 <template slot-scope='scope'>
-                    <el-button type="primary" icon='edit' size="small" @click='templateManage(scope.row.arrangeTemplateCode)'>管 理</el-button>
+                    <el-button type="primary" icon='edit' size="small" @click='templateManage(scope.row)'>管 理</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -19,7 +21,21 @@
     </div>
 
     <el-dialog :title="templateDialog.title" :visible.sync="templateDialog.isShow" :width="templateDialog.width" :close-on-press-escape='false' :modal-append-to-body="false">
-        <el-table :data="templateDialog.periodList" size="mini" align="left" border stripe height="480px">
+        <el-form :inline="true" ref="templateBase" :model="templateDialog" :rules="templateDialog.templateDialogRules" class="demo-form-inline" size="mini" label-suffix='：' style="margin-right:20px">
+            <el-form-item prop="templateName" label="模板名称">
+                <el-input v-model="templateDialog.templateName"></el-input>
+            </el-form-item>
+            <el-form-item label="是否启用">
+                <el-switch
+                    v-model="templateDialog.templateEnabled"
+                    active-color="#13ce66"
+                    active-value="Y"
+                    inactive-value="N">
+                </el-switch>
+
+            </el-form-item>
+        </el-form>
+        <el-table :data="templateDialog.periodList" size="mini" align="left" border stripe :max-height="templateDialog.height">
             <el-table-column property="dayName" label="星期" align='center' width="120">
             </el-table-column>
             <el-table-column property="coursePeriod" label="课程时间段" align='left'>
@@ -51,8 +67,9 @@
             </el-table-column>
         </el-table>
         <div class="footer_container" style="text-align:center;margin-top:10px">
-            <el-button size="small" @click="templateDialog.isShow = false">取 消</el-button>
-            <el-button v-noRepeatClick size="small" type="primary" @click="btnSubmit()">确 定</el-button>
+            <el-button size="small" @click="resetForm('templateBase')">取 消</el-button>
+            <el-button v-if="templateDialog.type == 'edit'" v-noRepeatClick size="small" type="danger" @click="btnDelEvent()">删 除</el-button>
+            <el-button v-noRepeatClick size="small" type="primary" @click="btnSubmitEvent('templateBase')">确 定</el-button>
         </div>
     </el-dialog>
 </div>
@@ -73,10 +90,20 @@ export default {
             curRoleCode: '',
             templateDialog: {
                 width: '600px',
+                height: 400,
                 isShow: false,
                 title: '模板信息',
+                templateName: '',
+                templateEnabled: 'Y',
                 type: 'edit',
                 templateCode: '',
+                templateDialogRules: {
+                    templateName: [{
+                        required: true,
+                        message: '请填写排课模板名称',
+                        trigger: 'blur'
+                    }],
+                },
                 periodList: [{
                     dayCode: 'day1',
                     dayName: '星期一',
@@ -152,7 +179,7 @@ export default {
             this.loading = true;
             axios({
                 type: 'get',
-                path: '/api/config/getarrangetemplates',
+                path: '/api/arrangetemplate/getarrangetemplates',
                 fn: result => {
                     this.templateList = result;
                     this.loading = false;
@@ -160,17 +187,25 @@ export default {
             });
         },
 
-        templateManage(templateCode) {
+        resetForm(form){
+            this.$refs[form].resetFields();
+            this.templateDialog.templateName = '';
+            this.templateDialog.isShow = false;
+        },
+
+        templateManage(row) {
             this.templateDialog.type = 'edit';
-            this.templateDialog.templateCode = templateCode;
+            this.templateDialog.templateCode = row.arrangeTemplateCode;
+            this.templateDialog.templateName = row.arrangeTemplateName;
+            this.templateDialog.templateEnabled = row.templateEnabled;
             this.templateDialog.isShow = true;
-            this.getTemplateDetail(templateCode);
+            this.getTemplateDetail(row.arrangeTemplateCode);
         },
 
         getTemplateDetail(templateCode) {
             axios({
                 type: 'get',
-                path: '/api/config/getarrangetemplatedetail/' + templateCode,
+                path: '/api/arrangetemplate/getarrangetemplatedetail/' + templateCode,
                 fn: result => {
                     for (let i = 0; i < 7; i++) {
                         this.templateDialog.periodList[i].coursePeriod = [];
@@ -218,35 +253,99 @@ export default {
                 }];
             }
             this.templateDialog.templateCode = '';
+            this.templateDialog.templateName = '';
+            this.templateDialog.templateEnabled = 'Y';
             this.templateDialog.type = 'add';
             this.templateDialog.isShow = true;
         },
 
-        btnSubmit() {
+        btnSubmitEvent(form) {
+            this.$refs[form].validate((valid) => {
+                if (valid) {
+                    this.templateSubmit();
+                }
+            });
+        },
+
+        btnDelEvent() {
+            this.$confirm('确定删除这个排课模板吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                axios({
+                    type: 'delete',
+                    path: '/api/arrangetemplate/deltemplate/' + this.templateDialog.templateCode,
+                    fn: result => {
+                        if (result === 1200) {
+                            this.getTemplateList();
+                            this.$message({
+                                message: '删除成功！',
+                                type: 'success'
+                            });
+                            this.templateDialog.isShow = false;
+                        }
+                        else if(result === 1600 ){
+                            this.$message({
+                                message: '当前模板正在使用，不能直接删除！',
+                                type: 'warning'
+                            });
+                        }
+                        else
+                        {
+                            this.$message({
+                                message: '删除排课模板失败！',
+                                type: 'error'
+                            });
+                        }
+                    }
+                });
+            }).catch(() => {
+                //
+            });
+        },
+
+        templateSubmit(){
             let listTemplateDetails = [];
             let templateCode = this.templateDialog.templateCode;
             for (let i = 0; i < 7; i++) {
                 let dayCode = this.templateDialog.periodList[i].dayCode;
                 this.templateDialog.periodList[i].coursePeriod.forEach(item => {
-                    listTemplateDetails.push({
-                        arrangeTemplateCode: templateCode,
-                        coursePeriod: item.startTime + '-' + item.endTime,
-                        courseWeekDay: dayCode
-                    });
+                    if(item.startTime && item.endTime){
+                        listTemplateDetails.push({
+                            arrangeTemplateCode: templateCode,
+                            coursePeriod: item.startTime + '-' + item.endTime,
+                            courseWeekDay: dayCode
+                        });
+                    }
                 })
+            }
+
+            let template = {
+                templateCode: templateCode,
+                templateName: this.templateDialog.templateName,
+                templateEnabled: this.templateDialog.templateEnabled,
+                details: listTemplateDetails
             }
             if (this.templateDialog.type == 'add') {
                 axios({
                     type: 'post',
                     path: '/api/arrangetemplate/addnewtemplate',
-                    data: listTemplateDetails,
+                    data: template,
                     fn: result => {
                         if (result === 1200) {
+                            this.getTemplateList();
                             this.$message({
                                 message: '添加排课模板成功',
                                 type: 'success'
                             });
                             this.templateDialog.isShow = false;
+                        }
+                        else{
+                            this.$message({
+                                message: '添加排课模板失败',
+                                type: 'error'
+                            });
                         }
                     }
                 });
@@ -254,9 +353,10 @@ export default {
                 axios({
                     type: 'post',
                     path: '/api/arrangetemplate/updatetemplate',
-                    data: listTemplateDetails,
+                    data: template,
                     fn: result => {
                         if (result === 1200) {
+                            this.getTemplateList();
                             this.$message({
                                 message: '更新排课模板成功',
                                 type: 'success'
@@ -268,7 +368,7 @@ export default {
             } else {
                 this.$message({
                     message: '无法添加或更新排课模板，请联系系统管理人员',
-                    type: 'warning'                  
+                    type: 'warning'
                 });
             }
         },

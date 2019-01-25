@@ -61,7 +61,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                var templates = context.SysCourseArrangeTemplate.Where(t => t.TemplateEnabled == "Y").ToList();
+                var templates = context.SysCourseArrangeTemplate.ToList();
 
                 return templates;
             }
