@@ -438,6 +438,7 @@ export default {
     watch: {
         'curArrangeTemplateCode'(curVal,oldVal){
             if(oldVal != ''){
+                this.coursePeriodsLoading = true;
                 this.getTemplatePeriod();
             }
         },

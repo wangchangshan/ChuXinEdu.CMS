@@ -49,13 +49,19 @@
         <div class="form">
             <el-form :inline="true" size="mini" class="demo-form-inline">
                 <el-form-item label="">
-                    <el-select placeholder="请选择套餐" v-model="supplementDialog.curPackageId" @change="pacakgeChanged" size='mini' style="width:360px">
+                    <el-select placeholder="请选择套餐" v-model="supplementDialog.curPackageId" @change="pacakgeChanged" size='mini' style="width:320px">
                         <el-option v-for="item in supplementDialog.packageList" :key="item.id" :label="item.packageName" :value="item.id">
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="剩余课时数：">
                     {{ supplementDialog.selectedPackage.flexCourseCount || 0 }} 节
+                </el-form-item>
+                <el-form-item label="">
+                    <el-select placeholder="请选择排课模板" v-model="supplementDialog.curATCode" @change="atChanged" size='mini' style="width:300px">
+                        <el-option v-for="item in supplementDialog.atList" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
             </el-form>
             <el-table :data="supplementDialog.newCourseList" size="mini" align="left" border stripe :max-height="supplementDialog.tableHeight">
@@ -67,7 +73,7 @@
                 </el-table-column>
                 <el-table-column prop="coursePeriod" label="时间段" align='center' min-width="130">
                     <template slot-scope='scope'>
-                        <el-select v-model="scope.row.coursePeriod" placeholder="选择时间段" size='mini'>
+                        <el-select v-model="scope.row.coursePeriod" placeholder="选择时间段" :clearable='true' size='mini'>
                             <el-option v-for="item in coursePeriodList[scope.row.courseWeekDay]" :key="item" :label="item" :value="item">
                             </el-option>
                         </el-select>
@@ -185,6 +191,8 @@ export default {
                 formLabelWidth: '120px',
                 packageList: [],
                 curPackageId: '',
+                atList: [],
+                curATCode: '',
                 selectedPackage: {
 
                 },
@@ -533,24 +541,62 @@ export default {
                         });
                     } else {
                         this.supplementDialog.isShow = true;
-                        if (this.coursePeriodList['day1'].length == 0) {
-                            this.getPeriodList();
-                        }
+                        this.getArrangeTemplateList()
                     }
                 }
             });
         },
+
+        getArrangeTemplateList(){
+            // 获取排课模板
+            axios({
+                type: 'get',
+                path: '/api/arrangetemplate/getarrangetemplates',
+                fn: result => {
+                    this.supplementDialog.atList = [];
+                    result.forEach((item) => {
+                        if(item.templateEnabled == 'Y') {
+                            this.supplementDialog.atList.push({
+                                value: item.arrangeTemplateCode,
+                                label: item.arrangeTemplateName
+                            });
+                        }                        
+                    });
+                    if(this.supplementDialog.atList.length > 0){
+                        this.supplementDialog.curATCode = this.supplementDialog.atList[0].value;
+                        if (this.coursePeriodList['day1'].length == 0) {
+                            this.getPeriodList();
+                        }
+                    }
+                    else{
+                        this.$message({
+                            type: 'warning',
+                            message: '没有可用的排课模板，请先在系统管理中添加排课模板！'
+                        });
+                    }
+                }
+            })
+        },
+
         getPeriodList() {
             axios({
                 type: 'get',
-                path: '/api/coursearrange/getpriodlist/at-001',
+                path: '/api/coursearrange/getpriodlist/' + this.supplementDialog.curATCode,
                 fn: (result) => {
+                    for(let i= 1; i <= 7; i ++){
+                        this.coursePeriodList['day' + i] = [];
+                    }
                     result.forEach(item => {
                         this.coursePeriodList[item.courseWeekDay].push(item.coursePeriod);
                     });
                 }
             });
         },
+
+        atChanged(){
+            this.getPeriodList();
+        },
+
         pacakgeChanged(selectedValue) {
             for (let p of this.supplementDialog.packageList) {
                 if (p.id == selectedValue) {
@@ -567,7 +613,7 @@ export default {
             this.supplementDialog.firstCourse = {
                 index: new Date().getTime(),
                 studentCoursePackageId: this.supplementDialog.selectedPackage.id,
-                arrangeTemplateCode: 'at-001',
+                arrangeTemplateCode: this.supplementDialog.curATCode,
                 classroom: 'room1',
                 courseWeekDay: '',
                 courseDate: '',
@@ -592,7 +638,7 @@ export default {
             this.supplementDialog.newCourseList.push({
                 index: new Date().getTime(),
                 studentCoursePackageId: this.supplementDialog.selectedPackage.id,
-                arrangeTemplateCode: 'at-001',
+                arrangeTemplateCode: this.supplementDialog.curATCode,
                 classroom: 'room1',
                 courseWeekDay: '',
                 courseDate: this.previousCourseDate,
@@ -616,6 +662,13 @@ export default {
             }
         },
         removeLine(index) {
+            if(this.supplementDialog.newCourseList.length == 1) {
+                this.$message({
+                    type: "warning",
+                    message: "请至少保留一条记录！"
+                })
+                return;
+            }
             let removedIndex = -1;
             for (let i = 0; i < this.supplementDialog.newCourseList.length; i++) {
                 if (this.supplementDialog.newCourseList[i].index == index) {

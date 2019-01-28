@@ -1914,17 +1914,24 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     if (template != null)
                     {
                         template.ArrangeTemplateName = templateName;
-                        template.TemplateEnabled = templateEnabled;
-
-                        var templateDetails = context.SysCourseArrangeTemplateDetail.Where(t => t.ArrangeTemplateCode == templateCode).ToList();
-                        foreach (var item in templateDetails)
+                        int arrangeCount = context.StudentCourseArrange.Count(s => s.ArrangeTemplateCode == templateCode);
+                        if (arrangeCount == 0)
                         {
-                            context.Remove(item);
+                            template.TemplateEnabled = templateEnabled;
+                            var templateDetails = context.SysCourseArrangeTemplateDetail.Where(t => t.ArrangeTemplateCode == templateCode).ToList();
+                            foreach (var item in templateDetails)
+                            {
+                                context.Remove(item);
+                            }
+
+                            foreach (var detail in details)
+                            {
+                                context.SysCourseArrangeTemplateDetail.Add(detail);
+                            }
                         }
-
-                        foreach (var detail in details)
-                        {
-                            context.SysCourseArrangeTemplateDetail.Add(detail);
+                        else
+                        { 
+                            result = "1600";
                         }
 
                         context.SaveChanges();

@@ -363,6 +363,19 @@ export default {
                             });
                             this.templateDialog.isShow = false;
                         }
+                        else if (result === 1600) {
+                            this.getTemplateList();
+                            this.$message({
+                                message: '当前排课模板下已经安排了学员，只能修改模板名称！',
+                                type: 'warning'
+                            });
+                        }
+                        else{
+                            this.$message({
+                                message: '更新排课模板失败',
+                                type: 'error'
+                            });
+                        }
                     }
                 });
             } else {
