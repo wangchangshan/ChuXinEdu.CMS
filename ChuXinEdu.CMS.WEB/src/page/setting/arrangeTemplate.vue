@@ -68,7 +68,7 @@
         </el-table>
         <div class="footer_container" style="text-align:center;margin-top:10px">
             <el-button size="small" @click="resetForm('templateBase')">取 消</el-button>
-            <el-button v-if="templateDialog.type == 'edit'" v-noRepeatClick size="small" type="danger" @click="btnDelEvent()">删 除</el-button>
+            <el-button v-if="templateDialog.panelType == 'edit'" v-noRepeatClick size="small" type="danger" @click="btnDelEvent()">删 除</el-button>
             <el-button v-noRepeatClick size="small" type="primary" @click="btnSubmitEvent('templateBase')">确 定</el-button>
         </div>
     </el-dialog>
@@ -95,7 +95,7 @@ export default {
                 title: '模板信息',
                 templateName: '',
                 templateEnabled: 'Y',
-                type: 'edit',
+                panelType: 'edit',
                 templateCode: '',
                 templateDialogRules: {
                     templateName: [{
@@ -194,7 +194,7 @@ export default {
         },
 
         templateManage(row) {
-            this.templateDialog.type = 'edit';
+            this.templateDialog.panelType = 'edit';
             this.templateDialog.templateCode = row.arrangeTemplateCode;
             this.templateDialog.templateName = row.arrangeTemplateName;
             this.templateDialog.templateEnabled = row.templateEnabled;
@@ -255,7 +255,7 @@ export default {
             this.templateDialog.templateCode = '';
             this.templateDialog.templateName = '';
             this.templateDialog.templateEnabled = 'Y';
-            this.templateDialog.type = 'add';
+            this.templateDialog.panelType = 'add';
             this.templateDialog.isShow = true;
         },
 
@@ -268,7 +268,7 @@ export default {
         },
 
         btnDelEvent() {
-            this.$confirm('确定删除这个排课模板吗?', '提示', {
+            this.$confirm('确定删除当前排课模板吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -327,7 +327,7 @@ export default {
                 templateEnabled: this.templateDialog.templateEnabled,
                 details: listTemplateDetails
             }
-            if (this.templateDialog.type == 'add') {
+            if (this.templateDialog.panelType == 'add') {
                 axios({
                     type: 'post',
                     path: '/api/arrangetemplate/addnewtemplate',
@@ -349,7 +349,7 @@ export default {
                         }
                     }
                 });
-            } else if (this.templateDialog.type == 'edit') {
+            } else if (this.templateDialog.panelType == 'edit') {
                 axios({
                     type: 'post',
                     path: '/api/arrangetemplate/updatetemplate',

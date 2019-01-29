@@ -1977,7 +1977,31 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "添加排课模板出错");
+                _logger.LogError(ex, "删除排课模板出错");
+                result = "1500";
+            }
+            return result;
+        }
+        #endregion
+
+        #region 字典数据
+        public string AddNewDic(List<SysDictionary> dicList)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    foreach (var dic in dicList)
+                    {
+                        context.SysDictionary.Add(dic);                        
+                    }
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加字典出错");
                 result = "1500";
             }
             return result;

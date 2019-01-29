@@ -18,5 +18,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         IEnumerable<StudentCourseArrange> GetArrangeDirty();
         
         IEnumerable<StudentCoursePackage> GetPackageDirty();
+
+        IEnumerable<SysDictionary> GetDictionarys();
     }
 }

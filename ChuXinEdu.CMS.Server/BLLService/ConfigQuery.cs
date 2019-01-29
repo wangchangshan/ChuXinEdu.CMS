@@ -37,6 +37,15 @@ namespace ChuXinEdu.CMS.Server.BLLService
 			}
         }
 
+        public IEnumerable<SysDictionary> GetDictionarys()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var dics = context.SysDictionary.ToList();
+                return dics;
+            }
+        }
+
         public IEnumerable<StudentCourseArrange> GetArrangeDirty()
         {
             using (BaseContext context = new BaseContext())
