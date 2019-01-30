@@ -41,7 +41,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                var dics = context.SysDictionary.ToList();
+                var dics = context.SysDictionary.OrderBy(s => s.Id)
+                                                .ToList();
                 return dics;
             }
         }

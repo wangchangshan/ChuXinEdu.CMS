@@ -1992,9 +1992,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    foreach (var dic in dicList)
+                    int typeCount = context.SysDictionary.Count( s => s.TypeCode == dicList[0].TypeCode);
+                    if(typeCount > 0)
                     {
-                        context.SysDictionary.Add(dic);                        
+                        result = "1600";
+                    }
+                    else
+                    {
+                        foreach (var dic in dicList)
+                        {
+                            context.SysDictionary.Add(dic);
+                        }
                     }
                     context.SaveChanges();
                 }
@@ -2002,6 +2010,56 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "添加字典出错");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string UpdateDic(List<SysDictionary> dicList)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var dics = context.SysDictionary.Where(s => s.TypeCode == dicList[0].TypeCode).ToList();
+                    foreach (var dic in dics)
+                    {
+                        context.Remove(dic);
+                    }
+                    foreach (var dic in dicList)
+                    {
+                        context.SysDictionary.Add(dic);
+                    }
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "修改字典出错");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string RemoveDic(string typeCode)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var dics = context.SysDictionary.Where(s => s.TypeCode == typeCode).ToList();
+                    foreach (var dic in dics)
+                    {
+                        context.Remove(dic);
+                    }
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "删除字典出错");
                 result = "1500";
             }
             return result;

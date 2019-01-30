@@ -73,7 +73,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 添加新模板 POST api/arrangetemplate/updatetemplate
+        /// 更新模板 POST api/arrangetemplate/updatetemplate
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -91,7 +91,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 添加新模板 Delete api/arrangetemplate/deltemplate
+        /// 删除模板 Delete api/arrangetemplate/deltemplate
         /// </summary>
         /// <returns></returns>
         [HttpDelete("{templateCode}")]

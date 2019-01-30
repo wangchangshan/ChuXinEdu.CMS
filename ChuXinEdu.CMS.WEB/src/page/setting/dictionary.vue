@@ -39,6 +39,11 @@
                     <el-input size="mini" v-model="scope.row.itemCode"></el-input>
                 </template>
             </el-table-column>
+            <el-table-column property="itemSortWeight" label="排序" align='left'>
+                <template slot-scope='scope'>
+                    <el-input size="mini" v-model="scope.row.itemSortWeight"></el-input>
+                </template>
+            </el-table-column>
             <el-table-column label="启用？" align='center' width="90">
                 <template slot-scope='scope'>
                     <el-switch v-model="scope.row.itemEnabled" active-color="#13ce66" active-value="Y" inactive-value="N">
@@ -87,6 +92,7 @@ export default {
                     id: Math.random().toString(),
                     itemCode: '',
                     itemName: '',
+                    itemSortWeight: '',
                     itemEnabled: 'Y'
                 }],
                 typeCode: '',
@@ -116,6 +122,7 @@ export default {
                 path: '/api/dictionary/getdictionarys',
                 fn: result => {
                     this.allDicList = result;
+                    this.dicTypeList = [];
                     let types = [];
                     result.forEach(item => {
                         if (types.indexOf(item.typeCode) == -1) {
@@ -152,6 +159,7 @@ export default {
                 id: Math.random().toString(),
                 itemCode: '',
                 itemName: '',
+                itemSortWeight: '',
                 itemEnabled: 'Y'
             })
         },
@@ -176,6 +184,7 @@ export default {
                     id: Math.random().toString(),
                     itemCode: '',
                     itemName: '',
+                    itemSortWeight: '',
                     itemEnabled: 'Y'
                 }]
         },
@@ -190,18 +199,29 @@ export default {
 
         templateSubmit() {
             let listDicItems = [];
+            let listItemCodes = [];
             let typeCode = this.dicItemDialog.typeCode;
             let typeName = this.dicItemDialog.typeName;
-            this.dicItemDialog.itemList.forEach(item => {
+
+            for(let item of this.dicItemDialog.itemList) {
+                if(listItemCodes.indexOf(item.itemCode) > -1) {
+                    this.$message({
+                        message: '字典编码重复，请修改后重新提交',
+                        type: 'error'
+                    });
+                    return;
+                }
+                listItemCodes.push(item.itemCode);
                 listDicItems.push({
                     typeCode: typeCode,
                     typeName: typeName,
                     itemCode: item.itemCode,
                     itemName: item.itemName,
                     isParent: 'N',
+                    itemSortWeight: item.itemSortWeight,
                     itemEnabled: item.itemEnabled
                 });
-            });
+            }
 
             if (this.dicItemDialog.panelType == 'add') {
                 axios({
@@ -216,7 +236,14 @@ export default {
                                 type: 'success'
                             });
                             this.dicItemDialog.isShow = false;
-                        } else {
+                        }
+                        else if(result === 1600) {
+                            this.$message({
+                                message: '字典类别编码重复，请修改后重新提交',
+                                type: 'error'
+                            });
+                        }
+                        else {
                             this.$message({
                                 message: '添加字典失败',
                                 type: 'error'
@@ -227,23 +254,24 @@ export default {
             } else if (this.dicItemDialog.panelType == 'edit') {
                 axios({
                     type: 'post',
-                    path: '/api/arrangetemplate/updatetemplate',
-                    data: template,
+                    path: '/api/dictionary/updatedic',
+                    data: listDicItems,
                     fn: result => {
                         if (result === 1200) {
                             this.getDicList();
                             this.$message({
-                                message: '更新排课模板成功',
+                                message: '更新字典成功',
                                 type: 'success'
                             });
                             this.dicItemDialog.isShow = false;
-                        } else if (result === 1600) {
-                            this.getDicList();
+                        }
+                        else if (result === 1401) {
                             this.$message({
-                                message: '当前排课模板下已经安排了学员，只能修改模板名称！',
+                                message: '您没有权限修改字典项，请联系系统管理员',
                                 type: 'warning'
                             });
-                        } else {
+                        } 
+                        else {
                             this.$message({
                                 message: '更新排课模板失败',
                                 type: 'error'
@@ -253,7 +281,7 @@ export default {
                 });
             } else {
                 this.$message({
-                    message: '无法添加或更新排课模板，请联系系统管理人员',
+                    message: '无法添加或更新字典，请联系系统管理人员',
                     type: 'warning'
                 });
             }
@@ -267,7 +295,7 @@ export default {
             }).then(() => {
                 axios({
                     type: 'delete',
-                    path: '/api/arrangetemplate/deltemplate/' + this.dicItemDialog.typeCode,
+                    path: '/api/dictionary/deldic/' + this.dicItemDialog.typeCode,
                     fn: result => {
                         if (result === 1200) {
                             this.getDicList();
@@ -276,14 +304,14 @@ export default {
                                 type: 'success'
                             });
                             this.dicItemDialog.isShow = false;
-                        } else if (result === 1600) {
+                        } else if (result === 1401) {
                             this.$message({
-                                message: '当前模板正在使用，不能直接删除！',
+                                message: '您没有权限删除字典项，请联系系统管理员',
                                 type: 'warning'
                             });
                         } else {
                             this.$message({
-                                message: '删除排课模板失败！',
+                                message: '删除字典失败！',
                                 type: 'error'
                             });
                         }

@@ -57,9 +57,17 @@
                 <el-form-item label="剩余课时数：">
                     {{ supplementDialog.selectedPackage.flexCourseCount || 0 }} 节
                 </el-form-item>
+            </el-form>
+            <el-form :inline="true" size="mini" class="demo-form-inline">
                 <el-form-item label="">
-                    <el-select placeholder="请选择排课模板" v-model="supplementDialog.curATCode" @change="atChanged" size='mini' style="width:300px">
+                    <el-select placeholder="请选择排课模板" v-model="supplementDialog.curATCode" @change="atChanged" size='mini' style="width:320px">
                         <el-option v-for="item in supplementDialog.atList" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="">
+                    <el-select placeholder="请选择班级/机构" v-model="supplementDialog.curClassroom" size='mini' style="width:300px">
+                        <el-option v-for="item in supplementDialog.classroomList" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -169,7 +177,7 @@ export default {
         return {
             studentName: '',
             courseList: [],
-            filteredCourseList:[],
+            filteredCourseList: [],
             badges: {
                 all: 0,
                 meishu: 0,
@@ -193,6 +201,8 @@ export default {
                 curPackageId: '',
                 atList: [],
                 curATCode: '',
+                classroomList: [],
+                curClassroom: '',
                 selectedPackage: {
 
                 },
@@ -246,8 +256,8 @@ export default {
             }
         }
     },
-    watch:{
-        'curCourseCategory'(cur){
+    watch: {
+        'curCourseCategory'(cur) {
             this.filteredCourseList = this.courseList.filter(item => this.curCourseCategory == 'all' || item.courseCategoryCode == cur);
             this.getRowSpanInfo();
         }
@@ -429,7 +439,7 @@ export default {
         },
 
         removeCourse(row) {
-            this.$confirm('是否确定删除该节课程['+ row.courseDate +': ' + row.coursePeriod + ']？', '提示', {
+            this.$confirm('是否确定删除该节课程[' + row.courseDate + ': ' + row.coursePeriod + ']？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -441,7 +451,7 @@ export default {
                         courseId: row.studentCourseId
                     },
                     fn: result => {
-                        if(result == 1200){
+                        if (result == 1200) {
                             this.getHistoryCourseList();
                         }
                     }
@@ -541,41 +551,59 @@ export default {
                         });
                     } else {
                         this.supplementDialog.isShow = true;
-                        this.getArrangeTemplateList()
+                        this.getArrangeTemplateList();
+                        this.getClassroom();
                     }
                 }
             });
         },
 
-        getArrangeTemplateList(){
-            // 获取排课模板
-            axios({
-                type: 'get',
-                path: '/api/arrangetemplate/getarrangetemplates',
-                fn: result => {
-                    this.supplementDialog.atList = [];
-                    result.forEach((item) => {
-                        if(item.templateEnabled == 'Y') {
-                            this.supplementDialog.atList.push({
-                                value: item.arrangeTemplateCode,
-                                label: item.arrangeTemplateName
+        getArrangeTemplateList() {
+            if (this.supplementDialog.atList.length == 0) {
+                axios({
+                    type: 'get',
+                    path: '/api/arrangetemplate/getarrangetemplates',
+                    fn: result => {
+                        this.supplementDialog.atList = [];
+                        result.forEach((item) => {
+                            if (item.templateEnabled == 'Y') {
+                                this.supplementDialog.atList.push({
+                                    value: item.arrangeTemplateCode,
+                                    label: item.arrangeTemplateName
+                                });
+                            }
+                        });
+                        if (this.supplementDialog.atList.length > 0) {
+                            this.supplementDialog.curATCode = this.supplementDialog.atList[0].value;
+                            if (this.coursePeriodList['day1'].length == 0) {
+                                this.getPeriodList();
+                            }
+                        } else {
+                            this.$message({
+                                type: 'warning',
+                                message: '没有可用的排课模板，请先在系统管理中添加排课模板！'
                             });
-                        }                        
-                    });
-                    if(this.supplementDialog.atList.length > 0){
-                        this.supplementDialog.curATCode = this.supplementDialog.atList[0].value;
-                        if (this.coursePeriodList['day1'].length == 0) {
-                            this.getPeriodList();
                         }
                     }
-                    else{
-                        this.$message({
-                            type: 'warning',
-                            message: '没有可用的排课模板，请先在系统管理中添加排课模板！'
-                        });
+                })
+            }
+
+        },
+
+        getClassroom() {
+            if (this.supplementDialog.classroomList.length == 0) {
+                axios({
+                    type: 'get',
+                    path: '/api/config/getdicbycode',
+                    data: {
+                        typeCode: 'classroom'
+                    },
+                    fn: result => {
+                        this.supplementDialog.classroomList = result;
+                        this.supplementDialog.curClassroom = result && result[0].value || '';
                     }
-                }
-            })
+                })
+            }
         },
 
         getPeriodList() {
@@ -583,7 +611,7 @@ export default {
                 type: 'get',
                 path: '/api/coursearrange/getpriodlist/' + this.supplementDialog.curATCode,
                 fn: (result) => {
-                    for(let i= 1; i <= 7; i ++){
+                    for (let i = 1; i <= 7; i++) {
                         this.coursePeriodList['day' + i] = [];
                     }
                     result.forEach(item => {
@@ -593,7 +621,7 @@ export default {
             });
         },
 
-        atChanged(){
+        atChanged() {
             this.getPeriodList();
         },
 
@@ -614,7 +642,7 @@ export default {
                 index: new Date().getTime(),
                 studentCoursePackageId: this.supplementDialog.selectedPackage.id,
                 arrangeTemplateCode: this.supplementDialog.curATCode,
-                classroom: 'room1',
+                classroom: this.supplementDialog.curClassroom,
                 courseWeekDay: '',
                 courseDate: '',
                 coursePeriod: '',
@@ -639,7 +667,7 @@ export default {
                 index: new Date().getTime(),
                 studentCoursePackageId: this.supplementDialog.selectedPackage.id,
                 arrangeTemplateCode: this.supplementDialog.curATCode,
-                classroom: 'room1',
+                classroom: this.supplementDialog.curClassroom,
                 courseWeekDay: '',
                 courseDate: this.previousCourseDate,
                 coursePeriod: this.supplementDialog.firstCourse.coursePeriod,
@@ -662,7 +690,7 @@ export default {
             }
         },
         removeLine(index) {
-            if(this.supplementDialog.newCourseList.length == 1) {
+            if (this.supplementDialog.newCourseList.length == 1) {
                 this.$message({
                     type: "warning",
                     message: "请至少保留一条记录！"
@@ -707,14 +735,12 @@ export default {
                         });
                         this.getHistoryCourseList();
                         this.supplementDialog.isShow = false;
-                    }
-                    else if(result == 1409){
+                    } else if (result == 1409) {
                         this.$message({
                             message: '课程套餐数据异常！！请检查数据！',
                             type: 'error'
                         });
-                    }
-                    else {
+                    } else {
                         this.$message({
                             message: '补录出错，请查看相关日志！',
                             type: 'error'
@@ -757,15 +783,15 @@ export default {
             let width = dom.offsetWidth;
 
             // clone dom
-            let cloneDom = dom.cloneNode(true);    
-            cloneDom.style.height = 'auto';                    
+            let cloneDom = dom.cloneNode(true);
+            cloneDom.style.height = 'auto';
             cloneDom.childNodes[2].style.height = 'auto';
             cloneDom.style.zIndex = "-1";
             document.body.appendChild(cloneDom);
             let height = cloneDom.offsetHeight;
 
             // create canvas
-            let canvas = document.createElement("canvas"); 
+            let canvas = document.createElement("canvas");
             let scale = 1.8; //定义比例
             canvas.width = width * scale; //定义canvas 宽度 * 缩放
             canvas.height = height * scale; //定义canvas高度 * 缩放
@@ -785,7 +811,7 @@ export default {
                 rotateAngle: -20 * Math.PI / 180, //水印字体倾斜角度设置
                 fontColor: "#7eb00a", //水印字体颜色设置
                 linePositionX: (width - 165) * scale / 2, //canvas第一行文字起始X坐标
-                firstLinePositionY: height * scale  - 220,
+                firstLinePositionY: height * scale - 220,
                 secondLinePositionY: height * scale - 130,
                 thirdLinePositionY: height * scale - 40,
             };
@@ -793,21 +819,21 @@ export default {
             html2canvas(cloneDom, h2cOpts).then(canvas => {
                 var img = new Image();
                 var ctx = canvas.getContext('2d');
-                if(img.complete) {
+                if (img.complete) {
                     img.src = canvas.toDataURL("image/png", 1.0);
-                    img.onload = () => {  
+                    img.onload = () => {
                         ctx.drawImage(img, 0, 0);
-                        ctx.font = waterMarkOpts.fontStyle;  
+                        ctx.font = waterMarkOpts.fontStyle;
                         //文字倾斜角度
                         //ctx.rotate(waterMarkOpts.rotateAngle);
                         ctx.fillStyle = waterMarkOpts.fontColor;
-                        
+
                         ctx.fillText(this.studentName, waterMarkOpts.linePositionX, waterMarkOpts.firstLinePositionY);
                         ctx.fillText("初心工作室", waterMarkOpts.linePositionX, waterMarkOpts.secondLinePositionY);
                         ctx.fillText(dateHelper.getDate(), waterMarkOpts.linePositionX, waterMarkOpts.thirdLinePositionY);
                         //坐标系还原
                         //ctx.rotate(-waterMarkOpts.rotateAngle);
-                        
+
                         // 关闭抗锯齿
                         ctx.mozImageSmoothingEnabled = false;
                         ctx.webkitImageSmoothingEnabled = false;
@@ -822,7 +848,7 @@ export default {
             });
         },
 
-        downloadScreenShot (canvas) {
+        downloadScreenShot(canvas) {
             let url = canvas.toDataURL("image/png", 1.0)
             let link = document.createElement('a')
             link.style.display = 'none'
@@ -838,7 +864,9 @@ export default {
             axios({
                 type: 'get',
                 path: '/api/download/studentcourse',
-                data: {studentCode: this.studentCode},
+                data: {
+                    studentCode: this.studentCode
+                },
                 responseType: 'blob',
                 fn: result => {
                     this.download(result);
@@ -848,7 +876,7 @@ export default {
             })
         },
 
-        download (data) {
+        download(data) {
             if (!data) {
                 return
             }

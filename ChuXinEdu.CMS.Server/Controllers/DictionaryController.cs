@@ -13,6 +13,7 @@ using System.Text;
 using Newtonsoft.Json.Serialization;
 using ChuXinEdu.CMS.Server.Filters;
 using System.Data;
+using System.Web;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -43,7 +44,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 添加新模板 POST api/dictionary/addnewdic
+        /// 添加新字典 POST api/dictionary/addnewdic
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -51,6 +52,44 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string result = string.Empty;
             result = _chuxinWorkflow.AddNewDic(dicList);
+            return result;
+        }
+
+        /// <summary>
+        /// 更新字段 POST api/dictionary/updatedic
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string UpdateDic([FromBody] List<SysDictionary> dicList)
+        {
+            string result = string.Empty;
+            if((HttpUtility.UrlDecode(Request.Headers["logincode"]) ?? "").ToLower() == "cswang")
+            {
+                result = _chuxinWorkflow.UpdateDic(dicList);
+            }
+            else
+            {
+                result = "1401";
+            }
+            return result;
+        }
+        
+        /// <summary>
+        /// 添加新模板 Delete api/dictionary/deldic
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("{typeCode}")]
+        public string DelDic(string typeCode)
+        {
+            string result = string.Empty;
+            if((HttpUtility.UrlDecode(Request.Headers["logincode"]) ?? "").ToLower() == "cswang")
+            {
+                result = _chuxinWorkflow.RemoveDic(typeCode);
+            }
+            else
+            {
+                result = "1401";
+            }
             return result;
         }
     }

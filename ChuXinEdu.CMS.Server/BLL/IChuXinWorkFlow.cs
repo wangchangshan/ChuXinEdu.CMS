@@ -147,6 +147,12 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [添加字典]
         string AddNewDic(List<SysDictionary> dicList);
 
+        // [更新字典]
+        string UpdateDic(List<SysDictionary> dicList);
+
+        // [删除字典]
+        string RemoveDic(string typeCode);
+
         // [脏数据处理]
         string ClearDirtyForPackage(int id);
 
