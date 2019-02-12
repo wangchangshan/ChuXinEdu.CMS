@@ -3,7 +3,7 @@
     <comment :time="'2019-01-11'" :id="1" :content="'测试一下'"></comment>
   </div> -->
 <div class="table_container">
-    <el-table id="capture" :data="commentList" v-loading="loading" size="mini" align="left" border :height="tableHeight">
+    <el-table id="capture" :data="commentList" v-loading="loading" class="table-comment" size="mini" align="left" stripe border :height="tableHeight">
         <el-table-column type="index" width="50" align='center'></el-table-column>
         <el-table-column prop="courseDate" label="时间" align='center' width="120">
         </el-table-column>
@@ -369,9 +369,5 @@ export default {
     height: 36px;
     line-height: 36px;
     text-align: left;
-}
-
-.table_container .el-table .cell {
-    white-space: pre-line;
 }
 </style>
