@@ -280,6 +280,16 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<StudentCourseComment> GetCourseComments(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseComment.Where(s => s.StudentCode == studentCode)
+                                                .OrderByDescending(s => s.CourseDate)
+                                                .ToList();
+            }
+        }
+
         // public int GetStudentSignInCourseCount(string studentCode)
         // {
         //     int count = 0;
@@ -665,6 +675,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 return context.Teacher.Where(t => t.TeacherCode == teacherCode).FirstOrDefault();
             }
+        }
+
+        public string getTeacherCodeByName(string teacherName)
+        {
+            string teacherCode = string.Empty;
+            using (BaseContext context = new BaseContext())
+            {
+                var user = context.SysUser.Where(s => s.LoginCode == teacherName).FirstOrDefault();
+                if(user != null)
+                {
+                    teacherCode = user.TeacherCode;
+                }
+            }
+            return teacherCode;
         }
 
         public IEnumerable<StudentCourseList> GetTeacherCourseList(string teacherCode, int pageIndex, int pageSize, QUERY_TEACHER_COURSE query, out int totalCount)

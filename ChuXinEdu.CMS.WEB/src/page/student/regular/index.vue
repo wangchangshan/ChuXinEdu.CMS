@@ -12,6 +12,11 @@
             <student-course-history v-if="activeLabelCode === 'history'" v-bind:studentCode="studentCode"></student-course-history>
         </el-tab-pane>
 
+        <el-tab-pane :name="'comment'">
+            <span slot="label"><i class="fa fa-pencil"></i> 课堂评语</span> 
+            <teacher-comment v-if="activeLabelCode === 'comment'" v-bind:studentCode="studentCode"></teacher-comment>
+        </el-tab-pane>
+
         <el-tab-pane :name="'dayoff'">
             <span slot="label"><i class="fa fa-fax"></i> 请假记录</span> 
             <student-offday-history v-if="activeLabelCode === 'dayoff'" v-bind:studentCode="studentCode"></student-offday-history>
@@ -28,11 +33,6 @@
         <el-tab-pane :name="'feeback'">
             <span slot="label"><i class="fa fa-exclamation-triangle"></i> 退 费</span> 
             <student-fee-back v-if="activeLabelCode === 'feeback'" v-bind:studentCode="studentCode"></student-fee-back>
-        </el-tab-pane>
-
-        <el-tab-pane :name="'comment'">
-            <span slot="label"><i class="fa fa-flag-checkered"></i> 课堂评语</span> 
-            <teacher-comment v-if="activeLabelCode === 'comment'" v-bind:studentCode="studentCode"></teacher-comment>
         </el-tab-pane>
 
         <el-tab-pane :name="'otherinfo'">

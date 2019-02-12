@@ -1678,6 +1678,74 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
         #endregion
 
+        #region  course comment
+        public string AddCourseComment(StudentCourseComment newComment)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.StudentCourseComment.Add(newComment);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加课堂评语失败");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string UpdateCourseComment(int id, StudentCourseComment comment)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var scc = context.StudentCourseComment.Where(s => s.CommentId == id).First();
+                    scc.CourseDate = comment.CourseDate;
+                    scc.Content = comment.Content;
+                    scc.TeacherCode = comment.TeacherCode;
+                    scc.TeacherName = comment.TeacherName;
+
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "更新课堂评语失败");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string RemoveCourseComment(int id)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var scc = context.StudentCourseComment.Where(s => s.CommentId == id).FirstOrDefault();
+                    if(scc != null)
+                    {
+                        context.StudentCourseComment.Remove(scc);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "删除课堂评语失败");
+                result = "1500";
+            }
+            return result;
+        }
+        #endregion
+        
         #region teacher
         public string AddTeacher(Teacher teacher)
         {

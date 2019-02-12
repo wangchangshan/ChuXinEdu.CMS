@@ -120,6 +120,15 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [删除系统套餐] 
         string RemoveSysCoursePackage(int id);
 
+        // [添加课堂评语] 
+        string AddCourseComment(StudentCourseComment newComment);
+
+        // [更新课堂评语] 
+        string UpdateCourseComment(int id, StudentCourseComment comment);
+
+        // [删除课堂评语] 
+        string RemoveCourseComment(int id);
+
         // [添加排课模板]
         string AddArrangeTemplate(string templateCode, string templateName, string templateEnabled, List<SysCourseArrangeTemplateDetail> details);
 

@@ -891,7 +891,7 @@ export default {
             document.body.removeChild(link);
         },
 
-        // 前端导出，无法适配 iPad 暂时不使用
+        // 前端导出 暂时不使用
         export2Excle1() {
             if (this.courseList.length == 0) {
                 this.$message({

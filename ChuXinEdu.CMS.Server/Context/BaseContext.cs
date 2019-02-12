@@ -52,6 +52,8 @@ namespace ChuXinEdu.CMS.Server.Context
 
         public virtual DbSet<StudentCourseList> StudentCourseList { get; set; }
 
+        public virtual DbSet<StudentCourseComment> StudentCourseComment { get; set; }
+
         public virtual DbSet<StudentCoursePackage> StudentCoursePackage { get; set; }
 
         public virtual DbSet<StudentStatusHistory> StudentStatusHistory { get; set; }

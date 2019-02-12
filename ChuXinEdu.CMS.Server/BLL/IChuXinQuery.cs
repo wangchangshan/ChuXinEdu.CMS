@@ -45,6 +45,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentCourseList> GetStudentDayOffList(string studentCode);
 
+        IEnumerable<StudentCourseComment> GetCourseComments(string studentCode);
+
         DataTable GetScpSimplify();
 
         //获取已经上课的数目
@@ -108,6 +110,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         DataTable GetTeacherListWithRole(string roleCode);
 
         Teacher GetTeacher(string teacherCode);
+
+        string getTeacherCodeByName(string teacherName);
 
         IEnumerable<StudentCourseList> GetTeacherCourseList(string teacherCode, int pageIndex, int pageSize, QUERY_TEACHER_COURSE query, out int totalCount);
 
