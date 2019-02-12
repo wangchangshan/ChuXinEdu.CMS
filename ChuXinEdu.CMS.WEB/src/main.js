@@ -81,16 +81,15 @@ router.beforeEach((to, from, next) => {
             }
         }
 
-        if(hasPermission){
-            store.commit('SET_ACTIVE_MENU', to.path);
-            if(to.name) {
+        if(to.name) {
+            if(hasPermission) {
+                store.commit('SET_ACTIVE_MENU', to.path);
                 next();
-            } else {
-                next({ path: '/404' })
+            }else{
+                next({ path: '/403' })
             }
-        }
-        else{
-            next({ path: '/403' })
+        } else {
+            next({ path: '/404' })
         }
     }
 });
