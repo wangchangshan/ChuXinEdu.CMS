@@ -112,7 +112,7 @@
             <el-table-column property="flexCourseCount" label="可选课时" align='center' width="80"></el-table-column>
             <el-table-column property="selectedCourseCount" label="选择课时数" width="140">
                 <template slot-scope="scope">
-                    <el-input-number v-model="scope.row.selectedCourseCount" :min="1" :max="scope.row.flexCourseCount" label="描述文字" size="mini"></el-input-number>
+                    <el-input-number v-model="scope.row.selectedCourseCount" :min="1" :max="scope.row.flexCourseCount" size="mini"></el-input-number>
                 </template>
             </el-table-column>
             <el-table-column property="selectedCourseCount" label="课程内容" width="140">

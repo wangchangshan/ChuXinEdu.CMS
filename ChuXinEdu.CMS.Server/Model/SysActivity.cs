@@ -20,6 +20,15 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("activity_to_date")]
         public DateTime ActivityToDate { get; set; }
 
+        [Column("activity_course_count")]
+        public int ActivityCourseCount { get; set; }
+
+        [Column("activity_child_price")]
+        public decimal ActivityChildPrice { get; set; }
+
+        [Column("activity_adult_price")]
+        public decimal ActivityAdultPrice { get; set; }
+
         [Column("activity_address")]
         public string ActivityAddress { get; set; }
 
