@@ -80,7 +80,10 @@ export default {
         document.onkeydown = (e) => {
             let _key = window.event.keyCode;
             if(_key === 13){
-                this.submitForm('loginForm');
+                let path = this.$route.path;
+                if(path == "/") {
+                    this.submitForm('loginForm');
+                }
             }
         }
     },  

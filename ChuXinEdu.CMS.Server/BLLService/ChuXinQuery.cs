@@ -122,6 +122,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<DIC_R_KEY_VALUE> GetAllActiveStudents()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var students = context.DIC_R_KEY_VALUE.FromSql($@"select s.student_code as item_code, s.student_name as item_name
+                                                                    from student s
+                                                                    where s.student_status = '01'
+                                                                    order by s.student_name")
+                                                        .ToList();
+
+                return students;
+            }
+        }
+
         public IEnumerable<Student> GetStudentList2Export(QUERY_STUDENT query)
         {
             IEnumerable<Student> students = null;

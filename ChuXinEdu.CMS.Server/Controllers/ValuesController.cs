@@ -32,7 +32,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 code = "1200",
                 data = "data",
             };
-
+            // string to object
+            //OverAll overAll = JsonConvert.DeserializeObject<OverAll>(info);
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             settings.Formatting = Formatting.Indented;

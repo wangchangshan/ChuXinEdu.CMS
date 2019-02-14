@@ -110,6 +110,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取活跃学生键值对 list GET api/config/getactivestudent
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<DIC_R_KEY_VALUE> GetActiveStudent()
+        {
+            return _chuxinQuery.GetAllActiveStudents();
+        }
+
+        /// <summary>
         /// 获取系统角色列表 list GET api/config/getroles
         /// </summary>
         /// <returns></returns>
