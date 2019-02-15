@@ -1745,6 +1745,58 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
         #endregion
+
+        #region activity
+        public string AddNewActivity(SysActivity activity, out int id)
+        {
+            string result = "1200";
+            id = -1;
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.SysActivity.Add(activity);
+                    context.SaveChanges();
+                    id = activity.ActivityId;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加活动失败");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string UpdateActivity(int id, SysActivity activity)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var ac = context.SysActivity.Where(s => s.ActivityId == id).FirstOrDefault();
+                    if(ac != null)
+                    {
+                        ac.ActivitySubject = activity.ActivitySubject;
+                        ac.ActivityFromDate = activity.ActivityFromDate;
+                        ac.ActivityToDate = activity.ActivityToDate;
+                        ac.ActivityCourseCount = activity.ActivityCourseCount;
+                        ac.ActivityAddress = activity.ActivityAddress;
+                        ac.ActivityContent =activity.ActivityContent;
+
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "更新活动失败");
+                result = "1500";
+            }
+            return result;
+        }
+        #endregion
         
         #region teacher
         public string AddTeacher(Teacher teacher)

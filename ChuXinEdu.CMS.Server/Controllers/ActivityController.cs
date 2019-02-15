@@ -37,19 +37,24 @@ namespace ChuXinEdu.CMS.Server.Controllers
         //     return comments;
         // }
 
-        // POST api/comment
-        [HttpPost]
-        public string Post([FromBody] StudentCourseComment newComment)
+        // POST api/activity
+        [HttpPost("{activityId}")]
+        public ActionResult<string> Post(int activityId, [FromBody] SysActivity activity)
         {
             string result = string.Empty;
-            newComment.CreateTime = DateTime.Now;
-
-            string teacherCode = _chuxinQuery.getTeacherCodeByName(newComment.TeacherName);
-            newComment.TeacherCode = teacherCode;
+            int id = 0;
             
-            result = _chuxinWorkFlow.AddCourseComment(newComment);
+            if(activityId == 0)
+            {
+                result = _chuxinWorkFlow.AddNewActivity(activity, out id);
+            }
+            else
+            {
+                result = _chuxinWorkFlow.UpdateActivity(activityId, activity);
+                id = activityId;
+            }
 
-            return result;
+            return new JsonResult(new { code = result, id = id });
         }
 
         // PUT api/comment/5

@@ -138,6 +138,12 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [删除排课模板]
         string RemoveArrangeTemplate(string templateCode);
 
+        // [添加活动]
+        string AddNewActivity(SysActivity activity, out int id);
+
+        // [添加活动]
+        string UpdateActivity(int id, SysActivity activity);
+
         // [添加教师]
         string AddTeacher(Teacher teacher);
 

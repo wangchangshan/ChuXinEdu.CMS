@@ -2,7 +2,7 @@
 <div class="createPost-container">
     <el-form class="form-container" size="small" :model="postForm" :rules="rules" ref="postForm">
 
-        <sticky :className="'sub-navbar '+ postForm.status">
+        <sticky :className="'sub-navbar '+ status">
             <el-button v-noRepeatClick size="small" type="danger" @click="draftForm">删除</el-button>
             <el-button v-noRepeatClick size="small" type="success" @click="submitForm">保存
             </el-button>
@@ -23,14 +23,14 @@
                         <el-row>
                             <el-col :span="14">
                                 <el-form-item label-width="80px" prop="activityDate" label="活动时间:" class="postInfo-container-item">
-                                    <el-date-picker value-format="yyyy-MM-dd" size="small" class="date-rang-small" :editable="false" v-model="postForm.activityDate" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                                    <el-date-picker v-model="postForm.activityDate" type="daterange" value-format="yyyy-MM-dd" size="small" class="date-rang-small" :editable="false" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
                                     </el-date-picker>
                                 </el-form-item>
                             </el-col>
 
                             <el-col :span="10">
                                 <el-form-item label-width="80px" label="销课课时:" class="postInfo-container-item">
-                                    <el-input-number v-model="postForm.courseCount" :min="0" size="mini"></el-input-number> 节
+                                    <el-input-number v-model="postForm.activityCourseCount" :min="0" size="mini"></el-input-number> 节
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -38,8 +38,8 @@
                 </el-col>
             </el-row>
 
-            <el-form-item label-width="80px" prop="address" label="活动地点:">
-                <el-input class="article-textarea" size="small" v-model="postForm.address">
+            <el-form-item label-width="80px" prop="activityAddress" label="活动地点:">
+                <el-input class="article-textarea" size="small" v-model="postForm.activityAddress">
                 </el-input>
                 <span class="word-counter" v-show="addressLength">{{addressLength}}字</span>
             </el-form-item>
@@ -62,7 +62,7 @@
             </div>
 
             <div class="editor-container">
-                <Tinymce :height=400 ref="editor" v-model="postForm.content" />
+                <Tinymce :height=400 ref="editor" v-model="postForm.activityContent" />
             </div>
         </div>
     </el-form>
@@ -82,13 +82,13 @@ import {
 } from '@/utils/validate'
 
 const defaultForm = {
-    activityId: undefined,
     activitySubject: '',
-    content: '',
-    address: '',
-    activityDate: '', 
-    courseCount: 0,
-    status: 'draft'
+    activityAddress: '',
+    activityDate: '',
+    activityFromDate: '',
+    activityToDate: '',
+    activityCourseCount: 0,
+    activityContent: ''
 }
 
 export default {
@@ -108,48 +108,52 @@ export default {
         const validateRequire = (rule, value, callback) => {
             if (value === '' || value == undefined) {
                 callback('必填项');
-            }
-            else {
+            } else {
                 callback();
             }
         }
         return {
-            selStudent:{
+            status: 'edit',
+            selStudent: {
                 rawList: [],
                 options: [],
                 selected: []
             },
             studentActivityList: [],
+            activityId: 0,
             postForm: Object.assign({}, defaultForm),
             rules: {
                 activitySubject: [{
-                    validator: validateRequire, trigger: 'blur'                    
+                    validator: validateRequire,
+                    trigger: 'blur'
                 }],
                 activityDate: [{
-                    validator: validateRequire, trigger: 'change'
+                    validator: validateRequire,
+                    trigger: ['change']
                 }],
-                address: [{
-                    validator: validateRequire, trigger: 'blur'
+                activityAddress: [{
+                    validator: validateRequire,
+                    trigger: 'blur'
                 }]
             }
         }
     },
     computed: {
         addressLength() {
-            return this.postForm.address.length
+            return this.postForm.activityAddress.length
         }
     },
     created() {
         this.getActivieStudents();
         if (this.isEdit) {
-          const activityId = this.$route.params && this.$route.params.activityId
-          this.fetchActivityData(activityId)
+            const activityId = this.$route.params && this.$route.params.activityId
+            this.fetchActivityData(activityId)
         } else {
-          this.postForm = Object.assign({}, defaultForm)
+            this.postForm = Object.assign({}, defaultForm)
         }
     },
     methods: {
-        getActivieStudents () {
+        getActivieStudents() {
             axios({
                 type: 'get',
                 path: '/api/config/getactivestudent',
@@ -170,14 +174,29 @@ export default {
         submitForm() {
             this.$refs['postForm'].validate(valid => {
                 if (valid) {
-                    console.log(this.postForm)
-                    this.$notify({
-                        title: '成功',
-                        message: '保存成功',
-                        type: 'success',
-                        duration: 2000
-                    })
-                    this.postForm.status = 'published'
+                    this.postForm.activityFromDate = this.postForm.activityDate[0];
+                    this.postForm.activityToDate = this.postForm.activityDate[1];
+                    axios({
+                        type: 'post',
+                        path: '/api/activity/' + this.activityId,
+                        data: this.postForm,
+                        fn: result => {
+                            if (result.code == 1200) {
+                                this.activityId = result.id;
+                                this.$route.params.activityId = result.id;
+                                this.$message({
+                                    message: '保存成功',
+                                    type: 'success'
+                                });
+                            } else {
+                                this.$message({
+                                    message: '保存失败',
+                                    type: 'error'
+                                });
+                            }
+                        }
+                    });
+                    this.status = 'published'
                 } else {
                     return false
                 }
@@ -197,7 +216,7 @@ export default {
                 showClose: true,
                 duration: 1000
             })
-            this.postForm.status = 'draft'
+            this.status = 'edit'
         },
 
         getRemoteStudent(query) {
@@ -216,8 +235,8 @@ export default {
         selectStudentChanged() {
             this.studentActivityList = this.selStudent.selected.map(item => {
                 let studentName = 'NONE'
-                for (let s of this.selStudent.rawList){
-                    if(s.value == item) {
+                for (let s of this.selStudent.rawList) {
+                    if (s.value == item) {
                         studentName = s.label;
                         break;
                     }
@@ -231,7 +250,7 @@ export default {
         },
 
         removeStudentTag(val) {
-            this.studentActivityList = this.studentActivityList.filter( item => {
+            this.studentActivityList = this.studentActivityList.filter(item => {
                 return item.studentCode != val;
             })
             this.selStudent.selected.splice(this.selStudent.selected.indexOf(val), 1);
