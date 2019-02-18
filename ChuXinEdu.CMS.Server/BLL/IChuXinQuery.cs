@@ -103,6 +103,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<SysCoursePackage> GetSysCoursePackageList(QUERY_SYS_PACKAGE query);
 
+        List<SysActivity> GetActivityList(QUERY_SYS_ACTIVITY query, out int totalCount);
+
         bool isPackageUsed(int packageId);
 
         IEnumerable<Teacher> GetTeacherList(QUERY_TEACHER query);

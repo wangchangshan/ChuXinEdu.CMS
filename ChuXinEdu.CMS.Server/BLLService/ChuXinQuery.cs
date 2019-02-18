@@ -617,6 +617,32 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         #endregion
 
+        #region activity
+        public List<SysActivity> GetActivityList(QUERY_SYS_ACTIVITY query, out int totalCount)
+        {
+            List<SysActivity> activities = null;
+            using (BaseContext context = new BaseContext())
+            {
+                IQueryable<SysActivity> temp = null;
+
+                if (!String.IsNullOrEmpty(query.activitySubject))
+                {
+                    temp = context.SysActivity.Where(s => EF.Functions.Like(s.ActivitySubject, "%" + query.activitySubject + "%"));
+                }
+
+                if (temp == null)
+                {
+                    temp = context.SysActivity.Where(s => 1 == 1);
+                }
+                totalCount = temp.Count();
+                activities = temp.Skip(query.pageSize * (query.pageIndex - 1)).Take(query.pageSize).ToList();
+
+                return activities;
+            }
+        }
+
+        #endregion
+
         #region teacher
         public IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge()
         {

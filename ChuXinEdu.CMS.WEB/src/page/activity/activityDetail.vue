@@ -146,6 +146,7 @@ export default {
     created() {
         this.getActivieStudents();
         if (this.isEdit) {
+            debugger
             const activityId = this.$route.params && this.$route.params.activityId
             this.fetchActivityData(activityId)
         } else {

@@ -1,176 +1,205 @@
 <template>
 <div class="fillcontain">
+    <div class="search_container">
+        <el-form :inline="true" class="demo-form-inline search-form">
+            <el-form-item label="名称：">
+                <el-input type="text" size="small" v-model="searchField.activitySubject" placeholder="请输入活动主题" class="search_field"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" size="small" @click='searchActivity()'>查 询</el-button>
+                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetActivityList()'>重 置</el-button>
+            </el-form-item>
+            <el-form-item class="btnRight">
+                <router-link :to="'/newActivity'">
+                    <el-button type="primary" size="small" icon="el-icon-plus" >创建新活动</el-button>
+                 </router-link>
+                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
     <div class="table_container">
-        <el-table :data="activityList" v-loading="loading" style="width: 100%" align="center" size="mini" :max-height="tableHeight">
-            <el-table-column type="expand">
-                <template slot-scope="props">
-                    <el-form label-position="left" inline class="demo-table-expand">
-                        <el-form-item label="参加学生：">
-                            <span>{{ props.row.activity_attend_students }}</span>
-                        </el-form-item>
-                    </el-form>
-                </template>
+        <el-table :data="activityList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :height="tableHeight">
+            <el-table-column type="index" align='center' width="40" fixed></el-table-column>
+            <el-table-column prop="activitySubject" label="活动主题" align='left' min-width="230" fixed>
             </el-table-column>
-            <el-table-column prop="activity_title" label="活动主题" align='left' min-width="200">
+            <el-table-column prop="activityDate" label="活动时间" align='center' width="170" fixed>
             </el-table-column>
-            <el-table-column prop="activity_from_date" label="活动时间" align='center' width="200">
+            <el-table-column prop="activityCourseCount" label="课时数" align='center' width="70">
             </el-table-column>
-            <el-table-column prop="activity_address" label="活动地点" align='center' min-width="200">
+            <el-table-column prop="activityAddress" label="地址" align='center' min-width="120">
             </el-table-column>
-            
-            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="180">
-                <template>
-                    <el-button type="success" icon='edit' size="small" @click='showStudentDetail()'>查看详细</el-button>
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
+                <template slot-scope="scope">
+                    <router-link :to="{ path: '/editActivity', params: { activityId: scope.row.activityId }}">
+                        <el-button type="primary" size="small" icon="el-icon-edit">编辑</el-button>
+                    </router-link>
                 </template>
             </el-table-column>
         </el-table>
         <el-row>
             <el-col :span="24">
                 <div class="pagination">
-                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="paginations.page_size" :layout="paginations.layout" :total="paginations.total" :current-page="paginations.current_page_index" @current-change='handleCurrentChange'
-                        @size-change='handleSizeChange'>
+                    <el-pagination v-if="paginations.total > 0" :page-sizes="paginations.page_sizes" :page-size="searchField.pageSize" :layout="paginations.layout" :total="paginations.total" :current-page="searchField.pageIndex" @current-change='handlePageCurrentChange' @size-change='handlePageSizeChange'>
 
                     </el-pagination>
                 </div>
             </el-col>
         </el-row>
     </div>
-    <el-dialog :title="dialog.title" :visible.sync="dialog.show" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
-        <div class="form">
-            <el-form ref="studentInfo" :model="studentInfo" :rules="studentInfoRules" :label-width="dialog.formLabelWidth" :label-position='dialog.labelPosition' style="margin:10px;width:auto;">
-                <el-form-item label="姓名">
-                    <el-input v-model="studentInfo.student_name"></el-input>
-                </el-form-item>
-                <el-form-item label="性别">
-                    <el-radio-group v-model="studentInfo.student_sex">
-                        <el-radio label="男"></el-radio>
-                        <el-radio label="女"></el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="出生日期">
-                    <el-date-picker v-model="studentInfo.student_birthday" :editable="false" type="date" placeholder="选择日期"> </el-date-picker>
-                </el-form-item>
-                <el-form-item label="身份证号码">
-                    <el-input v-model="studentInfo.student_identity_card_num"></el-input>
-                </el-form-item>
-                <el-form-item label="联系电话">
-                    <el-input v-model="studentInfo.student_phone"></el-input>
-                </el-form-item>
-                <el-form-item label="家庭地址">
-                    <el-input v-model="studentInfo.student_address"></el-input>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="studentInfo.student_remark"></el-input>
-                </el-form-item>
-                <el-form-item label="报名时间">
-                    <el-date-picker v-model="studentInfo.student_register_date" :editable="false" type="date" placeholder="选择日期"> </el-date-picker>
-                </el-form-item>
-                <el-form-item class="text_right">
-                    <el-button @click="dialog.show = false">取 消</el-button>
-                    <el-button type="primary">提 交</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
-    </el-dialog>
 </div>
 </template>
 
 <script>
+import {
+    axios,
+    dicHelper,
+    tagTypeHelper
+} from '@/utils/index'
+
 export default {
     data() {
         return {
-            activityList: [{
-                    activity_id: '201807001',
-                    activity_title: '奥林匹克森林公园写生',
-                    activity_from_date: '2008-06-19',
-                    activity_to_date: '2008-06-20',
-                    activity_address: '北京市昌平区天巢园小区',
-                    activity_attend_students: '胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，'
-                },
-                {
-                    activity_id: '201807001',
-                    activity_title: '夜宿海洋馆活动',
-                    activity_from_date: '2008-06-19',
-                    activity_to_date: '2008-06-20',
-                    activity_address: '北京市昌平区天巢园小区',
-                    activity_attend_students: '胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，'
-                },
-                {
-                    activity_id: '201807001',
-                    activity_title: '中国国家美术馆展览',
-                    activity_from_date: '2008-06-19',
-                    activity_to_date: '2008-06-20',
-                    activity_address: '北京市昌平区天巢园小区',
-                    activity_attend_students: '胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，胡小平，'
-                },
-            ],
+            loading: true,
+            downloadLoading: false,
+            activityList: [],
+            tableHeight: this.$store.state.page.win_content.height - 106,
             searchField: {
-                student_name: ''
-            },
-            loading: false,
-            tableHeight: this.$store.state.page.win_content.height - 63,
-            search_form_rules: {
-                student_name: [{
-                    required: false,
-                    message: '学生姓名不能为空',
-                    trigger: 'blur'
-                }]
+                pageIndex: 1,
+                pageSize: 15,
+                activitySubject: ''
             },
             paginations: {
-                current_page_index: 1,
-                total: 3,
-                page_size: 15,
+                total: 0,
                 page_sizes: [10, 15, 20, 30],
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
             },
-            dialog: {
-                width: '500px',
-                show: false,
-                title: '添加学生',
-                labelPosition: 'right',
-                formLabelWidth: '120px'
-            },
-            studentInfo: {
-
-            },
-            studentInfoRules: {
-
-            }
         }
     },
+    created() {
+        this.getActivityList();
+    },
     methods: {
-        courseTag(course) {
-            let basic = '';
-            switch (course) {
-                case '国画':
-                    basic = 'success'
-                    break;
-                case '西画':
-                    basic = ''
-                    break;
-                case '书法':
-                    basic = 'info'
-                    break;
-                default:
-                    basic = 'danger'
+        /**
+         * 改变页码和当前页时需要拼装的路径方法
+         * @param {string} field 参数字段名
+         * @param {string} value 参数字段值
+         */
+        setPath(field, value) {
+            var path = this.$route.path,
+                query = Object.assign({}, this.$route.query);
+            if (typeof field === 'object') {
+                query = field;
+            } else {
+                query[field] = value;
             }
-            return basic;
+            this.$router.push({
+                path,
+                query
+            });
         },
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
+
+        searchActivity() {
+            var page = 1;
+            this.searchField.pageIndex = 1;
+            this.getActivityList({
+                page,
+                fun: () => {
+                    this.setPath('page', page);
+                }
+            });
         },
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
+
+        resetActivityList() {
+            this.searchField.activitySubject = '';
+            this.searchField.pageIndex = 1;
+            this.getActivityList();
         },
-        addStudent() {
-            this.dialog.title = '新增学生';
-            this.dialog.show = true;
+
+        getActivityList({
+            page,
+            pageSize,
+            where,
+            fun
+        } = {}) {
+            this.loading = true;
+            var query = this.$route.query;
+            this.searchField.pageIndex = page || parseInt(query.page) || 1;
+            this.searchField.pageSize = pageSize || parseInt(query.page_size) || this.searchField.pageSize;
+            var data = {
+                q: this.searchField
+            }
+            if (where) {
+                data = Object.assign(data, where || {});
+            }
+            
+            axios({
+                type: 'get',
+                path: '/api/activity',
+                data: data,
+                fn: result => {
+                    this.paginations.total = result.totalCount;
+                    result.data.forEach(item => {
+                        if(item.activityFromDate == item.activityToDate) {
+                            item.activityDate = item.activityFromDate
+                        }
+                        else {
+                            item.activityDate = item.activityFromDate + '至' + item.activityToDate
+                        }
+                    });
+                    this.activityList = result.data;
+                    this.loading = false;
+                }
+            })
         },
-        showStudentDetail() {
-            alert('待开发')
+
+        handlePageSizeChange(pageSize) {
+            this.getActivityList({
+                pageSize,
+                fun: () => {
+                    this.setPath('page_size', pageSize);
+                }
+            });
         },
-        searchStudent() {
-            alert('待开发')
+        handlePageCurrentChange(page) {
+            this.getActivityList({
+                page,
+                fun: () => {
+                    this.setPath('page', page);
+                }
+            });
+        },
+
+        export2Excle() {
+            if (this.activityList.length == 0) {
+                this.$message({
+                    message: '没有数据需要导出！',
+                    type: 'success'
+                });
+                return;
+            }
+            this.downloadLoading = true
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['套餐编码', '套餐名称', '课程类别', '课时数目', '价 格', '是否启用'];
+                const filterVal = ['packageCode', 'packageName', 'packageCourseCategoryName', 'packageCourseCount', 'packagePrice', 'packageEnabled']
+                const data = this.formatJson(filterVal, this.activityList)
+                excel.export_json_to_excel({
+                    header: tHeader,
+                    data,
+                    filename: '课程套餐列表',
+                    autoWidth: true,
+                    bookType: 'xlsx'
+                })
+                this.downloadLoading = false;
+            })
+        },
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (j === 'time') {
+                    return v[j] && v[j].split('T')[0] || ''; //parseTime(v[j])
+                } else {
+                    return v[j]
+                }
+            }))
         }
     }
 }
@@ -191,7 +220,6 @@ export default {
     width: 100%;
     min-width: 750px;
 }
-
 .pagination {
     text-align: left;
     margin-top: 10px

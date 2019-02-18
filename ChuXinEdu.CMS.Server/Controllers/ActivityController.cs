@@ -8,6 +8,7 @@ using ChuXinEdu.CMS.Server.Utils;
 using ChuXinEdu.CMS.Server.ViewModel;
 using Newtonsoft.Json;
 using ChuXinEdu.CMS.Server.Filters;
+using Newtonsoft.Json.Serialization;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -26,16 +27,25 @@ namespace ChuXinEdu.CMS.Server.Controllers
             _chuxinWorkFlow = chuxinWorkFlow;
         }        
 
-        // /// <summary>
-        // /// 获取活动列表 GET api/comment
-        // /// </summary>
-        // /// <returns></returns>
-        // [HttpGet("{studentCode}")]
-        // public IEnumerable<SysActivity> GetActivityList(string studentCode)
-        // {
-        //     IEnumerable<SysActivity> comments = _chuxinQuery.GetCourseComments(studentCode);
-        //     return comments;
-        // }
+        // GET api/activity
+        [HttpGet]
+        public ActionResult<string> Get(string q)
+        {
+            int totalCount = 0;
+            QUERY_SYS_ACTIVITY query = JsonConvert.DeserializeObject<QUERY_SYS_ACTIVITY>(q);
+            List<SysActivity> activityList = _chuxinQuery.GetActivityList(query,out totalCount);
+
+            var settings = new JsonSerializerSettings()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                DateFormatString = "yyyy-MM-dd"
+            };
+            
+            return new JsonResult(new {
+                TotalCount = totalCount,
+                Data = activityList
+            }, settings);
+        }
 
         // POST api/activity
         [HttpPost("{activityId}")]
