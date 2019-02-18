@@ -105,6 +105,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         List<SysActivity> GetActivityList(QUERY_SYS_ACTIVITY query, out int totalCount);
 
+        SysActivity GetActivityById(int activityId);
+
         bool isPackageUsed(int packageId);
 
         IEnumerable<Teacher> GetTeacherList(QUERY_TEACHER query);

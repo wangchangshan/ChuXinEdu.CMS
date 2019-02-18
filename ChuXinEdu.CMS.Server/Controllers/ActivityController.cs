@@ -33,7 +33,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             int totalCount = 0;
             QUERY_SYS_ACTIVITY query = JsonConvert.DeserializeObject<QUERY_SYS_ACTIVITY>(q);
-            List<SysActivity> activityList = _chuxinQuery.GetActivityList(query,out totalCount);
+            List<SysActivity> activityList = _chuxinQuery.GetActivityList(query, out totalCount);
 
             var settings = new JsonSerializerSettings()
             {
@@ -45,6 +45,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 TotalCount = totalCount,
                 Data = activityList
             }, settings);
+        }
+
+        // GET api/activity/1
+        [HttpGet("{activityId}")]
+        public SysActivity Get(int activityId)
+        {
+            return _chuxinQuery.GetActivityById(activityId);
         }
 
         // POST api/activity
@@ -67,21 +74,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return new JsonResult(new { code = result, id = id });
         }
 
-        // PUT api/comment/5
-        [HttpPut("{id}")]
-        public string Put(int id, [FromBody] StudentCourseComment comment)
-        {
-            string result = string.Empty;
-            result = _chuxinWorkFlow.UpdateCourseComment(id, comment);
-            return result;
-        }
-
-        // DELETE api/comment/5
+        // DELETE api/activity/5
         [HttpDelete("{id}")]
         public string Delete(int id)
         {
             string result = string.Empty;
-            result = _chuxinWorkFlow.RemoveCourseComment(id);
+            result = _chuxinWorkFlow.RemoveActivity(id);
 
             return result;
         }

@@ -1796,6 +1796,29 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
+
+        public string RemoveActivity(int id)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var activity = context.SysActivity.FirstOrDefault(s => s.ActivityId == id);
+                    if (activity != null)
+                    {
+                        context.SysActivity.Remove(activity);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "删除学生介绍信息失败");
+                result = "1500";
+            }
+            return result;
+        }
         #endregion
         
         #region teacher

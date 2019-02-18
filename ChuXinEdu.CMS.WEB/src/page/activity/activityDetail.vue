@@ -3,12 +3,14 @@
     <el-form class="form-container" size="small" :model="postForm" :rules="rules" ref="postForm">
 
         <sticky :className="'sub-navbar '+ status">
-            <el-button v-noRepeatClick size="small" type="danger" @click="draftForm">删除</el-button>
-            <el-button v-noRepeatClick size="small" type="success" @click="submitForm">保存
+            <el-button v-noRepeatClick v-if="activityId != 0" size="small" type="danger" @click="deleteForm">删除</el-button>
+            <el-button v-noRepeatClick size="small" type="success" @click="submitForm(false)">保存
             </el-button>
-            <el-button v-noRepeatClick size="small" type="success" @click="submitForm">保存并返回列表
+            <el-button v-noRepeatClick size="small" type="success" @click="submitForm(true)">保存并返回列表
             </el-button>
-            <el-button v-noRepeatClick size="small" type="warning" @click="draftForm">取消</el-button>
+            <router-link :to="'/activity'">
+                <el-button v-noRepeatClick size="small" type="warning" >取消</el-button>
+            </router-link>
         </sticky>
 
         <div class="createPost-main-container">
@@ -146,8 +148,8 @@ export default {
     created() {
         this.getActivieStudents();
         if (this.isEdit) {
-            debugger
             const activityId = this.$route.params && this.$route.params.activityId
+            this.activityId = activityId;
             this.fetchActivityData(activityId)
         } else {
             this.postForm = Object.assign({}, defaultForm)
@@ -166,13 +168,17 @@ export default {
         fetchActivityData(activityId) {
             axios({
                 type: 'get',
-                path: '/api/config/getactivestudent',
+                path: '/api/activity/' + activityId,
                 fn: result => {
-                    this.selStudent.rawList = result
+                    this.postForm.activitySubject = result.activitySubject
+                    this.postForm.activityAddress = result.activityAddress                    
+                    this.postForm.activityDate = [result.activityFromDate.split('T')[0],result.activityToDate.split('T')[0]]
+                    this.postForm.activityCourseCount = result.activityCourseCount
+                    this.postForm.activityContent = result.activityContent
                 }
             });
         },
-        submitForm() {
+        submitForm(jump2list) {
             this.$refs['postForm'].validate(valid => {
                 if (valid) {
                     this.postForm.activityFromDate = this.postForm.activityDate[0];
@@ -189,6 +195,9 @@ export default {
                                     message: '保存成功',
                                     type: 'success'
                                 });
+                                if(jump2list){
+                                    this.$router.push('/activity')
+                                }
                             } else {
                                 this.$message({
                                     message: '保存失败',
@@ -203,21 +212,33 @@ export default {
                 }
             })
         },
-        draftForm() {
-            if (this.postForm.activitySubject.length === 0) {
-                this.$message({
-                    message: '请填写必要的标题和内容',
-                    type: 'warning'
-                })
-                return
-            }
-            this.$message({
-                message: '保存成功',
-                type: 'success',
-                showClose: true,
-                duration: 1000
-            })
-            this.status = 'edit'
+        deleteForm() {
+            this.$confirm('确定删除当前活动吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                axios({
+                    type: 'delete',
+                    path: '/api/activity/' + this.activityId,
+                    fn: result => {
+                        if (result == 1200) {
+                            this.$message({
+                                message: '删除活动成功！',
+                                type: 'success'
+                            });
+                            this.$router.push("/activity")
+                        }else {
+                            this.$message({
+                                message: '删除活动失败！',
+                                type: 'error'
+                            });
+                        }
+                    }
+                });
+            }).catch(() => {
+                //
+            });
         },
 
         getRemoteStudent(query) {

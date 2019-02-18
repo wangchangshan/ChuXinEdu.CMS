@@ -22,15 +22,15 @@
             <el-table-column type="index" align='center' width="40" fixed></el-table-column>
             <el-table-column prop="activitySubject" label="活动主题" align='left' min-width="230" fixed>
             </el-table-column>
-            <el-table-column prop="activityDate" label="活动时间" align='center' width="170" fixed>
+            <el-table-column prop="activityDate" label="活动时间" align='center' width="175" fixed>
             </el-table-column>
             <el-table-column prop="activityCourseCount" label="课时数" align='center' width="70">
             </el-table-column>
-            <el-table-column prop="activityAddress" label="地址" align='center' min-width="120">
+            <el-table-column prop="activityAddress" label="地址" align='left' min-width="120">
             </el-table-column>
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
                 <template slot-scope="scope">
-                    <router-link :to="{ path: '/editActivity', params: { activityId: scope.row.activityId }}">
+                    <router-link :to="{ name: '编辑活动', params: { activityId: scope.row.activityId }}">
                         <el-button type="primary" size="small" icon="el-icon-edit">编辑</el-button>
                     </router-link>
                 </template>

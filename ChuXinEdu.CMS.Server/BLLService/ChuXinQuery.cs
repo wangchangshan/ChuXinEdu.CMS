@@ -641,6 +641,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public SysActivity GetActivityById(int activityId)
+        {
+            using(BaseContext context = new BaseContext())
+            {
+                return context.SysActivity.FirstOrDefault(s => s.ActivityId == activityId);
+            }
+        }
+
         #endregion
 
         #region teacher

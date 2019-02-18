@@ -73,7 +73,7 @@ export default {
                 isShow: false,
                 title: '添加评语',
                 labelPosition: 'right',
-                formLabelWidth: '65px',
+                formLabelWidth: '70px',
                 panelType: 'edit',
                 curCommentId: '',
                 commentInfo: {
