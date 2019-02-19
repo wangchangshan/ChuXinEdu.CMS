@@ -12,7 +12,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [EnableCors("any")]
     [MyAuthenFilter]
     [ApiController]
@@ -27,9 +27,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
             _chuxinWorkFlow = chuxinWorkFlow;
         }        
 
-        // GET api/activity
+        // GET api/activity/getlist
         [HttpGet]
-        public ActionResult<string> Get(string q)
+        public ActionResult<string> GetList(string q)
         {
             int totalCount = 0;
             QUERY_SYS_ACTIVITY query = JsonConvert.DeserializeObject<QUERY_SYS_ACTIVITY>(q);
@@ -47,16 +47,23 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }, settings);
         }
 
-        // GET api/activity/1
+        // GET api/activity/getdetail
         [HttpGet("{activityId}")]
-        public SysActivity Get(int activityId)
+        public SysActivity GetDetail(int activityId)
         {
             return _chuxinQuery.GetActivityById(activityId);
         }
 
-        // POST api/activity
+        // GET api/activity/getstudents
+        [HttpGet("{activityId}")]
+        public List<StudentActivity> GetStudents(int activityId)
+        {
+            return _chuxinQuery.GetStudentByActivity(activityId);
+        }
+
+        // POST api/activity/saveactivity
         [HttpPost("{activityId}")]
-        public ActionResult<string> Post(int activityId, [FromBody] SysActivity activity)
+        public ActionResult<string> SaveActivity(int activityId, [FromBody] SysActivity activity)
         {
             string result = string.Empty;
             int id = 0;
@@ -74,9 +81,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return new JsonResult(new { code = result, id = id });
         }
 
-        // DELETE api/activity/5
+        // POST api/activity/savestudents
+        [HttpPost("{activityId}")]
+        public ActionResult<string> SaveStudents(int activityId, [FromBody] List<StudentActivity> saList)
+        {
+            string result = string.Empty;
+            result = _chuxinWorkFlow.SaveStudent2Activity(activityId, saList);
+
+            return result;
+        }
+
+        // DELETE api/activity/delactivity
         [HttpDelete("{id}")]
-        public string Delete(int id)
+        public string DelActivity(int id)
         {
             string result = string.Empty;
             result = _chuxinWorkFlow.RemoveActivity(id);

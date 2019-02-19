@@ -649,6 +649,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public List<StudentActivity> GetStudentByActivity(int activityId)
+        {
+            using(BaseContext context = new BaseContext())
+            {
+                return context.StudentActivity.Where(s => s.ActivityId == activityId).ToList();
+            }
+        }
+
         #endregion
 
         #region teacher

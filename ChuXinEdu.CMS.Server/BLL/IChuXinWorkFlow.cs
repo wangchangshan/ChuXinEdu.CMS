@@ -147,6 +147,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [删除活动]
         string RemoveActivity(int id);
 
+        // [保存活动学生]
+        string SaveStudent2Activity(int id, List<StudentActivity> saList);
+
         // [添加教师]
         string AddTeacher(Teacher teacher);
 

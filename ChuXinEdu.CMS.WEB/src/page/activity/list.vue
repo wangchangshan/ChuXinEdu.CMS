@@ -11,18 +11,21 @@
             </el-form-item>
             <el-form-item class="btnRight">
                 <router-link :to="'/newActivity'">
-                    <el-button type="primary" size="small" icon="el-icon-plus" >创建新活动</el-button>
-                 </router-link>
-                <el-button type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
+                    <el-button type="primary" size="small" icon="el-icon-plus">创建新活动</el-button>
+                </router-link>
             </el-form-item>
         </el-form>
     </div>
     <div class="table_container">
         <el-table :data="activityList" v-loading="loading" style="width: 100%" align="left" border stripe size="mini" :height="tableHeight">
-            <el-table-column type="index" align='center' width="40" fixed></el-table-column>
-            <el-table-column prop="activitySubject" label="活动主题" align='left' min-width="230" fixed>
+            <el-table-column type="expand">
+                <template slot-scope="scope">
+                    <div v-html="scope.row.activityContent"></div>
+                </template>
             </el-table-column>
-            <el-table-column prop="activityDate" label="活动时间" align='center' width="175" fixed>
+            <el-table-column prop="activitySubject" label="活动主题" align='left' min-width="230">
+            </el-table-column>
+            <el-table-column prop="activityDate" label="活动时间" align='center' width="175">
             </el-table-column>
             <el-table-column prop="activityCourseCount" label="课时数" align='center' width="70">
             </el-table-column>
@@ -31,7 +34,7 @@
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="100">
                 <template slot-scope="scope">
                     <router-link :to="{ name: '编辑活动', params: { activityId: scope.row.activityId }}">
-                        <el-button type="primary" size="small" icon="el-icon-edit">编辑</el-button>
+                        <el-button type="warning" size="small" icon="el-icon-edit">编辑</el-button>
                     </router-link>
                 </template>
             </el-table-column>
@@ -131,18 +134,17 @@ export default {
             if (where) {
                 data = Object.assign(data, where || {});
             }
-            
+
             axios({
                 type: 'get',
-                path: '/api/activity',
+                path: '/api/activity/getlist',
                 data: data,
                 fn: result => {
                     this.paginations.total = result.totalCount;
                     result.data.forEach(item => {
-                        if(item.activityFromDate == item.activityToDate) {
+                        if (item.activityFromDate == item.activityToDate) {
                             item.activityDate = item.activityFromDate
-                        }
-                        else {
+                        } else {
                             item.activityDate = item.activityFromDate + '至' + item.activityToDate
                         }
                     });
@@ -168,39 +170,6 @@ export default {
                 }
             });
         },
-
-        export2Excle() {
-            if (this.activityList.length == 0) {
-                this.$message({
-                    message: '没有数据需要导出！',
-                    type: 'success'
-                });
-                return;
-            }
-            this.downloadLoading = true
-            import('@/vendor/Export2Excel').then(excel => {
-                const tHeader = ['套餐编码', '套餐名称', '课程类别', '课时数目', '价 格', '是否启用'];
-                const filterVal = ['packageCode', 'packageName', 'packageCourseCategoryName', 'packageCourseCount', 'packagePrice', 'packageEnabled']
-                const data = this.formatJson(filterVal, this.activityList)
-                excel.export_json_to_excel({
-                    header: tHeader,
-                    data,
-                    filename: '课程套餐列表',
-                    autoWidth: true,
-                    bookType: 'xlsx'
-                })
-                this.downloadLoading = false;
-            })
-        },
-        formatJson(filterVal, jsonData) {
-            return jsonData.map(v => filterVal.map(j => {
-                if (j === 'time') {
-                    return v[j] && v[j].split('T')[0] || ''; //parseTime(v[j])
-                } else {
-                    return v[j]
-                }
-            }))
-        }
     }
 }
 </script>
@@ -220,6 +189,7 @@ export default {
     width: 100%;
     min-width: 750px;
 }
+
 .pagination {
     text-align: left;
     margin-top: 10px

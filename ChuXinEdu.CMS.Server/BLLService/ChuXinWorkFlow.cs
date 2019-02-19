@@ -1808,13 +1808,47 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     if (activity != null)
                     {
                         context.SysActivity.Remove(activity);
+
+                        var sas = context.StudentActivity.Where(s => s.ActivityId == id).ToList();
+                        foreach (var sa in sas)
+                        {
+                            context.StudentActivity.Remove(sa);                            
+                        }
                         context.SaveChanges();
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "删除学生介绍信息失败");
+                _logger.LogError(ex, "删除活动失败");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string SaveStudent2Activity(int id, List<StudentActivity> saList)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var sas = context.StudentActivity.Where(s => s.ActivityId == id).ToList();
+                    foreach(StudentActivity sa in sas)
+                    {
+                        context.StudentActivity.Remove(sa);
+                    }
+
+                    foreach (var sa in saList)
+                    {
+                        context.StudentActivity.Add(sa);
+                    }
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加活动学生失败");
                 result = "1500";
             }
             return result;

@@ -307,6 +307,51 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 上传头像 POST api/upload/uploadactivityimage
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string UploadActivityImage()
+        {
+            string result = "1600";
+
+            string contentRootPath = _hostingEnvironment.ContentRootPath;
+            string documentPath = "/cxdocs/activitys/" + DateTime.Now.Year.ToString() + "/" + DateTime.Now.Month.ToString() + "/";
+
+            if (!Directory.Exists(contentRootPath + documentPath))
+            {
+                Directory.CreateDirectory(contentRootPath + documentPath);
+            }
+
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
+            if (file != null)
+            {
+                string ext = Path.GetExtension(file.FileName);
+                string newName = string.Format("{0}{1}", Guid.NewGuid().ToString("N"), ext);
+                documentPath = documentPath + newName;
+                string savePath = contentRootPath + documentPath;
+
+                using (var stream = System.IO.File.Create(savePath))
+                {
+                    file.CopyTo(stream);
+                }
+                
+                    string fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                    // 数据入库
+                    StudentActivityImage activity = new StudentActivityImage
+                    {
+                        ActivityId = 0
+                    };
+                //result = _chuxinWorkFlow.UploadAvtivityImages(activity);
+            }
+            else
+            {
+                return result;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 获取图片 Get api/upload/getimage
         /// </summary>
         /// <returns></returns>

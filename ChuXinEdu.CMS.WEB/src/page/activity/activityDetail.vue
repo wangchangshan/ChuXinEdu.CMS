@@ -9,11 +9,11 @@
             <el-button v-noRepeatClick size="small" type="success" @click="submitForm(true)">保存并返回列表
             </el-button>
             <router-link :to="'/activity'">
-                <el-button v-noRepeatClick size="small" type="warning" >取消</el-button>
+                <el-button v-noRepeatClick size="small" type="warning" style="margin-right:10px;margin-left:3px">取消</el-button>
             </router-link>
         </sticky>
 
-        <div class="createPost-main-container">
+        <div class="createPost-main-container" :style="{height: height + 'px'}">
             <el-row>
                 <el-col :span="24">
                     <el-form-item style="margin-left: 10px" prop="activitySubject">
@@ -123,6 +123,7 @@ export default {
             },
             studentActivityList: [],
             activityId: 0,
+            height: this.$store.state.page.win_content.height - 60,
             postForm: Object.assign({}, defaultForm),
             rules: {
                 activitySubject: [{
@@ -159,7 +160,7 @@ export default {
         getActivieStudents() {
             axios({
                 type: 'get',
-                path: '/api/config/getactivestudent',
+                path: '/api/config/getenablestudent',
                 fn: result => {
                     this.selStudent.rawList = result
                 }
@@ -168,13 +169,21 @@ export default {
         fetchActivityData(activityId) {
             axios({
                 type: 'get',
-                path: '/api/activity/' + activityId,
+                path: '/api/activity/getdetail/' + activityId,
                 fn: result => {
                     this.postForm.activitySubject = result.activitySubject
-                    this.postForm.activityAddress = result.activityAddress                    
-                    this.postForm.activityDate = [result.activityFromDate.split('T')[0],result.activityToDate.split('T')[0]]
+                    this.postForm.activityAddress = result.activityAddress
+                    this.postForm.activityDate = [result.activityFromDate.split('T')[0], result.activityToDate.split('T')[0]]
                     this.postForm.activityCourseCount = result.activityCourseCount
                     this.postForm.activityContent = result.activityContent
+                }
+            });
+            axios({
+                type: 'get',
+                path: '/api/activity/getstudents/' + activityId,
+                fn: result => {
+                    this.studentActivityList = result;
+                    this.selStudent.selected = result.map(v => v.studentCode);
                 }
             });
         },
@@ -183,19 +192,27 @@ export default {
                 if (valid) {
                     this.postForm.activityFromDate = this.postForm.activityDate[0];
                     this.postForm.activityToDate = this.postForm.activityDate[1];
+                    let sSaved = false;
+                    if (this.activityId != 0) {
+                        sSaved = true;
+                        this.saveStudents();
+                    }
                     axios({
                         type: 'post',
-                        path: '/api/activity/' + this.activityId,
+                        path: '/api/activity/saveactivity/' + this.activityId,
                         data: this.postForm,
                         fn: result => {
                             if (result.code == 1200) {
                                 this.activityId = result.id;
+                                if(sSaved = false){
+                                    this.saveStudents();
+                                }
                                 this.$route.params.activityId = result.id;
                                 this.$message({
                                     message: '保存成功',
                                     type: 'success'
                                 });
-                                if(jump2list){
+                                if (jump2list) {
                                     this.$router.push('/activity')
                                 }
                             } else {
@@ -206,11 +223,23 @@ export default {
                             }
                         }
                     });
-                    this.status = 'published'
+                    this.status = 'saved'
                 } else {
                     return false
                 }
             })
+        },
+        saveStudents() {
+            this.studentActivityList.forEach(v => {
+                v.activityId = this.activityId;
+            })
+
+            axios({
+                type: 'post',
+                path: '/api/activity/savestudents/' + this.activityId,
+                data: this.studentActivityList,
+                fn: result => {}
+            });
         },
         deleteForm() {
             this.$confirm('确定删除当前活动吗?', '提示', {
@@ -220,7 +249,7 @@ export default {
             }).then(() => {
                 axios({
                     type: 'delete',
-                    path: '/api/activity/' + this.activityId,
+                    path: '/api/activity/delactivity/' + this.activityId,
                     fn: result => {
                         if (result == 1200) {
                             this.$message({
@@ -228,7 +257,7 @@ export default {
                                 type: 'success'
                             });
                             this.$router.push("/activity")
-                        }else {
+                        } else {
                             this.$message({
                                 message: '删除活动失败！',
                                 type: 'error'
@@ -264,7 +293,7 @@ export default {
                     }
                 }
                 return {
-                    activityId: 0,
+                    activityId: this.activityId,
                     studentCode: item,
                     studentName: studentName
                 }
@@ -289,6 +318,7 @@ export default {
 
     .createPost-main-container {
         padding: 0px 25px 0 20px;
+        overflow-y: auto;
 
         .postInfo-container {
             position: relative;
