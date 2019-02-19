@@ -158,7 +158,7 @@ export default {
             }).then(() => {
                 axios({
                     type: 'delete',
-                    path: '/api/comment/' + this.commentDialog.curCommentId,
+                    path: '/api/comment/' + commentId,
                     fn: result => {
                         if (result === 1200) {
                             this.fetchData();

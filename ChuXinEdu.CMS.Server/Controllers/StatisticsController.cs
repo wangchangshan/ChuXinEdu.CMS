@@ -74,13 +74,22 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 return cs;
             }
 
-            foreach (DataRow dr in dtTotal.Rows)
+            DateTime beginDate = new DateTime(2017, 12, 31);
+            int curY = DateTime.Now.Year;
+            int curM = DateTime.Now.Month;
+            while(beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
             {
-                string ym = dr["ym"].ToString();
+                string ym = beginDate.ToString("yyyy-MM");
+                int meishu = GetAmountByYm(dtMeishu, ym);
+                int shufa = GetAmountByYm(dtShufa, ym);
+                int total = GetAmountByYm(dtTotal, ym);
+
                 cs.xMonth.Add(ym);
-                cs.yTotal.Add(Int32.Parse(dr["amount"].ToString()));
-                cs.yMeishu.Add(GetAmountByYm(dtMeishu, ym));
-                cs.yShufa.Add(GetAmountByYm(dtShufa, ym));
+                cs.yMeishu.Add(meishu);
+                cs.yShufa.Add(shufa);
+                cs.yTotal.Add(total);
+
+                beginDate = beginDate.AddMonths(1);
             }
             return cs;
         }

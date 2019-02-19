@@ -204,7 +204,7 @@ export default {
                         fn: result => {
                             if (result.code == 1200) {
                                 this.activityId = result.id;
-                                if(sSaved = false){
+                                if(sSaved == false){
                                     this.saveStudents();
                                 }
                                 this.$route.params.activityId = result.id;
@@ -233,7 +233,6 @@ export default {
             this.studentActivityList.forEach(v => {
                 v.activityId = this.activityId;
             })
-
             axios({
                 type: 'post',
                 path: '/api/activity/savestudents/' + this.activityId,
