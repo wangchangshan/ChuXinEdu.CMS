@@ -47,12 +47,29 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public IEnumerable<StudentCourseArrange> GetArrangeDirty()
+        public List<StudentCourseArrange> GetArrangeDirty()
         {
+            List<StudentCourseArrange> dirtys = new List<StudentCourseArrange>();
             using (BaseContext context = new BaseContext())
             {
-                var arrange = context.StudentCourseArrange.Where(a => a.CourseRestCount <= 0).ToList();
-                return arrange;
+                var arranges1 = context.StudentCourseArrange.Where(a => a.CourseRestCount <= 0).ToList();
+                foreach (var item in arranges1)
+                {
+                    dirtys.Add(item);
+                }
+                var arranges2 = context.StudentCourseArrange.ToList();
+                foreach (var item in arranges2)
+                {
+                    int count = context.StudentCourseList.Where(s => s.StudentCode == item.StudentCode
+                                                        && s.ArrangeGuid == item.ArrangeGuid
+                                                        && s.AttendanceStatusCode == "09")
+                                            .Count();
+                    if(item.CourseRestCount != count)
+                    {
+                        dirtys.Add(item);
+                    }
+                }
+                return dirtys;
             }
         }
 

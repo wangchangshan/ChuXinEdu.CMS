@@ -15,7 +15,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<DIC_R_KEY_VALUE> GetSysCoursePackage(string categoryCode);
 
-        IEnumerable<StudentCourseArrange> GetArrangeDirty();
+        List<StudentCourseArrange> GetArrangeDirty();
         
         IEnumerable<StudentCoursePackage> GetPackageDirty();
 
