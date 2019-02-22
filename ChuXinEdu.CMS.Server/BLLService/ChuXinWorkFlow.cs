@@ -48,12 +48,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         // 是否已经登录了
                         if (!String.IsNullOrEmpty(sysUser.Token) && sysUser.TokenExpireTime > DateTime.Now)
                         {
-                            // ip 相同，则直接登录
+                            // 同一个局域网内，则直接登录 (允许账号在一个局域网内多点登陆)
                             if (ip == sysUser.LastLoginIP)
                             {
-                                result = "1200";
+                                result = "1201";
+                                token = sysUser.Token;
                                 sysUser.LastLoginTime = DateTime.Now;
                                 context.SaveChanges();
+                            }
+                            else
+                            {
+                                result = "1701";
                             }
                         }
                         else

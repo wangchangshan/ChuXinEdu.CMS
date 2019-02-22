@@ -156,7 +156,7 @@ export default {
                         path: '/api/account/login',
                         data: loginData,
                         fn: result => {
-                            if (result.code == 1200) {
+                            if (result.code == 1200 || result.code == 1201) {
                                 this.saveUserInfo(result);
                                 this.getConfigs();
                                 this.generateMenu(result.roles);

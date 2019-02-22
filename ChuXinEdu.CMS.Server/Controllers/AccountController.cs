@@ -45,7 +45,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public ActionResult<string> Login([FromBody] dynamic loginForm)
         {
             string result = string.Empty;
-            string loginCode = loginForm.username.ToString();
+            string loginCode = loginForm.username.ToString().ToUpper();
             string pwd = loginForm.password.ToString();
             
             string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(); 
@@ -84,12 +84,24 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 signToken = Guid.NewGuid().ToString("N");
                 result = _chuxinWorkFlow.SaveUserLoginInfo(loginCode, ip, signToken);
             }
+            else if(result == "1201") // 同一局域网内的登陆
+            {
+                if(teacherCode == "0")
+                {
+                    roles = "1007";
+                }
+                else 
+                {
+                    roles = _chuxinQuery.GetRoles(teacherCode);
+                }
+            }
             
             return new JsonResult(new { code = result, data = signToken, roles = roles });
         }
 
         // POST api/account/checkpwd
         [HttpPost]
+        [MyAuthenFilter]
         public ActionResult<string> CheckPwd([FromBody] dynamic loginForm)
         {
             string result = string.Empty;
@@ -117,8 +129,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return new JsonResult(new { code = result });
         }
 
-          // POST api/account/login
+          // POST api/account/changepwd
         [HttpPost]
+        [MyAuthenFilter]
         public ActionResult<string> ChangePwd([FromBody] dynamic pwdForm)
         {
             string result = string.Empty;
