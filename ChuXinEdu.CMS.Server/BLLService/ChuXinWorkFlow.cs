@@ -2285,11 +2285,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var arrange = context.StudentCourseArrange.FirstOrDefault(a => a.Id == id && a.CourseRestCount <= 0);
+                    var arrange = context.StudentCourseArrange.FirstOrDefault(a => a.Id == id);
                     if (arrange != null)
                     {
-                        context.Remove(arrange);
-                        context.SaveChanges();
+                        string arrangeGuid = arrange.ArrangeGuid;
+                        string studentCode = arrange.StudentCode;
+                        var courseCount = context.StudentCourseList.Where(s => s.ArrangeGuid == arrangeGuid 
+                                                                            && s.AttendanceStatusCode == "09"
+                                                                            && s.StudentCode == studentCode)
+                                                                    .Count();
+                        if(courseCount == 0)
+                        {
+                            context.Remove(arrange);
+                            context.SaveChanges();
+                        }
+                        else if(courseCount != arrange.CourseRestCount)
+                        {
+                            arrange.CourseRestCount = courseCount;
+                            context.SaveChanges();
+                        }
                     }
                 }
             }
