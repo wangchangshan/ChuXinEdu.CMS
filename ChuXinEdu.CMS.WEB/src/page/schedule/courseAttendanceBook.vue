@@ -39,7 +39,7 @@
             </el-table-column>
             <el-table-column prop="operation" align='left' label="操作" fixed="right" width="160">
                 <template slot-scope='scope'>
-                    <el-button v-noRepeatClick type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId)'>请假</el-button>
+                    <el-button v-noRepeatClick type="warning" icon='edit' size="mini" @click='qingJiaCourse(scope.row.studentCourseId, scope.row.courseType)'>请假</el-button>
                     <el-button v-noRepeatClick type="success" icon='edit' size="mini" @click='showSingleSignInDialog(scope.row)'>签到</el-button>
                 </template>
             </el-table-column>
@@ -338,8 +338,13 @@ export default {
             });
         },
         // 请假
-        qingJiaCourse(studentCourseId) {
-            var _this = this;
+        qingJiaCourse(studentCourseId, courseType) {
+            if(courseType == '试听') {
+                this.$alert('试听学员不支持请假，请直接在排课页面删除当前课程！', '操作提醒', {
+                    confirmButtonText: '确定'
+                });
+                return;
+            }
             this.$confirm('是否确定该学员已请假？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -351,13 +356,13 @@ export default {
                     data: {
                         StudentCourseId: studentCourseId
                     },
-                    fn: function (result) {
+                    fn: result => {
                         if (result === 1200) {
-                            _this.$message({
+                            this.$message({
                                 message: '请假成功！',
                                 type: 'success'
                             });
-                            _this.removeTableRow(studentCourseId);
+                            this.removeTableRow(studentCourseId);
                         }
                     }
                 });
