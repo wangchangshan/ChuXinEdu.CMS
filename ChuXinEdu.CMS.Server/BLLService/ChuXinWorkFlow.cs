@@ -1428,8 +1428,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
+                    bool changeName = false;
                     var s = context.Student.Where(st => st.StudentCode == studentCode).First();
-
+                    if (s.StudentName != student.StudentName)
+                    {
+                        changeName = true;
+                        s.StudentName = student.StudentName;
+                    }
                     s.StudentSex = student.StudentSex;
                     s.StudentBirthday = student.StudentBirthday;
                     s.StudentIdentityCardNum = student.StudentIdentityCardNum;
@@ -1440,6 +1445,61 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     s.StudentStatus = student.StudentStatus;
 
                     context.SaveChanges();
+
+                    if(changeName)
+                    {
+                        var trialStudent = context.StudentTemp.Where(x => x.StudentCode == studentCode).FirstOrDefault();
+                        if(trialStudent != null)
+                        {
+                            trialStudent.StudentName = student.StudentName;
+                        }
+                        context.SaveChanges();
+
+                        List<StudentCoursePackage> scpList = context.StudentCoursePackage.Where(x => x.StudentCode == studentCode).ToList();
+                        foreach(var scp in scpList)
+                        {
+                            scp.StudentName = student.StudentName;
+                        }
+
+                        List<StudentCourseArrange> scaList = context.StudentCourseArrange.Where(x => x.StudentCode == studentCode).ToList();
+                        foreach (var sca in scaList)
+                        {
+                            sca.StudentName = student.StudentName;
+                        }
+
+                        List<StudentCourseComment> sccList = context.StudentCourseComment.Where(x => x.StudentCode == studentCode).ToList();
+                        foreach (var scc in sccList)
+                        {
+                            scc.StudentName = student.StudentName;
+                        }
+                        
+                        List<StudentRecommend> srList1 = context.StudentRecommend.Where(x => x.NewStudentCode == studentCode).ToList();
+                        foreach (var sr in srList1)
+                        {
+                            sr.NewStudentName = student.StudentName;   
+                        }
+
+                        List<StudentRecommend> srList2 = context.StudentRecommend.Where(x => x.OriginStudentCode == studentCode).ToList();
+                        foreach (var sr in srList2)
+                        {
+                            sr.OriginStudentName = student.StudentName;   
+                        }
+
+                        List<StudentActivity> saList = context.StudentActivity.Where(x => x.StudentCode == studentCode).ToList();
+                        foreach (var sa in saList)
+                        {
+                            sa.StudentName = student.StudentName;
+                        }
+
+                        context.SaveChanges();
+
+                        List<StudentCourseList> sclList = context.StudentCourseList.Where(x => x.StudentCode == studentCode).ToList();
+                        foreach (var scl in sclList)
+                        {
+                            scl.StudentName = student.StudentName;
+                        }
+                        context.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
@@ -1735,7 +1795,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 using (BaseContext context = new BaseContext())
                 {
                     var scc = context.StudentCourseComment.Where(s => s.CommentId == id).FirstOrDefault();
-                    if(scc != null)
+                    if (scc != null)
                     {
                         context.StudentCourseComment.Remove(scc);
                         context.SaveChanges();
@@ -1781,14 +1841,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 using (BaseContext context = new BaseContext())
                 {
                     var ac = context.SysActivity.Where(s => s.ActivityId == id).FirstOrDefault();
-                    if(ac != null)
+                    if (ac != null)
                     {
                         ac.ActivitySubject = activity.ActivitySubject;
                         ac.ActivityFromDate = activity.ActivityFromDate;
                         ac.ActivityToDate = activity.ActivityToDate;
                         ac.ActivityCourseCount = activity.ActivityCourseCount;
                         ac.ActivityAddress = activity.ActivityAddress;
-                        ac.ActivityContent =activity.ActivityContent;
+                        ac.ActivityContent = activity.ActivityContent;
 
                         context.SaveChanges();
                     }
@@ -1817,7 +1877,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         var sas = context.StudentActivity.Where(s => s.ActivityId == id).ToList();
                         foreach (var sa in sas)
                         {
-                            context.StudentActivity.Remove(sa);                            
+                            context.StudentActivity.Remove(sa);
                         }
                         context.SaveChanges();
                     }
@@ -1839,7 +1899,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 using (BaseContext context = new BaseContext())
                 {
                     var sas = context.StudentActivity.Where(s => s.ActivityId == id).ToList();
-                    foreach(StudentActivity sa in sas)
+                    foreach (StudentActivity sa in sas)
                     {
                         context.StudentActivity.Remove(sa);
                     }
@@ -1859,7 +1919,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
         #endregion
-        
+
         #region teacher
         public string AddTeacher(Teacher teacher)
         {
@@ -2112,7 +2172,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             }
                         }
                         else
-                        { 
+                        {
                             result = "1600";
                         }
 
@@ -2174,8 +2234,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    int typeCount = context.SysDictionary.Count( s => s.TypeCode == dicList[0].TypeCode);
-                    if(typeCount > 0)
+                    int typeCount = context.SysDictionary.Count(s => s.TypeCode == dicList[0].TypeCode);
+                    if (typeCount > 0)
                     {
                         result = "1600";
                     }
@@ -2295,16 +2355,16 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     {
                         string arrangeGuid = arrange.ArrangeGuid;
                         string studentCode = arrange.StudentCode;
-                        var courseCount = context.StudentCourseList.Where(s => s.ArrangeGuid == arrangeGuid 
+                        var courseCount = context.StudentCourseList.Where(s => s.ArrangeGuid == arrangeGuid
                                                                             && s.AttendanceStatusCode == "09"
                                                                             && s.StudentCode == studentCode)
                                                                     .Count();
-                        if(courseCount == 0)
+                        if (courseCount == 0)
                         {
                             context.Remove(arrange);
                             context.SaveChanges();
                         }
-                        else if(courseCount != arrange.CourseRestCount)
+                        else if (courseCount != arrange.CourseRestCount)
                         {
                             arrange.CourseRestCount = courseCount;
                             context.SaveChanges();

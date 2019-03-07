@@ -168,7 +168,7 @@
         <div class="form">
             <el-form ref="baseInfo" :model="studentDialog.baseInfo" :rules="studentDialog.baseInfoRules" :label-width="studentDialog.formLabelWidth" :label-position='studentDialog.labelPosition' size="mini">
                 <el-form-item label="姓名">
-                    {{ studentDialog.baseInfo.studentName }} 
+                    <el-input v-model="studentDialog.baseInfo.studentName"></el-input>
                     <el-select v-model="studentDialog.baseInfo.studentStatus" placeholder="请选择学生状态">
                         <el-option v-for="item in $store.getters['student_status']" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
