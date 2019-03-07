@@ -355,7 +355,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "请假失败！");
+                _logger.LogError(ex, "请假失败！studentCourseId: " + studentCourseId.ToString());
                 result = "1500";
             }
             return result;
@@ -1491,12 +1491,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             sa.StudentName = student.StudentName;
                         }
 
+                        List<StudentBackFee> sbfList = context.StudentBackFee.Where(x => x.StudentCode == studentCode).ToList();
+                        foreach (var sbf in sbfList)
+                        {
+                            sbf.StudentName = student.StudentName;
+                        }                        
+
                         context.SaveChanges();
 
                         List<StudentCourseList> sclList = context.StudentCourseList.Where(x => x.StudentCode == studentCode).ToList();
                         foreach (var scl in sclList)
                         {
                             scl.StudentName = student.StudentName;
+                        }
+                        context.SaveChanges();
+
+                        List<StudentArtwork> sakList = context.StudentArtwork.Where(x => x.StudentCode == studentCode).ToList();
+                        foreach (var sak in sakList)
+                        {
+                            sak.StudentName = student.StudentName;
                         }
                         context.SaveChanges();
                     }
