@@ -49,7 +49,7 @@
         <div class="form">
             <el-form :inline="true" size="mini" class="demo-form-inline">
                 <el-form-item label="">
-                    <el-select placeholder="请选择套餐" v-model="supplementDialog.curPackageId" @change="pacakgeChanged" size='mini' style="width:320px">
+                    <el-select placeholder="请选择套餐" v-model="supplementDialog.curPackageId" @change="packageChanged" size='mini' style="width:320px">
                         <el-option v-for="item in supplementDialog.packageList" :key="item.id" :label="item.packageName" :value="item.id">
                         </el-option>
                     </el-select>
@@ -265,6 +265,9 @@ export default {
     created() {
         this.studentName = this.$route.query.studentname;
         this.getHistoryCourseList();
+    },
+    mounted() {
+        // document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight;
     },
     methods: {
         getHistoryCourseList() {
@@ -625,7 +628,7 @@ export default {
             this.getPeriodList();
         },
 
-        pacakgeChanged(selectedValue) {
+        packageChanged(selectedValue) {
             for (let p of this.supplementDialog.packageList) {
                 if (p.id == selectedValue) {
                     this.supplementDialog.selectedPackage = p;
