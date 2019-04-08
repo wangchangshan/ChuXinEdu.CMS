@@ -2,7 +2,7 @@
 <div class="login_page">
     <transition name="form-fade" mode="in-out">
         <div class="login_content">
-            <section class="form_container" v-show="showLogin">
+            <section class="form_container">
                 <div class="form_name">
                     <span class="title">初心教育后台管理系统</span>
                 </div>
@@ -71,9 +71,7 @@ export default {
                     message: '请输入密码',
                     trigger: 'blur'
                 }]
-            },
-            showLogin: false,
-            ip: ''
+            }
         }
     },
     created() {
@@ -88,7 +86,6 @@ export default {
         }
     },  
     mounted() {
-        this.showLogin = true;
     },
     computed: {
         ...mapGetters(['getMenuItems', 'getRouterLoadedStatus'])
@@ -198,16 +195,6 @@ export default {
                     }
                 }
             });
-        },
-        getIP() {
-            axios({
-                type: 'get',
-                path: 'http://httpbin.org/ip',
-                data: '',
-                fn: data => {
-                    this.ip = data.origin;
-                }
-            })
         },
         saveUserInfo(info) {
             const userinfo = {
