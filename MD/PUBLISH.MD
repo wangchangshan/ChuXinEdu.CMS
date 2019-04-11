@@ -240,6 +240,11 @@ vi nginx.config
 ## 重启nginx 使配置生效
 nginx -s reload
 ```
+>关闭防火墙或者开放端口
+```bash
+systemctl stop firewalld.service
+```
+
 
 #### 5.3 转到后端项目目录运行项目
 ```bash

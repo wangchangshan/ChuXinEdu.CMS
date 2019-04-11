@@ -189,12 +189,13 @@ crontab -e
 
 ### 2. .Net Core运行环境安装
 
-#### 2.1 注册微软产品，安装需要的依赖
+#### 2.1 安装源
+> 安装需要的运行时源
+https://dotnet.microsoft.com/download/linux-package-manager/centos/runtime-2.1.0
 
 ```bash
 sudo rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm
 ```
-
 #### 2.2 安装.Net RunTime
 
 > 官方参考：[为支持的 CentOS 和 Oracle Linux 分发/版本（64 位）安装 .NET Core](https://docs.microsoft.com/zh-cn/dotnet/core/linux-prerequisites?tabs=netcore2x)
