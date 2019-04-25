@@ -242,6 +242,7 @@ nginx -s reload
 ```
 >关闭防火墙或者开放端口
 ```bash
+# https://www.jianshu.com/p/411274f96492
 systemctl stop firewalld.service
 ```
 
@@ -253,6 +254,7 @@ dotnet xxx.dll
 #### 5.4 使用守护进程supervisor 托管netcore
 ```bash
 ## 1. 通过yum安装
+yum install epel-release
 yum install supervisor
 
 ## 2. 创建supervisor的配置目录
