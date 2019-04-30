@@ -76,6 +76,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 if(teacherCode == "0")
                 {
                     roles = "1007";
+                    if(loginCode == "CSWANG")
+                    {
+                        roles = "1007,99999"; // super
+                    }
                 }
                 else 
                 {
