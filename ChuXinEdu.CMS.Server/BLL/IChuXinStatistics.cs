@@ -13,5 +13,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         DataTable GetStudentDistribution_shufa();
         DataTable GetTrialStudentDistribution();
         DataTable GetIncomeDistribution();
+        DataTable GetTotalIncome();
+        IDictionary<string, decimal> GetTotalActualIncome();
     }
 }

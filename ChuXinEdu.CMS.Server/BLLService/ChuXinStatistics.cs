@@ -28,7 +28,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                 order by DATE_FORMAT(course_date,'%Y-%m')");
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "获取签到课程数据出错");
             }
@@ -46,7 +46,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                 order by DATE_FORMAT(course_date,'%Y-%m')");
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "获取每月学生数目出错");
             }
@@ -64,7 +64,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                 order by DATE_FORMAT(course_date,'%Y-%m')");
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "获取每月美术学生数据出错");
             }
@@ -82,7 +82,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                 order by DATE_FORMAT(course_date,'%Y-%m')");
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "获取每月书法学生数据出错");
             }
@@ -101,7 +101,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                 order by DATE_FORMAT(course_date,'%Y-%m')");
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "获取每月试听学生数据出错");
             }
@@ -118,11 +118,66 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                 order by DATE_FORMAT(pay_date,'%Y-%m')");
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "获取签到课程数据出错");
             }
             return dt;
+        }
+
+        public DataTable GetTotalIncome()
+        {
+            DataTable dt = null;
+            try
+            {
+                dt = ADOContext.GetDataTable(@"select course_category_name as name,sum(actual_price-fee_back_amount) as value 
+                                                from student_course_package 
+                                                where is_payed='Y' 
+                                                group by course_category_name");
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取整体报名收入分布出错");
+            }
+            return dt;
+        }
+
+        public IDictionary<string, decimal> GetTotalActualIncome()
+        {
+            Dictionary<string, decimal> actualIncome = new Dictionary<string, decimal>();
+            try
+            {
+                actualIncome.Add("国画", 0.00m);
+                actualIncome.Add("西画", 0.00m);
+                actualIncome.Add("硬笔", 0.00m);
+                actualIncome.Add("软笔", 0.00m);
+
+                DataTable dtPackage = ADOContext.GetDataTable(@"select id, actual_course_count,actual_price 
+                                                from student_course_package 
+                                                where is_payed='Y'");
+                foreach (DataRow dr in dtPackage.Rows)
+                {
+                    string packageId = dr["id"].ToString();
+                    decimal amount = Convert.ToDecimal(dr["actual_price"].ToString());
+                    int courseCount = Convert.ToInt32(dr["actual_course_count"].ToString());
+                    decimal unitPrice = amount / courseCount;
+
+                    DataTable dtCourse = ADOContext.GetDataTable(@"select course_folder_name, count(1) as course_count 
+                                                                    from student_course_list 
+                                                                    where student_course_package_id =@1 and attendance_status_code in ('01', '02') 
+                                                                    group by course_folder_name", packageId);
+                    foreach (DataRow drCourse in dtCourse.Rows)
+                    {
+                        actualIncome[drCourse["course_folder_name"].ToString()] += Convert.ToInt32(drCourse["course_count"].ToString()) * unitPrice;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取实际销课收入分布出错");
+            }
+            return actualIncome;
         }
     }
 }

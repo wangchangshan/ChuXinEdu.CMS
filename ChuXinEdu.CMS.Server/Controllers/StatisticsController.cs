@@ -29,34 +29,67 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         public StatisticsController(IChuXinStatistics chuxinStatistic)
         {
-            _chuxinStatistic = chuxinStatistic;    
+            _chuxinStatistic = chuxinStatistic;
         }
 
         // GET api/statistics/type
         [HttpGet("{type}")]
         public ActionResult<string> Get(string type)
         {
-            HomeGroupChat hgc = new HomeGroupChat();
-            switch (type)
-            {
-                case "dashboard":
-                    hgc.student = GetStudentClassifyForHome();
-                    hgc.course = GetCourseClassifyForHome();
-                    hgc.trialStudent = GetTrialStudentClassifyForHome();
-                    hgc.income = GetIncomeClassifyForHome();
-                break;
-
-                default:
-                break;
-            }
+            string resultJson = string.Empty;
 
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             settings.Formatting = Formatting.Indented;
-            string resultJson = JsonConvert.SerializeObject(hgc,settings);
+            switch (type)
+            {
+                case "dashboard":
+                    {
+                        HomeGroupChat hgc = new HomeGroupChat();
+                        hgc.student = GetStudentClassifyForHome();
+                        hgc.course = GetCourseClassifyForHome();
+                        hgc.trialStudent = GetTrialStudentClassifyForHome();
+                        hgc.income = GetIncomeClassifyForHome();
+                        resultJson = JsonConvert.SerializeObject(hgc, settings);
+                        break;
+                    }
+                case "totalsignupincome":
+                    {
+                        DataTable dtTotalSignUp = _chuxinStatistic.GetTotalIncome();
+                        resultJson = JsonConvert.SerializeObject(dtTotalSignUp, settings);
+                        break;
+                    }
+
+                case "totalactualincome":
+                    {
+                        IDictionary<string, decimal> actualIncome = _chuxinStatistic.GetTotalActualIncome();
+                        DataTable dtActualCourseIncome = new DataTable();
+                        dtActualCourseIncome.Columns.Add("name");
+                        dtActualCourseIncome.Columns.Add("value", typeof(decimal));
+
+                        foreach (var income in actualIncome)
+                        {
+                            DataRow dr = dtActualCourseIncome.NewRow();
+                            dr["name"] = income.Key;
+                            dr["value"] = income.Value;
+
+                            dtActualCourseIncome.Rows.Add(dr);
+                        }
+                        
+
+                        resultJson = JsonConvert.SerializeObject(dtActualCourseIncome, settings);
+                        break;
+                    }
+
+
+                default:
+                    break;
+            }
+
             return resultJson;
         }
 
+        #region dashboard line chart
         private ClassifyStatistic GetStudentClassifyForHome()
         {
             ClassifyStatistic cs = new ClassifyStatistic();
@@ -69,7 +102,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             DataTable dtMeishu = _chuxinStatistic.GetStudentDistribution_meishu();
             DataTable dtShufa = _chuxinStatistic.GetStudentDistribution_shufa();
 
-            if(dtTotal == null || dtMeishu == null || dtShufa == null)
+            if (dtTotal == null || dtMeishu == null || dtShufa == null)
             {
                 return cs;
             }
@@ -77,7 +110,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             DateTime beginDate = new DateTime(2017, 12, 31);
             int curY = DateTime.Now.Year;
             int curM = DateTime.Now.Month;
-            while(beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
+            while (beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
             {
                 string ym = beginDate.ToString("yyyy-MM");
                 int meishu = GetAmountByYm(dtMeishu, ym);
@@ -104,7 +137,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             DataTable dtTotal = _chuxinStatistic.GetCourseDistribution();
 
-            if(dtTotal == null)
+            if (dtTotal == null)
             {
                 return cs;
             }
@@ -112,7 +145,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             DateTime beginDate = new DateTime(2017, 12, 31);
             int curY = DateTime.Now.Year;
             int curM = DateTime.Now.Month;
-            while(beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
+            while (beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
             {
                 string ym = beginDate.ToString("yyyy-MM");
                 int meishu = GetAmountByYm(dtTotal, ym, "meishu");
@@ -138,7 +171,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             DataTable dtTotal = _chuxinStatistic.GetTrialStudentDistribution();
 
-            if(dtTotal == null)
+            if (dtTotal == null)
             {
                 return cs;
             }
@@ -146,7 +179,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             DateTime beginDate = new DateTime(2017, 12, 31);
             int curY = DateTime.Now.Year;
             int curM = DateTime.Now.Month;
-            while(beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
+            while (beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
             {
                 string ym = beginDate.ToString("yyyy-MM");
                 int meishu = GetAmountByYm(dtTotal, ym, "meishu");
@@ -172,7 +205,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             DataTable dtTotal = _chuxinStatistic.GetIncomeDistribution();
 
-            if(dtTotal == null)
+            if (dtTotal == null)
             {
                 return cs;
             }
@@ -180,7 +213,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             DateTime beginDate = new DateTime(2017, 12, 31);
             int curY = DateTime.Now.Year;
             int curM = DateTime.Now.Month;
-            while(beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
+            while (beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
             {
                 string ym = beginDate.ToString("yyyy-MM");
                 int meishu = GetAmountByYm(dtTotal, ym, "meishu");
@@ -202,7 +235,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             foreach (DataRow dr in dt.Rows)
             {
-                if(dr["ym"].ToString() == ym)
+                if (dr["ym"].ToString() == ym)
                 {
                     amount = Int32.Parse(dr["amount"].ToString());
                     dt.Rows.Remove(dr);
@@ -218,7 +251,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             foreach (DataRow dr in dt.Rows)
             {
-                if(dr["ym"].ToString() == ym && dr["type"].ToString() == type)
+                if (dr["ym"].ToString() == ym && dr["type"].ToString() == type)
                 {
                     amount = Int32.Parse(dr["amount"].ToString().Split(".")[0]);
                     dt.Rows.Remove(dr);
@@ -227,24 +260,42 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
             return amount;
         }
+        #endregion  
+
+        #region pie chart  
+        #endregion 
     }
 
     class HomeGroupChat
     {
-        public ClassifyStatistic student{ get; set; }
-        public ClassifyStatistic course{ get; set; }
-        public ClassifyStatistic trialStudent{ get; set; }
-        public ClassifyStatistic income{ get; set; }
+        public ClassifyStatistic student { get; set; }
+        public ClassifyStatistic course { get; set; }
+        public ClassifyStatistic trialStudent { get; set; }
+        public ClassifyStatistic income { get; set; }
     }
 
     class ClassifyStatistic
     {
-        public List<string> xMonth{ get; set; }
+        public List<string> xMonth { get; set; }
 
-        public List<int> yMeishu{ get; set; }
+        public List<int> yMeishu { get; set; }
 
-        public List<int> yShufa{ get; set; }
+        public List<int> yShufa { get; set; }
 
-        public List<int> yTotal{ get; set; }
+        public List<int> yTotal { get; set; }
+    }
+
+    class PieChart
+    {
+        public List<string> typeList { get; set; }
+
+        public List<N_V> distribution { get; set; }
+    }
+
+    class N_V
+    {
+        public string name { get; set; }
+
+        public string value { get; set; }
     }
 }
