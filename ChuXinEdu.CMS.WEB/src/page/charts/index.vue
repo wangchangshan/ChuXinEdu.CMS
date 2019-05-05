@@ -4,25 +4,25 @@
     <el-row :gutter="32">
         <el-col :xs="12" :sm="12" :lg="12">
             <div class="chart-panel">
-                <pie-chart :chart-data="totalSignUpIncome" />
+                <pie-chart :chart-data="totalSignUpIncome" :height="'300px'"/>
             </div>
         </el-col>
         <el-col :xs="12" :sm="12" :lg="12">
             <div class="chart-panel">
-                <pie-chart :chart-data="totalActualIncome" />
+                <pie-chart :chart-data="totalActualIncome" :height="'300px'"/>
             </div>
         </el-col>
     </el-row>
     <el-row :gutter="32">
         <el-col :xs="24" :sm="24" :lg="24">
             <div class="chart-panel">
-                <el-row type="flex" class="row-bg" justify="end" style="padding-right:10px">
+                <el-row type="flex" class="row-bg" justify="end" style="padding-right:20px">
                     <el-col :span="6"> 
                         <el-date-picker v-model="monthRange" value-format="yyyy-MM" @change="getXiaoKeDistribution" style="float:right" z-index="9999" size="small" type="monthrange" align="right" unlink-panels range-separator="至" start-placeholder="开始月份" end-placeholder="结束月份" :picker-options="pickerOptions">
                         </el-date-picker>
                     </el-col>
                 </el-row>
-                <bar-chart :chart-data="xiaoketongji"/>
+                <bar-chart :chart-data="xiaoketongji" :height="'300px'"/>
             </div>
         </el-col>
     </el-row>
@@ -146,11 +146,11 @@ export default {
     width: 100%;
     background: #fff;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .dashboard-editor-container {
-    padding: 10px;
+    padding: 6px 0 0 0;
     background-color: rgb(240, 242, 245);
 }
 </style>
