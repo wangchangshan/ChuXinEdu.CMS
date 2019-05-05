@@ -24,7 +24,7 @@ export default {
         },
         height: {
             type: String,
-            default: '300px'
+            default: '350px'
         },
         chartData: {
             type: Object
@@ -66,10 +66,15 @@ export default {
             this.setOptions(this.chartData)
         },
         setOptions({
+            title,
             legendData,
             seriesData
         } = {}) {
             this.chart.setOption({
+                title: {
+                    text: title,
+                    left: 'left'
+                },
                 tooltip: {
                     trigger: 'item',
                     formatter: '{a} <br/>{b} : {c} ({d}%)'
@@ -83,20 +88,14 @@ export default {
                 series: [{
                     name: '分布图',
                     type: 'pie',
-                    // roseType: 'radius',
                     radius: [50, 70],
                     label: {
                         normal: {
                             formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
                             backgroundColor: '#eee',
                             borderColor: '#aaa',
-                            borderWidth: 1,
+                            borderWidth: 0,
                             borderRadius: 4,
-                            // shadowBlur:3,
-                            // shadowOffsetX: 2,
-                            // shadowOffsetY: 2,
-                            // shadowColor: '#999',
-                            // padding: [0, 7],
                             rich: {
                                 a: {
                                     color: '999',
@@ -113,23 +112,23 @@ export default {
                                 hr: {
                                     borderColor: '#aaa',
                                     width: '100%',
-                                    borderWidth: 0.5,
+                                    borderWidth: 0.4,
                                     height: 0
                                 },
                                 b: {
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     lineHeight: 33
                                 },
                                 per: {
                                     color: '#eee',
-                                    backgroundColor: '#334455',
+                                    backgroundColor: '#67c23a',
                                     padding: [2, 4],
                                     borderRadius: 2
                                 }
                             }
                         }
                     },
-                    center: ['50%', '38%'],
+                    center: ['50%', '48%'],
                     data: seriesData,
                     animationEasing: 'cubicInOut',
                     animationDuration: 2600

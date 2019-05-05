@@ -179,5 +179,25 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return actualIncome;
         }
+
+        public DataTable GetAllDistribution(string begin, string end)
+        {
+            DataTable dt = null;
+            try
+            {
+                dt = ADOContext.GetDataTable(@"select course_folder_code, count(1) as course_count, DATE_FORMAT(course_date,'%Y-%m') as ym 
+                                                from student_course_list 
+                                                where DATE_FORMAT(course_date,'%Y-%m') >= @1 and DATE_FORMAT(course_date,'%Y-%m') <= @2
+                                                    and attendance_status_code in ('01', '02') 
+                                                group by course_folder_code,DATE_FORMAT(course_date,'%Y-%m')"
+                                            , begin, end);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取销课课时分布数据出错");
+            }
+            return dt;
+        }
     }
 }

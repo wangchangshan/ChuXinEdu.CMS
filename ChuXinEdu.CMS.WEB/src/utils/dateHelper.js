@@ -1,5 +1,5 @@
 const dateHelper = {
-    getWeekNameByCode(code){
+    getWeekNameByCode(code) {
         let week = '';
         switch (code) {
             case 'day1':
@@ -94,13 +94,13 @@ const dateHelper = {
         }
         return week;
     },
-    
-    getDate(theDay){        
+
+    getDate(theDay) {
         var date;
-        if(!theDay){
+        if (!theDay) {
             date = new Date();
         }
-        else{
+        else {
             date = new Date(theDay);
         }
         var seperator1 = "-";
@@ -115,6 +115,35 @@ const dateHelper = {
         }
         var currentdate = year + seperator1 + month + seperator1 + strDate;
         return currentdate;
+    },
+
+    calcuteNewDate(_dateObject, x) {
+        if (_dateObject == null || undefined == _dateObject || _dateObject == '') {
+            _dateObject = new Date();
+        }
+
+        _dateObject.setMonth(_dateObject.getMonth() + x);
+
+        //返回日期的毫秒表示
+        var nd = _dateObject.valueOf();
+        nd = new Date(nd);
+
+        var y = nd.getFullYear();
+        var m = nd.getMonth() + 1;
+        var d = nd.getDate();
+
+        if (m <= 9) m = "0" + m;
+        if (d <= 9) d = "0" + d;
+        var cdate = y + "-" + m;
+
+        return cdate;
+    },
+
+    getDefaultMonthRange() {
+        let endDate = new Date()
+        let endMonth = this.calcuteNewDate(endDate, 0);
+        let beginMonth = this.calcuteNewDate(endDate, -6);
+        return beginMonth + ',' + endMonth;
     }
 }
 

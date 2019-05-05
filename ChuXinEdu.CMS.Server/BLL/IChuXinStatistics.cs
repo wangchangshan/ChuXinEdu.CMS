@@ -15,5 +15,6 @@ namespace ChuXinEdu.CMS.Server.BLL
         DataTable GetIncomeDistribution();
         DataTable GetTotalIncome();
         IDictionary<string, decimal> GetTotalActualIncome();
+        DataTable GetAllDistribution(string begin, string end);
     }
 }

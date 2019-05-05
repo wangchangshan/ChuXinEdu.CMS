@@ -34,7 +34,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         // GET api/statistics/type
         [HttpGet("{type}")]
-        public ActionResult<string> Get(string type)
+        public ActionResult<string> Get(string type, [FromQuery] string range)
         {
             string resultJson = string.Empty;
 
@@ -75,12 +75,24 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
                             dtActualCourseIncome.Rows.Add(dr);
                         }
-                        
 
                         resultJson = JsonConvert.SerializeObject(dtActualCourseIncome, settings);
                         break;
                     }
 
+                case "coursedistribution": //销课分布
+                    {
+                        string begin = DateTime.Now.ToString("yyyy-MM");
+                        string end = begin;
+                        if (!String.IsNullOrEmpty(range))
+                        {
+                            begin = range.Split(",")[0];
+                            end = range.Split(",")[1];
+                        }
+                        CourseDistribution cd = GetCoursedistribution(begin, end);
+                        resultJson = JsonConvert.SerializeObject(cd, settings);
+                        break;
+                    }
 
                 default:
                     break;
@@ -262,7 +274,60 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
         #endregion  
 
-        #region pie chart  
+        #region Bar chart  
+        private CourseDistribution GetCoursedistribution(string begin, string end)
+        {
+            CourseDistribution cd = new CourseDistribution();
+            cd.xMonth = new List<string>();
+            cd.guohua = new List<int>();
+            cd.xihua = new List<int>();
+            cd.ruanbi = new List<int>();
+            cd.yingbi = new List<int>();
+
+            DataTable dtDistribution = _chuxinStatistic.GetAllDistribution(begin, end);
+
+            if (dtDistribution == null)
+            {
+                return cd;
+            }
+
+            DateTime beginDate = Convert.ToDateTime(begin);
+            DateTime endDate = Convert.ToDateTime(end);
+
+            while (beginDate <= endDate)
+            {
+                string ym = beginDate.ToString("yyyy-MM");
+
+                int guohua = GetCourseCount(dtDistribution, "meishu_00", ym);
+                int xihua = GetCourseCount(dtDistribution, "meishu_01", ym);
+                int ruanbi = GetCourseCount(dtDistribution, "shufa_00", ym);
+                int yingbi = GetCourseCount(dtDistribution, "shufa_01", ym);
+
+                cd.xMonth.Add(ym);
+                cd.guohua.Add(guohua);
+                cd.xihua.Add(xihua);
+                cd.ruanbi.Add(ruanbi);
+                cd.yingbi.Add(yingbi);
+
+                beginDate = beginDate.AddMonths(1);
+            }
+            return cd;
+        }
+
+        private int GetCourseCount(DataTable dt, string code, string ym)
+        {
+            int count = 0;
+            foreach (DataRow dr in dt.Rows)
+            {
+                if (dr["course_folder_code"].ToString() == code && dr["ym"].ToString() == ym)
+                {
+                    count = Int32.Parse(dr["course_count"].ToString());
+                    dt.Rows.Remove(dr);
+                    break;
+                }
+            }
+            return count;
+        }
         #endregion 
     }
 
@@ -285,17 +350,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public List<int> yTotal { get; set; }
     }
 
-    class PieChart
+    class CourseDistribution
     {
-        public List<string> typeList { get; set; }
+        public List<string> xMonth { get; set; }
 
-        public List<N_V> distribution { get; set; }
-    }
+        public List<int> guohua { get; set; }
 
-    class N_V
-    {
-        public string name { get; set; }
+        public List<int> xihua { get; set; }
 
-        public string value { get; set; }
+        public List<int> ruanbi { get; set; }
+
+        public List<int> yingbi { get; set; }
     }
 }

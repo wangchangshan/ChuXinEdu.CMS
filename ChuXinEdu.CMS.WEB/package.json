@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "echarts": "^4.1.0",
-    "element-ui": "^2.4.9",
+    "element-ui": "^2.8.2",
     "file-saver": "^2.0.0-rc.4",
     "html2canvas": "^1.0.0-alpha.12",
     "js-file-download": "^0.4.4",
