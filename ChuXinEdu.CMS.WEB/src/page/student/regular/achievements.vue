@@ -3,7 +3,11 @@
     <el-row type="flex" class="row-bg" :gutter="10" style="overflow:auto" v-bind:style="{height: pageHeight + 'px'}">
         <el-col :span="6">
             <el-card v-for="achievement in artWorkList1" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
-                <img :src="achievement.showURL" class="image">
+                <el-image :src="achievement.showURL" lazy class="image">
+                    <div slot="placeholder" class="image-slot">
+                        加载中<span class="dot">...</span>
+                    </div>
+                </el-image>
                 <div style="padding: 14px;">
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
@@ -17,7 +21,11 @@
         </el-col>
         <el-col :span="6">
             <el-card v-for="achievement in artWorkList2" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
-                <img :src="achievement.showURL" class="image">
+                <el-image :src="achievement.showURL" lazy class="image">
+                    <div slot="placeholder" class="image-slot">
+                        加载中<span class="dot">...</span>
+                    </div>
+                </el-image>
                 <div style="padding: 14px;">
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
@@ -30,7 +38,11 @@
         </el-col>
         <el-col :span="6">
             <el-card v-for="achievement in artWorkList3" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
-                <img :src="achievement.showURL" class="image">
+                <el-image :src="achievement.showURL" lazy class="image">
+                    <div slot="placeholder" class="image-slot">
+                        加载中<span class="dot">...</span>
+                    </div>
+                </el-image>
                 <div style="padding: 14px;">
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
@@ -43,7 +55,11 @@
         </el-col>
         <el-col :span="6">
             <el-card v-for="achievement in artWorkList4" :key="achievement.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
-                <img :src="achievement.showURL" class="image">
+                <el-image :src="achievement.showURL" lazy class="image">
+                    <div slot="placeholder" class="image-slot">
+                        加载中<span class="dot">...</span>
+                    </div>
+                </el-image>
                 <div style="padding: 14px;">
                     <span>{{achievement.artworkTitle}}</span>
                     <div class="bottom clearfix">
