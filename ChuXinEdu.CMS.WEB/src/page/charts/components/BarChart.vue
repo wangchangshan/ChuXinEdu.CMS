@@ -71,7 +71,18 @@ export default {
             xihua,
             ruanbi,
             yingbi
-        }={}){
+        } = {}) {
+            var labelOption = {
+                normal: {
+                    show: true,
+                    position: 'top',
+                    distance: 10,
+                    align: 'center',
+                    verticalAlign: 'middle',
+                    rotate: 0,
+                    formatter: '{c}'
+                }
+            };
             this.chart.setOption({
                 title: {
                     text: '销课分布',
@@ -84,7 +95,7 @@ export default {
                     }
                 },
                 legend: {
-                    data:['国画','西画','软笔','硬笔']
+                    data: ['国画', '西画', '软笔', '硬笔']
                 },
                 grid: {
                     top: 40,
@@ -109,29 +120,32 @@ export default {
                 series: [{
                     name: '国画',
                     type: 'bar',
-                    // stack: 'total',
-                    barWidth: '10%',
+                    barGap: 0,
+                    barWidth: '20%',
+                    label: labelOption,
                     data: guohua,
                     animationDuration
                 }, {
                     name: '西画',
                     type: 'bar',
-                    // stack: 'total',
-                    barWidth: '10%',
+                    barWidth: '20%',
+                    label: labelOption,
                     data: xihua,
                     animationDuration
                 }, {
                     name: '软笔',
                     type: 'bar',
-                    stack: 'total',
-                    barWidth: '10%',
+                    // stack: 'shufa',
+                    barWidth: '20%',
+                    label: labelOption,
                     data: ruanbi,
                     animationDuration
                 }, {
                     name: '硬笔',
                     type: 'bar',
-                    stack: 'total',
-                    barWidth: '10%',
+                    // stack: 'shufa',
+                    barWidth: '20%',
+                    label: labelOption,
                     data: yingbi,
                     animationDuration
                 }]
