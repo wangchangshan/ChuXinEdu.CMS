@@ -18,7 +18,7 @@
             <div class="chart-panel">
                 <el-row type="flex" class="row-bg" justify="end" style="padding-right:20px">
                     <el-col :span="6"> 
-                        <el-date-picker v-model="monthRange" value-format="yyyy-MM" @change="getXiaoKeDistribution" style="float:right" z-index="9999" size="small" type="monthrange" align="right" unlink-panels range-separator="至" start-placeholder="开始月份" end-placeholder="结束月份" :picker-options="pickerOptions">
+                        <el-date-picker v-model="monthRange" :editable="false" value-format="yyyy-MM" @change="getXiaoKeDistribution" style="float:right" z-index="9999" size="small" type="monthrange" align="right" unlink-panels range-separator="至" start-placeholder="开始月份" end-placeholder="结束月份" :picker-options="pickerOptions">
                         </el-date-picker>
                     </el-col>
                 </el-row>
