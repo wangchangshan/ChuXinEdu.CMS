@@ -25,6 +25,7 @@
                     <div>
                         退费金额：( {{fpackage.actualPrice}} / {{fpackage.actualCourseCount}} ) X {{fpackage.restCourseCount}} = {{ fpackage.backFee }}
                     </div>
+                    <el-button v-noRepeatClick size="small" plain type="primary"  @click="packageFeeback(fpackage.id)">当前套餐退费</el-button>
                 </el-collapse-item>
             </el-collapse>
         </el-card>
@@ -35,7 +36,7 @@
                 <a class="big-title">总计退费 <span style="color:#f56767">{{totalFeeback}}</span> 元</a>
             </div>
             <div>
-                <el-button v-noRepeatClick type="primary" @click="submitFeeback()">退 费</el-button>
+                <el-button v-noRepeatClick type="primary" @click="submitFeeback()">全部退费</el-button>
             </div>
         </el-card>
     </el-row>
@@ -73,30 +74,56 @@ export default {
     created() {},
     methods: {
         prepareFeeback() {
-            var _this = this;
+            this.feeBackData = [];
+            this.totalFeeback = 0;
             axios({
                 type: 'get',
-                path: '/api/student/getnofinishpackage/' + _this.studentCode,
-                fn: function (result) {
+                path: '/api/student/getnofinishpackage/' + this.studentCode,
+                fn: (result) => {
                     if(result.length == 0){
-                        _this.noNeedFeeback = true;
+                        this.noNeedFeeback = true;
                     }
                     result.forEach(item => {
-                        _this.activeNames.push(item.packageCode);
+                        this.activeNames.push(item.packageCode);
                         item.backFee = ((item.actualPrice / item.actualCourseCount) * item.restCourseCount).toFixed(2);
-                        _this.totalFeeback += parseFloat(item.backFee);
-                        _this.feeBackData.push({
+                        this.totalFeeback += parseFloat(item.backFee);
+                        this.feeBackData.push({
                             Id: item.id,
                             feeBackAmount: parseFloat(item.backFee)
                         })
                     })
-                    _this.feeBackPackage = result;
+                    this.feeBackPackage = result;
                 }
+            });
+        },
+        packageFeeback(curPId){
+            var _this = this;
+            this.$confirm('确定对当前套餐进行退费操作?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                axios({
+                    type: 'put',
+                    path: '/api/student/packagefeeback/' + _this.studentCode + '?packageId=' + curPId,
+                    data: this.feeBackData,
+                    fn: function (result) {
+                        if (result == 1200) {
+                            _this.prepareFeeback();
+                            _this.$message({
+                                message: '套餐退费成功',
+                                type: 'success'
+                            });
+                        }
+                    }
+                });
+            }).catch(() => {
+                //
             });
         },
         submitFeeback() {
             var _this = this;
-            this.$confirm('确定对学员【' + _this.$route.query.studentname + '】进行退费操作?', '提示', {
+            this.$confirm('确定对学员【' + _this.$route.query.studentname + '】进行全部套餐退费操作?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -118,8 +145,7 @@ export default {
             }).catch(() => {
                 //
             });
-
-        },
+        }
     }
 }
 </script>

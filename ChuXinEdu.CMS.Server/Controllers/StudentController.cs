@@ -158,7 +158,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             IEnumerable<StudentTemp> studentList = _chuxinQuery.GetTempStudentToSelectCourse();
             return studentList;
-        }    
+        }
+
+        /// <summary>
+        /// 获取学生报名的套餐 GET api/student/getpackages
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<StudentCoursePackage> GetPackages(string studentCode)
+        {
+            return _chuxinQuery.GetStudentCoursePackage(studentCode);
+        }
 
         /// <summary>
         /// 获取学生基础信息 GET api/student/getbaseinfo
@@ -211,7 +220,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     shufa.TotalRestCourseCount += coursePackage.RestCourseCount;
                     if(coursePackage.IsPayed == "Y")
                     {
-                        shufa.TotalTuition += coursePackage.ActualPrice;
+                        shufa.TotalTuition += coursePackage.ActualPrice - coursePackage.FeeBackAmount;
                     }
                 }
             }
@@ -411,6 +420,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string Feeback(string studentCode, [FromBody] List<StudentCoursePackage> packageList)
         {
             string result = _chuxinWorkflow.SetStudentFeeBack(studentCode, packageList);
+            return result;
+        }
+
+        /// <summary>
+        /// 学生退费 PUT api/student/packagefeeback
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{studentcode}")]
+        public string PackageFeeback(string studentCode, int packageId, [FromBody] List<StudentCoursePackage> packageList)
+        {
+            string result = _chuxinWorkflow.SetStudentPackageFeeBack(studentCode, packageId, packageList);
             return result;
         }
 

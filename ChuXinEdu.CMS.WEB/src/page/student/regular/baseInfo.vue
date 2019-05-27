@@ -70,16 +70,20 @@
         <el-col :span="24">
             <template>
                 <el-table :data="pageData.coursePackageList" stripe border style="width: 100%" size="mini">
-                    <el-table-column prop="packageName" align='left' label="课程套餐" min-width="210">
+                    <el-table-column prop="" align='left' label="课程套餐" min-width="210">
+                        <template slot-scope='scope'>
+                            <i class="el-icon-success" :style="{color: scope.row.restCourseCount==0 ?'#67C23A' :''}"></i>
+                            {{ scope.row.packageName }}
+                        </template>
                     </el-table-column>
                     <el-table-column prop="" align='center' label="课程类别" min-width="90">
                         <template slot-scope='scope'>
                             {{ scope.row.courseCategoryName  + "/" + scope.row.courseFolderName }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="restCourseCount" align='center' label="剩余课时" min-width="80">
+                    <el-table-column prop="restCourseCount" align='center' label="剩余课时" min-width="70">
                         <template slot-scope='scope'>
-                            {{ scope.row.restCourseCount  + "/" + scope.row.actualCourseCount }}
+                            {{ scope.row.restCourseCount }}
                         </template>
                     </el-table-column>
                     <el-table-column prop="payDate" align='center' label="缴费日期" min-width="100">

@@ -99,6 +99,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [学生退费]
         string SetStudentFeeBack(string studentCode, List<StudentCoursePackage> packageList);
 
+        // [学生套餐退费]
+        string SetStudentPackageFeeBack(string studentCode, int packageId, List<StudentCoursePackage> packageList);   
+
         // [更新试听学生]  
         string UpdateTempStudent(int id, StudentTemp student);
 

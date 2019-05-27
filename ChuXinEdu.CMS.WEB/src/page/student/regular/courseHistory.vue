@@ -43,6 +43,14 @@
         <el-button v-noRepeatClick type="primary" size="small" @click='supplementCourse()'><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
         <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
         <el-button v-noRepeatClick type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 导出图片</el-button>
+        <el-select v-model="packageList1Value" @change="changePackage" size="small" clearable class="input-300" placeholder="请选择套餐">
+            <el-option
+                v-for="item in packageList1"
+                :key="item.id"
+                :label="item.packageName"
+                :value="item.id">
+            </el-option>
+        </el-select>
     </div>
 
     <el-dialog :title="supplementDialog.title" :visible.sync="supplementDialog.isShow" :width="supplementDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
@@ -178,6 +186,8 @@ export default {
             studentName: '',
             courseList: [],
             filteredCourseList: [],
+            packageList1: [],
+            packageList1Value: '',
             badges: {
                 all: 0,
                 meishu: 0,
@@ -258,18 +268,31 @@ export default {
     },
     watch: {
         'curCourseCategory'(cur) {
-            this.filteredCourseList = this.courseList.filter(item => this.curCourseCategory == 'all' || item.courseCategoryCode == cur);
+            this.filteredCourseList = this.filteredCourseList.filter(item => this.curCourseCategory == 'all' || item.courseCategoryCode == cur);
             this.getRowSpanInfo();
         }
     },
     created() {
         this.studentName = this.$route.query.studentname;
+        this.getStudentPackageList();
         this.getHistoryCourseList();
     },
-    mounted() {
-        // document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight;
+    updated() {
+        this.$refs.courseTable.bodyWrapper.scrollTop =this.$refs.courseTable.bodyWrapper.scrollHeight;
     },
     methods: {
+        getStudentPackageList() {
+            axios({
+                type: 'get',
+                path: '/api/student/getpackages',
+                data: {
+                    studentCode: this.studentCode
+                },
+                fn: result => {
+                    this.packageList1 = result;
+                }
+            });
+        },
         getHistoryCourseList() {
             this.loading = true;
             axios({
@@ -778,6 +801,15 @@ export default {
                 }
             }
             return name;
+        },
+
+        changePackage(){
+            this.filteredCourseList = this.courseList.filter(item => this.packageList1Value == null || item.studentCoursePackageId == this.packageList1Value);
+            this.getRowSpanInfo();
+
+            this.badges.all = this.filteredCourseList.length;
+            this.badges.shufa = this.filteredCourseList.filter(item => item.courseCategoryCode == 'shufa').length;
+            this.badges.meishu = this.badges.all - this.badges.shufa;
         },
 
         captureCourse() {
