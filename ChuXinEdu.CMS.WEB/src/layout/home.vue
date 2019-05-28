@@ -60,35 +60,32 @@ export default {
             this.$store.dispatch('set_win_content', this.winSize); //触发动作，content部分的宽高也随即改变。
         },
         getBirthdayNotify() {
-            var _this = this;
             axios({
                 type: 'get',
                 path: '/api/student/getbirthdaynotify',
-                fn: function (result) {
+                fn: result => {
                     if(result){
-                        _this.$store.commit('SET_BIRTHDAY_LIST', result);                    
+                        this.$store.commit('SET_BIRTHDAY_LIST', result);                    
                     }
                 }
             })
         },
         getToRecordNotify() {
-            var _this = this;
             axios({
                 type: 'get',
                 path: '/api/course/gettorecordcount',
-                fn: function (result) {
-                    _this.$store.commit('SET_TO_RECORD', result);  
+                fn: result => {
+                    this.$store.commit('SET_TO_RECORD', result);  
                 }
             })
         },
         getToFinishNotify() {
-            var _this = this;
             axios({
                 type: 'get',
                 path: '/api/course/gettofinish',
-                fn: function (result) {
+                fn: result => {
                     if(result){
-                        _this.$store.commit('SET_TO_FINISH_LIST', result); 
+                        this.$store.commit('SET_TO_FINISH_LIST', result); 
                     } 
                 }
             })

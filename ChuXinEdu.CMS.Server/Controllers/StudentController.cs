@@ -256,6 +256,18 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取学生缴费排行(前100名) GET api/student/getpayrank
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult<string> GetPayRank()
+        {
+            DataTable dt = _chuxinQuery.GetStudentPayRank();
+            string result = JsonConvert.SerializeObject(dt);
+            return result;
+        }
+
+        /// <summary>
         /// 获取学生上课列表 GET api/student/getcourselist
         /// </summary>
         /// <returns></returns>

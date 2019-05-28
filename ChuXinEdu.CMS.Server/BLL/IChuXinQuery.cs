@@ -51,6 +51,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         DataTable GetScpSimplify();
 
+        DataTable GetStudentPayRank();
+
         //获取已经上课的数目
         //int GetStudentSignInCourseCount(string studentCode);
 

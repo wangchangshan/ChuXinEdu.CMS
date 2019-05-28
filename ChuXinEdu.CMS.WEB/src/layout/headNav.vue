@@ -40,6 +40,24 @@
         <ul class="top-menu">
             <li class="li-badge">
                 <a>
+            <el-popover width="220" trigger="hover" @show="showPayRank">
+              <el-table :data="payRankList" stripe :max-height="tableHeight" size="mini">
+                <el-table-column type="index" width="50"></el-table-column>
+                <el-table-column width="90" property="student_name" label="姓名"></el-table-column>
+                <el-table-column width="80" property="amount" label="贡献值">
+                    <template slot-scope="scope">
+                        <span style="color:#f56767">{{ scope.row.amount }}</span>
+                    </template>
+                </el-table-column>
+              </el-table>
+              <el-badge slot="reference">
+                <i class="fa fa-trophy"></i>
+              </el-badge>
+            </el-popover>
+          </a>
+            </li>
+            <li class="li-badge">
+                <a>
             <el-popover width="225" trigger="hover">
               <el-table :data="$store.state.header.birthdayList" stripe size="mini">
                 <el-table-column width="100" property="student_name" label="姓名"></el-table-column>
@@ -65,7 +83,7 @@
             </li>
             <li class="li-badge">
                 <a>
-            <el-popover width="450" trigger="hover">
+            <el-popover width="455" trigger="hover">
               <el-table
                 :data="$store.state.header.toFinishList"
                 stripe
@@ -75,7 +93,7 @@
                 <el-table-column width="80" property="student_name" label="姓名"></el-table-column>
                 <el-table-column width="210" property="package_name" label="套餐名称"></el-table-column>
                 <el-table-column
-                  width="70"
+                  width="75"
                   property="rest_course_count"
                   label="剩余课时"
                   align="center"
@@ -161,12 +179,11 @@ export default {
                     axios({
                         type: 'post',
                         path: '/api/account/checkpwd',
-                        data: verifyData, 
+                        data: verifyData,
                         fn: result => {
-                            if(result.code != 1200){
+                            if (result.code != 1200) {
                                 callback(new Error("原始密码输入不正确！"));
-                            } 
-                            else {
+                            } else {
                                 callback();
                             }
                         }
@@ -200,6 +217,7 @@ export default {
             userInfo: "",
             path: "",
             breadcrumbList: "",
+            payRankList: [],
             pwdDialog: {
                 width: "400px",
                 isShow: false,
@@ -241,6 +259,17 @@ export default {
         this.getBreadcrumb();
     },
     methods: {
+        showPayRank(){            
+            axios({
+                type: 'get',
+                path: '/api/student/getpayrank',
+                fn: result => {
+                    if(result){
+                        this.payRankList = result;                    
+                    }
+                }
+            })
+        },
         getBreadcrumb() {
             var current = {
                 title: this.$route.name,
@@ -279,7 +308,7 @@ export default {
             }
         },
 
-        submitChangePwd(formName){
+        submitChangePwd(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     let pwdData = {
@@ -289,16 +318,15 @@ export default {
                     axios({
                         type: 'post',
                         path: '/api/account/changepwd',
-                        data: pwdData, 
+                        data: pwdData,
                         fn: result => {
-                            if(result.code == 1200){
+                            if (result.code == 1200) {
                                 this.$message({
                                     message: '修改密码成功',
                                     type: 'success'
                                 });
                                 this.resetPwdForm('changepwd');
-                            } 
-                            else {
+                            } else {
                                 this.$message({
                                     message: '修改密码失败，错误码：' + result.code,
                                     type: 'success'

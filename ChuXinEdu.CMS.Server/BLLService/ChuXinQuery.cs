@@ -243,6 +243,15 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public DataTable GetStudentPayRank()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                DataTable dt = ADOContext.GetDataTable(@"select student_name, sum(actual_price - fee_back_amount) as amount from student_course_package group by student_name order by sum(actual_price - fee_back_amount) desc limit 0, 100");
+                return dt;
+            }
+        }
+
         public Student GetStudentByCode(string studentCode)
         {
             using (BaseContext context = new BaseContext())
