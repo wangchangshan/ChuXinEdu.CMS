@@ -40,6 +40,21 @@
                     <el-button type="primary" icon="el-icon-plus" size="mini" @click="showAddRecommendPanel()">添 加</el-button>
                 </div>
             </el-collapse-item>
+
+            <el-collapse-item name="4">
+                <template slot="title">
+                    <a class="sub-title">微信授权码</a>
+                </template>
+                <div>
+                    <span> {{wxkey}}</span>
+                    <!-- <el-input v-model="wxkey">
+                        <el-button slot="append" @click="copyWxKey">复制</el-button>
+                    </el-input> -->
+                    <div style="margin-top:10px">
+                        <el-button v-noRepeatClick type="primary" size="mini" @click="generateWxKey">生成授权码</el-button>
+                    </div>
+                </div>
+            </el-collapse-item>
         </el-collapse>
     </el-card>
 
@@ -87,7 +102,8 @@ export default {
     data() {
         return {
             loading: false,
-            activeNames: ['1', '2', '3'],
+            wxkey: '',
+            activeNames: ['1', '2', '3', '4'],
             trialOtherCourse: '否',
             myIntroducer: {
                 studentCode: '',
@@ -256,6 +272,10 @@ export default {
             }
             index != -1 && this.searchStudentDialog.studentList.splice(index, 1);
         },
+
+        generateWxKey(){
+            this.wxkey = '123123123'
+        }
     }
 }
 </script>
