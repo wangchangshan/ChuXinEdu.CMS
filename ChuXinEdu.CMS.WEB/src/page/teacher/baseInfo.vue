@@ -12,7 +12,7 @@
             </el-aside>
             <el-main style="padding:10px; padding-bottom:0">
                 <el-row :gutter="10">
-                    <el-col :span="24" style="min-width:280px">
+                    <el-col :xs="18" :sm="12" :lg="12" style="min-width:280px">
                         <el-card shadow="never" class="card-teacher-base">
                             <el-form :label-width="teacherDialog.formLabelWidth" :label-position='teacherDialog.labelPosition' size="mini" label-suffix="：">
                                 <el-form-item label="姓名">
@@ -40,6 +40,17 @@
                                     <el-button type="primary" @click="showUpdateTeacher()"><i class="el-icon-edit el-icon--left"></i>编 辑</el-button>
                                 </el-form-item>
                             </el-form>
+                        </el-card>
+                    </el-col>
+                    <el-col :xs="6" :sm="12" :lg="12">
+                        <el-card shadow="never" class="card-teacher-base">
+                            <div slot="header" class="clearfix">
+                                <span>微信授权码</span>
+                            </div>
+                            <div>
+                                <span> {{wxkey}}</span>
+                                <el-button v-show="!wxkey" v-noRepeatClick type="primary" size="mini" @click="generateWxKey">生成授权码</el-button>
+                            </div>
                         </el-card>
                     </el-col>
                 </el-row>
@@ -106,6 +117,7 @@ export default {
     },
     data() {
         return {
+            wxkey: '',
             avatarPanel: {
                 isShow: false,
                 params: {
@@ -178,8 +190,7 @@ export default {
         'my-avatar': myAvatar
     },
     created() {
-        var _this = this;
-        _this.GetTeacherBaseData();
+        this.GetTeacherBaseData();
     },
     methods: {
         setAvatarShow() {
@@ -205,17 +216,17 @@ export default {
         },
 
         GetTeacherBaseData() {
-            var _this = this;
             axios({
                 type: 'get',
-                path: '/api/teacher/getteacherbase/' + _this.teacherCode,
-                fn: function (result) {
+                path: '/api/teacher/getteacherbase/' + this.teacherCode,
+                fn: result => {
                     result.teacherBirthday = result.teacherBirthday.split('T')[0];
                     result.teacherRegisterDate = result.teacherRegisterDate.split('T')[0];
-                    result.teacherStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['teacher_status'], result.teacherStatus);
-                    _this.avatarPanel.imgDataUrl = result.teacherAvatarPath;
-                    _this.pageData.teacherInfo = result;
-                    _this.teacherDialog.curId = result.id;
+                    result.teacherStatusDesc = dicHelper.getLabelByValue(this.$store.getters['teacher_status'], result.teacherStatus);
+                    this.avatarPanel.imgDataUrl = result.teacherAvatarPath;
+                    this.pageData.teacherInfo = result;
+                    this.teacherDialog.curId = result.id;
+                    this.wxkey = result.teacherWxkey;
                 }
             });
         },
@@ -273,6 +284,16 @@ export default {
 
         teacherStatusTag(teacherStatusCode) {
             return tagTypeHelper.teacherStatusTag(teacherStatusCode);
+        },
+
+        generateWxKey() {
+            axios({
+                type: 'get',
+                path: '/api/teacher/getwxkey/' + this.teacherCode,
+                fn: result => {
+                    this.wxkey = result;
+                }
+            });
         }
     }
 }

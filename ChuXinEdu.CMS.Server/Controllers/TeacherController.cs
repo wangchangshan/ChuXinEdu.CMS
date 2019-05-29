@@ -50,11 +50,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string resultJson = string.Empty;
             DataTable dt = _chuxinQuery.GetAllCourseRoleTeachers();
-            if(dt!= null)
+            if (dt != null)
             {
                 resultJson = JsonConvert.SerializeObject(dt);
             }
-			return resultJson;
+            return resultJson;
         }
 
         // GET api/teacher/getteacherwithrole
@@ -63,23 +63,23 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string resultJson = string.Empty;
             DataTable dt = _chuxinQuery.GetTeacherListWithRole(roleCode);
-            if(dt!= null)
+            if (dt != null)
             {
                 resultJson = JsonConvert.SerializeObject(dt);
             }
-			return resultJson;
+            return resultJson;
         }
 
         // GET api/teacher/getteacherbase
         [HttpGet("{teacherCode}")]
         public Teacher GetTeacherBase(string teacherCode)
         {
-            Teacher  teacher = _chuxinQuery.GetTeacher(teacherCode);
-            if(!String.IsNullOrEmpty(teacher.TeacherAvatarPath))
+            Teacher teacher = _chuxinQuery.GetTeacher(teacherCode);
+            if (!String.IsNullOrEmpty(teacher.TeacherAvatarPath))
             {
                 int id = teacher.Id;
                 string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-                teacher.TeacherAvatarPath = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-t&rnd="+ System.Guid.NewGuid().ToString("N");
+                teacher.TeacherAvatarPath = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-t&rnd=" + System.Guid.NewGuid().ToString("N");
             }
             return teacher;
         }
@@ -88,18 +88,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet("{teacherCode}")]
         public ActionResult<string> getCourseList(string teacherCode, int pageIndex, int pageSize, string q)
         {
-            QUERY_TEACHER_COURSE query = JsonConvert.DeserializeObject<QUERY_TEACHER_COURSE>(q);            
+            QUERY_TEACHER_COURSE query = JsonConvert.DeserializeObject<QUERY_TEACHER_COURSE>(q);
             int totalCount = 0;
             IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetTeacherCourseList(teacherCode, pageIndex, pageSize, query, out totalCount);
 
-            dynamic obj = new {
+            dynamic obj = new
+            {
                 TotalCount = totalCount,
                 CourseList = courseList
             };
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             settings.Formatting = Formatting.Indented;
-            string resultJson = JsonConvert.SerializeObject(obj,settings);
+            string resultJson = JsonConvert.SerializeObject(obj, settings);
 
             return resultJson;
         }
@@ -110,9 +111,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// <returns></returns>
         [HttpGet("{teacherCode}")]
         public IEnumerable<StudentCourseList> GetCourseList2Export(string teacherCode, string q)
-        { 
-            QUERY_TEACHER_COURSE query = JsonConvert.DeserializeObject<QUERY_TEACHER_COURSE>(q);            
-            IEnumerable<StudentCourseList>  courseList = _chuxinQuery.GetTeacherCourseList2Export(teacherCode, query);
+        {
+            QUERY_TEACHER_COURSE query = JsonConvert.DeserializeObject<QUERY_TEACHER_COURSE>(q);
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetTeacherCourseList2Export(teacherCode, query);
             return courseList;
         }
 
@@ -136,5 +137,27 @@ namespace ChuXinEdu.CMS.Server.Controllers
             result = _chuxinWorkFlow.UpdateTeacher(id, teacher);
             return result;
         }
-    }   
+
+        // GET api/teacher/getwxkey
+        [HttpGet("{teacherCode}")]
+        public ActionResult<string> GetWxkey(string teacherCode)
+        {
+            string wxKey = string.Empty;
+            Teacher teacher = _chuxinQuery.GetTeacher(teacherCode);
+            if(String.IsNullOrEmpty(teacher.TeacherWxkey))
+            {
+                wxKey = Guid.NewGuid().ToString("N").Substring(0, 8);
+                string result = _chuxinWorkFlow.UpdateTeacherWxkey(teacherCode, wxKey);
+                if(result != "1200")
+                {
+                    wxKey = "授权码生成错误，请联系管理员。";
+                }
+            }
+            else
+            {
+                wxKey = teacher.TeacherWxkey;
+            }
+            return wxKey;
+        }
+    }
 }

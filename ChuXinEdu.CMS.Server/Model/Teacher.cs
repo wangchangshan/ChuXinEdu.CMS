@@ -44,6 +44,9 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("teacher_status")]
         public string TeacherStatus { get; set; }
 
+        [Column("teacher_wxkey")]
+        public string TeacherWxkey { get; set; }
+
         [Column("teacher_remark")]
         public string TeacherRemark { get; set; }
     }

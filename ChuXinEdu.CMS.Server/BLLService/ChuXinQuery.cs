@@ -798,6 +798,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
         #endregion 
 
+        #region  weixin user
+        public SysWxUser GetWxUserByOpenId(string openId)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.SysWxUser.FirstOrDefault(s => s.OpenId == openId);
+            }
+        }
+
+        #endregion
+
         public string GetAvatarTruePath(int id, string type)
         {
             string path = string.Empty;

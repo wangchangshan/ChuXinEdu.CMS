@@ -80,7 +80,8 @@ namespace ChuXinEdu.CMS.Server.Context
 
         public virtual DbSet<SysOutUser> SysOutUser { get; set; }
 
-
+        public virtual DbSet<SysWxUser> SysWxUser { get; set; }
+        
         public virtual DbSet<SysLoginHistory> SysLoginHistory { get; set; }
         
         public virtual DbSet<Teacher> Teacher { get; set; }

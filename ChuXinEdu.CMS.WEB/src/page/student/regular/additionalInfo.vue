@@ -47,9 +47,6 @@
                 </template>
                 <div>
                     <span> {{wxkey}}</span>
-                    <!-- <el-input v-model="wxkey">
-                        <el-button slot="append" @click="copyWxKey">复制</el-button>
-                    </el-input> -->
                     <div style="margin-top:10px">
                         <el-button v-noRepeatClick type="primary" size="mini" @click="generateWxKey">生成授权码</el-button>
                     </div>
@@ -274,7 +271,7 @@ export default {
         },
 
         generateWxKey(){
-            this.wxkey = '123123123'
+            this.wxkey = ''
         }
     }
 }

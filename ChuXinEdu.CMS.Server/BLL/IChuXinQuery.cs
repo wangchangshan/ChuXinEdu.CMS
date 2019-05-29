@@ -127,6 +127,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentCourseList> GetTeacherCourseList2Export(string teacherCode, QUERY_TEACHER_COURSE query);
 
+        SysWxUser GetWxUserByOpenId(string openId);
 
 
 

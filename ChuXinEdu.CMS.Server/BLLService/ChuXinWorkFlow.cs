@@ -2019,6 +2019,27 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string UpdateTeacherWxkey(string teacherCode, string wxKey)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var th = context.Teacher.Where(t => t.TeacherCode == teacherCode).FirstOrDefault();
+                    th.TeacherWxkey = wxKey;
+
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "插入教师微信授权码出错");
+                result = "1500";
+            }
+            return result;
+        }
+
         #endregion
 
         public string AddNewRecommend(StudentRecommend srd)

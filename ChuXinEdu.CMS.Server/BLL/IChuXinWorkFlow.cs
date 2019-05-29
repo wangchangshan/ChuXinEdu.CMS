@@ -159,6 +159,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [更新教师]
         string UpdateTeacher(int id, Teacher teacher);
 
+        string UpdateTeacherWxkey(string teacherCode, string wxKey);
+
         // [为教师添加角色]
         string AddTeacherRole(string roleCode, List<string> teacherCodes);
 
