@@ -23,8 +23,14 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("wx_key")]
         public string WxKey { get; set; }
 
-         [Column("wx_user_type")]
+        [Column("wx_user_type")]
         public string wxUserType { get; set; }
+
+        [Column("access_token")]
+        public string AccessToken { get; set; }
+
+        [Column("expires_in")]
+        public int? ExpiresIn { get; set; }
 
         [Column("last_request_time")]
         public DateTime? LastRequestTime { get; set; }

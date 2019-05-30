@@ -807,6 +807,33 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public bool IsStudentExist(string studentCode, string studentName)
+        {
+            bool flag = false;
+            using (BaseContext context = new BaseContext())
+            {
+                var student = context.Student.FirstOrDefault(s => s.StudentCode == studentCode && s.StudentName == studentName);
+                if(student != null)
+                {
+                    flag = true;
+                }
+            }
+            return flag;
+        }
+
+        public string GetTeacherCodeByWxKey(string wxKey)
+        {
+            string result = string.Empty;
+            using (BaseContext context = new BaseContext())
+            {
+                var teacher = context.Teacher.FirstOrDefault(s => s.TeacherWxkey == wxKey);
+                if(teacher != null)
+                {
+                    result = teacher.TeacherCode;
+                }
+            }
+            return result;
+        }
         #endregion
 
         public string GetAvatarTruePath(int id, string type)

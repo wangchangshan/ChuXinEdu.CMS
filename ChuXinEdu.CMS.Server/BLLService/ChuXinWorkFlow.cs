@@ -2380,6 +2380,61 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
         #endregion
 
+        #region 微信登陆
+        public string InsertWxLoginInfo(string openId, string sessionKey, string innerPCode, string wxKey, string type)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var user = context.SysWxUser.FirstOrDefault( s => s.WxKey == wxKey);
+                    if (user != null)
+                    {
+                        return "1222";
+                    }
+
+                    SysWxUser wxUser = new SysWxUser{
+                        OpenId = openId,
+                        SessionKey = sessionKey,
+                        InnerPersonCode = innerPCode,
+                        WxKey = wxKey,
+                        wxUserType = type,
+                        LastRequestTime = DateTime.Now
+                    };
+                    context.SysWxUser.Add(wxUser);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "添加微信登陆信息出错");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string UpdateWxSKey(string openId, string sKey)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var user = context.SysWxUser.First( s => s.OpenId == openId);
+                    user.SessionKey = sKey;
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "更新微信sessionKey出错");
+                result = "1500";
+            }
+            return result;
+        }
+        #endregion
+
         #region 脏数据处理
         public string ClearDirtyForPackage(int id)
         {

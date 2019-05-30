@@ -129,6 +129,9 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         SysWxUser GetWxUserByOpenId(string openId);
 
+        bool IsStudentExist(string studentCode, string studentName);
+
+        string GetTeacherCodeByWxKey(string wxKey);
 
 
         // 这是一个测试

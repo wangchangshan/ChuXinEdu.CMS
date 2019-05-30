@@ -179,6 +179,11 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [删除字典]
         string RemoveDic(string typeCode);
 
+        // [插入微信登陆信息]
+        string InsertWxLoginInfo(string openId, string sessionKey, string innerPCode, string wxKey, string type);
+
+        string UpdateWxSKey(string openId, string sKey);
+
         // [脏数据处理]
         string ClearDirtyForPackage(int id);
 
