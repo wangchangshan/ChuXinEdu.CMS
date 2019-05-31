@@ -58,7 +58,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 stateCode = "1200";
                 // 生成登陆标识态
-                sKey = Cryptor.Encrypt(ticket.SessionKey);
+                sKey = wxUser.wxUserType + Cryptor.Encrypt(ticket.SessionKey);
                 _chuxinWorkFlow.UpdateWxSKey(ticket.OpenId, sKey);
             }
 
@@ -88,7 +88,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 // 2. 获取当前用户的openid
                 ticket = GetWxTicket(code);
-                sKey = Cryptor.Encrypt(ticket.SessionKey);
+                sKey = "1" + Cryptor.Encrypt(ticket.SessionKey);
 
                 // 3. 数据入库
                 stateCode = _chuxinWorkFlow.InsertWxLoginInfo(ticket.OpenId, sKey, studentCode, "", "1");
@@ -124,7 +124,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 // 2. 获取当前用户的openid
                 ticket = GetWxTicket(code);
-                sKey = Cryptor.Encrypt(ticket.SessionKey);
+                sKey = "2" + Cryptor.Encrypt(ticket.SessionKey);
 
                 // 3. 数据入库
                 stateCode = _chuxinWorkFlow.InsertWxLoginInfo(ticket.OpenId, sKey, teacherCode, teacherWxKey, "2");
