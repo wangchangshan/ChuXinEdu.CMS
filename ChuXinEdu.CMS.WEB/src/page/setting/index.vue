@@ -34,8 +34,7 @@ import dirtyData from './dirtyData'
 export default {
     data() {
         return { 
-            activeLabelCode: 'dictionary',
-            teacherCode: ''
+            activeLabelCode: 'dictionary'
         }
     },
     created() {    
