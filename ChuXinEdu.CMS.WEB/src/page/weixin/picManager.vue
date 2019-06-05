@@ -1,5 +1,6 @@
 <template>
 <div class="fallcontain">
+    
     <el-row type="flex" class="row-bg" :gutter="10" style="overflow:auto" v-bind:style="{height: pageHeight + 'px'}">
         <el-col :span="6">
             <el-card v-for="picure in picList1" :key="picure.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
