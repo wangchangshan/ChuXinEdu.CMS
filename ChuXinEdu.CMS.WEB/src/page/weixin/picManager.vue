@@ -1,6 +1,29 @@
 <template>
 <div class="fallcontain">
-    
+    <div class="search_container">
+        <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
+            <!-- <el-form-item label="学号">not show for ipad UI
+                <el-input type="text" size="small" v-model="searchField.studentCode" placeholder="请输入学号" class="search_field"></el-input>
+            </el-form-item> -->
+            <el-form-item label="姓名">
+                <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名" class="search_field"></el-input>
+            </el-form-item>
+            <el-form-item label="状态">
+                <el-select size="small" v-model="searchField.studentStatus" placeholder="请选择学生状态" class="search_field" :clearable="true">
+                    <el-option v-for="item in $store.getters['student_status']" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查询</el-button>
+                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重置</el-button>
+            </el-form-item>
+            <el-form-item class="btnRight">
+                <el-button type="primary" size="small" @click='showAddStudent()'><i class="fa fa-user-plus" aria-hidden="true"></i> 添加</el-button>
+                <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
     <el-row type="flex" class="row-bg" :gutter="10" style="overflow:auto" v-bind:style="{height: pageHeight + 'px'}">
         <el-col :span="6">
             <el-card v-for="picure in picList1" :key="picure.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
@@ -74,7 +97,7 @@
     </el-row>
 
     <div class="footer_container">
-        <el-button type="primary" size="small" @click='showUploadDialog()'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
+        <el-button type="primary" size="small" @click='showUploadDialog()'>上传图片<i class="el-icon-upload el-icon--right"></i></el-button>
     </div>
 
     <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.isShow" :width="uploadDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
@@ -262,7 +285,7 @@ export default {
         },
         removeAchievement(achievementId){
             var _this = this;
-            this.$confirm('确定删除这个作品吗?', '提示', {
+            this.$confirm('确定删除这张图片吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -292,6 +315,11 @@ export default {
 .fallcontain {
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.search_container {
+    height: 36px;
+    line-height: 36px;
 }
 
 .time {

@@ -28,7 +28,6 @@
                         <el-button type="primary" size="mini" icon='el-icon-picture' @click='viewArtwork(scope.row.studentCourseId)'></el-button>
                     </el-button-group>
                     <el-button v-noRepeatClick type="danger" size="mini" icon='el-icon-delete' @click='removeCourse(scope.row)'></el-button>
-
                 </template>
             </el-table-column>
         </el-table>
