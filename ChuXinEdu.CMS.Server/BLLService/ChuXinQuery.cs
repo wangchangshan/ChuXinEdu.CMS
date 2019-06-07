@@ -25,7 +25,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     strRoles += role.RoleCode + ",";
                 }
             }
-            if(strRoles.Length > 1)
+            if (strRoles.Length > 1)
             {
                 strRoles = strRoles.TrimEnd(',');
             }
@@ -652,7 +652,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public SysActivity GetActivityById(int activityId)
         {
-            using(BaseContext context = new BaseContext())
+            using (BaseContext context = new BaseContext())
             {
                 return context.SysActivity.FirstOrDefault(s => s.ActivityId == activityId);
             }
@@ -660,7 +660,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public List<StudentActivity> GetStudentByActivity(int activityId)
         {
-            using(BaseContext context = new BaseContext())
+            using (BaseContext context = new BaseContext())
             {
                 return context.StudentActivity.Where(s => s.ActivityId == activityId).ToList();
             }
@@ -748,7 +748,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 var user = context.SysUser.Where(s => s.LoginCode == teacherName).FirstOrDefault();
-                if(user != null)
+                if (user != null)
                 {
                     teacherCode = user.TeacherCode;
                 }
@@ -792,13 +792,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 {
                     courseLists = courseLists.Where(s => s.CourseDate <= query.endDate);
                 }
-                
+
                 return courseLists.OrderBy(s => s.CoursePeriod).OrderBy(s => s.CourseDate).ToList();
             }
         }
         #endregion 
 
-        #region  weixin user
+        #region  weixin 小程序
         public SysWxUser GetWxUserByOpenId(string openId)
         {
             using (BaseContext context = new BaseContext())
@@ -813,7 +813,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 var student = context.Student.FirstOrDefault(s => s.StudentCode == studentCode && s.StudentName == studentName);
-                if(student != null)
+                if (student != null)
                 {
                     flag = true;
                 }
@@ -827,12 +827,35 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 var teacher = context.Teacher.FirstOrDefault(s => s.TeacherWxkey == wxKey);
-                if(teacher != null)
+                if (teacher != null)
                 {
                     result = teacher.TeacherCode;
                 }
             }
             return result;
+        }
+
+        public IEnumerable<WxPicture> GetWxPicture(string picTypeCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.WxPicture.Where(s => s.WxPictureType == picTypeCode).ToList();
+            }
+        }
+
+        public string GetWeiXinPicTruePath(int id)
+        {
+            string path = string.Empty;
+            using (BaseContext context = new BaseContext())
+            {
+                var st = context.WxPicture.Where(s => s.Id == id).FirstOrDefault();
+                if (st != null)
+                {
+                    path = st.PicturePath;
+                }
+            }
+
+            return path;
         }
         #endregion
 

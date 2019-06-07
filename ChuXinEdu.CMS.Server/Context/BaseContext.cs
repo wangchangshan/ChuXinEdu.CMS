@@ -88,6 +88,8 @@ namespace ChuXinEdu.CMS.Server.Context
 
         public virtual DbSet<TeacherRole> TeacherRole { get; set; }
 
+        public virtual DbSet<WxPicture> WxPicture { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

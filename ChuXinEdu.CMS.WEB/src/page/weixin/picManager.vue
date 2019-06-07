@@ -1,95 +1,71 @@
 <template>
 <div class="fallcontain">
-    <div class="search_container">
-        <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
-            <!-- <el-form-item label="学号">not show for ipad UI
-                <el-input type="text" size="small" v-model="searchField.studentCode" placeholder="请输入学号" class="search_field"></el-input>
-            </el-form-item> -->
-            <el-form-item label="姓名">
-                <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名" class="search_field"></el-input>
-            </el-form-item>
-            <el-form-item label="状态">
-                <el-select size="small" v-model="searchField.studentStatus" placeholder="请选择学生状态" class="search_field" :clearable="true">
-                    <el-option v-for="item in $store.getters['student_status']" :key="item.value" :label="item.label" :value="item.value">
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查询</el-button>
-                <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重置</el-button>
-            </el-form-item>
-            <el-form-item class="btnRight">
-                <el-button type="primary" size="small" @click='showAddStudent()'><i class="fa fa-user-plus" aria-hidden="true"></i> 添加</el-button>
-                <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
     <el-row type="flex" class="row-bg" :gutter="10" style="overflow:auto" v-bind:style="{height: pageHeight + 'px'}">
         <el-col :span="6">
-            <el-card v-for="picure in picList1" :key="picure.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
-                <el-image :src="picure.showURL" lazy class="image">
+            <el-card v-for="picure in picList1" :key="picure.id" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
+                <el-image :src="picure.picturePath" lazy class="image">
                     <div slot="placeholder" class="image-slot">
                         加载中<span class="dot">...</span>
                     </div>
                 </el-image>
                 <div style="padding: 14px;">
-                    <span>{{picure.artworkTitle}}</span>
+                    <span>{{picure.subject}}</span>
                     <div class="bottom clearfix">
-                        <time class="time">{{ picure.finishDate }}</time>
-                        <span class="time">{{picure.documentSize}}</span>
-                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(picure.artworkId)"></el-button>
+                        <time class="time">{{ picure.studentName }}</time>
+                        <span class="time">{{picure.studentAge}}岁</span>
+                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(picure.id)"></el-button>
                         <!-- <el-rate v-model="picure.achievement_rate" :allow-half = "true" class="right"></el-rate> -->
                     </div>
                 </div>
             </el-card>
         </el-col>
         <el-col :span="6">
-            <el-card v-for="picure in picList2" :key="picure.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
-                <el-image :src="picure.showURL" lazy class="image">
+            <el-card v-for="picure in picList2" :key="picure.id" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
+                <el-image :src="picure.picturePath" lazy class="image">
                     <div slot="placeholder" class="image-slot">
                         加载中<span class="dot">...</span>
                     </div>
                 </el-image>
                 <div style="padding: 14px;">
-                    <span>{{picure.artworkTitle}}</span>
+                    <span>{{picure.subject}}</span>
                     <div class="bottom clearfix">
-                        <time class="time">{{ picure.finishDate }}</time>
-                        <span class="time">{{picure.documentSize}}</span>
-                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(picure.artworkId)"></el-button>
+                        <time class="time">{{ picure.studentName }}</time>
+                        <span class="time">{{picure.studentAge}}</span>
+                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(picure.id)"></el-button>
                     </div>
                 </div>
             </el-card>
         </el-col>
         <el-col :span="6">
-            <el-card v-for="picure in picList3" :key="picure.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
-                <el-image :src="picure.showURL" lazy class="image">
+            <el-card v-for="picure in picList3" :key="picure.id" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
+                <el-image :src="picure.picturePath" lazy class="image">
                     <div slot="placeholder" class="image-slot">
                         加载中<span class="dot">...</span>
                     </div>
                 </el-image>
                 <div style="padding: 14px;">
-                    <span>{{picure.artworkTitle}}</span>
+                    <span>{{picure.subject}}</span>
                     <div class="bottom clearfix">
-                        <time class="time">{{ picure.finishDate }}</time>
-                        <span class="time">{{picure.documentSize}}</span>
-                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(picure.artworkId)"></el-button>
+                        <time class="time">{{ picure.studentName }}</time>
+                        <span class="time">{{picure.studentAge}}</span>
+                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(picure.id)"></el-button>
                     </div>
                 </div>
             </el-card>
         </el-col>
         <el-col :span="6">
-            <el-card v-for="picure in picList4" :key="picure.artworkId" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
-                <el-image :src="picure.showURL" lazy class="image">
+            <el-card v-for="picure in picList4" :key="picure.id" :body-style="{ padding: '0px' }" shadow="hover" style="margin-bottom:5px">
+                <el-image :src="picure.picturePath" lazy class="image">
                     <div slot="placeholder" class="image-slot">
                         加载中<span class="dot">...</span>
                     </div>
                 </el-image>
                 <div style="padding: 14px;">
-                    <span>{{picure.artworkTitle}}</span>
+                    <span>{{picure.subject}}</span>
                     <div class="bottom clearfix">
-                        <time class="time">{{ picure.finishDate }}</time>
-                        <span class="time">{{picure.documentSize}}</span>
-                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(picure.artworkId)"></el-button>
+                        <time class="time">{{ picure.studentName }}</time>
+                        <span class="time">{{picure.studentAge}}</span>
+                        <el-button type="text" icon="el-icon-delete" class="button" @click="removeAchievement(picure.id)"></el-button>
                     </div>
                 </div>
             </el-card>
@@ -102,12 +78,28 @@
 
     <el-dialog :title="uploadDialog.title" :visible.sync="uploadDialog.isShow" :width="uploadDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
-            <el-upload :on-error="handleError" class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-remove="handleImgRemove" :before-upload="beforeUpload" :on-success="uploadSuccess" list-type="picture">
+            <el-form v-if="wx_pic_code == '02'" ref="wxPicture" :model="uploadDialog.params" size="mini" :label-width="'100px'" :label-position="'right'" label-suffix='：' style="margin-right:20px">
+                <el-form-item label="姓名">
+                    <el-input v-model="uploadDialog.params.studentName"></el-input>
+                </el-form-item>
+                <el-form-item label="性别">
+                    <el-radio-group v-model="uploadDialog.params.studentSex">
+                        <el-radio label="男"></el-radio>
+                        <el-radio label="女"></el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="绘画年龄">
+                    <el-input v-model="uploadDialog.params.studentAge"></el-input>
+                </el-form-item>
+                <el-form-item label="作品主题">
+                    <el-input v-model="uploadDialog.params.subject"></el-input>
+                </el-form-item>
+            </el-form>
+            <el-upload :on-error="handleError" class="upload-demo" :multiple="uploadDialog.multiple" :action="uploadDialog.actionUrl" :data="uploadDialog.params" :file-list="uploadDialog.thumbnailList" :on-success="uploadSuccess" list-type="picture">
                 <el-button size="mini" type="primary">选择上传<i class="el-icon-upload el-icon--right"></i></el-button>
             </el-upload>
             <el-form style="margin:10px;width:auto;">
                 <el-form-item class="text_right">
-                    <el-button size="small" @click="btnCancelUpload()">取 消</el-button>
                     <el-button v-noRepeatClick size="small" type="primary" @click="btnSubmitUpload()">确 定</el-button>
                 </el-form-item>
             </el-form>
@@ -122,6 +114,9 @@ import {
 } from '@/utils/index'
 
 export default {
+    props: {
+        'wx_pic_code': String,
+    },
     data() {
         return {
             pageHeight: this.$store.state.page.win_content.height - 96,
@@ -132,17 +127,20 @@ export default {
             picList4: [],
 
             uploadDialog: {
-                title: '批量上传作品',
+                title: '上传图片',
                 isShow: false,
                 multiple: true,
-                actionUrl: '/api/upload/uploadartworksimple',
+                actionUrl: '/api/upload/uploadwxpic',
                 fileCount: 0,
-                fileUIds: [],
                 thumbnailList: [],
                 params: {
                     studentCode: '',
                     studentName: '',
-                    uid: ''
+                    studentAge: 0,
+                    studentSex: '',
+                    teacherCode: '',
+                    subject: '',
+                    wxPictureType: ''
                 },
             }
         }
@@ -158,24 +156,19 @@ export default {
             this.picList3 = [];
             this.picList4 = [];
         },
+
         getAllPictures() {
-            var _this = this;
             axios({
                 type: 'get',
-                path: '/api/student/getartworklist',
-                data: {
-                    studentCode: _this.studentCode
-                },
-                fn: function (result) {
-                    _this.dataInit();
-                    result.forEach(item => {
-                        item.finishDate = item.finishDate.split('T')[0];
-                    });
-                    _this.picList = result;
-                    _this.GenerateColumn();
+                path: '/api/wxpicture/getwxpicture/' + this.wx_pic_code,
+                fn: result => {
+                    this.dataInit();
+                    this.picList = result;
+                    this.GenerateColumn();
                 }
             });
         },
+
         GenerateColumn() {
             this.picList.forEach((item, index) => {
                 if ((index + 1) % 4 === 1) {
@@ -191,21 +184,13 @@ export default {
         },
 
         showUploadDialog() {
-            this.uploadDialog.params = {
-                studentCode: this.studentCode,
-                studentName: this.$route.query.studentname,
-            }
+            this.uploadDialog.params.wxPictureType = this.wx_pic_code;
             this.uploadDialog.thumbnailList = [];
-            this.uploadDialog.fileUIds = [];
             this.uploadDialog.fileCount = 0;
             this.uploadDialog.isShow = true;
         },
 
-        beforeUpload(file) {
-            this.uploadDialog.params.uid = file.uid;
-        },
-
-        handleError(err, file, fileList){
+        handleError(err, file, fileList) {
             this.$notify({
                 title: '上传失败',
                 message: err,
@@ -213,77 +198,35 @@ export default {
             });
         },
 
-        uploadSuccess(response, file, fileList) {            
+        uploadSuccess(response, file, fileList) {
             // -1 文件存储错误； -2 数据库插入错误   
-            if(response == -1 || response == -2){
+            if (response == -1 || response == -2) {
                 this.$notify({
                     title: '上传失败',
                     message: '返回值：' + response,
                     type: 'error'
                 });
-            }
-            else{             
+            } else {
                 this.uploadDialog.fileCount = fileList.length;
-                this.uploadDialog.fileUIds = [];
-                for (let f of fileList) {
-                    this.uploadDialog.fileUIds.push(f.uid);
-                }
             }
         },
 
-        handleImgRemove(file, fileList) {
-            this.uploadDialog.fileCount = fileList.length;
-            this.uploadDialog.fileUIds = [];
-            for (let f of fileList) {
-                this.uploadDialog.fileUIds.push(f.uid);
-            }
-
-            axios({
-                type: 'delete',
-                path: '/api/upload/deltempfile',
-                data: {
-                    courseId: 0,
-                    uid: file.uid
-                },
-                fn: function (result) {}
-            });
-        },
         btnSubmitUpload() {
-            let fileUIds = this.uploadDialog.fileUIds;
-            axios({
-                type: 'put',
-                path: '/api/upload/artwork2yes',
-                data: fileUIds,
-                fn: result => {
-                    if (result == 1200) {
-                        this.getAllPictures();
-                        this.$message({
-                            message: '全部上传成功',
-                            type: 'success'
-                        });
-                        this.uploadDialog.thumbnailList = [];
-                        this.uploadDialog.isShow = false;
-                    }
-                }
-            });
-        },
-        btnCancelUpload() {
-            this.uploadDialog.isShow = false;
+            this.getAllPictures();
             this.uploadDialog.thumbnailList = [];
-            let fileUIds = this.uploadDialog.fileUIds;
-            
-            if (fileUIds.length > 0) {
-                let _this = this;
-                axios({
-                    type: 'delete',
-                    path: '/api/upload/delalltempfile',
-                    data: fileUIds,
-                    fn: function (result) {}
-                });
+            this.uploadDialog.isShow = false;
+            this.uploadDialog.params = {
+                studentCode: '',
+                studentName: '',
+                studentAge: 0,
+                studentSex: '',
+                teacherCode: '',
+                subject: '',
+                wxPictureType: ''
             }
-
         },
-        removeAchievement(achievementId){
+
+        removeAchievement(id) {
             var _this = this;
             this.$confirm('确定删除这张图片吗?', '提示', {
                 confirmButtonText: '确定',
@@ -292,7 +235,7 @@ export default {
             }).then(() => {
                 axios({
                     type: 'delete',
-                    path: '/api/upload/delachievement/' + achievementId,
+                    path: '/api/upload/delwxpicture/' + id,
                     fn: function (result) {
                         if (result === 1200) {
                             _this.getAllPictures();
@@ -315,11 +258,6 @@ export default {
 .fallcontain {
     overflow-y: auto;
     overflow-x: hidden;
-}
-
-.search_container {
-    height: 36px;
-    line-height: 36px;
 }
 
 .time {

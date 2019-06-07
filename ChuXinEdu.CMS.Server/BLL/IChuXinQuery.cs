@@ -129,10 +129,13 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         SysWxUser GetWxUserByOpenId(string openId);
 
+        IEnumerable<WxPicture> GetWxPicture(string picTypeCode);
+
         bool IsStudentExist(string studentCode, string studentName);
 
         string GetTeacherCodeByWxKey(string wxKey);
 
+        string GetWeiXinPicTruePath(int id);
 
         // 这是一个测试
         StudentDescTest GetStudentDescTest(string studentCode);

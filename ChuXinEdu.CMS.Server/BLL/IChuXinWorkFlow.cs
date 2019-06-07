@@ -63,11 +63,17 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         string UploadAvatar(string studentCode, string path, string type);
 
+        // [上传微信小程序用到的图片]
+        string UploadWxPicture(WxPicture picture);
+
         // [删除临时作品]
         string RemoveTempArtWork(int courseId, string uid, string rootPath);
 
         // [删除正式作品]
         string RemoveArtWorkById(int id, string rootPath);
+
+        // [删除微信小程序图片]
+        string RemoveWxPicture(int id, string rootPath);
 
          // [添加学生选课套餐]
         string AddStudentCoursePackage(StudentCoursePackage scp);

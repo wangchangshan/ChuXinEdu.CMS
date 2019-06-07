@@ -2380,7 +2380,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
         #endregion
 
-        #region 微信登陆
+        #region 微信小程序
         public string InsertWxLoginInfo(string openId, string sessionKey, string innerPCode, string wxKey, string type)
         {
             string result = "1200";
@@ -2429,6 +2429,53 @@ namespace ChuXinEdu.CMS.Server.BLLService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "更新微信sessionKey出错");
+                result = "1500";
+            }
+            return result;
+        }
+        
+        public string UploadWxPicture(WxPicture picture)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    context.WxPicture.Add(picture);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "上传微信小程序失败");
+                result = "1500";
+            }
+            return result;
+        }
+
+        public string RemoveWxPicture(int id, string rootPath)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var pic = context.WxPicture.Where(s => s.Id == id).FirstOrDefault();
+                    if (pic != null)
+                    {
+                        string savePath = rootPath + pic.PicturePath;
+                        if (System.IO.File.Exists(savePath))
+                        {
+                            System.IO.File.Delete(savePath);
+                        }
+                        context.Remove(pic);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "删除作品失败");
                 result = "1500";
             }
             return result;

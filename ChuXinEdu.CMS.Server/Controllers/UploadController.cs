@@ -242,6 +242,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 删除微信小程序图片 DELETE api/upload/dewxpicture
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public string DelWxPicture(int id)
+        {
+            string result = string.Empty;
+            string contentRootPath = _hostingEnvironment.ContentRootPath;
+            result = _chuxinWorkFlow.RemoveWxPicture(id, contentRootPath);
+            return result;
+        }
+
+        /// <summary>
         /// 确定批量上传作品 PUT api/upload/artwork2yes
         /// </summary>
         /// <returns></returns>
@@ -307,7 +320,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 上传头像 POST api/upload/uploadactivityimage
+        /// 上传活动照片 POST api/upload/uploadactivityimage
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -335,18 +348,90 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 {
                     file.CopyTo(stream);
                 }
-                
-                    string fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
-                    // 数据入库
-                    StudentActivityImage activity = new StudentActivityImage
-                    {
-                        ActivityId = 0
-                    };
+
+                string fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                // 数据入库
+                StudentActivityImage activity = new StudentActivityImage
+                {
+                    ActivityId = 0
+                };
                 //result = _chuxinWorkFlow.UploadAvtivityImages(activity);
             }
             else
             {
                 return result;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 上传微信小程序用到的宣传图片 POST api/upload/uploadwxpic
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string UploadWxPic()
+        {
+            string result = "1200";
+            string studentCode = string.Empty;
+            string studentName = string.Empty;
+            string picTypCode = string.Empty;
+            if (!HttpContext.Request.Form.ContainsKey("wxPictureType"))
+            {
+                _logger.LogWarning("微信小程序图片上传，无法获取pictypecode");
+                return "1404";
+            }
+
+            picTypCode = HttpContext.Request.Form["wxPictureType"] + "";
+
+            try
+            {
+                string contentRootPath = _hostingEnvironment.ContentRootPath;
+                string documentPath = "/cxdocs/weixin" + picTypCode + "/";
+
+                if (!Directory.Exists(contentRootPath + documentPath))
+                {
+                    Directory.CreateDirectory(contentRootPath + documentPath);
+                }
+
+                var file = HttpContext.Request.Form.Files.FirstOrDefault();
+                if (file != null)
+                {
+                    string ext = Path.GetExtension(file.FileName);
+                    string newName = string.Format("{0}_x{1}", System.Guid.NewGuid().ToString("N"), ext);
+                    documentPath = documentPath + newName;
+                    string savePath = contentRootPath + documentPath;
+
+                    using (var stream = System.IO.File.Create(savePath))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                    int age = 0;
+                    try{
+                        age = Int32.Parse(HttpContext.Request.Form["studentAge"]);
+                    }catch{}
+
+                    WxPicture wxPicture = new WxPicture
+                    {
+                        subject = HttpContext.Request.Form["subject"] + "",
+                        StudentName = HttpContext.Request.Form["studentName"] + "",
+                        StudentAge = age,
+                        StudentSex = HttpContext.Request.Form["studentSex"] + "",
+                        TeacherCode = HttpContext.Request.Form["teacherCode"] + "",
+                        PicturePath = documentPath,
+                        WxPictureType = picTypCode
+                    };
+                    result = _chuxinWorkFlow.UploadWxPicture(wxPicture);
+                }
+                else
+                {
+                    _logger.LogWarning("微信图片上传：无法获取文件");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "批量上传：错误！{0}", ex.Message.ToString());
             }
             return result;
         }
@@ -371,6 +456,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     break;
                 case "avatar-t":
                     docPath = _chuxinQuery.GetAvatarTruePath(id, "teacher");
+                    break;
+
+                case "wx":
+                    docPath = _chuxinQuery.GetWeiXinPicTruePath(id);
                     break;
 
                 default:
