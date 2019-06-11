@@ -843,6 +843,16 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        
+        public IEnumerable<WxPicture> GetWxHomePicture()
+        {
+            //只取机构环境01与学习日常00
+            using (BaseContext context = new BaseContext())
+            {
+                return context.WxPicture.Where(s => s.WxPictureType == "00" || s.WxPictureType == "01").ToList();
+            }
+        }
+
         public string GetWeiXinPicTruePath(int id)
         {
             string path = string.Empty;

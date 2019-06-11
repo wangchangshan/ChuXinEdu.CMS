@@ -131,6 +131,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<WxPicture> GetWxPicture(string picTypeCode);
 
+        IEnumerable<WxPicture> GetWxHomePicture();
+
         bool IsStudentExist(string studentCode, string studentName);
 
         string GetTeacherCodeByWxKey(string wxKey);

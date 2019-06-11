@@ -10,19 +10,19 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace ChuXinEdu.CMS.Server.Filters
 {
     // 身份验证过滤器
-    public class OuterAuthenFilter : Attribute, IAuthorizationFilter
+    public class WxAuthenFilter : Attribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext fileterContext)
         {
-            string name = fileterContext.HttpContext.Request.Headers["name"] + "";
+            string sKey = fileterContext.HttpContext.Request.Headers["skey"] + "";
             
             using (BaseContext context = new BaseContext())
                 {
-                    var outerUser = context.SysOutUser.Where(u => u.UserCode == name).FirstOrDefault();
-                    if(outerUser != null)
+                    var wxUser = context.SysWxUser.Where(u => u.SessionKey == sKey).FirstOrDefault();
+                    if(wxUser != null)
                     {  
                         
-                        outerUser.LastRequestTime = DateTime.Now;
+                        wxUser.LastRequestTime = DateTime.Now;
                         context.SaveChanges();
                     }
                     else 
