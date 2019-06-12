@@ -4,9 +4,9 @@
         <el-container>
             <el-aside width="220px">
                 <div class="avatar-panel">
-                    <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="300" :height="300" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
+                    <my-avatar field="img" @crop-success="cropSuccess" @crop-upload-success="cropUploadSuccess" @crop-upload-fail="cropUploadFail" v-model="avatarPanel.isShow" :width="200" :height="200" :url="avatarPanel.uploadUrl" :params="avatarPanel.params" img-format="png">
                     </my-avatar>
-                    <img :src="avatarPanel.imgDataUrl">
+                    <img :src="avatarPanel.imgDataUrl"/>
                     <el-button type="success" size="mini" @click="setAvatarShow">设置头像<i class="el-icon-upload el-icon--right"></i></el-button>
                 </div>
             </el-aside>

@@ -17,6 +17,8 @@ using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
 using ChuXinEdu.CMS.Server.Filters;
 using Microsoft.Extensions.Logging;
+using System.Drawing;
+using ChuXinEdu.CMS.Server.Utils;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -310,6 +312,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     file.CopyTo(stream);
                 }
 
+                using(var stream  = file.OpenReadStream())
+                {
+                    Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
+                    //ImageHelper.SaveThumbnailImage(,);
+                }
                 result = _chuxinWorkFlow.UploadAvatar(code, documentPath, type);
             }
             else
