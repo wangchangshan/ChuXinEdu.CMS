@@ -146,7 +146,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 if (file != null)
                 {
                     string ext = Path.GetExtension(file.FileName);
-                    string newName = string.Format("{0}_{1}_x{2}", studentName, System.Guid.NewGuid().ToString("N"), ext);
+                    string newName = string.Format("{0}_{1}{2}", studentName, System.Guid.NewGuid().ToString("N"), ext);
                     documentPath = documentPath + newName;
                     string savePath = contentRootPath + documentPath;
 
@@ -312,10 +312,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     file.CopyTo(stream);
                 }
 
+                // 存储微信小程序缩略图头像 60X60
                 using(var stream  = file.OpenReadStream())
                 {
                     Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
-                    //ImageHelper.SaveThumbnailImage(,);
+                    ImageHelper.SaveThumbnailImage(bitmap, savePath, 60, 60);
                 }
                 result = _chuxinWorkFlow.UploadAvatar(code, documentPath, type);
             }
@@ -404,7 +405,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 if (file != null)
                 {
                     string ext = Path.GetExtension(file.FileName);
-                    string newName = string.Format("{0}_x{1}", System.Guid.NewGuid().ToString("N"), ext);
+                    string newName = string.Format("{0}{1}", System.Guid.NewGuid().ToString("N"), ext);
                     documentPath = documentPath + newName;
                     string savePath = contentRootPath + documentPath;
 
@@ -464,8 +465,15 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 case "avatar-t":
                     docPath = _chuxinQuery.GetAvatarTruePath(id, "teacher");
                     break;
+                case "avatar-s-wx":
+                    docPath = _chuxinQuery.GetAvatarTruePath(id, "student");
+                    if(!String.IsNullOrEmpty(docPath))
+                    {
+                        docPath += "_60X60.png";
+                    }
+                    break;
 
-                case "wx":
+                case "normal-wx":
                     docPath = _chuxinQuery.GetWeiXinPicTruePath(id);
                     break;
 

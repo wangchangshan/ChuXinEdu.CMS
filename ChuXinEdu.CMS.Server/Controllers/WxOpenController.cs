@@ -63,7 +63,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var pic in wxPics)
             {
-                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=wx";
+                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=normal-wx";
             }
 
             return wxPics;
@@ -176,7 +176,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     dtScpSimplify.Rows.Remove(dr);
                     ssList.Add(ss);
                 }
-                studentVM.StudentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + student.Id + "&type=avatar-s";
+                studentVM.StudentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + student.Id + "&type=avatar-s-wx";
                 studentVM.StudentCourseCategory = ssList;
                 studentList.Add(studentVM);
             }
