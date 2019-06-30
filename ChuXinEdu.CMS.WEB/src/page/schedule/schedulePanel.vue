@@ -62,6 +62,9 @@
                         <el-button plain icon="el-icon-tickets" type="primary" size="mini" @click="toggleRestCourseCount()">{{ setting.btnRestCourseName }}</el-button>
                     </li>
                     <li>
+                        <el-button plain icon="el-icon-date" type="warning" size="mini" @click="showPostponePanel()">整体顺延</el-button>
+                    </li>
+                    <li>
                         <el-card class="box-card card-mini" shadow="never" style="border-right:none">
                             <div slot="header" class="clearfix">
                                 <span>排课日期展示：</span>
@@ -196,11 +199,32 @@
             </el-table-column>
         </el-table>
         <div class="footer-botton-area">
-            选择添加放假日期：
+            选择放假日期：
             <el-date-picker type="dates" :editable="false" value-format="yyyy-MM-dd" v-model="holidayDialog.newHolidays" :picker-options="holidayDialog.pickerDateOptions" size="small"></el-date-picker>
             <el-button v-noRepeatClick type="success" size="small" @click='submitHolidays()'>确定</el-button>
             <el-button @click="holidayDialog.isShow = false" size="small">取消</el-button>
         </div>
+    </el-dialog>
+
+    <el-dialog :title="postponeDialog.title" :visible.sync="postponeDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="postponeDialog.width">
+        
+        顺延日期：
+        <div class="footer-botton-area">
+            <el-date-picker
+                :editable="false" 
+                size="small"
+                value-format="yyyy-MM-dd"
+                v-model="postponeDialog.pausePeriod"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+            </el-date-picker>
+            <el-button v-noRepeatClick type="success" size="small" @click='submitPostpone()'>确定</el-button>
+            <el-button @click="postponeDialog.isShow = false" size="small">取消</el-button>
+        </div>
+        <el-alert style="margin-top:20px" title="说明： 顺延只对当前排课模板有效，请确认模板，一旦顺延，无法撤销。" type="warning" :closable="false">
+        </el-alert>
     </el-dialog>
 </div>
 </template>
@@ -364,7 +388,7 @@ export default {
             holidayDialog: {
                 title: "放假安排",
                 isShow: false,
-                width: '550px',
+                width: '600px',
                 holidayList: [],
                 newHolidays: [],
                 pickerDateOptions: {
@@ -381,6 +405,12 @@ export default {
                         return result;
                     }
                 }
+            },
+            postponeDialog: {
+                title: "课程顺延",
+                isShow: false,
+                width:'550px',
+                pausePeriod: []
             },
             curArrangeTemplateCode: '',
             arrangeTemplateOptions:[],
@@ -1031,6 +1061,49 @@ export default {
 
         courseFolderTag(folderCode) {
             return tagTypeHelper.courseFolderTag(folderCode);
+        },
+
+        showPostponePanel() {
+            this.postponeDialog.pausePeriod = [];
+            this.postponeDialog.isShow = true;
+        },
+
+        submitPostpone() {
+            if(this.postponeDialog.pausePeriod == [] || this.postponeDialog.pausePeriod[0] == undefined) {
+                return false;
+            }
+
+            var startDate = this.postponeDialog.pausePeriod[0];
+            var endDate = this.postponeDialog.pausePeriod[1];
+
+            this.$confirm('确定要将当前排课模板 '+ startDate+' 至 '+ endDate+' 期间的课程顺延吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                axios({
+                    type: 'post',
+                    path: '/api/coursearrange/postpone/' + this.curArrangeTemplateCode,
+                    data: this.postponeDialog.pausePeriod,
+                    fn: result => {
+                        if (result == 1200) {
+                            this.refreshAll();
+                            this.$message({
+                                message: '排课顺延成功！',
+                                type: 'success'
+                            });
+                            this.postponeDialog.isShow = false;
+                        } else {
+                            this.$message({
+                                message: '排课顺延失败，请联系管理员',
+                                type: 'error'
+                            });
+                        }
+                    }
+                });
+            }).catch(() => {
+                //
+            });
         }
     }
 };

@@ -217,5 +217,21 @@ namespace ChuXinEdu.CMS.Server.Controllers
             result = _chuxinWorkFlow.RemoveHoliday(strDay);
             return result;
         }
+
+        /// <summary>
+        /// 排课顺延日期 POST api/coursearrange/postpone
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("{templateCode}")]
+        public string Postpone(string templateCode, [FromBody] List<string> dates)
+        {
+            string result = string.Empty;
+            DateTime startDay = Convert.ToDateTime(dates[0]);
+            DateTime endDay = Convert.ToDateTime(dates[1]);
+
+            result = _chuxinWorkFlow.Postpone(templateCode, startDay, endDay);
+            
+            return result;
+        }
     }   
 }

@@ -822,6 +822,98 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public string Postpone(string templateCode, DateTime startDay, DateTime endDay)
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var students = context.Student.Where(s => s.StudentStatus == "01").ToList();
+
+                    foreach (Student student in students)
+                    {
+                        var courses = context.StudentCourseList.Where(s=> s.ArrangeTemplateCode == templateCode
+                                                        && s.AttendanceStatusCode == "09" 
+                                                        && s.StudentCode == student.StudentCode 
+                                                        && s.CourseDate >= startDay
+                                                        && s.CourseDate <= endDay)
+                                                        .OrderByDescending(s => s.CourseDate)
+                                                        .ToList();
+                        Dictionary<String, DateTime> dicFlag = new Dictionary<String, DateTime>();
+                        foreach (var course in courses)
+                        {
+                            string flagKey = course.Classroom + "|" + course.CourseDate + "|" + course.CourseWeekDay;
+                            DateTime lastClassDate = course.CourseDate;
+                            if(!dicFlag.ContainsKey(flagKey))
+                            {
+                                var flagCourse = context.StudentCourseList.Where( s => s.ArrangeTemplateCode == templateCode
+                                                                                    && s.StudentCode == student.StudentCode
+                                                                                    && s.Classroom == course.Classroom
+                                                                                    && s.CourseWeekDay == course.CourseWeekDay
+                                                                                    && s.CoursePeriod == course.CoursePeriod
+                                                                                    && s.CourseDate > endDay)
+                                                                        .OrderByDescending( s=> s.CourseDate)
+                                                                        .FirstOrDefault();
+                                if(flagCourse != null)
+                                {
+                                    // 时间段外仍有排课
+                                    lastClassDate = flagCourse.CourseDate;
+                                }
+                                dicFlag.Add(flagKey, lastClassDate);
+                            }
+                            // 计算课程新的日期
+                            DateTime newClassDay = lastClassDate;
+                            if(newClassDay <= endDay)
+                            {
+                                while(newClassDay <= endDay)
+                                {
+                                    newClassDay = newClassDay.AddDays(7);
+                                }
+                            }
+                            else
+                            {
+                                newClassDay = newClassDay.AddDays(7);
+                            }
+
+                            // 插入新的课程记录
+                            var newCourse = new StudentCourseList{
+                                StudentCoursePackageId = course.StudentCoursePackageId,
+                                ArrangeGuid = course.ArrangeGuid,
+                                ArrangeTemplateCode = course.ArrangeTemplateCode,
+                                Classroom = course.Classroom,
+                                CoursePeriod = course.CoursePeriod,
+                                CourseWeekDay = course.CourseWeekDay,
+                                CourseDate = newClassDay,
+                                StudentCode = course.StudentCode,
+                                StudentName = course.StudentName,
+                                PackageCode = course.PackageCode,
+                                CourseCategoryCode = course.CourseCategoryCode,
+                                CourseCategoryName = course.CourseCategoryName,
+                                CourseFolderCode = course.CourseFolderCode,
+                                CourseFolderName = course.CourseFolderName,
+                                CourseType = course.CourseType,
+                                AttendanceStatusCode = course.AttendanceStatusCode,
+                                AttendanceStatusName = course.AttendanceStatusName
+                            };
+                            context.Add(newCourse);
+
+                            // 删除旧的课程记录
+                            context.Remove(course);
+
+                            context.SaveChanges();
+                        }    
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "顺延课程失败");
+                result = "1500";
+            }
+            return result;     
+        }
+
         public string SignInSingle(CL_U_SIGN_IN course)
         {
             string result = "1200";

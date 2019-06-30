@@ -37,6 +37,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [排课模块] 删除学生排课 单节
         string SingleRemoveCourse(int studentCourseId);
 
+        // [排课模板] 顺延所有排课
+        string Postpone(string templateCode, DateTime startDay, DateTime endDay);
+
         // [排课模块] 添加放假安排
         string AddHoliday(SysHoliday holiday);
 
