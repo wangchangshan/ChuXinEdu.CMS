@@ -1,7 +1,7 @@
 <template>
 <div class="schedule-panel">
     <el-row class="schedule-area row">
-        <el-col :span="3" v-for="day in coursePeriods" v-bind:key="day.dayCode" v-show="setting.weekdays[day.dayCode]">
+        <el-col :span="3" v-for="day in coursePeriods" v-bind:key="day.dayCode">
             <div class="week-panel" :style="{'height': pageHeight + 'px'}">
                 <p class="title">{{day.dayName}}</p>
                 <el-collapse v-model="day.activePeriods" class="collapse-panle" v-loading='coursePeriodsLoading' :style="{'height': pageHeight - 31 + 'px'}">
@@ -62,35 +62,7 @@
                         <el-button plain icon="el-icon-tickets" type="primary" size="mini" @click="toggleRestCourseCount()">{{ setting.btnRestCourseName }}</el-button>
                     </li>
                     <li>
-                        <el-button plain icon="el-icon-date" type="warning" size="mini" @click="showPostponePanel()">整体顺延</el-button>
-                    </li>
-                    <li>
-                        <el-card class="box-card card-mini" shadow="never" style="border-right:none">
-                            <div slot="header" class="clearfix">
-                                <span>排课日期展示：</span>
-                            </div>
-                            <div class="ckb-line">
-                                <el-checkbox v-model="setting.weekdays.day1" size="mini" label="星期一" border></el-checkbox>
-                            </div>
-                            <div class="ckb-line">
-                                <el-checkbox v-model="setting.weekdays.day2" size="mini" label="星期二" border></el-checkbox>
-                            </div>
-                            <div class="ckb-line">
-                                <el-checkbox v-model="setting.weekdays.day3" size="mini" label="星期三" border></el-checkbox>
-                            </div>
-                            <div class="ckb-line">
-                                <el-checkbox v-model="setting.weekdays.day4" size="mini" label="星期四" border></el-checkbox>
-                            </div>
-                            <div class="ckb-line">
-                                <el-checkbox v-model="setting.weekdays.day5" size="mini" label="星期五" border></el-checkbox>
-                            </div>
-                            <div class="ckb-line">
-                                <el-checkbox v-model="setting.weekdays.day6" size="mini" label="星期六" border></el-checkbox>
-                            </div>
-                            <div>
-                                <el-checkbox v-model="setting.weekdays.day7" size="mini" label="星期日" border></el-checkbox>
-                            </div>
-                        </el-card>
+                        <el-button plain icon="el-icon-date" type="danger" size="mini" @click="showPostponePanel()">假期课程顺延</el-button>
                     </li>
                 </ul>
             </div>
@@ -206,7 +178,12 @@
         </div>
     </el-dialog>
 
-    <el-dialog :title="postponeDialog.title" :visible.sync="postponeDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="postponeDialog.width">
+    <el-dialog
+        v-loading="postponeDialog.loading"
+        element-loading-text="数据处理中..."
+        element-loading-spinner="el-icon-loading"
+        element-loading-background="rgba(0, 0, 0, 0.8)"
+        :title="postponeDialog.title" :visible.sync="postponeDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="postponeDialog.width">
         
         顺延日期：
         <div class="footer-botton-area">
@@ -223,7 +200,7 @@
             <el-button v-noRepeatClick type="success" size="small" @click='submitPostpone()'>确定</el-button>
             <el-button @click="postponeDialog.isShow = false" size="small">取消</el-button>
         </div>
-        <el-alert style="margin-top:20px" title="说明： 顺延只对当前排课模板有效，请确认模板，一旦顺延，无法撤销。" type="warning" :closable="false">
+        <el-alert style="margin-top:20px" title="警告：课程顺延后，当前排课模板下的所有班级下的所有学生的上课时间将按星期顺延，一旦顺延，无法撤销！请谨慎操作！" type="error" :closable="false">
         </el-alert>
     </el-dialog>
 </div>
@@ -245,7 +222,7 @@ export default {
         return {
             pageHeight: this.$store.state.page.win_content.height - 73,
             coursePeriodsLoading: true,
-            coursePeriods: [{
+            coursePeriods_init: [{
                     dayCode: 'day1',
                     dayName: '星期一',
                     periods: [
@@ -256,6 +233,49 @@ export default {
                         //     studentList:[],
                         // },
                     ],
+                    activePeriods: []
+                },
+                {
+                    dayCode: 'day2',
+                    dayName: '星期二',
+                    periods: [],
+                    activePeriods: []
+                },
+                {
+                    dayCode: 'day3',
+                    dayName: '星期三',
+                    periods: [],
+                    activePeriods: []
+                },
+                {
+                    dayCode: 'day4',
+                    dayName: '星期四',
+                    periods: [],
+                    activePeriods: []
+                },
+                {
+                    dayCode: 'day5',
+                    dayName: '星期五',
+                    periods: [],
+                    activePeriods: []
+                },
+                {
+                    dayCode: 'day6',
+                    dayName: '星期六',
+                    periods: [],
+                    activePeriods: []
+                },
+                {
+                    dayCode: 'day7',
+                    dayName: '星期日',
+                    periods: [],
+                    activePeriods: []
+                },
+            ],
+            coursePeriods: [{
+                    dayCode: 'day1',
+                    dayName: '星期一',
+                    periods: [],
                     activePeriods: []
                 },
                 {
@@ -310,16 +330,7 @@ export default {
                 btnTogglePeriodName: '全部折叠',
                 btnTogglePeriodIcon: 'el-icon-arrow-up',
                 hidTogglePeriodStatus: true, // true : 当前展开
-                holidayList:[],
-                weekdays:{
-                    day1: true,
-                    day2: true,
-                    day3: true,
-                    day4: false,
-                    day5: true,
-                    day6: true,
-                    day7: true,
-                }
+                holidayList:[]
             },
             selectZhengShiDialog: {
                 title: '',
@@ -409,10 +420,11 @@ export default {
             postponeDialog: {
                 title: "课程顺延",
                 isShow: false,
+                loading: false,
                 width:'550px',
                 pausePeriod: []
             },
-            curArrangeTemplateCode: '',
+            curArrangeTemplateCode: this.$store.state.page.arrangeTemplateCode,
             arrangeTemplateOptions:[],
             courseOptions: [{
                 value: 'meishu',
@@ -452,7 +464,10 @@ export default {
                         }                        
                     });
                     if(this.arrangeTemplateOptions.length > 0){
-                        this.curArrangeTemplateCode = this.arrangeTemplateOptions[0].value;                        
+                        if(this.curArrangeTemplateCode == '') {
+                            this.curArrangeTemplateCode = this.arrangeTemplateOptions[0].value;                        
+                            this.$store.dispatch('set_template_code', this.curArrangeTemplateCode);
+                        }
                         this.getTemplatePeriod();
                         this.holidaysInit();
                     }
@@ -471,6 +486,7 @@ export default {
                 this.coursePeriodsLoading = true;
                 this.getTemplatePeriod();
             }
+            this.$store.dispatch('set_template_code', this.curArrangeTemplateCode);
         },
     },
     methods: {
@@ -485,10 +501,11 @@ export default {
                     roomCode: this.roomCode
                 },
                 fn: result => {
+                    this.coursePeriods = this.coursePeriods_init;
                     for (let day of this.coursePeriods) {
                         day.activePeriods = [];
                         day.periods = [];
-                    }
+                    };
                     result.forEach((item) => {
                         // 构造coursePeriods数据
                         for (let day of this.coursePeriods) {
@@ -505,6 +522,11 @@ export default {
                             }
                         }
                     });
+
+                    // 休息日不展示
+                    this.coursePeriods = this.coursePeriods.filter(item => {
+                        return item.periods.length > 0;
+                    })
                     this.coursePeriodsLoading = false;
                 }
             })
@@ -1081,12 +1103,14 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
+                this.postponeDialog.loading = true;
                 axios({
                     type: 'post',
                     path: '/api/coursearrange/postpone/' + this.curArrangeTemplateCode,
                     data: this.postponeDialog.pausePeriod,
                     fn: result => {
                         if (result == 1200) {
+                            this.postponeDialog.loading = false;
                             this.refreshAll();
                             this.$message({
                                 message: '排课顺延成功！',
@@ -1094,6 +1118,7 @@ export default {
                             });
                             this.postponeDialog.isShow = false;
                         } else {
+                            this.postponeDialog.loading = false;
                             this.$message({
                                 message: '排课顺延失败，请联系管理员',
                                 type: 'error'
