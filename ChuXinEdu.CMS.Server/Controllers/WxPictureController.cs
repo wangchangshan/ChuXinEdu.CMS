@@ -1,22 +1,10 @@
-using System;
-using System.Data;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.IO;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Hosting;
-using Newtonsoft.Json;
 using ChuXinEdu.CMS.Server.Utils;
-using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
-using ChuXinEdu.CMS.Server.ViewModel;
-using Newtonsoft.Json.Serialization;
 using ChuXinEdu.CMS.Server.Filters;
-using System.Net.Http;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -47,7 +35,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var pic in wxPics)
             {
-                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=wx";
+                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=normal-wx";
             }
 
             return wxPics;

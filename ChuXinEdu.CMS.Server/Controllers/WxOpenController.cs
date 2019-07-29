@@ -45,7 +45,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var pic in wxPics)
             {
-                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=wx";
+                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=normal-wx";
             }
 
             return wxPics;
