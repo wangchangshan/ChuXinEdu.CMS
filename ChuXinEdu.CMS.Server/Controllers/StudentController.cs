@@ -268,7 +268,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取学生上课列表 GET api/student/getcourselist
+        /// 获取学生上课历史记录列表（旧页面） GET api/student/getcourselist
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -279,7 +279,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取学生上课列表 GET api/student/getdayofflist
+        /// 获取学生上课历史记录列表（新页面） GET api/student/gethistorycourselist
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<StudentCourseList> GetHistoryCourseList(int pageIndex, int pageSize, string q)
+        {
+            string studentCode = string.Empty;
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(studentCode);
+            return courseList;
+        }
+
+        /// <summary>
+        /// 获取学生请假记录列表 GET api/student/getdayofflist
         /// </summary>
         /// <returns></returns>
         [HttpGet]

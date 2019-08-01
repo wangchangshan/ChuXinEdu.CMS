@@ -112,7 +112,7 @@
     </el-dialog>
 
     <el-dialog :title="selectShiTingDialog.title" :visible.sync="selectShiTingDialog.isShow" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false" :width="selectShiTingDialog.width">
-        <el-table :data="selectShiTingDialog.studentList" max-height="400" size="mini" @selection-change="handleStudentTempSelectionChange">
+        <el-table :data="selectShiTingDialog.studentList" height="400" size="mini" @selection-change="handleStudentTempSelectionChange">
             <el-table-column type="selection" width="30"></el-table-column>
             <el-table-column property="studentName" label="姓名" width="70"></el-table-column>
             <el-table-column label="课程内容" min-width="180" align='center'>
@@ -426,27 +426,7 @@ export default {
             },
             curArrangeTemplateCode: this.$store.state.page.arrangeTemplateCode,
             arrangeTemplateOptions:[],
-            courseOptions: [{
-                value: 'meishu',
-                label: '美术',
-                children: [{
-                    value: 'meishu_00',
-                    label: '国画'
-                }, {
-                    value: 'meishu_01',
-                    label: '西画'
-                }]
-            }, {
-                value: 'shufa',
-                label: '书法',
-                children: [{
-                    value: 'shufa_00',
-                    label: '毛笔'
-                }, {
-                    value: 'shufa_01',
-                    label: '硬笔'
-                }]
-            }]
+            courseOptions: []
         };
     },
     created() {
@@ -590,22 +570,32 @@ export default {
 
         // 试听课程
         showTempStudentsListCourse(dayCode, dayName, periodName) {
+            if(this.courseOptions.length == 0){
+                // 获取所有课程类型
+                axios({
+                    type: 'get',
+                    path: '/api/config/getcourseclassify',
+                    fn: result => {
+                        this.courseOptions = result;
+                    }
+                });
+            }
+            this.getShiTingStudentList();
+
             this.selectShiTingDialog.title = '选择试听学生 [' + dayName + ' ' + periodName + ']';
             this.selectShiTingDialog.curDayCode = dayCode;
             this.selectShiTingDialog.curPeriodName = periodName;
-            this.getShiTingStudentList();
             this.selectShiTingDialog.isShow = true;
         },
 
         // 试听学生列表
         getShiTingStudentList() {
-            var _this = this;
-            _this.selectShiTingDialog.studentList = [];
+            this.selectShiTingDialog.studentList = [];
             axios({
                 type: 'get',
                 path: '/api/student/gettempstudentstoselectCourse',
-                fn: function (result) {
-                    _this.selectShiTingDialog.studentList = result;
+                fn: result => {
+                    this.selectShiTingDialog.studentList = result;
                 }
             })
         },
@@ -678,10 +668,10 @@ export default {
 
         // 添加排课学生入口
         showStudentsListPanel(dayCode, dayName, periodName) {
+            this.getPickCourseStudentList(dayCode, periodName);
             this.selectZhengShiDialog.title = '选择学生 [' + dayName + ' ' + periodName + ']';
             this.selectZhengShiDialog.curDayCode = dayCode;
             this.selectZhengShiDialog.curPeriodName = periodName;
-            this.getPickCourseStudentList(dayCode, periodName);
             this.selectZhengShiDialog.isShow = true;
         },
 

@@ -283,6 +283,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
+                // 01：上课销课； 02：活动销课
                 return context.StudentCourseList.Where(s => s.StudentCode == studentCode
                                                             && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"))
                                                 .OrderBy(s => s.CoursePeriod)

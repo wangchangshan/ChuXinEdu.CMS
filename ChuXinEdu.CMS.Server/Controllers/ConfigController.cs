@@ -100,6 +100,30 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// [配置] 获取课程类别包括大类和小类（用于级联展示） 
+        /// GET api/config/getcourseclassify
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<DIC_R_PACKAGE> GetCourseClassify()
+        {
+            var categoryList = _configQuery.GetDicByCode("course_category").ToList();
+
+            List<DIC_R_PACKAGE> courseClassify = new List<DIC_R_PACKAGE>();
+            foreach (var item in categoryList)
+            {
+                DIC_R_PACKAGE package = new DIC_R_PACKAGE();
+                package.Label = item.Label;
+                package.Value = item.Value;
+                package.children = _configQuery.GetChildrenDicByCode("course_folder" ,item.Value);
+
+                courseClassify.Add(package);
+            }
+
+            return courseClassify;
+        }
+
+        /// <summary>
         /// 获取收费教师键值对 list GET api/config/getfinancer
         /// </summary>
         /// <returns></returns>

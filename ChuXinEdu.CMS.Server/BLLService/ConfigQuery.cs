@@ -18,7 +18,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
 			{
 				var dicList =  context.DIC_R_KEY_VALUE.FromSql($@"select item_code, item_name 
                                                                   from sys_dictionary 
-                                                                  where type_code= {typeCode} and item_enabled = 'Y' 
+                                                                  where type_code = {typeCode} and item_enabled = 'Y' 
+                                                                  order by item_sort_weight")
+                                                        .ToList();
+                return dicList;
+			}
+        }
+
+        public IEnumerable<DIC_R_KEY_VALUE> GetChildrenDicByCode(string typeCode, string parentCode)
+        {
+            using (BaseContext context = new BaseContext())
+			{
+				var dicList =  context.DIC_R_KEY_VALUE.FromSql($@"select item_code, item_name 
+                                                                  from sys_dictionary 
+                                                                  where type_code = {typeCode} and parent_item_code = {parentCode} and item_enabled = 'Y' 
                                                                   order by item_sort_weight")
                                                         .ToList();
                 return dicList;

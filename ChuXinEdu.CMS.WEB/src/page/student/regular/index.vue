@@ -46,7 +46,7 @@
 <script>
 // import studentDetailBaseInfo from '@/page/studentDetailBaseInfo'
 import baseInfo from './baseInfo'
-import courseHistory from './courseHistory'
+import courseHistory from './courseHistoryNew'
 import dayoffHistory from './dayoffHistory'
 import achievements from './achievements'
 import feeBack from './feeBack'
