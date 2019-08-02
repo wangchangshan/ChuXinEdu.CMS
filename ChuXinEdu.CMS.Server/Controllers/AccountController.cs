@@ -1,20 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using ChuXinEdu.CMS.Server.Context;
-using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
-using ChuXinEdu.CMS.Server.ViewModel;
-using ChuXinEdu.CMS.Server.Utils;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.Logging;
-using System.Data;
-using System.Net.Http;
 using System.Text;
 using ChuXinEdu.CMS.Server.Filters;
 

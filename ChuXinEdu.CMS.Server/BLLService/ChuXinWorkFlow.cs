@@ -1,8 +1,6 @@
 using System;
-using System.Data;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.Utils;

@@ -1,7 +1,5 @@
 using System;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Web;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Utils;

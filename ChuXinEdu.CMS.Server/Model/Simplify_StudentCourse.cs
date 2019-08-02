@@ -1,7 +1,3 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace ChuXinEdu.CMS.Server.Model
 {
     public class Simplify_StudentCourse

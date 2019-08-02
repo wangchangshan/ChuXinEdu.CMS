@@ -1,16 +1,12 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.IO;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using ChuXinEdu.CMS.Server.Utils;
-using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
@@ -283,11 +279,23 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<StudentCourseList> GetHistoryCourseList(int pageIndex, int pageSize, string q)
+        public ActionResult<String> GetHistoryCourseList(int pageIndex, int pageSize, string q)
         {
-            string studentCode = string.Empty;
-            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(studentCode);
-            return courseList;
+            int totalCount = 0;
+            QUERY_STUDENT_COURSE_LIST query = JsonConvert.DeserializeObject<QUERY_STUDENT_COURSE_LIST>(q);            
+
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(pageIndex, pageSize, query, out totalCount);
+ 
+            var settings = new JsonSerializerSettings()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                DateFormatString = "yyyy-MM-dd"
+            };
+            
+            return new JsonResult(new {
+                TotalCount = totalCount,
+                Data = courseList
+            }, settings);
         }
 
         /// <summary>

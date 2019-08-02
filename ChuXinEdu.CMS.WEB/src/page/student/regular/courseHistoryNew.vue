@@ -3,8 +3,8 @@
     <div class="search_container">
         <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
             <el-form-item label="报名套餐">
-                <el-select @change="changePackage" size="small" class="input-small" v-model="searchField.packageCode" placeholder="请选择报名套餐" :clearable="true">
-                    <el-option v-for="item in packageList1" :key="item.id" :label="item.packageName" :value="item.id">
+                <el-select size="small" class="input-small" v-model="searchField.studentPackageId" placeholder="请选择报名套餐" :clearable="true">
+                    <el-option v-for="item in packageOptions" :key="item.id" :label="item.packageName" :value="item.id">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -14,12 +14,12 @@
             <el-form-item class="btnRight">
                 <el-button v-noRepeatClick type="primary" size="small" @click='supplementCourse()'><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
                 <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
-                <el-button v-noRepeatClick type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 导出图片</el-button>
+                <el-button v-noRepeatClick type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 导出长图</el-button>
             </el-form-item>
         </el-form>
     </div>
     <div class="table_container">
-        <el-table id="capture" ref="courseTable" :data="filteredCourseList" :span-method="objectSpanMethod" :row-class-name="packageColorFlag" v-loading="loading" size="mini" align="left" border :height="tableHeight">
+        <el-table id="capture" ref="courseTable" :data="courseList" :span-method="objectSpanMethod" :row-class-name="packageColorFlag" v-loading="loading" size="mini" align="left" border :height="tableHeight">
             <el-table-column type="index" width="50" align='center'></el-table-column>
             <el-table-column prop="courseDate" label="上课日期" align='center' min-width="135">
                 <template slot-scope='scope'>
@@ -59,23 +59,6 @@
             </el-col>
         </el-row>
     </div>
-
-    <!-- <div class="footer_container">
-        <el-radio-group v-model="curCourseCategory" size="small" type="success">
-            <el-radio-button label="all">全部 <span style="font-weight:600">{{ this.badges.all }}</span>节</el-radio-button>
-            <el-radio-button label="meishu">美术 <span style="font-weight:600">{{ this.badges.meishu }}</span>节</el-radio-button>
-            <el-radio-button label="shufa">书法 <span style="font-weight:600">{{ this.badges.shufa }}</span>节</el-radio-button>
-        </el-radio-group>
-
-        <el-select v-model="packageList1Value" @change="changePackage" size="small" clearable class="input-small" placeholder="请选择套餐">
-            <el-option
-                v-for="item in packageList1"
-                :key="item.id"
-                :label="item.packageName"
-                :value="item.id">
-            </el-option>
-        </el-select>
-    </div> -->
 
     <el-dialog :title="supplementDialog.title" :visible.sync="supplementDialog.isShow" :width="supplementDialog.width" :close-on-click-modal='false' :close-on-press-escape='false' :modal-append-to-body="false">
         <div class="form">
@@ -211,30 +194,23 @@ export default {
             courseList: [],
             searchField: {
                 studentCode: '',
-                packageCode: ''
+                studentPackageId: ''
             },
             paginations: {
                 current_page_index: 1,
-                total: 10,
-                page_size: 15,
-                page_sizes: [20, 40, 80, 100],
+                total: 0,
+                page_size: 50,
+                page_sizes: [30, 50, 80, 100],
                 layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
             },
-            filteredCourseList: [],
-            packageList1: [],
-            packageList1Value: '',
-            badges: {
-                all: 0,
-                meishu: 0,
-                shufa: 0
-            },
+            packageOptions: [],
             packages: [],
             curCourseCategory: 'all',
             dateRowSpanArray: [],
             loading: true,
             downloadLoading: false,
             captureLoading: false,
-            tableHeight: this.$store.state.page.win_content.height - 200,
+            tableHeight: this.$store.state.page.win_content.height - 155,
             supplementDialog: {
                 width: '850px',
                 tableHeight: 450,
@@ -304,7 +280,7 @@ export default {
     created() {
         this.studentName = this.$route.query.studentname;
         this.getStudentPackageList();
-        this.getHistoryCourseList();
+        this.loading = false;
     },
     updated() {
         this.$refs.courseTable.bodyWrapper.scrollTop = this.$refs.courseTable.bodyWrapper.scrollHeight;
@@ -318,7 +294,7 @@ export default {
                     studentCode: this.studentCode
                 },
                 fn: result => {
-                    this.packageList1 = result;
+                    this.packageOptions = result;
                 }
             });
         },
@@ -357,21 +333,15 @@ export default {
                 data: data,
                 fn: result => {
                     this.paginations.total = result.totalCount;
-                    result.forEach(item => {
-                        item.courseDate = item.courseDate.split('T')[0];
+                    result.data.forEach(item => {
                         item.weekName = dateHelper.getWeekNameByCode(item.courseWeekDay);
                         if (this.packages.indexOf(item.studentCoursePackageId) == -1) {
                             this.packages.push(item.studentCoursePackageId);
                         }
                     });
-                    this.courseList = result;
-                    this.filteredCourseList = result;
+                    this.courseList = result.data;
                     this.getRowSpanInfo();
                     this.loading = false;
-
-                    // this.badges.all = this.courseList.length;
-                    // this.badges.shufa = this.courseList.filter(item => item.courseCategoryCode == 'shufa').length;
-                    // this.badges.meishu = this.badges.all - this.badges.shufa;
                     fun && fun();
                 }
             });
@@ -547,7 +517,7 @@ export default {
             this.dateRowSpanArray = [];
             let cDate = '';
             let dateIndex = 0;
-            this.filteredCourseList.forEach((item, index, array) => {
+            this.courseList.forEach((item, index, array) => {
                 this.dateRowSpanArray.push(1);
                 if (index === 0) {
                     cDate = item.courseDate;
@@ -859,15 +829,6 @@ export default {
             return name;
         },
 
-        changePackage() {
-            this.filteredCourseList = this.courseList.filter(item => this.packageList1Value == null || item.studentCoursePackageId == this.packageList1Value);
-            this.getRowSpanInfo();
-
-            this.badges.all = this.filteredCourseList.length;
-            this.badges.shufa = this.filteredCourseList.filter(item => item.courseCategoryCode == 'shufa').length;
-            this.badges.meishu = this.badges.all - this.badges.shufa;
-        },
-
         captureCourse() {
             this.captureLoading = true;
             let dom = document.querySelector("#capture");
@@ -954,15 +915,11 @@ export default {
         export2Excle() {
             axios({
                 type: 'get',
-                path: '/api/download/studentcourse',
-                data: {
-                    studentCode: this.studentCode
-                },
+                path: '/api/download/studenthistorycourse',
+                data: this.searchField,
                 responseType: 'blob',
                 fn: result => {
-                    this.download(result);
-                    // var fileDownload = require('js-file-download');
-                    // fileDownload(result, '上课记录.xlsx');                    
+                    this.download(result);                   
                 }
             })
         },
@@ -982,31 +939,6 @@ export default {
             document.body.removeChild(link);
         },
 
-        // 前端导出 暂时不使用
-        export2Excle1() {
-            if (this.courseList.length == 0) {
-                this.$message({
-                    message: '没有数据（' + this.curCourseCategory + '）需要导出！',
-                    type: 'success'
-                });
-                return;
-            }
-            var filename = this.courseList[0].studentName + "上课记录_" + this.curCourseCategory;
-            this.downloadLoading = true;
-            import('@/vendor/Export2Excel').then(excel => {
-                const tHeader = ['上课日期', '上课时间', '课程类别', '课程主题', '上课教师'];
-                const filterVal = ['courseDate', 'coursePeriod', 'courseFolderName', 'courseSubject', 'teacherName']
-                const data = this.formatJson(filterVal, this.courseList.filter(item => this.curCourseCategory == 'all' || item.courseCategoryCode == this.curCourseCategory))
-                excel.export_json_to_excel({
-                    header: tHeader,
-                    data,
-                    filename: filename,
-                    autoWidth: true,
-                    bookType: 'xlsx'
-                })
-                this.downloadLoading = false;
-            })
-        },
         formatJson(filterVal, jsonData) {
             return jsonData.map(v => filterVal.map(j => {
                 if (j === 'courseDate') {

@@ -1,12 +1,4 @@
-
-using System;
-using System.Data;
-using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Extensions;
-using Microsoft.Extensions.Configuration;
-using MySql.Data;
-using MySql.Data.MySqlClient;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.ViewModel;
 using ChuXinEdu.CMS.Server.Utils;

@@ -1,7 +1,5 @@
-using System;
 using System.Data;
 using System.Collections.Generic;
-using ChuXinEdu.CMS.Server.Model;
 
 namespace ChuXinEdu.CMS.Server.BLL
 {

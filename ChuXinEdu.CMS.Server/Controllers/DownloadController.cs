@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Net.Http.Headers;
-using System.Net.Mime;
-using System.Threading.Tasks;
 using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.Filters;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
@@ -39,7 +33,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// [导出] 导出学生上课记录 GET api/download/studentcourse
+        /// [导出] 导出学生上课记录（旧页面） GET api/download/studentcourse
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -57,6 +51,47 @@ namespace ChuXinEdu.CMS.Server.Controllers
                                                                         where scl.student_code='{studentCode}' and (attendance_status_code = '01' or attendance_status_code = '02') and course_type='正式' 
                                                                         order by student_course_package_id,course_period,course_date");
 
+                result = GenerateExcel_StudentCourse(dtCourse, fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "学生上课记录导出失败！");
+            }
+
+            return File(result, "application/vnd.ms-excel");
+        }
+
+        /// <summary>
+        /// [导出] 导出学生上课记录（新页面） GET api/download/studentcourse
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult StudentHistoryCourse(string studentCode, int? studentPackageId)
+        {
+            byte[] result = null;
+            try
+            {
+                string docPath = string.Empty;
+                DataTable dtCourse = null;
+                string fileName = studentCode + "_course_history.xlsx";
+                if (studentPackageId != null)
+                {
+                    dtCourse = ADOContext.GetDataTable($@"select package_name as '套餐名称',scl.course_date as '日期', scl.course_period as '时间',scl.course_folder_name as '课程类别',course_subject as '课程内容',teacher_name '上课教师' 
+                                                        from student_course_list scl
+                                                        left join student_course_package scp on scl.student_course_package_id = scp.id
+                                                        where scl.student_code='{studentCode}' and (attendance_status_code = '01' or attendance_status_code = '02') and course_type='正式' 
+                                                        and scl.student_course_package_id = {studentPackageId} 
+                                                        order by student_course_package_id,course_period,course_date");
+                }
+                else
+                {
+                    dtCourse = ADOContext.GetDataTable($@"select package_name as '套餐名称',scl.course_date as '日期', scl.course_period as '时间',scl.course_folder_name as '课程类别',course_subject as '课程内容',teacher_name '上课教师' 
+                                                        from student_course_list scl
+                                                        left join student_course_package scp on scl.student_course_package_id = scp.id
+                                                        where scl.student_code='{studentCode}' and (attendance_status_code = '01' or attendance_status_code = '02') and course_type='正式' 
+                                                        order by student_course_package_id,course_period,course_date");
+                }
+                
                 result = GenerateExcel_StudentCourse(dtCourse, fileName);
             }
             catch (Exception ex)

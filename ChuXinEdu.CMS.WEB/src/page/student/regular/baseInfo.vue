@@ -81,10 +81,9 @@
                             {{ scope.row.courseCategoryName  + "/" + scope.row.courseFolderName }}
                         </template>
                     </el-table-column>
+                    <el-table-column prop="actualCourseCount" align='center' label="总课时" min-width="70">
+                    </el-table-column>
                     <el-table-column prop="restCourseCount" align='center' label="剩余课时" min-width="70">
-                        <template slot-scope='scope'>
-                            {{ scope.row.restCourseCount }}
-                        </template>
                     </el-table-column>
                     <el-table-column prop="payDate" align='center' label="缴费日期" min-width="100">
                         <template slot-scope='scope'>
@@ -95,8 +94,6 @@
                         <template slot-scope='scope'>
                             <span style="color:#f56767;">{{ scope.row.actualPrice }}</span> 
                         </template>
-                    </el-table-column>
-                    <el-table-column prop="payPatternName" align='center' label="缴费方式" min-width="70">
                     </el-table-column>
                     <el-table-column prop="payeeName" align='center' label="收款人" min-width="70">
                     </el-table-column>

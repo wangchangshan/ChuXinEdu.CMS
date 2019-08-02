@@ -1,5 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ChuXinEdu.CMS.Server.Filters

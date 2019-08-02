@@ -41,7 +41,7 @@
         </el-radio-group>
         <el-button v-noRepeatClick type="primary" size="small" @click='supplementCourse()'><i class="fa fa-book" aria-hidden="true"></i> 补录课程</el-button>
         <el-button v-noRepeatClick type="primary" size="small" @click='export2Excle()' :loading="downloadLoading"><i class="fa fa-file-excel-o" aria-hidden="true"></i> 导出Excel</el-button>
-        <el-button v-noRepeatClick type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 导出图片</el-button>
+        <el-button v-noRepeatClick type="primary" size="small" @click='captureCourse()' :loading="captureLoading"><i class="fa fa-camera" aria-hidden="true"></i> 导出长图</el-button>
         <el-select v-model="packageList1Value" @change="changePackage" size="small" clearable class="input-small" placeholder="请选择套餐">
             <el-option
                 v-for="item in packageList1"

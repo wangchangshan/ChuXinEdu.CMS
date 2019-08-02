@@ -45,6 +45,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode);
 
+        IEnumerable<StudentCourseList> GetStudentCourseList(int pageIndex, int pageSize, QUERY_STUDENT_COURSE_LIST query,out int totalCount);
+
         IEnumerable<StudentCourseList> GetStudentDayOffList(string studentCode);
 
         IEnumerable<StudentCourseComment> GetCourseComments(string studentCode);

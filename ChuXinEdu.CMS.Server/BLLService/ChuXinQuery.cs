@@ -292,6 +292,45 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<StudentCourseList> GetStudentCourseList(int pageIndex, int pageSize, QUERY_STUDENT_COURSE_LIST query,out int totalCount)
+        {
+            IEnumerable<StudentCourseList> courseList = null;
+            using (BaseContext context = new BaseContext())
+            {
+                IQueryable<StudentCourseList> temp = null;
+
+                if (!String.IsNullOrEmpty(query.studentCode))
+                {
+                    temp = context.StudentCourseList.Where(s => s.StudentCode == query.studentCode
+                                                                && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"));
+                }
+                if (query.studentPackageId != null)
+                {
+                    if (temp == null)
+                    {
+                        temp = context.StudentCourseList;
+                    }
+                    temp = temp.Where(s => s.StudentCoursePackageId == query.studentPackageId);
+                }
+
+                if (temp == null)
+                {
+                    totalCount = 0;
+                    courseList = temp;
+                }
+                else
+                {
+                    totalCount = temp.Count();
+                    courseList = temp.OrderBy(s => s.CoursePeriod)
+                                    .OrderBy(s => s.CourseDate).ToList()
+                                    .Skip(pageSize * (pageIndex - 1))
+                                    .Take(pageSize);
+                }
+
+                return courseList;
+            }
+        }
+
         public IEnumerable<StudentCourseList> GetStudentDayOffList(string studentCode)
         {
             using (BaseContext context = new BaseContext())
