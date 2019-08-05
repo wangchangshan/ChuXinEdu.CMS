@@ -114,11 +114,11 @@
         <div class="form">
             <el-form ref="courseInfo" :model="packageDialog.courseInfo" :label-width="packageDialog.formLabelWidth" :label-position='packageDialog.labelPosition' style="margin:10px;width:auto;" size="mini">
                 <el-form-item label="课程类型">
-                    <el-cascader :disabled="packageDialog.uploadPanel == 'Y'" :options="packageDialog.coursePackage" v-model="packageDialog.courseInfo.selectedPackage" size="mini" style="width:350px"></el-cascader>
+                    <el-cascader :disabled="packageDialog.uploadPanel == 'Y'" @change="packageChanged" :options="packageDialog.coursePackage" v-model="packageDialog.courseInfo.selectedPackage" size="mini" style="width:350px"></el-cascader>
                 </el-form-item>
                 <el-form-item label="课程内容">
                     <el-radio-group :disabled="packageDialog.uploadPanel == 'Y'" v-model="packageDialog.courseInfo.selectedFolder">
-                        <el-radio v-for="item in $store.getters['course_folder']" :key="item.value" :label="item.value" :disabled="handleCourseFolderDisplay(item)">{{item.label}}</el-radio>
+                        <el-radio v-for="item in packageDialog.folders" :key="item.value" :label="item.value">{{item.label}}</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="实际课程数目">
@@ -262,6 +262,7 @@ export default {
                 labelPosition: 'right',
                 formLabelWidth: '100px',
                 uploadPanel: 'N',
+                folders:[],
                 courseInfo: {
                     selectedPackage: [],
                     selectedFolder: '',
@@ -313,15 +314,14 @@ export default {
         'my-avatar': myAvatar
     },
     created() {
-        var _this = this;
-        _this.GetStudentBaseData();
+        this.GetStudentBaseData();
 
         // 获取所有课程套餐
         axios({
             type: 'get',
             path: '/api/config/getcoursepackage',
-            fn: function (result) {
-                _this.packageDialog.coursePackage = result;
+            fn: result => {
+                this.packageDialog.coursePackage = result;
             }
         });
 
@@ -329,8 +329,8 @@ export default {
         axios({
             type: 'get',
             path: '/api/config/getfinancer',
-            fn: function (result) {
-                _this.packageDialog.payeeList = result;
+            fn: result => {
+                this.packageDialog.payeeList = result;
             }
         });
     },
@@ -357,25 +357,21 @@ export default {
          * [param] field
          */
         cropUploadFail(status, field) {
-            // console.log('-------- upload fail --------');
-            // console.log(status);
-            // console.log('field: ' + field);
         },
 
         GetStudentBaseData() {
-            var _this = this;
             axios({
                 type: 'get',
                 path: '/api/student/getbaseinfo',
                 data: {
-                    studentCode: _this.studentCode
+                    studentCode: this.studentCode
                 },
-                fn: function (result) {
+                fn: result => {
                     result.studentInfo.studentBirthday = result.studentInfo.studentBirthday && result.studentInfo.studentBirthday.split('T')[0] || '';
                     result.studentInfo.studentRegisterDate = result.studentInfo.studentRegisterDate.split('T')[0];
-                    result.studentInfo.studentStatusDesc = dicHelper.getLabelByValue(_this.$store.getters['student_status'], result.studentInfo.studentStatus);
-                    _this.avatarPanel.imgDataUrl = result.studentInfo.studentAvatarPath;
-                    _this.pageData = result;
+                    result.studentInfo.studentStatusDesc = dicHelper.getLabelByValue(this.$store.getters['student_status'], result.studentInfo.studentStatus);
+                    this.avatarPanel.imgDataUrl = result.studentInfo.studentAvatarPath;
+                    this.pageData = result;
 
                 }
             });
@@ -603,17 +599,12 @@ export default {
 
         },
 
-        handleCourseFolderDisplay(item) {
-            // 控制课程小类的是否可选
-            if (this.packageDialog.courseInfo.selectedPackage.length == 0) {
-                return true;
-            } else if (item.value.indexOf(this.packageDialog.courseInfo.selectedPackage[0]) > -1) {
-                return false;
-            } else {
-                if (this.packageDialog.courseInfo.selectedFolder == item.value) {
-                    this.packageDialog.courseInfo.selectedFolder = '';
-                }
-                return true;
+        packageChanged() {
+           if (this.packageDialog.courseInfo.selectedPackage.length == 0) {
+                this.packageDialog.folders = [];
+            } else{
+                let pCode = this.packageDialog.courseInfo.selectedPackage[0];
+                this.packageDialog.folders = this.$store.getters['course_folder'].filter(item => {return item.value.indexOf(pCode + '_') > -1})
             }
         },
 
