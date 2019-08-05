@@ -67,10 +67,7 @@ export default {
         },
         setOptions({
             xMonth,
-            guohua,
-            xihua,
-            ruanbi,
-            yingbi
+            courseFolder
         } = {}) {
             var labelOption = {
                 normal: {
@@ -83,6 +80,22 @@ export default {
                     formatter: '{c}'
                 }
             };
+
+            let myLegend = [];
+            let mySeries = [];
+            for(let folder of courseFolder){
+                myLegend.push(folder.name);
+                mySeries.push({
+                    name: folder.name,
+                    type: 'bar',
+                    barGap: 0,
+                    barWidth: '20%',
+                    label: labelOption,
+                    data: folder.sum,
+                    animationDuration
+                });
+            }
+
             this.chart.setOption({
                 title: {
                     text: '销课分布',
@@ -95,7 +108,7 @@ export default {
                     }
                 },
                 legend: {
-                    data: ['国画', '西画', '软笔', '硬笔']
+                    data: myLegend
                 },
                 grid: {
                     top: 40,
@@ -117,38 +130,7 @@ export default {
                         show: false
                     }
                 }],
-                series: [{
-                    name: '国画',
-                    type: 'bar',
-                    barGap: 0,
-                    barWidth: '20%',
-                    label: labelOption,
-                    data: guohua,
-                    animationDuration
-                }, {
-                    name: '西画',
-                    type: 'bar',
-                    barWidth: '20%',
-                    label: labelOption,
-                    data: xihua,
-                    animationDuration
-                }, {
-                    name: '软笔',
-                    type: 'bar',
-                    // stack: 'shufa',
-                    barWidth: '20%',
-                    label: labelOption,
-                    data: ruanbi,
-                    animationDuration
-                }, {
-                    name: '硬笔',
-                    type: 'bar',
-                    // stack: 'shufa',
-                    barWidth: '20%',
-                    label: labelOption,
-                    data: yingbi,
-                    animationDuration
-                }]
+                series: mySeries
             })
         }
     }

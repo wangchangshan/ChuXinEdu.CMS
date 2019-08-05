@@ -268,6 +268,18 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<DIC_R_KEY_VALUE> GetStudentPackageKV(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var dicList =  context.DIC_R_KEY_VALUE.FromSql($@"select distinct course_category_code as item_code, course_category_name as item_name 
+                                                                from student_course_package 
+                                                                where student_code={studentCode}")
+                                                        .ToList();
+                return dicList;
+            }
+        }
+
         public IEnumerable<StudentCoursePackage> GetNoFinishPackage(string studentCode)
         {
             using (BaseContext context = new BaseContext())

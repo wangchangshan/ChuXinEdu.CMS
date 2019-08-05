@@ -30,26 +30,22 @@ import {
 let chartData = {
     student: {
         xMonth: [],
-        yMeishu: [],
-        yShufa: [],
+        courseCategory: [],
         yTotal: [],
     },
     course: {
         xMonth: [],
-        yMeishu: [],
-        yShufa: [],
+        courseCategory: [],
         yTotal: []
     },
     trialStudent: {
         xMonth: [],
-        yMeishu: [],
-        yShufa: [],
+        courseCategory: [],
         yTotal: []
     },
     income: {
         xMonth: [],
-        yMeishu: [],
-        yShufa: [],
+        courseCategory: [],
         yTotal: []
     }
 }

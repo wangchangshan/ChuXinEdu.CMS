@@ -41,6 +41,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         
         IEnumerable<StudentCoursePackage> GetStudentCoursePackage(string studentCode);
 
+        IEnumerable<DIC_R_KEY_VALUE> GetStudentPackageKV(string studentCode);
+
         IEnumerable<StudentCoursePackage> GetNoFinishPackage(string studentCode);
 
         IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode);

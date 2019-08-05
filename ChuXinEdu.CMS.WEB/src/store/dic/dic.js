@@ -32,12 +32,6 @@ const getters = {
     course_folder: state => {
         return state.allDics && state.allDics.course_folder || [];
     },
-    course_folder_meishu: state => {
-        return state.allDics && state.allDics.course_folder && state.allDics.course_folder.filter(folder => folder.value.indexOf('meishu') > -1);
-    },
-    course_folder_shufa: state => {
-        return state.allDics && state.allDics.course_folder && state.allDics.course_folder.filter(folder => folder.value.indexOf('shufa') > -1);
-    },
     pay_pattern: state => {
         return state.allDics && state.allDics.pay_pattern || [];
     },

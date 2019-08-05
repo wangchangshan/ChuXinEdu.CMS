@@ -7,8 +7,7 @@ namespace ChuXinEdu.CMS.Server.BLL
     {
         DataTable GetCourseDistribution();
         DataTable GetStudentDistribution();
-        DataTable GetStudentDistribution_meishu();
-        DataTable GetStudentDistribution_shufa();
+        DataTable GetStudentDistribution(string categoryCode);
         DataTable GetTrialStudentDistribution();
         DataTable GetIncomeDistribution();
         DataTable GetTotalIncome();

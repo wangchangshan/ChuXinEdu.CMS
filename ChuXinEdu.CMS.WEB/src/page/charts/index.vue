@@ -52,10 +52,7 @@ export default {
             },
             xiaoketongji: {
                 xMonth: [],
-                guohua: [],
-                xihua: [],
-                ruanbi: [],
-                yingbi: []
+                courseFolder: []
             },
             pickerOptions: {
                 shortcuts: [{
@@ -93,6 +90,7 @@ export default {
         BarChart
     },
     methods: {
+        // 获取所有的报名收入
         getTotalSignUpIncome() {
             axios({
                 type: 'get',
@@ -110,6 +108,7 @@ export default {
                 }
             })
         },
+        // 获取实际的销课收入
         getTotalActualIncome() {
             axios({
                 type: 'get',
@@ -127,6 +126,7 @@ export default {
                 }
             })
         },
+        // 获取销课课程种类分布图
         getXiaoKeDistribution() {
             axios({
                 type: 'get',

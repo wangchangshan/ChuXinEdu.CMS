@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 using ChuXinEdu.CMS.Server.BLL;
 using Newtonsoft.Json.Serialization;
 using ChuXinEdu.CMS.Server.Filters;
+using System.Linq;
+using ChuXinEdu.CMS.Server.ViewModel;
+using ChuXinEdu.CMS.Server.Utils;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -17,10 +20,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
     public class StatisticsController : ControllerBase
     {
         private readonly IChuXinStatistics _chuxinStatistic;
+        private readonly IConfigQuery _configQuery;
 
-        public StatisticsController(IChuXinStatistics chuxinStatistic)
+        public StatisticsController(IChuXinStatistics chuxinStatistic, IConfigQuery configQuery)
         {
             _chuxinStatistic = chuxinStatistic;
+            _configQuery = configQuery;
         }
 
         // GET api/statistics/type
@@ -36,11 +41,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 case "dashboard":
                     {
+                        var categories = _configQuery.GetDicByCode("course_category");
+                        DateTime beginDate = DateTime.Parse(CustomConfig.GetSetting("StatisticsStartDate") ?? "2017-12-31");
+
                         HomeGroupChat hgc = new HomeGroupChat();
-                        hgc.student = GetStudentClassifyForHome();
-                        hgc.course = GetCourseClassifyForHome();
-                        hgc.trialStudent = GetTrialStudentClassifyForHome();
-                        hgc.income = GetIncomeClassifyForHome();
+                        hgc.student = GetStudentClassifyForHome(beginDate, categories);
+                        hgc.course = GetCourseClassifyForHome(beginDate, categories); // 销课大类分布
+                        hgc.trialStudent = GetTrialStudentClassifyForHome(beginDate, categories);
+                        hgc.income = GetIncomeClassifyForHome(beginDate, categories);
                         resultJson = JsonConvert.SerializeObject(hgc, settings);
                         break;
                     }
@@ -93,50 +101,67 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         #region dashboard line chart
-        private ClassifyStatistic GetStudentClassifyForHome()
+        private ClassifyStatistic GetStudentClassifyForHome(DateTime beginDate, IEnumerable<DIC_R_KEY_VALUE> categories)
         {
             ClassifyStatistic cs = new ClassifyStatistic();
             cs.xMonth = new List<string>();
             cs.yTotal = new List<int>();
-            cs.yMeishu = new List<int>();
-            cs.yShufa = new List<int>();
+            cs.courseCategory = new List<CourseCategory>();
 
             DataTable dtTotal = _chuxinStatistic.GetStudentDistribution();
-            DataTable dtMeishu = _chuxinStatistic.GetStudentDistribution_meishu();
-            DataTable dtShufa = _chuxinStatistic.GetStudentDistribution_shufa();
-
-            if (dtTotal == null || dtMeishu == null || dtShufa == null)
+            if (dtTotal == null)
             {
                 return cs;
             }
-
-            DateTime beginDate = new DateTime(2017, 12, 31);
+            DateTime date1 = beginDate;
             int curY = DateTime.Now.Year;
             int curM = DateTime.Now.Month;
-            while (beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
+            while (date1 <= DateTime.Now || (date1.Year == curY && date1.Month == curM))
             {
-                string ym = beginDate.ToString("yyyy-MM");
-                int meishu = GetAmountByYm(dtMeishu, ym);
-                int shufa = GetAmountByYm(dtShufa, ym);
+                string ym = date1.ToString("yyyy-MM");
                 int total = GetAmountByYm(dtTotal, ym);
-
                 cs.xMonth.Add(ym);
-                cs.yMeishu.Add(meishu);
-                cs.yShufa.Add(shufa);
                 cs.yTotal.Add(total);
 
-                beginDate = beginDate.AddMonths(1);
+                date1 = date1.AddMonths(1);
+            }
+
+            DataTable dtCategory = null;
+
+            foreach (DIC_R_KEY_VALUE c in categories)
+            {
+                dtCategory = _chuxinStatistic.GetStudentDistribution(c.Value);
+                if (dtCategory == null)
+                {
+                    continue;
+                }
+                CourseCategory category = new CourseCategory();
+                category.name = c.Text;
+                category.sum = new List<int>();
+
+                DateTime date2 = beginDate;
+                curY = DateTime.Now.Year;
+                curM = DateTime.Now.Month;
+                while (date2 <= DateTime.Now || (date2.Year == curY && date2.Month == curM))
+                {
+                    string ym = date2.ToString("yyyy-MM");
+                    int ymCount = GetAmountByYm(dtCategory, ym);
+                    category.sum.Add(ymCount);
+
+                    date2 = date2.AddMonths(1);
+                }
+
+                cs.courseCategory.Add(category);
             }
             return cs;
         }
 
-        private ClassifyStatistic GetCourseClassifyForHome()
+        private ClassifyStatistic GetCourseClassifyForHome(DateTime beginDate, IEnumerable<DIC_R_KEY_VALUE> categories)
         {
             ClassifyStatistic cs = new ClassifyStatistic();
             cs.xMonth = new List<string>();
+            cs.courseCategory = new List<CourseCategory>();
             cs.yTotal = new List<int>();
-            cs.yMeishu = new List<int>();
-            cs.yShufa = new List<int>();
 
             DataTable dtTotal = _chuxinStatistic.GetCourseDistribution();
 
@@ -144,33 +169,50 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 return cs;
             }
-
-            DateTime beginDate = new DateTime(2017, 12, 31);
+            DateTime date1 = beginDate;
             int curY = DateTime.Now.Year;
             int curM = DateTime.Now.Month;
-            while (beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
+            while (date1 <= DateTime.Now || (date1.Year == curY && date1.Month == curM))
             {
-                string ym = beginDate.ToString("yyyy-MM");
-                int meishu = GetAmountByYm(dtTotal, ym, "meishu");
-                int shufa = GetAmountByYm(dtTotal, ym, "shufa");
+                string ym = date1.ToString("yyyy-MM");
+                int ymCount = GetAmountByYm(dtTotal, ym, "TOTAL");
 
                 cs.xMonth.Add(ym);
-                cs.yMeishu.Add(meishu);
-                cs.yShufa.Add(shufa);
-                cs.yTotal.Add(meishu + shufa);
+                cs.yTotal.Add(ymCount);
 
-                beginDate = beginDate.AddMonths(1);
+                date1 = date1.AddMonths(1);
             }
+
+            foreach (DIC_R_KEY_VALUE c in categories)
+            {
+                CourseCategory category = new CourseCategory();
+                category.name = c.Text;
+                category.sum = new List<int>();
+
+                DateTime date2 = beginDate;
+                curY = DateTime.Now.Year;
+                curM = DateTime.Now.Month;
+                while (date2 <= DateTime.Now || (date2.Year == curY && date2.Month == curM))
+                {
+                    string ym = date2.ToString("yyyy-MM");
+                    int ymCount = GetAmountByYm(dtTotal, ym, c.Value);
+                    category.sum.Add(ymCount);
+
+                    date2 = date2.AddMonths(1);
+                }
+
+                cs.courseCategory.Add(category);
+            }
+
             return cs;
         }
 
-        private ClassifyStatistic GetTrialStudentClassifyForHome()
+        private ClassifyStatistic GetTrialStudentClassifyForHome(DateTime beginDate, IEnumerable<DIC_R_KEY_VALUE> categories)
         {
             ClassifyStatistic cs = new ClassifyStatistic();
             cs.xMonth = new List<string>();
+            cs.courseCategory = new List<CourseCategory>();
             cs.yTotal = new List<int>();
-            cs.yMeishu = new List<int>();
-            cs.yShufa = new List<int>();
 
             DataTable dtTotal = _chuxinStatistic.GetTrialStudentDistribution();
 
@@ -179,32 +221,49 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 return cs;
             }
 
-            DateTime beginDate = new DateTime(2017, 12, 31);
+            DateTime date1 = beginDate;
             int curY = DateTime.Now.Year;
             int curM = DateTime.Now.Month;
-            while (beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
+            while (date1 <= DateTime.Now || (date1.Year == curY && date1.Month == curM))
             {
-                string ym = beginDate.ToString("yyyy-MM");
-                int meishu = GetAmountByYm(dtTotal, ym, "meishu");
-                int shufa = GetAmountByYm(dtTotal, ym, "shufa");
+                string ym = date1.ToString("yyyy-MM");
+                int ymCount = GetAmountByYm(dtTotal, ym, "TOTAL");
 
                 cs.xMonth.Add(ym);
-                cs.yMeishu.Add(meishu);
-                cs.yShufa.Add(shufa);
-                cs.yTotal.Add(meishu + shufa);
+                cs.yTotal.Add(ymCount);
 
-                beginDate = beginDate.AddMonths(1);
+                date1 = date1.AddMonths(1);
+            }
+
+            foreach (DIC_R_KEY_VALUE c in categories)
+            {
+                CourseCategory category = new CourseCategory();
+                category.name = c.Text;
+                category.sum = new List<int>();
+
+                DateTime date2 = beginDate;
+                curY = DateTime.Now.Year;
+                curM = DateTime.Now.Month;
+                while (date2 <= DateTime.Now || (date2.Year == curY && date2.Month == curM))
+                {
+                    string ym = date2.ToString("yyyy-MM");
+                    int ymCount = GetAmountByYm(dtTotal, ym, c.Value);
+                    category.sum.Add(ymCount);
+
+                    date2 = date2.AddMonths(1);
+                }
+
+                cs.courseCategory.Add(category);
             }
             return cs;
         }
 
-        private ClassifyStatistic GetIncomeClassifyForHome()
+        private ClassifyStatistic GetIncomeClassifyForHome(DateTime beginDate, IEnumerable<DIC_R_KEY_VALUE> categories)
         {
             ClassifyStatistic cs = new ClassifyStatistic();
             cs.xMonth = new List<string>();
+            cs.courseCategory = new List<CourseCategory>();
             cs.yTotal = new List<int>();
-            cs.yMeishu = new List<int>();
-            cs.yShufa = new List<int>();
 
             DataTable dtTotal = _chuxinStatistic.GetIncomeDistribution();
 
@@ -213,21 +272,39 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 return cs;
             }
 
-            DateTime beginDate = new DateTime(2017, 12, 31);
+            DateTime date1 = beginDate;
             int curY = DateTime.Now.Year;
             int curM = DateTime.Now.Month;
-            while (beginDate <= DateTime.Now || (beginDate.Year == curY && beginDate.Month == curM))
+            while (date1 <= DateTime.Now || (date1.Year == curY && date1.Month == curM))
             {
-                string ym = beginDate.ToString("yyyy-MM");
-                int meishu = GetAmountByYm(dtTotal, ym, "meishu");
-                int shufa = GetAmountByYm(dtTotal, ym, "shufa");
+                string ym = date1.ToString("yyyy-MM");
+                int ymCount = GetAmountByYm(dtTotal, ym, "TOTAL");
 
                 cs.xMonth.Add(ym);
-                cs.yMeishu.Add(meishu);
-                cs.yShufa.Add(shufa);
-                cs.yTotal.Add(meishu + shufa);
+                cs.yTotal.Add(ymCount);
 
-                beginDate = beginDate.AddMonths(1);
+                date1 = date1.AddMonths(1);
+            }
+
+            foreach (DIC_R_KEY_VALUE c in categories)
+            {
+                CourseCategory category = new CourseCategory();
+                category.name = c.Text;
+                category.sum = new List<int>();
+
+                DateTime date2 = beginDate;
+                curY = DateTime.Now.Year;
+                curM = DateTime.Now.Month;
+                while (date2 <= DateTime.Now || (date2.Year == curY && date2.Month == curM))
+                {
+                    string ym = date2.ToString("yyyy-MM");
+                    int ymCount = GetAmountByYm(dtTotal, ym, c.Value);
+                    category.sum.Add(ymCount);
+
+                    date2 = date2.AddMonths(1);
+                }
+
+                cs.courseCategory.Add(category);
             }
             return cs;
         }
@@ -254,7 +331,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             foreach (DataRow dr in dt.Rows)
             {
-                if (dr["ym"].ToString() == ym && dr["type"].ToString() == type)
+                if (type == "TOTAL")
+                {
+                    if (dr["ym"].ToString() == ym)
+                    {
+                        amount += Int32.Parse(dr["amount"].ToString().Split(".")[0]);
+                    }
+                }
+                else if (dr["ym"].ToString() == ym && dr["type"].ToString() == type)
                 {
                     amount = Int32.Parse(dr["amount"].ToString().Split(".")[0]);
                     dt.Rows.Remove(dr);
@@ -270,10 +354,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             CourseDistribution cd = new CourseDistribution();
             cd.xMonth = new List<string>();
-            cd.guohua = new List<int>();
-            cd.xihua = new List<int>();
-            cd.ruanbi = new List<int>();
-            cd.yingbi = new List<int>();
+            cd.courseFolder = new List<CourseFolder>();
 
             DataTable dtDistribution = _chuxinStatistic.GetAllDistribution(begin, end);
 
@@ -288,19 +369,30 @@ namespace ChuXinEdu.CMS.Server.Controllers
             while (beginDate <= endDate)
             {
                 string ym = beginDate.ToString("yyyy-MM");
-
-                int guohua = GetCourseCount(dtDistribution, "meishu_00", ym);
-                int xihua = GetCourseCount(dtDistribution, "meishu_01", ym);
-                int ruanbi = GetCourseCount(dtDistribution, "shufa_00", ym);
-                int yingbi = GetCourseCount(dtDistribution, "shufa_01", ym);
-
                 cd.xMonth.Add(ym);
-                cd.guohua.Add(guohua);
-                cd.xihua.Add(xihua);
-                cd.ruanbi.Add(ruanbi);
-                cd.yingbi.Add(yingbi);
-
                 beginDate = beginDate.AddMonths(1);
+            }
+
+            var folders = _configQuery.GetDicByCode("course_folder").OrderBy(f => f.Value);
+            foreach (DIC_R_KEY_VALUE f in folders)
+            {
+                CourseFolder folder = new CourseFolder();
+                folder.name = f.Text;
+                folder.sum = new List<int>();
+
+                beginDate = Convert.ToDateTime(begin);
+                endDate = Convert.ToDateTime(end);
+
+                while (beginDate <= endDate)
+                {
+                    string ym = beginDate.ToString("yyyy-MM");
+                    int courseCount = GetCourseCount(dtDistribution, f.Value, ym);
+                    folder.sum.Add(courseCount);
+
+                    beginDate = beginDate.AddMonths(1);
+                }
+
+                cd.courseFolder.Add(folder);
             }
             return cd;
         }
@@ -334,23 +426,27 @@ namespace ChuXinEdu.CMS.Server.Controllers
     {
         public List<string> xMonth { get; set; }
 
-        public List<int> yMeishu { get; set; }
-
-        public List<int> yShufa { get; set; }
+        public List<CourseCategory> courseCategory { get; set; }
 
         public List<int> yTotal { get; set; }
+    }
+
+    class CourseCategory
+    {
+        public string name { get; set; }
+        public List<int> sum { get; set; }
     }
 
     class CourseDistribution
     {
         public List<string> xMonth { get; set; }
 
-        public List<int> guohua { get; set; }
+        public List<CourseFolder> courseFolder { get; set; }
+    }
 
-        public List<int> xihua { get; set; }
-
-        public List<int> ruanbi { get; set; }
-
-        public List<int> yingbi { get; set; }
+    class CourseFolder
+    {
+        public string name { get; set; }
+        public List<int> sum { get; set; }
     }
 }

@@ -50,38 +50,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return dt;
         }
 
-        public DataTable GetStudentDistribution_meishu()
+        public DataTable GetStudentDistribution(string categoryCode)
         {
             DataTable dt = null;
             try
             {
                 dt = ADOContext.GetDataTable(@"select DATE_FORMAT(course_date,'%Y-%m') as ym, count(distinct student_code) as amount 
                                                 from student_course_list 
-                                                where course_category_code='meishu' and attendance_status_code = '01' and course_type='正式' group by DATE_FORMAT(course_date,'%Y-%m')
-                                                order by DATE_FORMAT(course_date,'%Y-%m')");
+                                                where course_category_code=@1 and attendance_status_code = '01' and course_type='正式' group by DATE_FORMAT(course_date,'%Y-%m')
+                                                order by DATE_FORMAT(course_date,'%Y-%m')", categoryCode);
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "获取每月美术学生数据出错");
-            }
-            return dt;
-        }
-
-        public DataTable GetStudentDistribution_shufa()
-        {
-            DataTable dt = null;
-            try
-            {
-                dt = ADOContext.GetDataTable(@"select DATE_FORMAT(course_date,'%Y-%m') as ym, count(distinct student_code) as amount 
-                                                from student_course_list 
-                                                where course_category_code='shufa' and attendance_status_code = '01' and course_type='正式' group by DATE_FORMAT(course_date,'%Y-%m')
-                                                order by DATE_FORMAT(course_date,'%Y-%m')");
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "获取每月书法学生数据出错");
+                _logger.LogError(ex, "获取每月" + categoryCode + "学生数据出错");
             }
             return dt;
         }
@@ -142,14 +124,10 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
         public IDictionary<string, decimal> GetTotalActualIncome()
         {
+            //课程小类Dictionary集合
             Dictionary<string, decimal> actualIncome = new Dictionary<string, decimal>();
             try
             {
-                actualIncome.Add("国画", 0.00m);
-                actualIncome.Add("西画", 0.00m);
-                actualIncome.Add("硬笔", 0.00m);
-                actualIncome.Add("软笔", 0.00m);
-
                 DataTable dtPackage = ADOContext.GetDataTable(@"select id, actual_course_count,actual_price 
                                                 from student_course_package 
                                                 where is_payed='Y'");
@@ -166,7 +144,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                     group by course_folder_name", packageId);
                     foreach (DataRow drCourse in dtCourse.Rows)
                     {
-                        actualIncome[drCourse["course_folder_name"].ToString()] += Convert.ToInt32(drCourse["course_count"].ToString()) * unitPrice;
+                        string folderName = drCourse["course_folder_name"].ToString();
+                        if(!actualIncome.ContainsKey(folderName))
+                        {
+                            actualIncome.Add(folderName, 0.00m);
+                        }
+                        actualIncome[folderName] += Convert.ToInt32(drCourse["course_count"].ToString()) * unitPrice;
                     }
                 }
             }

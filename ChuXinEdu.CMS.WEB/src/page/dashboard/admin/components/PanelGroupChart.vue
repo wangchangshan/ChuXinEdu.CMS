@@ -45,7 +45,7 @@ export default {
         chartData: {
             deep: true,
             handler(val) {
-                this.setOptions(val)
+                this.setOptions(val);
             }
         }
     },
@@ -73,10 +73,69 @@ export default {
         },
         setOptions({
             xMonth,
-            yMeishu,
-            yShufa,
+            courseCategory,
             yTotal
         } = {}) {
+            if (courseCategory.length == 0) {
+                return;
+            }
+            let mySeries = [];
+            let myLegend = [];
+            let colors = ['#7eb00a', '#5ab1ef', '#2ec7c9', '#b6a2de', '#d87a80', '#9a7fd1', '#c9ab00', '#c05050', '#7eb00a', '#5ab1ef', '#2ec7c9', '#b6a2de', '#d87a80', '#9a7fd1', '#c9ab00', '#c05050', '#7eb00a', '#5ab1ef', '#2ec7c9', '#b6a2de', '#d87a80', '#9a7fd1', '#c9ab00', '#c05050']
+            for (let i = 0; i < courseCategory.length; i++) {
+                let category = courseCategory[i];
+                myLegend.push(category.name)
+                let obj = {
+                    name: category.name,
+                    type: 'bar',
+                    stack: 'MonthStack',
+                    barMaxWidth: 35,
+                    barGap: '10%',
+                    itemStyle: {
+                        normal: {
+                            color: colors[i],
+                            label: {
+                                show: true,
+                                textStyle: {
+                                    color: '#fff'
+                                },
+                                position: 'insideTop',
+                                formatter(p) {
+                                    return p.value > 0 ? p.value : ''
+                                }
+                            }
+                        }
+                    },
+                    data: category.sum,
+                    animationDuration: animationDuration
+                };
+                mySeries.push(obj);
+            }
+            
+            let totalSeries = {
+                name: '总数',
+                type: 'line',
+                stack: 'MonthStack',
+                symbolSize: 10,
+                symbol: 'circle',
+                itemStyle: {
+                    normal: {
+                        color: '#d87a80',
+                        barBorderRadius: 0,
+                        label: {
+                            show: true,
+                            position: 'top'
+                        }
+                    }
+                },
+                data: yTotal,
+                animation: true,
+                animationThreshold: false,
+                animationDuration: animationDuration
+            };
+            myLegend.push('总数');
+            mySeries.push(totalSeries);
+
             this.chart.setOption({
                 title: {
                     show: false,
@@ -87,7 +146,7 @@ export default {
                 legend: {
                     x: 20,
                     top: 20,
-                    data: ['美术', '书法', '总数']
+                    data: myLegend
                 },
                 toolbox: {
                     show: true,
@@ -203,74 +262,8 @@ export default {
                     end: 35,
                     zoomLock: true
                 }],
-                series: [{
-                        name: '美术',
-                        type: 'bar',
-                        stack: 'total',
-                        barMaxWidth: 35,
-                        barGap: '10%',
-                        itemStyle: {
-                            normal: {
-                                color: '#7eb00a',
-                                label: {
-                                    show: true,
-                                    textStyle: {
-                                        color: '#fff'
-                                    },
-                                    position: 'insideTop',
-                                    formatter(p) {
-                                        return p.value > 0 ? p.value : ''
-                                    }
-                                }
-                            }
-                        },
-                        data: yMeishu,
-                        animationDuration
-                    },
-
-                    {
-                        name: '书法',
-                        type: 'bar',
-                        stack: 'total',
-                        itemStyle: {
-                            normal: {
-                                color: '#5ab1ef', //'rgba(0,191,183,1)',
-                                barBorderRadius: 0,
-                                label: {
-                                    show: true,
-                                    position: 'top',
-                                    formatter(p) {
-                                        return p.value > 0 ? p.value : ''
-                                    }
-                                }
-                            }
-                        },
-                        data: yShufa,
-                        animationDuration
-                    }, {
-                        name: '总数',
-                        type: 'line',
-                        stack: 'total',
-                        symbolSize: 10,
-                        symbol: 'circle',
-                        itemStyle: {
-                            normal: {
-                                color: '#d87a80', //'rgba(252,230,48,1)',
-                                barBorderRadius: 0,
-                                label: {
-                                    show: true,
-                                    position: 'top',
-                                    formatter(p) {
-                                        return p.value > 0 ? p.value : ''
-                                    }
-                                }
-                            }
-                        },
-                        data: yTotal,
-                        animationDuration
-                    }
-                ]
-            })
+                series: mySeries
+            });
         }
     }
 }

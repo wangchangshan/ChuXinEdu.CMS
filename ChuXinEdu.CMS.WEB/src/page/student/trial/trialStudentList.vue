@@ -219,9 +219,6 @@ export default {
         filterStudentStatus(value, row, column) {
             return row['studentTempStatus'] === value;
         },
-        courseCategoryTag(categoryCode) {
-            return tagTypeHelper.courseCategoryTag(categoryCode);
-        },
         handleResultTag(result) {
             return tagTypeHelper.studentTrialResultTag(result);
         },

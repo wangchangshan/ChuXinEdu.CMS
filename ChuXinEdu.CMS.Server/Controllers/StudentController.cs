@@ -16,7 +16,7 @@ using ChuXinEdu.CMS.Server.Filters;
 namespace ChuXinEdu.CMS.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [EnableCors("any")]    
+    [EnableCors("any")]
     [MyAuthenFilter]
     [ApiController]
     public class StudentController : ControllerBase
@@ -25,9 +25,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
         private readonly IChuXinQuery _chuxinQuery;
         private readonly IChuXinWorkFlow _chuxinWorkflow;
 
-        public StudentController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkflow,  IHostingEnvironment hostingEnvironment)
+        public StudentController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkflow, IHostingEnvironment hostingEnvironment)
         {
-            _chuxinQuery = chuxinQuery;    
+            _chuxinQuery = chuxinQuery;
             _chuxinWorkflow = chuxinWorkflow;
             _hostingEnvironment = hostingEnvironment;
         }
@@ -39,9 +39,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public ActionResult<string> GetStudentList(int pageIndex, int pageSize, string q)
         {
-            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);            
-            
-            var config = new MapperConfiguration(cfg => {
+            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);
+
+            var config = new MapperConfiguration(cfg =>
+            {
                 cfg.CreateMap<Student, STUDENT_R_LIST>();
             });
             IMapper mapper = config.CreateMapper();
@@ -53,16 +54,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             STUDENT_R_LIST studentVM = null;
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-            foreach(Student student in students)
+            foreach (Student student in students)
             {
                 var studentCode = student.StudentCode;
                 studentVM = mapper.Map<Student, STUDENT_R_LIST>(student);
 
                 DataRow[] drArr = dtScpSimplify.Select("student_code = '" + studentCode + "'");
                 List<Simplify_StudentCourse> ssList = new List<Simplify_StudentCourse>();
-                foreach(DataRow dr in drArr)
+                foreach (DataRow dr in drArr)
                 {
-                    Simplify_StudentCourse ss = new Simplify_StudentCourse{
+                    Simplify_StudentCourse ss = new Simplify_StudentCourse
+                    {
                         StudentCode = studentCode,
                         Code = dr["course_category_code"].ToString(),
                         Name = dr["course_category_name"].ToString()
@@ -81,7 +83,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 DateFormatString = "yyyy-MM-dd"
             };
 
-            return new JsonResult(new {
+            return new JsonResult(new
+            {
                 TotalCount = totalCount,
                 Data = studentList
             }, settings);
@@ -93,9 +96,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// <returns></returns>
         [HttpGet]
         public IEnumerable<Student> GetStudentList2Export(string q)
-        { 
-            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);            
-            IEnumerable<Student>  studentList = _chuxinQuery.GetStudentList2Export(query);
+        {
+            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);
+            IEnumerable<Student> studentList = _chuxinQuery.GetStudentList2Export(query);
             return studentList;
         }
 
@@ -109,14 +112,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string resultJson = string.Empty;
             DataTable dt = _chuxinQuery.GetStudentForRecommend(studentName);
-            if(dt!= null)
+            if (dt != null)
             {
                 resultJson = JsonConvert.SerializeObject(dt);
             }
             return resultJson;
         }
-        
-         /// <summary>
+
+        /// <summary>
         /// 添加新的推荐学员 POST api/student/postnewrecommend
         /// </summary>
         /// <returns></returns>
@@ -140,7 +143,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpGet]
         public IEnumerable<StudentCoursePackage> GetStudentsToSelectCourse(string dayCode, string periodName)
         {
-            IEnumerable<StudentCoursePackage>  studentList = _chuxinQuery.GetStudentToSelectCourse(dayCode, periodName);
+            IEnumerable<StudentCoursePackage> studentList = _chuxinQuery.GetStudentToSelectCourse(dayCode, periodName);
             return studentList;
         }
 
@@ -175,56 +178,46 @@ namespace ChuXinEdu.CMS.Server.Controllers
             STUDENT_R_BASEINO baseInfo = new STUDENT_R_BASEINO();
 
             baseInfo.StudentInfo = _chuxinQuery.GetStudentByCode(studentCode);
-            if(!String.IsNullOrEmpty(baseInfo.StudentInfo.StudentAvatarPath))
+            if (!String.IsNullOrEmpty(baseInfo.StudentInfo.StudentAvatarPath))
             {
                 int id = baseInfo.StudentInfo.Id;
                 string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-                baseInfo.StudentInfo.StudentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s&rnd="+ System.Guid.NewGuid().ToString("N");
+                baseInfo.StudentInfo.StudentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s&rnd=" + System.Guid.NewGuid().ToString("N");
             }
 
-            baseInfo.CoursePackageList =  _chuxinQuery.GetStudentCoursePackage(studentCode);
+            baseInfo.CoursePackageList = _chuxinQuery.GetStudentCoursePackage(studentCode);
 
-            
-            STUDENT_R_COURSE_OVERVIEW meishu = new STUDENT_R_COURSE_OVERVIEW {
-                CourseCategoryCode = "meishu",
-                CourseCategoryName = "美术",
-                TotalCourseCount = 0,
-                TotalRestCourseCount = 0,
-                TotalTuition = 0.0m
-            };
-            STUDENT_R_COURSE_OVERVIEW shufa = new STUDENT_R_COURSE_OVERVIEW{
-                CourseCategoryCode = "shufa",
-                CourseCategoryName = "书法",
-                TotalCourseCount = 0,
-                TotalRestCourseCount = 0,
-                TotalTuition = 0.0m
-            };
-            foreach (var coursePackage in baseInfo.CoursePackageList)
-            {
-                if(coursePackage.CourseCategoryCode == "meishu")
-                {
-                    meishu.TotalCourseCount += coursePackage.ActualCourseCount;
-                    meishu.TotalRestCourseCount += coursePackage.RestCourseCount;
-                    if(coursePackage.IsPayed == "Y")
-                    {
-                        meishu.TotalTuition += coursePackage.ActualPrice - coursePackage.FeeBackAmount;
-                    }
-                }
-                else if(coursePackage.CourseCategoryCode == "shufa")
-                {
-                    shufa.TotalCourseCount += coursePackage.ActualCourseCount;
-                    shufa.TotalRestCourseCount += coursePackage.RestCourseCount;
-                    if(coursePackage.IsPayed == "Y")
-                    {
-                        shufa.TotalTuition += coursePackage.ActualPrice - coursePackage.FeeBackAmount;
-                    }
-                }
-            }
+            IEnumerable<DIC_R_KEY_VALUE> distinctCategories = _chuxinQuery.GetStudentPackageKV(studentCode);
             List<STUDENT_R_COURSE_OVERVIEW> overview = new List<STUDENT_R_COURSE_OVERVIEW>();
-            overview.Add(meishu);
-            overview.Add(shufa);
+            STUDENT_R_COURSE_OVERVIEW category = null;
+            foreach (var distCategory in distinctCategories)
+            {
+                category = new STUDENT_R_COURSE_OVERVIEW
+                {
+                    CourseCategoryCode = distCategory.Value,
+                    CourseCategoryName = distCategory.Text,
+                    TotalCourseCount = 0,
+                    TotalRestCourseCount = 0,
+                    TotalTuition = 0.0m
+                };
+                foreach (var coursePackage in baseInfo.CoursePackageList)
+                {
+                    if (coursePackage.CourseCategoryCode == distCategory.Value)
+                    {
+
+                        category.TotalCourseCount += coursePackage.ActualCourseCount;
+                        category.TotalRestCourseCount += coursePackage.RestCourseCount;
+                        if (coursePackage.IsPayed == "Y")
+                        {
+                            category.TotalTuition += coursePackage.ActualPrice - coursePackage.FeeBackAmount;
+                        }
+                    }
+                }
+
+                overview.Add(category);
+            }
+
             baseInfo.CourseOverview = overview;
-            
             return baseInfo;
         }
 
@@ -282,17 +275,18 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public ActionResult<String> GetHistoryCourseList(int pageIndex, int pageSize, string q)
         {
             int totalCount = 0;
-            QUERY_STUDENT_COURSE_LIST query = JsonConvert.DeserializeObject<QUERY_STUDENT_COURSE_LIST>(q);            
+            QUERY_STUDENT_COURSE_LIST query = JsonConvert.DeserializeObject<QUERY_STUDENT_COURSE_LIST>(q);
 
             IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(pageIndex, pageSize, query, out totalCount);
- 
+
             var settings = new JsonSerializerSettings()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 DateFormatString = "yyyy-MM-dd"
             };
-            
-            return new JsonResult(new {
+
+            return new JsonResult(new
+            {
                 TotalCount = totalCount,
                 Data = courseList
             }, settings);
@@ -313,10 +307,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取学生所有的课程作品 GET api/student/getartworklist
         /// </summary>
         /// <returns></returns>
-        [HttpGet]        
+        [HttpGet]
         public IEnumerable<ART_WORK_R_LIST> GetArtworkList(string studentCode)
         {
-            var config = new MapperConfiguration(cfg => {
+            var config = new MapperConfiguration(cfg =>
+            {
                 cfg.CreateMap<StudentArtwork, ART_WORK_R_LIST>();
             });
             IMapper mapper = config.CreateMapper();
@@ -324,7 +319,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             IEnumerable<StudentArtwork> artworks = _chuxinQuery.GetArkworkByStudent(studentCode);
 
             List<ART_WORK_R_LIST> artWorkList = new List<ART_WORK_R_LIST>();
-            ART_WORK_R_LIST  aw = null;
+            ART_WORK_R_LIST aw = null;
 
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var artwork in artworks)
@@ -346,8 +341,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public ActionResult<string> GetBirthdayNotify()
         {
             DataTable dt = _chuxinQuery.GetBirthdayIn7Days();
-            string resultJson = JsonConvert.SerializeObject(dt);           
-            return resultJson;            
+            string resultJson = JsonConvert.SerializeObject(dt);
+            return resultJson;
         }
 
         /// <summary>
@@ -388,14 +383,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
             package.CourseCategoryCode = sysPackage.PackageCourseCategoryCode;
             package.CourseCategoryName = sysPackage.PackageCourseCategoryName;
             package.PackageCourseCount = sysPackage.PackageCourseCount;
-            package.PackagePrice = sysPackage.PackagePrice;            
+            package.PackagePrice = sysPackage.PackagePrice;
 
             package.FlexCourseCount = package.ActualCourseCount;
             package.RestCourseCount = package.ActualCourseCount;
             package.ScpStatus = "00";
             package.CreateTime = DateTime.Now;
 
-            if(package.ActualPrice == 0)
+            if (package.ActualPrice == 0)
             {
                 package.ActualPrice = sysPackage.PackagePrice;
                 package.IsDiscount = "N";
@@ -473,20 +468,20 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpPost]
         public string AddStudent([FromBody] Student student)
         {
-            DateTime time  = new DateTime();
-            if(student.StudentRegisterDate != null)
+            DateTime time = new DateTime();
+            if (student.StudentRegisterDate != null)
             {
-                time  = student.StudentRegisterDate;
+                time = student.StudentRegisterDate;
             }
             else
             {
-                time  = DateTime.Now;
+                time = DateTime.Now;
             }
             string studentCode = TableCodeHelper.GenerateCode("student", "student_code", time);
             student.StudentCode = studentCode;
             student.TrialOtherCourse = "否";
             string result = _chuxinWorkflow.AddStudentBaseInfo(student);
-            if(result == "500")
+            if (result == "500")
             {
                 studentCode = "";
             }
@@ -503,5 +498,5 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string result = _chuxinWorkflow.UpdateStudentBaseInfo(studentCode, student);
             return result;
         }
-    }   
+    }
 }
