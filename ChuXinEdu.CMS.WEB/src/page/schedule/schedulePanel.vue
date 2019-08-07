@@ -93,7 +93,7 @@
             <el-table-column property="selectedCourseCount" label="课程内容" width="140">
                 <template slot-scope="scope">
                     <el-select v-model="scope.row.courseFolderCode" size='mini'>
-                        <el-option v-for="item in $store.getters['course_folder_' + scope.row.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
+                        <el-option v-for="item in $store.getters.getCourseColderByCate(scope.row.courseCategoryCode)" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </template>

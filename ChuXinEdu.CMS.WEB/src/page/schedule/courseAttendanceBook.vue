@@ -19,7 +19,7 @@
             <el-table-column prop="courseFolderName" label="课程类别" align='center' min-width="95">
                 <template slot-scope="scope">
                     <el-select v-model="scope.row.courseFolderCode" size='mini'>
-                        <el-option v-for="item in $store.getters['course_folder_' + scope.row.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
+                        <el-option v-for="item in $store.getters.getCourseColderByCate(scope.row.courseCategoryCode)" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </template>
@@ -60,7 +60,7 @@
                 </el-form-item>
                 <el-form-item label="课程类别">
                     <el-select v-model="signInDialog.courseInfo.courseFolderCode" size='mini'>
-                        <el-option v-for="item in $store.getters['course_folder_' + signInDialog.courseInfo.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
+                        <el-option v-for="item in $store.getters.getCourseColderByCate(signInDialog.courseInfo.courseCategoryCode)" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
                 </el-form-item>

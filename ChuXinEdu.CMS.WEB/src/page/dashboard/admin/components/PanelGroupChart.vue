@@ -136,6 +136,16 @@ export default {
             myLegend.push('总数');
             mySeries.push(totalSeries);
 
+            let monthZoomStart = 0;
+            let totalMonthCount = xMonth.length;
+            //默认视图中最多出现一年的数据
+            if(totalMonthCount <= 12) {
+                monthZoomStart = 0;
+            }
+            else {
+                monthZoomStart = (totalMonthCount - 12.0) / totalMonthCount * 100;
+            }
+
             this.chart.setOption({
                 title: {
                     show: false,
@@ -249,7 +259,7 @@ export default {
                         0
                     ],
                     bottom: 10,
-                    start: 50,
+                    start: monthZoomStart,
                     end: 100,
                     handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
                     handleSize: '110%'

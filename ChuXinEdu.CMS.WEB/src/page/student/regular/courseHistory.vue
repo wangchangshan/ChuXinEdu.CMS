@@ -97,7 +97,7 @@
                 <el-table-column prop="courseFolderCode" label="课程类别" align='center' min-width="130">
                     <template slot-scope='scope'>
                         <el-select v-model="scope.row.courseFolderCode" placeholder="请选择" size='mini'>
-                            <el-option v-for="item in $store.getters['course_folder_' + scope.row.courseCategoryCode]" :key="item.value" :label="item.label" :value="item.value">
+                            <el-option v-for="item in $store.getters.getCourseColderByCate(scope.row.courseCategoryCode)" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
                     </template>
@@ -744,7 +744,7 @@ export default {
                     });
                     return;
                 }
-                item.courseFolderName = dicHelper.getLabelByValue(this.$store.getters['course_folder_' + item.courseCategoryCode], item.courseFolderCode);
+                item.courseFolderName = dicHelper.getLabelByValue(this.$store.getters.getCourseColderByCate(item.courseCategoryCode), item.courseFolderCode);
                 item.teacherName = this.getTeacherNameByCode(item.courseFolderCode, item.teacherCode);
             }
 

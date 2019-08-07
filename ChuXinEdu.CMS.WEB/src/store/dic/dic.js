@@ -32,6 +32,11 @@ const getters = {
     course_folder: state => {
         return state.allDics && state.allDics.course_folder || [];
     },
+
+    getCourseColderByCate: (state) => (categoryCode) => {
+        return state.allDics && state.allDics.course_folder && state.allDics.course_folder.filter(folder => folder.value.indexOf(categoryCode) > -1);
+    },
+
     pay_pattern: state => {
         return state.allDics && state.allDics.pay_pattern || [];
     },
