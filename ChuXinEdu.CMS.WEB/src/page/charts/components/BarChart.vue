@@ -89,7 +89,7 @@ export default {
                     name: folder.name,
                     type: 'bar',
                     barGap: 0,
-                    barWidth: '20%',
+                    barWidth: '12%',
                     label: labelOption,
                     data: folder.sum,
                     animationDuration
