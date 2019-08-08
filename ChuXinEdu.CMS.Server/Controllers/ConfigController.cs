@@ -142,13 +142,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取系统角色列表 list GET api/config/getroles
+        /// 获取角色列表 list GET api/config/getroles
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         public IEnumerable<SysDictionary> GetRoles()
         {
-            return _chuxinQuery.GetSysRoles();
+            return _chuxinQuery.GetAllRoles();
         }
 
         /// <summary>

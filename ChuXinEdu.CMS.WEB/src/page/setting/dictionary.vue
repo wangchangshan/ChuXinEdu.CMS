@@ -14,7 +14,7 @@
             </el-table-column>
         </el-table>
     </div>
-    <div class="footer_container">
+    <div class="footer_container" style="text-align: center">
         <el-button type="success" icon="el-icon-plus" size="small" @click="showAddDicPanel()">添加字典</el-button>
     </div>
 
@@ -28,7 +28,7 @@
             </el-form-item>
         </el-form>
 
-        <el-table :data="dicItemDialog.itemList" size="mini" align="left" border stripe :max-height="dicItemDialog.height">
+        <el-table :data="dicItemDialog.itemList" size="mini" align="left" border stripe :height="dicItemDialog.height">
             <el-table-column property="itemName" label="名称" align='left'>
                 <template slot-scope='scope'>
                     <el-input size="mini" v-model="scope.row.itemName"></el-input>
@@ -123,14 +123,14 @@ export default {
                 fn: result => {
                     this.allDicList = result;
                     this.dicTypeList = [];
-                    let types = [];
+                    let typesFlag = [];
                     result.forEach(item => {
-                        if (types.indexOf(item.typeCode) == -1) {
+                        if (typesFlag.indexOf(item.typeCode) == -1) {
                             this.dicTypeList.push({
                                 typeCode: item.typeCode,
                                 typeName: item.typeName
                             });
-                            types.push(item.typeCode)
+                            typesFlag.push(item.typeCode)
                         }
                     })
                     this.loading = false;
@@ -212,7 +212,12 @@ export default {
                     return;
                 }
                 listItemCodes.push(item.itemCode);
+                let itemkey = 0;
+                if((item.id + '').split('.').length == 1){
+                    itemkey = item.id;
+                }
                 listDicItems.push({
+                    id: itemkey,
                     typeCode: typeCode,
                     typeName: typeName,
                     itemCode: item.itemCode,
@@ -222,7 +227,6 @@ export default {
                     itemEnabled: item.itemEnabled
                 });
             }
-
             if (this.dicItemDialog.panelType == 'add') {
                 axios({
                     type: 'post',

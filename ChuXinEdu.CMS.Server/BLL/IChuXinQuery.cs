@@ -17,7 +17,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         string GetRoles(string teacherCode);
 
-        IEnumerable<SysDictionary> GetSysRoles();
+        IEnumerable<SysDictionary> GetAllRoles();
 
         IEnumerable<SysMenu> GetSysMenus();
 

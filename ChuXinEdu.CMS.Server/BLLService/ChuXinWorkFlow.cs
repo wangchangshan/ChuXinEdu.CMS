@@ -831,9 +831,9 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                     foreach (Student student in students)
                     {
-                        var courses = context.StudentCourseList.Where(s=> s.ArrangeTemplateCode == templateCode
-                                                        && s.AttendanceStatusCode == "09" 
-                                                        && s.StudentCode == student.StudentCode 
+                        var courses = context.StudentCourseList.Where(s => s.ArrangeTemplateCode == templateCode
+                                                        && s.AttendanceStatusCode == "09"
+                                                        && s.StudentCode == student.StudentCode
                                                         && s.CourseDate >= startDay
                                                         && s.CourseDate <= endDay)
                                                         .OrderByDescending(s => s.CourseDate)
@@ -843,17 +843,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         {
                             string flagKey = course.Classroom + "|" + course.CourseDate + "|" + course.CourseWeekDay;
                             DateTime lastClassDate = course.CourseDate;
-                            if(!dicFlag.ContainsKey(flagKey))
+                            if (!dicFlag.ContainsKey(flagKey))
                             {
-                                var flagCourse = context.StudentCourseList.Where( s => s.ArrangeTemplateCode == templateCode
-                                                                                    && s.StudentCode == student.StudentCode
-                                                                                    && s.Classroom == course.Classroom
-                                                                                    && s.CourseWeekDay == course.CourseWeekDay
-                                                                                    && s.CoursePeriod == course.CoursePeriod
-                                                                                    && s.CourseDate > endDay)
-                                                                        .OrderByDescending( s=> s.CourseDate)
+                                var flagCourse = context.StudentCourseList.Where(s => s.ArrangeTemplateCode == templateCode
+                                                                                   && s.StudentCode == student.StudentCode
+                                                                                   && s.Classroom == course.Classroom
+                                                                                   && s.CourseWeekDay == course.CourseWeekDay
+                                                                                   && s.CoursePeriod == course.CoursePeriod
+                                                                                   && s.CourseDate > endDay)
+                                                                        .OrderByDescending(s => s.CourseDate)
                                                                         .FirstOrDefault();
-                                if(flagCourse != null)
+                                if (flagCourse != null)
                                 {
                                     // 时间段外仍有排课
                                     lastClassDate = flagCourse.CourseDate;
@@ -862,9 +862,9 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             }
                             // 计算课程新的日期
                             DateTime newClassDay = lastClassDate;
-                            if(newClassDay <= endDay)
+                            if (newClassDay <= endDay)
                             {
-                                while(newClassDay <= endDay)
+                                while (newClassDay <= endDay)
                                 {
                                     newClassDay = newClassDay.AddDays(7);
                                 }
@@ -875,7 +875,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             }
 
                             // 插入新的课程记录
-                            var newCourse = new StudentCourseList{
+                            var newCourse = new StudentCourseList
+                            {
                                 StudentCoursePackageId = course.StudentCoursePackageId,
                                 ArrangeGuid = course.ArrangeGuid,
                                 ArrangeTemplateCode = course.ArrangeTemplateCode,
@@ -900,7 +901,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             context.Remove(course);
 
                             context.SaveChanges();
-                        }    
+                        }
                     }
                 }
             }
@@ -909,7 +910,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 _logger.LogError(ex, "顺延课程失败");
                 result = "1500";
             }
-            return result;     
+            return result;
         }
 
         public string SignInSingle(CL_U_SIGN_IN course)
@@ -1536,17 +1537,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
 
                     context.SaveChanges();
 
-                    if(changeName)
+                    if (changeName)
                     {
                         var trialStudent = context.StudentTemp.Where(x => x.StudentCode == studentCode).FirstOrDefault();
-                        if(trialStudent != null)
+                        if (trialStudent != null)
                         {
                             trialStudent.StudentName = student.StudentName;
                         }
                         context.SaveChanges();
 
                         List<StudentCoursePackage> scpList = context.StudentCoursePackage.Where(x => x.StudentCode == studentCode).ToList();
-                        foreach(var scp in scpList)
+                        foreach (var scp in scpList)
                         {
                             scp.StudentName = student.StudentName;
                         }
@@ -1562,17 +1563,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         {
                             scc.StudentName = student.StudentName;
                         }
-                        
+
                         List<StudentRecommend> srList1 = context.StudentRecommend.Where(x => x.NewStudentCode == studentCode).ToList();
                         foreach (var sr in srList1)
                         {
-                            sr.NewStudentName = student.StudentName;   
+                            sr.NewStudentName = student.StudentName;
                         }
 
                         List<StudentRecommend> srList2 = context.StudentRecommend.Where(x => x.OriginStudentCode == studentCode).ToList();
                         foreach (var sr in srList2)
                         {
-                            sr.OriginStudentName = student.StudentName;   
+                            sr.OriginStudentName = student.StudentName;
                         }
 
                         List<StudentActivity> saList = context.StudentActivity.Where(x => x.StudentCode == studentCode).ToList();
@@ -1585,7 +1586,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         foreach (var sbf in sbfList)
                         {
                             sbf.StudentName = student.StudentName;
-                        }                        
+                        }
 
                         context.SaveChanges();
 
@@ -1656,7 +1657,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    if(packageList.Count == 1)
+                    if (packageList.Count == 1)
                     {
                         var student = context.Student.Where(st => st.StudentCode == studentCode).FirstOrDefault();
                         if (student != null)
@@ -2181,11 +2182,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var role = context.SysDictionary.Where(d => d.TypeCode == "roles"
+                    var role = context.SysDictionary.Where(d => (d.TypeCode == "sys_roles" || d.TypeCode == "biz_roles")
                                                                 && d.ItemCode == roleCode
                                                                 && d.ItemEnabled == "Y")
                                                     .First();
-                    string roleDesc = role.ItemDesc;
+                    string roleDesc = string.Empty;
+                    if(role.TypeCode == "sys_roles")
+                    {
+                        roleDesc = "sys";
+                    }
+                    else if(role.TypeCode == "biz_roles")
+                    {
+                        roleDesc = "course";
+                    }
                     foreach (var teacherCode in teacherCodes)
                     {
                         TeacherRole tr = new TeacherRole
@@ -2419,6 +2428,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        // update dic item (包括修改和新增同时存在)
         public string UpdateDic(List<SysDictionary> dicList)
         {
             string result = "1200";
@@ -2426,16 +2436,65 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var dics = context.SysDictionary.Where(s => s.TypeCode == dicList[0].TypeCode).ToList();
-                    foreach (var dic in dics)
+                    var simpleDic = context.SysDictionary.Where(s => s.TypeCode == dicList[0].TypeCode).ToList();
+                    if (simpleDic != null)
                     {
-                        context.Remove(dic);
+                        // 删除dic item
+                        foreach (var item in simpleDic)
+                        {
+                            bool isExist = false;
+                            foreach (var d in dicList)
+                            {
+                                if(item.Id == d.Id)
+                                {
+                                    isExist = true;
+                                }
+                            }
+                            if(!isExist)
+                            {
+                                context.Remove(item);
+                                context.SaveChanges();
+                            }
+                        }
+
+                        foreach (var changedDic in dicList)
+                        {
+                            var oriDic = context.SysDictionary.Where(s => s.Id == changedDic.Id).FirstOrDefault();
+                            if (oriDic != null)
+                            {
+                                // change existed dic item
+                                oriDic.ItemCode = changedDic.ItemCode;
+                                oriDic.ItemName = changedDic.ItemName;
+                                oriDic.ItemSortWeight = changedDic.ItemSortWeight;
+                                oriDic.ItemEnabled = changedDic.ItemEnabled;
+                                context.SaveChanges();
+                            }
+                            else
+                            {
+                                // add new dic item
+                                string parentCode = string.Empty;
+                                if(simpleDic[0].TypeCode == "course_folder") //特殊处理一下课程小类
+                                {
+                                    parentCode = changedDic.ItemCode.Split("_")[0];
+                                }
+
+                                SysDictionary newDicItem = new SysDictionary{
+                                    TypeCode = simpleDic[0].TypeCode,
+                                    TypeName = simpleDic[0].TypeName,
+                                    ItemDesc = simpleDic[0].ItemDesc,
+                                    IsParent = simpleDic[0].IsParent,
+                                    ParentItemCode = parentCode,
+                                    ItemCode = changedDic.ItemCode,
+                                    ItemName = changedDic.ItemName,
+                                    ItemSortWeight = changedDic.ItemSortWeight,
+                                    ItemEnabled = changedDic.ItemEnabled
+                                };
+
+                                context.SysDictionary.Add(newDicItem);
+                                context.SaveChanges();
+                            }
+                        }
                     }
-                    foreach (var dic in dicList)
-                    {
-                        context.SysDictionary.Add(dic);
-                    }
-                    context.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -2478,13 +2537,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var user = context.SysWxUser.FirstOrDefault( s => s.WxKey == wxKey);
+                    var user = context.SysWxUser.FirstOrDefault(s => s.WxKey == wxKey);
                     if (user != null)
                     {
                         return "1222";
                     }
 
-                    SysWxUser wxUser = new SysWxUser{
+                    SysWxUser wxUser = new SysWxUser
+                    {
                         OpenId = openId,
                         SessionKey = sessionKey,
                         InnerPersonCode = innerPCode,
@@ -2511,7 +2571,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 using (BaseContext context = new BaseContext())
                 {
-                    var user = context.SysWxUser.First( s => s.OpenId == openId);
+                    var user = context.SysWxUser.First(s => s.OpenId == openId);
                     user.SessionKey = sKey;
                     context.SaveChanges();
                 }
@@ -2523,7 +2583,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
             return result;
         }
-        
+
         public string UploadWxPicture(WxPicture picture)
         {
             string result = "1200";

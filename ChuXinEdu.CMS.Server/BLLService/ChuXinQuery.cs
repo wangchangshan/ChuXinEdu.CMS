@@ -32,13 +32,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return strRoles;
         }
 
-        public IEnumerable<SysDictionary> GetSysRoles()
+        public IEnumerable<SysDictionary> GetAllRoles()
         {
             using (BaseContext context = new BaseContext())
             {
-                var roles = context.SysDictionary.Where(d => d.TypeCode == "roles"
+                var roles = context.SysDictionary.Where(d => (d.TypeCode == "sys_roles" || d.TypeCode == "biz_roles")
                                                             && d.ItemEnabled == "Y")
                                                 .OrderBy(d => d.ItemSortWeight)
+                                                .OrderBy(d => d.TypeCode)
                                                 .ToList();
 
                 return roles;

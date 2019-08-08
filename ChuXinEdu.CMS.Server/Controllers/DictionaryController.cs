@@ -47,7 +47,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 更新字段 POST api/dictionary/updatedic
+        /// 更新字典 POST api/dictionary/updatedic
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -66,7 +66,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
         
         /// <summary>
-        /// 添加新模板 Delete api/dictionary/deldic
+        /// 删除当前字典 Delete api/dictionary/deldic
         /// </summary>
         /// <returns></returns>
         [HttpDelete("{typeCode}")]

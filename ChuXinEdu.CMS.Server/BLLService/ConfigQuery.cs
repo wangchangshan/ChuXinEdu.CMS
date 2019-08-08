@@ -52,7 +52,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                var dics = context.SysDictionary.OrderBy(s => s.Id)
+                var dics = context.SysDictionary.OrderBy(s => s.TypeCode)
+                                                .OrderBy(s => s.ItemSortWeight)
                                                 .ToList();
                 return dics;
             }

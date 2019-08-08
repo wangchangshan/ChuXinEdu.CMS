@@ -7,8 +7,8 @@
             </el-table-column>
             <el-table-column prop="itemCode" label="角色代码" align='center' min-width="150">
             </el-table-column>
-            <el-table-column prop="itemDesc" label="描述" align='center' min-width="150">
-            </el-table-column>
+            <!-- <el-table-column prop="itemDesc" label="描述" align='center' min-width="150">
+            </el-table-column> -->
             <el-table-column prop="operation" align='center' label="操作" fixed="right" width="125">
                 <template slot-scope='scope'>
                     <el-button type="primary" icon='edit' size="small" @click='roleManage(scope.row)'>管 理</el-button>
