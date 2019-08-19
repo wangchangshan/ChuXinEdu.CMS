@@ -91,13 +91,20 @@ events {
 }
 
 http {
-    include       mime.types;
+    include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
     sendfile        on;
     #tcp_nopush     on;
 
     keepalive_timeout  65;
-    #gzip  on;
+    
+    # 配置nginx压缩
+    gzip on;
+    gzip_min_length 5k;
+    gzip_comp_level 1;
+    gzip_types application/javascript text/css text/plain application/json application/font-woff font/ttf image/jpeg image/png image/svg+xml;
+    gzip_buffers 4 32k;
+    gzip_vary on;
 
     server {
         # listen 端口
@@ -129,10 +136,12 @@ http {
 }
 
 ```
+
 ```bash
 ## 重启nginx 使配置生效
 nginx -s reload
 ```
+
 > 说明：也可以将Nginx只作为反向代理服务器，在 location / {} 内配置proxy_pass为 IIS上的前端站点地址（http://localhost:8078）
 
 #### 3.2 后端部署 (IIS)

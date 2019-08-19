@@ -10,7 +10,7 @@ import Home from '@/layout/home'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import 'element-ui/lib/theme-chalk/index.css'
-import 'font-awesome/css/font-awesome.css'
+// import 'font-awesome/css/font-awesome.css'  使用 cdn加载
 import '@/style/index.scss' // global css
 
 Vue.use(ElementUI)
