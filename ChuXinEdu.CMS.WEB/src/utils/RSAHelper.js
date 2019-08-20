@@ -3,7 +3,7 @@ import JSEncrypt from 'jsencrypt'
 
 const RSAHelper = {
     encrypt(str){
-        let publicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAztJWvmn//yWTxEWg5934cftfCumAKUG7D74bsrGjaiTjq6YiL0SE3kYDgpnxJALWui2AXwqej5TItcGlFzS0Kk7MleQT9F3S37rpsI8lPIRL/1iHY2sSLnip9Nu3WDmaZVP54K8uK28NkWImB03J/Qio6o6aUpMyyu9Qt08QPNjB3jcKxGB5XpvfxTcflNEXA7UL86+S4RPL+YbMP2PYGOS0JtWUg/3Rtst3OBq6CZSTt+vRUvDNc37lgcHVVwTZBR44/W+PtfdxiWzIAXGMhhZwfVNB3pwrzsDaL8HEN8KGjDoT6cnqsgRHwB9QnMX2o8uRZgD60Lxl84qbb2qj7QIDAQAB';
+        let publicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA+MNImTs5P0uQ3r4Cr0rTL5iOwFfeMTjlnD7nj9Ebpx1h80xwnYm0L9/69A6vITELHLL+ESgwYBxcGb4IKT7wFXID/qcQhmwdjib5JwkStJgL+MaNSorTE+AESEg+A+KKR2vDZs5jo3ZcUbtaezs1OuwX9/pKm6/YvKWqi37bOAWVAPena+uvdruYkTRXgm+k8Vd8jeX0cxjv8O/MxebxutW40V8FzLogPx9t7oWZsBN3ODz7Q+MVkhoEwtIJB/lxmnb2sNO36qgWm4ae0i29gIzYGui7INcQ2mU8wVgMoBXOMCWcUxe2LeRbxqSkE+uqfL+kdZVTUZIA9nXLNVv6cQIDAQAB';
         let encryptor = new JSEncrypt();
         encryptor.setPublicKey(publicKey);
         let ciphertext = encryptor.encrypt(str);

@@ -1,10 +1,10 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
+//import Vue from 'vue'   use cdn in index.html
 import App from './App'
 import router from './router'
 import store from './store/index'
-import ElementUI from 'element-ui'
+//import ElementUI from 'element-ui'  use cdn in index.html
 import {LocalDB, menuHelper} from './utils/index'
 import Home from '@/layout/home'
 import NProgress from 'nprogress'
@@ -13,7 +13,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 // import 'font-awesome/css/font-awesome.css'  使用 cdn加载
 import '@/style/index.scss' // global css
 
-Vue.use(ElementUI)
+//Vue.use(ElementUI)
 
 NProgress.configure({ showSpinner: false })// NProgress Configuration
 
