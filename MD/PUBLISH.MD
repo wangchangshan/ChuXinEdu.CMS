@@ -102,7 +102,8 @@ http {
     gzip on;
     gzip_min_length 5k;
     gzip_comp_level 1;
-    gzip_types application/javascript text/css text/plain application/json application/font-woff font/ttf image/jpeg image/png image/svg+xml;
+    # 图片、字体不采用gzip，体积基本不会变小。
+    gzip_types application/javascript text/css text/plain application/json;
     gzip_buffers 4 32k;
     gzip_vary on;
 
