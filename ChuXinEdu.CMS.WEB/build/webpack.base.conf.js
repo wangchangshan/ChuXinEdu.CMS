@@ -13,7 +13,9 @@ function resolve(dir) {
 module.exports = {
     externals: {
         'vue': 'Vue',
-        'element-ui': 'ElementUI'
+        'element-ui': 'ElementUI',
+        'echarts': 'echarts',
+        'xlsx': 'XLSX'
     },
     context: path.resolve(__dirname, '../'),
     entry: {

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import echarts from 'echarts'
+//import echarts from 'echarts'
 import resize from './js/resize'
 import 'echarts/theme/macarons.js'
 import {
