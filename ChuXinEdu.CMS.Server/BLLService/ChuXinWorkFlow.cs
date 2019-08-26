@@ -171,6 +171,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         }
 
         #endregion 登陆模块
+
         // 排课
         public string BatchStudentsCourseArrange(CA_C_STUDENTS_MAIN caInfo)
         {
@@ -249,7 +250,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 CourseFolderName = student.CourseFolderName,
                                 CourseType = courseType,
                                 AttendanceStatusCode = statusCode,
-                                AttendanceStatusName = statusName
+                                AttendanceStatusName = statusName,
+                                Addon = DateTime.Now
                             });
                         }
 
@@ -893,7 +895,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 CourseFolderName = course.CourseFolderName,
                                 CourseType = course.CourseType,
                                 AttendanceStatusCode = course.AttendanceStatusCode,
-                                AttendanceStatusName = course.AttendanceStatusName
+                                AttendanceStatusName = course.AttendanceStatusName,
+                                Addon = DateTime.Now
                             };
                             context.Add(newCourse);
 
@@ -1156,6 +1159,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     foreach (var course in courseList)
                     {
                         course.ArrangeGuid = "0";
+                        course.Addon = DateTime.Now;
                         context.StudentCourseList.Add(course);
                         i++;
                     }

@@ -73,5 +73,8 @@ namespace ChuXinEdu.CMS.Server.Model
 
         [Column("attendance_status_name")]
         public string AttendanceStatusName { get; set; }
+
+        [Column("addon")]
+        public DateTime? Addon { get; set; }
     }
 }
