@@ -175,7 +175,7 @@ export default {
                 fn: result => {
                     result.forEach(item => {
                         item.teacherStatusDesc = dicHelper.getLabelByValue(this.$store.getters['teacher_status'], item.teacherStatus);
-                        item.teacherRegisterDate = item.teacherRegisterDate.split('T')[0];
+                        item.teacherRegisterDate = item.teacherRegisterDate && item.teacherRegisterDate.split('T')[0];
                     });
                     this.teacherList = result;
                     this.loading = false;
