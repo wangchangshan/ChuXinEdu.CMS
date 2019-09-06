@@ -405,17 +405,6 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public List<StudentCourseList> GetCoursesToday()
-        {
-            using (BaseContext context = new BaseContext())
-            {
-                return context.StudentCourseList.Where(c => c.AttendanceStatusCode == "09" && c.CourseDate == DateTime.Now.Date)
-                                                .OrderBy(c => c.CourseFolderCode)
-                                                .OrderBy(c => c.CoursePeriod)
-                                                .ToList();
-            }
-        }
-
         public List<StudentCourseList> GetCoursesByday(DateTime theDay)
         {
             using (BaseContext context = new BaseContext())

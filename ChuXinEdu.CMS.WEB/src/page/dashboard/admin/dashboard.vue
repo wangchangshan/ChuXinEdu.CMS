@@ -14,7 +14,7 @@
             <el-table-column prop="courseFolderName" label="课程内容" width="280" align='center'>
             </el-table-column> 
             <el-table-column prop="studentName" label="学生姓名" align='center'>
-            </el-table-column> 
+            </el-table-column>
         </el-table>
     </el-row>
 </div>
@@ -24,7 +24,8 @@
 import PanelGroup from './components/PanelGroup'
 import PanelGroupChart from './components/PanelGroupChart'
 import {
-    axios
+    axios,
+    dateHelper
 } from '@/utils/index'
 
 let chartData = {
@@ -97,7 +98,7 @@ export default {
         getArrangeToday() {
             axios({
                 type: 'get',
-                path: '/api/coursearrange/getcoursearrangedtoday',
+                path: '/api/coursearrange/getcoursearrangedbyday/' + dateHelper.getDate(new Date()),
                 fn: (result) => {
                     this.arrangeToday = result;
                     this.getRowSpanInfo();

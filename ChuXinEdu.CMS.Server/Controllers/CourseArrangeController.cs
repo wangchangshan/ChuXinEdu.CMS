@@ -73,21 +73,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>   
-        /// 获取今天排课信息 GET api/coursearrange/getcoursearrangedtoday
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public List<StudentCourseList> GetCourseArrangedToday()
-        {
-            List<StudentCourseList> scls = _chuxinQuery.GetCoursesToday();        
-            return scls;
-        }
-
-        /// <summary>   
         /// 获取某天排课信息 GET api/coursearrange/getcoursearrangedbyday
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("{day}")]
         public List<StudentCourseList> GetCourseArrangedbyDay(string day)
         {
             DateTime theDay = Convert.ToDateTime(day).Date;
