@@ -2,7 +2,7 @@
 <el-row :gutter="10">
     <el-col :xs="12" :sm="12" :lg="12">
         <el-card shadow="never" class="card-student-course">
-        <el-calendar>
+        <el-calendar v-model="calendarValue">
             <template slot="dateCell" slot-scope="{date, data}">
                 <p @click="getSchedule(data.day)" :class="data.isSelected ? 'is-selected' : ''">
                     {{ data.day.split('-').slice(2).join('-') }} {{ data.isSelected ? '✔️' : ''}}
@@ -43,6 +43,7 @@ export default {
         return {
             loading: false,
             tableHeight: this.$store.state.page.win_content.height - 80,
+            calendarValue: new Date(),
             selectedDay: '',
             courseSchedule: [],
             timeRowSpanArray: [],
@@ -51,7 +52,7 @@ export default {
     },
     created() {
         // 获取今天的课程表
-        this.getSchedule(dateHelper.getDate(new Date()));
+        this.getSchedule(dateHelper.getDate(this.calendarValue));
     },
     methods: {
         getSchedule(selectedDay) {
