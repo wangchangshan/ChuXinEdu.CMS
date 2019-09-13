@@ -390,14 +390,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
             package.ScpStatus = "00";
             package.CreateTime = DateTime.Now;
 
-            if (package.ActualPrice == 0)
+            if (package.ActualPrice < sysPackage.PackagePrice)
             {
-                package.ActualPrice = sysPackage.PackagePrice;
-                package.IsDiscount = "N";
+                package.IsDiscount = "Y";
             }
             else
             {
-                package.IsDiscount = "Y";
+                package.IsDiscount = "N";
             }
 
             result = _chuxinWorkflow.AddStudentCoursePackage(package);

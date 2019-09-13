@@ -109,7 +109,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     {
                         temp = context.Student;
                     }
-                    temp = temp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
+                    temp = temp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName.Trim() + "%"));
                 }
 
                 if (temp == null)
@@ -162,7 +162,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     {
                         temp = context.Student;
                     }
-                    temp = temp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
+                    temp = temp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName.Trim() + "%"));
                 }
 
                 if (temp == null)
@@ -211,7 +211,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 IQueryable<StudentTemp> temp = null;
                 if (!string.IsNullOrEmpty(query.studentName))
                 {
-                    temp = context.StudentTemp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName + "%"));
+                    temp = context.StudentTemp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName.Trim() + "%"));
                 }
                 if (query.studentTempStatus.Count() > 0)
                 {
@@ -635,7 +635,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     {
                         temp = context.SysCoursePackage;
                     }
-                    temp = temp.Where(s => EF.Functions.Like(s.PackageName, "%" + query.packageName + "%"));
+                    temp = temp.Where(s => EF.Functions.Like(s.PackageName, "%" + query.packageName.Trim() + "%"));
                 }
                 if (temp == null)
                 {
@@ -742,7 +742,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     {
                         temp = context.Teacher;
                     }
-                    temp = temp.Where(t => EF.Functions.Like(t.TeacherName, "%" + query.teacherName + "%"));
+                    temp = temp.Where(t => EF.Functions.Like(t.TeacherName, "%" + query.teacherName.Trim() + "%"));
                 }
                 if (temp == null)
                 {
