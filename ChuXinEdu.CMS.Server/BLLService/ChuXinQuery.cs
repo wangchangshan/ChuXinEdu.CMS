@@ -103,7 +103,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     }
                     temp = temp.Where(s => EF.Functions.Like(s.StudentCode, "%" + query.studentCode + "%"));
                 }
-                if (!String.IsNullOrEmpty(query.studentName))
+                if (!String.IsNullOrEmpty(query.studentName.Trim()))
                 {
                     if (temp == null)
                     {
@@ -156,7 +156,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     }
                     temp = temp.Where(s => EF.Functions.Like(s.StudentCode, "%" + query.studentCode + "%"));
                 }
-                if (!String.IsNullOrEmpty(query.studentName))
+                if (!String.IsNullOrEmpty(query.studentName.Trim()))
                 {
                     if (temp == null)
                     {
@@ -209,7 +209,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 IQueryable<StudentTemp> temp = null;
-                if (!string.IsNullOrEmpty(query.studentName))
+                if (!string.IsNullOrEmpty(query.studentName.Trim()))
                 {
                     temp = context.StudentTemp.Where(s => EF.Functions.Like(s.StudentName, "%" + query.studentName.Trim() + "%"));
                 }
@@ -220,6 +220,10 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         temp = context.StudentTemp;
                     }
                     temp = temp.Where(s => query.studentTempStatus.Contains(s.StudentTempStatus));
+                }
+                if (!string.IsNullOrEmpty(query.result.Trim()))
+                {
+                    temp = context.StudentTemp.Where(s => s.Result == query.result.Trim());
                 }
 
                 if (temp == null)
@@ -629,7 +633,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 {
                     temp = context.SysCoursePackage.Where(s => s.PackageEnabled == query.packageEnabled);
                 }
-                if (!string.IsNullOrEmpty(query.packageName))
+                if (!string.IsNullOrEmpty(query.packageName.Trim()))
                 {
                     if (temp == null)
                     {
@@ -736,7 +740,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 {
                     temp = context.Teacher.Where(t => t.TeacherStatus == query.teacherStatus);
                 }
-                if (!string.IsNullOrEmpty(query.teacherName))
+                if (!string.IsNullOrEmpty(query.teacherName.Trim()))
                 {
                     if (temp == null)
                     {

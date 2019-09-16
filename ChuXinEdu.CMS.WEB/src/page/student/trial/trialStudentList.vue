@@ -3,19 +3,25 @@
     <div class="search_container">
         <el-form :inline="true" :model="searchField" class="demo-form-inline search-form">
             <el-form-item label="姓名">
-                <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名"></el-input>
+                <el-input type="text" size="small" v-model="searchField.studentName" placeholder="请输入学生姓名" style="width:150px"></el-input>
             </el-form-item>
             <el-form-item label="状态">
-                <el-select size="small" v-model="searchField.studentTempStatus" multiple placeholder="请选择" style="width:320px">
+                <el-select size="small" v-model="searchField.studentTempStatus" multiple placeholder="请选择试听状态" style="width:230px">
                     <el-option v-for="item in $store.getters['student_temp_status']" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="结果">
+                <el-select size="small" v-model="searchField.result" placeholder="请选择试听结果"  style="width:150px">
+                    <el-option :key="'成功'" :label="'试听成功'" :value="'成功'"></el-option>
+                    <el-option :key="'失败'" :label="'试听失败'" :value="'失败'"></el-option>
+                    <el-option :key="'待定'" :label="'待定'" :value="'待定'"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="small" @click='searchStudent()'>查询</el-button>
                 <el-button type="warning" icon="el-icon-refresh" size="small" @click='resetStudentList()'>重置</el-button>
             </el-form-item>
-
             <el-form-item class="btnRight">
                 <el-button type="primary" size="small" @click='showAddStudent()'><i class="fa fa-user-plus" aria-hidden="true"></i> 添加</el-button>
             </el-form-item>
@@ -47,13 +53,10 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="operation" align='left' label="操作" fixed="right" width="220">
+            <el-table-column prop="operation" align='center' label="操作" fixed="right" width="120">
                 <template slot-scope='scope'>
                     <el-button v-if="scope.row.result != '成功'" @click="showEditPanel(scope.row)" type="primary" size="mini">编辑</el-button>
                     <el-button v-if="scope.row.result == '成功'" @click="showStudentDetail(scope.row.studentCode, scope.row.studentName)" type="success" size="mini">查看</el-button>
-                    <el-button v-noRepeatClick v-if="scope.row.studentTempStatus == '02' && scope.row.result == '待定'" @click="submitTrialSuccess(scope.row.id)" type="success" size="mini">成功</el-button>
-                    <el-button v-noRepeatClick v-if="scope.row.studentTempStatus == '02' && scope.row.result == '待定'" @click="submitTrialFail(scope.row.id)" type="info" size="mini">失败</el-button>
-                    <el-button v-noRepeatClick v-if="scope.row.studentTempStatus == '00'" @click="removeTempStudent(scope.row.id)" type="danger" size="mini">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -91,7 +94,10 @@
                 <el-form-item style="text-align:right">
                     <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
                     <el-button v-noRepeatClick size="small" v-if="studentDialog.isUpdate == true" type="primary" @click="submitUpdateStudent('baseInfo')">保 存</el-button>
-                    <el-button v-noRepeatClick size="small" v-if="studentDialog.isUpdate == false" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>
+                    <el-button v-noRepeatClick size="small" v-if="studentDialog.isUpdate == false" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>                    
+                    <el-button v-noRepeatClick v-if="studentDialog.studentTempStatus != '01' && studentDialog.result != '成功'" @click="submitTrialSuccess(studentDialog.curId)" size="small" type="success">试听成功</el-button>
+                    <el-button v-noRepeatClick v-if="studentDialog.studentTempStatus == '02' && studentDialog.result == '待定'" @click="submitTrialFail(studentDialog.curId)" size="small" type="info">试听失败</el-button>
+                    <el-button v-noRepeatClick v-if="studentDialog.studentTempStatus == '00'" @click="removeTempStudent(studentDialog.curId)" size="small" type="danger">删 除</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -112,7 +118,8 @@ export default {
             studentsList: [],
             searchField: {
                 studentName: '',
-                studentTempStatus:[]
+                studentTempStatus:[],
+                result:'待定'
             },
             loading: true,
             tableHeight: this.$store.state.page.win_content.height - 106,
@@ -131,6 +138,8 @@ export default {
                 labelPosition: 'right',
                 formLabelWidth: '90px',
                 curId: '',
+                studentTempStatus: '',
+                result: '',
                 baseInfo: {
                     studentName: "",
                     studentSex: "",
@@ -280,6 +289,8 @@ export default {
         showEditPanel(row) {
             this.studentDialog.curId = row.id;
             this.studentDialog.isUpdate = true;
+            this.studentDialog.studentTempStatus = row.studentTempStatus;
+            this.studentDialog.result = row.result;
             this.studentDialog.baseInfo = {
                 studentName: row.studentName,
                 studentSex: row.studentSex,
@@ -315,14 +326,13 @@ export default {
         },
 
         removeTempStudent(id) {
-            var _this = this;
             axios({
                 type: 'delete',
                 path: '/api/studenttemp/removestudent/' + id,
-                fn: function (result) {
+                fn: (result) => {
                     if (result == 1200) {
-                        _this.getList();
-                        _this.$message({
+                        this.getList();
+                        this.$message({
                             message: '删除成功',
                             type: 'success'
                         });
@@ -332,14 +342,14 @@ export default {
         },
 
         submitTrialSuccess(id) {
-            var _this = this;
             axios({
                 type: 'put',
                 path: '/api/studenttemp/trialsuccess/' + id,
-                fn: function (result) {
+                fn: (result) =>  {
                     if (result == 1200) {
-                        _this.getList();
-                        _this.$message({
+                        this.studentDialog.isShow = false;
+                        this.getList();
+                        this.$message({
                             message: '已经变更为正式学员！',
                             type: 'success'
                         });
@@ -349,14 +359,14 @@ export default {
         },
 
         submitTrialFail(id) {
-            var _this = this;
             axios({
                 type: 'put',
                 path: '/api/studenttemp/trialfail/' + id,
-                fn: function (result) {
+                fn: (result) => {
                     if (result == 1200) {
-                        _this.getList();
-                        _this.$message({
+                        this.studentDialog.isShow = false;
+                        this.getList();
+                        this.$message({
                             message: '已经标记为试听失败学生',
                             type: 'danger'
                         });
@@ -389,7 +399,8 @@ export default {
         resetStudentList(){
             this.searchField = {
                 studentName: '',
-                studentTempStatus: []
+                studentTempStatus: [],
+                result: ''
             };
             this.getList();
         }

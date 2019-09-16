@@ -6,5 +6,7 @@ namespace ChuXinEdu.CMS.Server.ViewModel
         public string studentName { get; set; }
 
         public string[] studentTempStatus {get; set;}
+
+        public string result { get; set; }
     }
 }
