@@ -95,7 +95,7 @@
                     <el-button size="small" @click="studentDialog.isShow = false">取 消</el-button>
                     <el-button v-noRepeatClick size="small" v-if="studentDialog.isUpdate == true" type="primary" @click="submitUpdateStudent('baseInfo')">保 存</el-button>
                     <el-button v-noRepeatClick size="small" v-if="studentDialog.isUpdate == false" type="primary" @click="submitAddStudent('baseInfo')">提 交</el-button>                    
-                    <el-button v-noRepeatClick v-if="studentDialog.studentTempStatus != '01' && studentDialog.result != '成功'" @click="submitTrialSuccess(studentDialog.curId)" size="small" type="success">试听成功</el-button>
+                    <el-button v-noRepeatClick v-if="studentDialog.studentTempStatus != '01' && studentDialog.result != '成功' && studentDialog.isUpdate == true" @click="submitTrialSuccess(studentDialog.curId)" size="small" type="success">试听成功</el-button>
                     <el-button v-noRepeatClick v-if="studentDialog.studentTempStatus == '02' && studentDialog.result == '待定'" @click="submitTrialFail(studentDialog.curId)" size="small" type="info">试听失败</el-button>
                     <el-button v-noRepeatClick v-if="studentDialog.studentTempStatus == '00'" @click="removeTempStudent(studentDialog.curId)" size="small" type="danger">删 除</el-button>
                 </el-form-item>
