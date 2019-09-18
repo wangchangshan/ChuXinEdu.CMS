@@ -223,7 +223,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 }
                 if (!string.IsNullOrEmpty(query.result.Trim()))
                 {
-                    temp = context.StudentTemp.Where(s => s.Result == query.result.Trim());
+                    if (temp == null)
+                    {
+                        temp = context.StudentTemp;
+                    }
+                    temp = temp.Where(s => s.Result == query.result.Trim());
                 }
 
                 if (temp == null)
