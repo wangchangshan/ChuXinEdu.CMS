@@ -9,7 +9,7 @@ namespace ChuXinEdu.CMS.Server.Filters
     {
         public void OnAuthorization(AuthorizationFilterContext filterContext)
         {
-            filterContext.Result = new JsonResult(new { code = "0000" });
+            filterContext.Result = new JsonResult(new { code = "1000" });
             return;
         }
     }
