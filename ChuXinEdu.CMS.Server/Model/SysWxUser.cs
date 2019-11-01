@@ -20,6 +20,9 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("inner_person_code")]
         public string InnerPersonCode { get; set; }
 
+        [Column("inner_person_name")]
+        public string InnerPersonName { get; set; }
+
         [Column("wx_key")]
         public string WxKey { get; set; }
 

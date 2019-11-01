@@ -424,6 +424,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public List<StudentCourseList> GetStudentWeekCourse(string studentCode, DateTime weekLastDay)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseList.Where(c => c.StudentCode == studentCode 
+                                                            && c.AttendanceStatusCode == "09"
+                                                            && c.CourseDate >= DateTime.Now 
+                                                            && c.CourseDate <= weekLastDay)
+                                                .OrderBy(c => c.CoursePeriod)
+                                                .OrderBy(c => c.CourseDate)
+                                                .ToList();
+            }
+        }
+
         public IEnumerable<CA_R_PERIOD_STUDENTS> GetAllPeriodStudents(string templateCode, string roomCode)
         {
             using (BaseContext context = new BaseContext())
@@ -871,15 +885,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return flag;
         }
 
-        public string GetTeacherCodeByWxKey(string wxKey)
+        public string GetTeacherCodeByWxKey(string wxKey, out string teacherName)
         {
             string result = string.Empty;
+            teacherName = string.Empty;
             using (BaseContext context = new BaseContext())
             {
                 var teacher = context.Teacher.FirstOrDefault(s => s.TeacherWxkey == wxKey);
                 if (teacher != null)
                 {
                     result = teacher.TeacherCode;
+                    teacherName = teacher.TeacherName;
                 }
             }
             return result;

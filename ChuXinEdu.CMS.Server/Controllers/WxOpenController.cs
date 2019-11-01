@@ -87,6 +87,20 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return scls;
         }
 
+
+        /// <summary>   
+        /// 获取学员本周的课程安排 GET api/open/getstudentweekcourse
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public List<StudentCourseList> GetStudentWeekCourse(string studentCode)
+        {
+            DateTime weekLastDay = DateTime.Now.AddDays(7 - Convert.ToInt16(DateTime.Now.DayOfWeek));
+            List<StudentCourseList> scls = _chuxinQuery.GetStudentWeekCourse(studentCode, weekLastDay);
+            return scls;
+        }
+
         /// <summary>
         /// 获取学生上课列表 GET api/open/getcourselist
         /// </summary>

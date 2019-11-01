@@ -2534,7 +2534,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #endregion
 
         #region 微信小程序
-        public string InsertWxLoginInfo(string openId, string sessionKey, string innerPCode, string wxKey, string type)
+        public string InsertWxLoginInfo(string openId, string sessionKey, string innerPCode, string innerPName, string wxKey, string type)
         {
             string result = "1200";
             try
@@ -2552,6 +2552,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         OpenId = openId,
                         SessionKey = sessionKey,
                         InnerPersonCode = innerPCode,
+                        InnerPersonName = innerPName,
                         WxKey = wxKey,
                         wxUserType = type,
                         LastRequestTime = DateTime.Now

@@ -32,6 +32,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string stateCode = string.Empty;
             string sKey = string.Empty;
+            string innerPersonCode = string.Empty;
+            string innerPersonName = string.Empty;
 
             // 1. 获取当前用户的openid
             WXTicket ticket = GetWxTicket(code);
@@ -48,13 +50,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 stateCode = "1200";
                 // 生成登陆标识态
                 sKey = wxUser.wxUserType + Cryptor.Encrypt(ticket.SessionKey);
+                innerPersonCode = wxUser.InnerPersonCode;
+                innerPersonName = wxUser.InnerPersonName;
                 _chuxinWorkFlow.UpdateWxSKey(ticket.OpenId, sKey);
             }
 
             dynamic obj = new
             {
                 stateCode = stateCode,
-                sessionKey = sKey
+                sessionKey = sKey,
+                innerPersonCode = innerPersonCode,
+                innerPersonName = innerPersonName
             };
             string resultJson = JsonConvert.SerializeObject(obj);
             return resultJson;
@@ -80,7 +86,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 sKey = "1" + Cryptor.Encrypt(ticket.SessionKey);
 
                 // 3. 数据入库
-                stateCode = _chuxinWorkFlow.InsertWxLoginInfo(ticket.OpenId, sKey, studentCode, "", "1");
+                stateCode = _chuxinWorkFlow.InsertWxLoginInfo(ticket.OpenId, sKey, studentCode, studentName, "", "1");
             }
             else
             {
@@ -107,8 +113,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string stateCode = string.Empty;
             WXTicket ticket = new WXTicket();
             string sKey = string.Empty;
+            string teacherName = string.Empty;
 
-            string teacherCode = _chuxinQuery.GetTeacherCodeByWxKey(teacherWxKey);
+            string teacherCode = _chuxinQuery.GetTeacherCodeByWxKey(teacherWxKey, out teacherName);
             if (!String.IsNullOrEmpty(teacherCode))
             {
                 // 2. 获取当前用户的openid
@@ -116,7 +123,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 sKey = "2" + Cryptor.Encrypt(ticket.SessionKey);
 
                 // 3. 数据入库
-                stateCode = _chuxinWorkFlow.InsertWxLoginInfo(ticket.OpenId, sKey, teacherCode, teacherWxKey, "2");
+                stateCode = _chuxinWorkFlow.InsertWxLoginInfo(ticket.OpenId, sKey, teacherCode, teacherName, teacherWxKey, "2");
             }
             else
             {
@@ -126,7 +133,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
             dynamic obj = new
             {
                 stateCode = stateCode,
-                sessionKey = sKey
+                sessionKey = sKey,
+                teacherCode = teacherCode,
+                teacherName = teacherName
             };
             string resultJson = JsonConvert.SerializeObject(obj);
             return resultJson;

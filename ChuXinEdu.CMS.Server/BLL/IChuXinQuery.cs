@@ -72,6 +72,9 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         List<StudentCourseList> GetCoursesByday(DateTime theDay);
 
+        // 获取学员本周未上的课程
+        List<StudentCourseList> GetStudentWeekCourse(string studentCode, DateTime weekLastDay);
+
         // 获取待选课学生列表
         IEnumerable<StudentCoursePackage> GetStudentToSelectCourse(string dayCode, string periodName);
 
@@ -137,7 +140,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         bool IsStudentExist(string studentCode, string studentName);
 
-        string GetTeacherCodeByWxKey(string wxKey);
+        string GetTeacherCodeByWxKey(string wxKey, out string teacherName);
 
         string GetWeiXinPicTruePath(int id);
 
