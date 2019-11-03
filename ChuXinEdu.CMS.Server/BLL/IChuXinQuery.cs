@@ -134,6 +134,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         SysWxUser GetWxUserByOpenId(string openId);
 
+        SysWxUser GetWxUserBySKey(string openId);
+
         IEnumerable<WxPicture> GetWxPicture(string picTypeCode);
 
         IEnumerable<WxPicture> GetWxHomePicture();

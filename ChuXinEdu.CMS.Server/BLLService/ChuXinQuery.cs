@@ -871,6 +871,14 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public SysWxUser GetWxUserBySKey(string sKey)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.SysWxUser.FirstOrDefault(s => s.SessionKey == sKey);
+            }
+        }
+
         public bool IsStudentExist(string studentCode, string studentName)
         {
             bool flag = false;

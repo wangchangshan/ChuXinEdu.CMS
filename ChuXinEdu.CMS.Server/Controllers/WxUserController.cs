@@ -67,6 +67,40 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取微信小程序登陆用户信息 GET api/wxuser/getwxuserinfo
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult<string> GetWxUserInfo(string sKey)
+        {
+            string stateCode = string.Empty;
+            string innerPersonCode = string.Empty;
+            string innerPersonName = string.Empty;
+
+            SysWxUser wxUser = _chuxinQuery.GetWxUserBySKey(sKey);
+            if (wxUser == null)
+            {
+                //告知小程序，当前用户没有登录过
+                stateCode = "1404";
+            }
+            else
+            {
+                stateCode = "1200";
+                innerPersonCode = wxUser.InnerPersonCode;
+                innerPersonName = wxUser.InnerPersonName;
+            }
+
+            dynamic obj = new
+            {
+                stateCode = stateCode,
+                innerPersonCode = innerPersonCode,
+                innerPersonName = innerPersonName
+            };
+            string resultJson = JsonConvert.SerializeObject(obj);
+            return resultJson;
+        }
+
+        /// <summary>
         /// 微信小程序家长注册登陆 GET api/wxuser/pregister
         /// </summary>
         /// <returns></returns>
