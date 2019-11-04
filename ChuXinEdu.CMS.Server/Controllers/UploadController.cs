@@ -305,7 +305,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 }
 
                 // 存储微信小程序缩略图头像 60X60
-                using(var stream  = file.OpenReadStream())
+                using (var stream = file.OpenReadStream())
                 {
                     Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
                     ImageHelper.SaveThumbnailImage(bitmap, savePath, 60, 60);
@@ -366,6 +366,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         /// <summary>
         /// 上传微信小程序用到的宣传图片 POST api/upload/uploadwxpic
+        /// 处理大小，将文件宽度限制为750px, 高度等比例缩放
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -397,19 +398,30 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 if (file != null)
                 {
                     string ext = Path.GetExtension(file.FileName);
-                    string newName = string.Format("{0}{1}", System.Guid.NewGuid().ToString("N"), ext);
+                    string newName = System.Guid.NewGuid().ToString("N");
                     documentPath = documentPath + newName;
                     string savePath = contentRootPath + documentPath;
 
-                    using (var stream = System.IO.File.Create(savePath))
+                    // 存储微信用到的图像 750X?
+                    using (var stream = file.OpenReadStream())
                     {
-                        file.CopyTo(stream);
+                        Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
+                        int oriWidth = bitmap.Width;
+                        int oriHeight = bitmap.Height;
+
+                        int newWidth = 750;
+                        int newHeight = Convert.ToInt32(newWidth * 1.0 / oriWidth * oriHeight);
+
+                        ImageHelper.SaveThumbnailImage(bitmap, savePath, newWidth, newHeight);
+                        documentPath = documentPath + "_" + newWidth.ToString() + "X" + newHeight.ToString() + ".png";
                     }
 
                     int age = 0;
-                    try{
+                    try
+                    {
                         age = Int32.Parse(HttpContext.Request.Form["studentAge"]);
-                    }catch{}
+                    }
+                    catch { }
 
                     WxPicture wxPicture = new WxPicture
                     {
@@ -459,7 +471,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     break;
                 case "avatar-s-wx":
                     docPath = _chuxinQuery.GetAvatarTruePath(id, "student");
-                    if(!String.IsNullOrEmpty(docPath))
+                    if (!String.IsNullOrEmpty(docPath))
                     {
                         docPath += "_60X60.png";
                     }

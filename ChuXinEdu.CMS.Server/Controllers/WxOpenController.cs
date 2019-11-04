@@ -32,7 +32,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取微信小程序用到的宣传图片 GET api/wxopen/getwxhomepicture
         /// </summary>
         /// <returns></returns>
-        [HttpGet]        
+        [HttpGet]
         public IEnumerable<WxPicture> GetWxHomePicture()
         {
             IEnumerable<WxPicture> wxPics = _chuxinQuery.GetWxHomePicture();
@@ -50,7 +50,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取微信小程序用到的宣传图片 GET api/wxpicture/getwxpicture
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{wxPicCode}")]        
+        [HttpGet("{wxPicCode}")]
         public IEnumerable<WxPicture> GetWxPicture(string wxPicCode)
         {
             IEnumerable<WxPicture> wxPics = _chuxinQuery.GetWxPicture(wxPicCode);
@@ -107,9 +107,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// <returns></returns>
         [HttpGet]
         [WxAuthenFilter]
-        public IEnumerable<StudentCourseList> GetCourseList(string studentCode)
+        public IEnumerable<StudentCourseList> GetCourseList(string studentCode, int pageIndex, int pageSize)
         {
-            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(studentCode);
+            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(studentCode, pageIndex, pageSize);
             return courseList;
         }
 

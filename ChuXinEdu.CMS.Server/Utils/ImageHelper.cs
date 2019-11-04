@@ -32,7 +32,7 @@ namespace ChuXinEdu.CMS.Server.Utils
             if (File.Exists(path))
             {
                 Byte[] bytes = File.ReadAllBytes(path);
-                
+
                 using (Stream sm = new MemoryStream(bytes))
                 {
                     Bitmap oriBitmap = new Bitmap(Bitmap.FromStream(sm));

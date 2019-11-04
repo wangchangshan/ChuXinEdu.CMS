@@ -281,7 +281,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                var dicList =  context.DIC_R_KEY_VALUE.FromSql($@"select distinct course_category_code as item_code, course_category_name as item_name 
+                var dicList = context.DIC_R_KEY_VALUE.FromSql($@"select distinct course_category_code as item_code, course_category_name as item_name 
                                                                 from student_course_package 
                                                                 where student_code={studentCode}")
                                                         .ToList();
@@ -300,20 +300,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode)
+        public IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode, int pageIndex, int pageSize)
         {
             using (BaseContext context = new BaseContext())
             {
-                // 01：上课销课； 02：活动销课
                 return context.StudentCourseList.Where(s => s.StudentCode == studentCode
                                                             && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"))
                                                 .OrderBy(s => s.CoursePeriod)
-                                                .OrderBy(s => s.CourseDate)
-                                                .ToList();
+                                                .OrderByDescending(s => s.CourseDate).ToList()
+                                                .Skip(pageSize * (pageIndex - 1))
+                                                .Take(pageSize);
             }
         }
 
-        public IEnumerable<StudentCourseList> GetStudentCourseList(int pageIndex, int pageSize, QUERY_STUDENT_COURSE_LIST query,out int totalCount)
+        public IEnumerable<StudentCourseList> GetStudentCourseList(int pageIndex, int pageSize, QUERY_STUDENT_COURSE_LIST query, out int totalCount)
         {
             IEnumerable<StudentCourseList> courseList = null;
             using (BaseContext context = new BaseContext())
@@ -428,9 +428,9 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.StudentCourseList.Where(c => c.StudentCode == studentCode 
+                return context.StudentCourseList.Where(c => c.StudentCode == studentCode
                                                             && c.AttendanceStatusCode == "09"
-                                                            && c.CourseDate >= DateTime.Now 
+                                                            && c.CourseDate >= DateTime.Today
                                                             && c.CourseDate <= weekLastDay)
                                                 .OrderBy(c => c.CoursePeriod)
                                                 .OrderBy(c => c.CourseDate)
@@ -917,7 +917,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        
+
         public IEnumerable<WxPicture> GetWxHomePicture()
         {
             //只取机构环境01与学习日常00

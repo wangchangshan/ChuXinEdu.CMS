@@ -260,12 +260,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取学生上课历史记录列表（旧页面） GET api/student/getcourselist
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        public IEnumerable<StudentCourseList> GetCourseList(string studentCode)
-        {
-            IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(studentCode);
-            return courseList;
-        }
+        // [HttpGet]
+        // public IEnumerable<StudentCourseList> GetCourseList(string studentCode)
+        // {
+        //     IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetStudentCourseList(studentCode);
+        //     return courseList;
+        // }
 
         /// <summary>
         /// 获取学生上课历史记录列表（新页面） GET api/student/gethistorycourselist

@@ -38,16 +38,16 @@ namespace ChuXinEdu.CMS.Server.BLL
         Student GetStudentByCode(string studentCode);
 
         DataTable GetStudentAuxiliaryInfo(string studentCode);
-        
+
         IEnumerable<StudentCoursePackage> GetStudentCoursePackage(string studentCode);
 
         IEnumerable<DIC_R_KEY_VALUE> GetStudentPackageKV(string studentCode);
 
         IEnumerable<StudentCoursePackage> GetNoFinishPackage(string studentCode);
 
-        IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode);
+        IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode, int pageIndex, int pageSize);
 
-        IEnumerable<StudentCourseList> GetStudentCourseList(int pageIndex, int pageSize, QUERY_STUDENT_COURSE_LIST query,out int totalCount);
+        IEnumerable<StudentCourseList> GetStudentCourseList(int pageIndex, int pageSize, QUERY_STUDENT_COURSE_LIST query, out int totalCount);
 
         IEnumerable<StudentCourseList> GetStudentDayOffList(string studentCode);
 
@@ -64,7 +64,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         //  获取每天上课时间段
         IEnumerable<SysCourseArrangeTemplateDetail> GetCourseArrangePeriod(string templateCode);
 
-         // 获取学生选课信息（包含每个时间段）
+        // 获取学生选课信息（包含每个时间段）
         IEnumerable<CA_R_PERIOD_STUDENTS> GetAllPeriodStudents(string templateCode, string roomCode);
 
         // 获取时间段内排课信息
@@ -85,7 +85,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod);
 
         DataTable GetBirthdayIn7Days();
- 
+
         // 获取假期列表
         IEnumerable<SysHoliday> GetHolidayList();
 
