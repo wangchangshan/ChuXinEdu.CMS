@@ -69,17 +69,47 @@ namespace ChuXinEdu.CMS.Server.Controllers
             var file = HttpContext.Request.Form.Files.FirstOrDefault();
             if (file != null)
             {
+                int imageCompressLevel = 100; // max
+                string strImageCompressLevel = CustomConfig.GetSetting("ImageCompressLevel");
+                if (!String.IsNullOrEmpty(strImageCompressLevel))
+                {
+                    imageCompressLevel = Convert.ToInt32(strImageCompressLevel);
+                }
+
                 string ext = Path.GetExtension(file.FileName);
+                if (imageCompressLevel < 100)
+                {
+                    ext = ".jpeg";
+                }
                 string newName = string.Format("{0}_{1}_{2}{3}", studentName, System.Guid.NewGuid().ToString("N"), courseId.ToString(), ext);
                 documentPath = documentPath + newName;
                 string savePath = contentRootPath + documentPath;
 
-                using (var stream = System.IO.File.Create(savePath))
+                string fileSize = string.Empty;
+                // 压缩上传图片
+                if (imageCompressLevel < 100)
                 {
-                    file.CopyTo(stream);
+                    using (var stream = file.OpenReadStream())
+                    {
+                        using (Stream s = new FileStream(savePath, FileMode.Create))
+                        {
+
+                            Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
+                            ImageHelper.Compress(bitmap, s, imageCompressLevel);
+                            fileSize = (s.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                        }
+                    }
+                }
+                else
+                {
+                    // 存储原图
+                    using (var stream = System.IO.File.Create(savePath))
+                    {
+                        file.CopyTo(stream);
+                    }
+                    fileSize = System.Math.Ceiling(file.Length / 1024.0 / 1024.0) + " MB";
                 }
 
-                string fileSize = System.Math.Ceiling(file.Length / 1024.0 / 1024.0) + " MB";
                 // 数据入库
                 StudentArtwork artWork = new StudentArtwork
                 {
@@ -103,7 +133,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 签到 上传作品 POST api/upload/uploadartworksimple
+        /// 签到 上传作品（学员作品墙页面的上传）POST api/upload/uploadartworksimple
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -137,17 +167,46 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 var file = HttpContext.Request.Form.Files.FirstOrDefault();
                 if (file != null)
                 {
+                    int imageCompressLevel = 100; // max
+                    string strImageCompressLevel = CustomConfig.GetSetting("ImageCompressLevel");
+                    if (!String.IsNullOrEmpty(strImageCompressLevel))
+                    {
+                        imageCompressLevel = Convert.ToInt32(strImageCompressLevel);
+                    }
+
                     string ext = Path.GetExtension(file.FileName);
+                    if (imageCompressLevel < 100)
+                    {
+                        ext = ".jpeg";
+                    }
                     string newName = string.Format("{0}_{1}{2}", studentName, System.Guid.NewGuid().ToString("N"), ext);
                     documentPath = documentPath + newName;
                     string savePath = contentRootPath + documentPath;
 
-                    using (var stream = System.IO.File.Create(savePath))
+                    string fileSize = string.Empty;
+                    // 压缩上传图片
+                    if (imageCompressLevel < 100)
                     {
-                        file.CopyTo(stream);
+                        using (var stream = file.OpenReadStream())
+                        {
+                            using (Stream s = new FileStream(savePath, FileMode.Create))
+                            {
+
+                                Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
+                                ImageHelper.Compress(bitmap, s, imageCompressLevel);
+                                fileSize = (s.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        using (var stream = System.IO.File.Create(savePath))
+                        {
+                            file.CopyTo(stream);
+                        }
+                        fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
                     }
 
-                    string fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
                     // 数据入库
                     StudentArtwork artWork = new StudentArtwork
                     {
@@ -308,7 +367,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 using (var stream = file.OpenReadStream())
                 {
                     Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
-                    ImageHelper.SaveThumbnailImage(bitmap, savePath, 60, 60);
+                    // 不再压缩，使用png格式，不要修改参数（微信小程序获取头像的地方制定了扩展名为png）
+                    ImageHelper.SaveThumbnailImage(bitmap, savePath, 60, 60, false, ".png");
                 }
                 result = _chuxinWorkFlow.UploadAvatar(code, documentPath, type);
             }
@@ -355,6 +415,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 {
                     ActivityId = 0
                 };
+
+                // 展示不处理
                 //result = _chuxinWorkFlow.UploadAvtivityImages(activity);
             }
             else
@@ -366,7 +428,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         /// <summary>
         /// 上传微信小程序用到的宣传图片 POST api/upload/uploadwxpic
-        /// 处理大小，将文件宽度限制为750px, 高度等比例缩放
+        /// 处理大小，将文件宽度限制为360px, 高度等比例缩放
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -402,7 +464,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     documentPath = documentPath + newName;
                     string savePath = contentRootPath + documentPath;
 
-                    // 存储微信用到的图像 750X?
+                    // 存储微信用到的图像 360X?
                     using (var stream = file.OpenReadStream())
                     {
                         Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
@@ -412,8 +474,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                         int newWidth = 750;
                         int newHeight = Convert.ToInt32(newWidth * 1.0 / oriWidth * oriHeight);
 
-                        ImageHelper.SaveThumbnailImage(bitmap, savePath, newWidth, newHeight);
-                        documentPath = documentPath + "_" + newWidth.ToString() + "X" + newHeight.ToString() + ".png";
+                        ImageHelper.SaveThumbnailImage(bitmap, savePath, newWidth, newHeight, true, ".jpeg");
+                        documentPath = documentPath + "_" + newWidth.ToString() + "X" + newHeight.ToString() + ".jpeg";
                     }
 
                     int age = 0;

@@ -106,7 +106,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                             using (Stream sm = System.IO.File.OpenRead(avatarPath))
                             {
                                 Bitmap bitmap = new Bitmap(Bitmap.FromStream(sm));
-                                ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60);
+                                ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60, false, ".png");
                             }
                             // 原来上传的图片为300X300，现在修改为200X200
                             ImageHelper.ChangeImageSize(avatarPath, 200, 200);
@@ -122,7 +122,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                             using (Stream sm = System.IO.File.OpenRead(avatarPath))
                             {
                                 Bitmap bitmap = new Bitmap(Bitmap.FromStream(sm));
-                                ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60);
+                                ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60, false, ".png");
                             }
                             // 原来上传的图片为300X300，现在修改为200X200
                             ImageHelper.ChangeImageSize(avatarPath, 200, 200);
