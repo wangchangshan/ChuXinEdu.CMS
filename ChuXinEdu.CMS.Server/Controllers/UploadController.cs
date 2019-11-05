@@ -358,6 +358,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 documentPath = documentPath + newName;
                 string savePath = contentRootPath + documentPath;
 
+                // 用户头像涉及历史数据问题，暂时不做压缩处理。后期需要批量处理历史数据问题。
                 using (var stream = System.IO.File.Create(savePath))
                 {
                     file.CopyTo(stream);
@@ -399,17 +400,47 @@ namespace ChuXinEdu.CMS.Server.Controllers
             var file = HttpContext.Request.Form.Files.FirstOrDefault();
             if (file != null)
             {
+                int imageCompressLevel = 100; // max
+                string strImageCompressLevel = CustomConfig.GetSetting("ImageCompressLevel");
+                if (!String.IsNullOrEmpty(strImageCompressLevel))
+                {
+                    imageCompressLevel = Convert.ToInt32(strImageCompressLevel);
+                }
+
                 string ext = Path.GetExtension(file.FileName);
+                if (imageCompressLevel < 100)
+                {
+                    ext = ".jpeg";
+                }
+
                 string newName = string.Format("{0}{1}", Guid.NewGuid().ToString("N"), ext);
                 documentPath = documentPath + newName;
                 string savePath = contentRootPath + documentPath;
 
-                using (var stream = System.IO.File.Create(savePath))
+                string fileSize = string.Empty;
+                // 压缩上传图片
+                if (imageCompressLevel < 100)
                 {
-                    file.CopyTo(stream);
+                    using (var stream = file.OpenReadStream())
+                    {
+                        using (Stream s = new FileStream(savePath, FileMode.Create))
+                        {
+
+                            Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
+                            ImageHelper.Compress(bitmap, s, imageCompressLevel);
+                            fileSize = (s.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                        }
+                    }
+                }
+                else
+                {
+                    using (var stream = System.IO.File.Create(savePath))
+                    {
+                        file.CopyTo(stream);
+                    }
+                    fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
                 }
 
-                string fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
                 // 数据入库
                 StudentActivityImage activity = new StudentActivityImage
                 {
@@ -428,7 +459,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
         /// <summary>
         /// 上传微信小程序用到的宣传图片 POST api/upload/uploadwxpic
-        /// 处理大小，将文件宽度限制为360px, 高度等比例缩放
+        /// 处理大小，将文件宽度限制为750px, 高度等比例缩放
         /// </summary>
         /// <returns></returns>
         [HttpPost]

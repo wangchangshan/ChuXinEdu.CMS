@@ -115,7 +115,13 @@ namespace ChuXinEdu.CMS.Server.Utils
 
                 if (isCompress)
                 {
-                    Compress(thumbnailImage, newPath, 50);
+                    int imageCompressLevel = 50;
+                    string strImageCompressLevel = CustomConfig.GetSetting("ImageCompressLevel");
+                    if (!String.IsNullOrEmpty(strImageCompressLevel))
+                    {
+                        imageCompressLevel = Convert.ToInt32(strImageCompressLevel);
+                    }
+                    Compress(thumbnailImage, newPath, imageCompressLevel);
                 }
                 else
                 {
