@@ -27,7 +27,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取微信小程序用到的宣传图片 GET api/wxpicture/getwxpicture
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{wxPicCode}")]        
+        [HttpGet("{wxPicCode}")]
         public IEnumerable<WxPicture> GetWxPicture(string wxPicCode)
         {
             IEnumerable<WxPicture> wxPics = _chuxinQuery.GetWxPicture(wxPicCode);
@@ -35,7 +35,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var pic in wxPics)
             {
-                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=normal-wx";
+                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=ad-wx";
             }
 
             return wxPics;

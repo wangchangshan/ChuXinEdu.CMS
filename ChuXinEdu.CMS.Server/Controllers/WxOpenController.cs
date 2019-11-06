@@ -40,14 +40,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var pic in wxPics)
             {
-                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=normal-wx";
+                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=ad-wx";
             }
 
             return wxPics;
         }
 
         /// <summary>
-        /// 获取微信小程序用到的宣传图片 GET api/wxpicture/getwxpicture
+        /// 获取微信小程序用到的宣传图片 GET api/wxopen/getwxpicture （暂时没有被调用）
         /// </summary>
         /// <returns></returns>
         [HttpGet("{wxPicCode}")]
@@ -58,13 +58,30 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var pic in wxPics)
             {
-                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=normal-wx";
+                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=ad-wx";
             }
 
             return wxPics;
         }
 
-        // GET api/open/getpackages
+        /// <summary>
+        /// 获取微信小程序用到的宣传图片——作品展示（带屏幕上拉分页） GET api/wxopen/getwxbestdraw
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<WxPicture> GetWxBestDraw(string wxPicCode, int pageIndex, int pageSize)
+        {
+            IEnumerable<WxPicture> wxPics = _chuxinQuery.GetWxPicture(wxPicCode, pageIndex, pageSize);
+
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+            foreach (var pic in wxPics)
+            {
+                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=ad-wx";
+            }
+
+            return wxPics;
+        }
+
+        // GET api/wxopen/getpackages
         [HttpGet]
         [WxAuthenFilter]
         public IEnumerable<SysCoursePackage> GetPackages(string q)
@@ -75,7 +92,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>   
-        /// 获取某天排课信息 GET api/open/getcoursearrangedbyday
+        /// 获取某天排课信息 GET api/wxopen/getcoursearrangedbyday
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -89,7 +106,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
 
         /// <summary>   
-        /// 获取学员本周的课程安排 GET api/open/getstudentweekcourse
+        /// 获取学员本周的课程安排 GET api/wxopen/getstudentweekcourse
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -102,7 +119,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取学生上课列表 GET api/open/getcourselist
+        /// 获取学生上课列表 GET api/wxopen/getcourselist
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -114,12 +131,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取学生所有的课程作品 GET api/student/getartworklist
+        /// 获取学生的课程作品 GET api/wxopen/getartworklist
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [WxAuthenFilter]
-        public IEnumerable<ART_WORK_R_LIST> GetArtworkList(string studentCode)
+        public IEnumerable<ART_WORK_R_LIST> GetArtworkList(string studentCode, int pageIndex, int pageSize)
         {
             var config = new MapperConfiguration(cfg =>
             {
@@ -127,7 +144,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             });
             IMapper mapper = config.CreateMapper();
 
-            IEnumerable<StudentArtwork> artworks = _chuxinQuery.GetArkworkByStudent(studentCode);
+            IEnumerable<StudentArtwork> artworks = _chuxinQuery.GetArkworkByStudent(studentCode, pageIndex, pageSize);
 
             List<ART_WORK_R_LIST> artWorkList = new List<ART_WORK_R_LIST>();
             ART_WORK_R_LIST aw = null;
@@ -136,7 +153,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             foreach (var artwork in artworks)
             {
                 aw = mapper.Map<StudentArtwork, ART_WORK_R_LIST>(artwork);
-                aw.ShowURL = accessUrlHost + "api/upload/getimage?id=" + artwork.ArtworkId + "&type=artwork";
+                aw.ShowURL = accessUrlHost + "api/upload/getimage?id=" + artwork.ArtworkId + "&type=artwork-wx";
 
                 artWorkList.Add(aw);
             }
@@ -145,7 +162,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// [学生列表] 获取所有学生list GET api/student/getstudentlist
+        /// [学生列表] 获取所有学生list GET api/wxopen/getstudentlist
         /// </summary>
         /// <returns></returns>
         [HttpGet]

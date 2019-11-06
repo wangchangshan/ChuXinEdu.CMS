@@ -102,7 +102,7 @@ namespace ChuXinEdu.CMS.Server.Utils
         /// <param name="isCompress">是否压缩</param>
         public static void SaveThumbnailImage(Bitmap originalImage, string originalPath, int width, int heigth, bool isCompress, string ext)
         {
-            string newPath = originalPath + "_" + width.ToString() + "X" + heigth.ToString() + ext;
+            string newPath = originalPath + "_" + width.ToString() + ext;
 
             if (!File.Exists(newPath))
             {

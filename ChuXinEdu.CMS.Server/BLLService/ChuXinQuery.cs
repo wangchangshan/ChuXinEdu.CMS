@@ -614,6 +614,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode, int pageIndex, int pageSize)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentArtwork.Where(s => s.StudentCode == studentCode
+                                                            && s.ArtworkStatus == "01")
+                                            .OrderBy(s => s.FinishDate)
+                                            .Skip(pageSize * (pageIndex - 1))
+                                            .Take(pageSize)
+                                            .ToList();
+            }
+        }
+
         public string GetArtWorkTruePath(int artworkId)
         {
             string path = string.Empty;
@@ -917,6 +930,16 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<WxPicture> GetWxPicture(string picTypeCode, int pageIndex, int pageSize)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.WxPicture.Where(s => s.WxPictureType == picTypeCode)
+                                        .Skip((pageIndex - 1) * pageSize)
+                                        .Take(pageSize)
+                                        .ToList();
+            }
+        }
 
         public IEnumerable<WxPicture> GetWxHomePicture()
         {

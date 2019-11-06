@@ -102,6 +102,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode);
 
+        IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode, int pageIndex, int pageSize);
+
         string GetArtWorkTruePath(int artworkId);
 
         string GetAvatarTruePath(int id, string type);
@@ -137,6 +139,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         SysWxUser GetWxUserBySKey(string openId);
 
         IEnumerable<WxPicture> GetWxPicture(string picTypeCode);
+
+        IEnumerable<WxPicture> GetWxPicture(string picTypeCode, int pageIndex, int pageSize);
 
         IEnumerable<WxPicture> GetWxHomePicture();
 

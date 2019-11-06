@@ -133,5 +133,106 @@ namespace ChuXinEdu.CMS.Server.Controllers
             catch { result = "1500"; }
             return result;
         }
+
+
+        /// <summary>
+        /// GET http://localhost:5000/api/open/compresshistoryimage
+        /// 压缩历史学员作品
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [BlockFilter]
+        public string CompressHistoryImage()
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var artWorks = context.StudentArtwork.ToList();
+                    foreach (StudentArtwork art in artWorks)
+                    {
+                        string imgPath = _hostingEnvironment.ContentRootPath + art.DocumentPath;
+                        if (System.IO.File.Exists(imgPath))
+                        {
+                            Bitmap bitmap = null;
+                            using (Stream sm = System.IO.File.OpenRead(imgPath))
+                            {
+                                bitmap = new Bitmap(Bitmap.FromStream(sm));
+                            }
+
+                            ImageHelper.Compress(bitmap, imgPath, 50);
+                        }
+                    }
+                }
+            }
+            catch { result = "1500"; }
+            return result;
+        }
+
+        /// <summary>
+        /// GET http://localhost:5000/api/open/restoreavatar
+        /// 修改头像路径到png
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public string RestoreAvatar()
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var students = context.Student.Where(s => s.StudentAvatarPath != null).ToList();
+                    foreach (Student student in students)
+                    {
+                        student.StudentAvatarPath = student.StudentAvatarPath.Split('.')[0] + ".png";
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch { result = "1500"; }
+            return result;
+        }
+
+
+        /// <summary>
+        /// GET http://localhost:5000/api/open/compressavatar
+        /// 压缩头像，并重新生成新的微信小程序头像 60X60
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public string CompressAvatar()
+        {
+            string result = "1200";
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var students = context.Student.Where(s => s.StudentAvatarPath != null).ToList();
+                    foreach (Student student in students)
+                    {
+                        string avatarPath = _hostingEnvironment.ContentRootPath + student.StudentAvatarPath;
+                        if (System.IO.File.Exists(avatarPath))
+                        {
+                            string newPath = string.Empty;
+                            Bitmap bitmap = null;
+
+                            using (Stream sm = System.IO.File.OpenRead(avatarPath))
+                            {
+                                bitmap = new Bitmap(Bitmap.FromStream(sm));
+                                ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60, true, ".png");
+                            }
+                        }
+                        if (System.IO.File.Exists(avatarPath + "_60X60.png"))
+                        {
+                            System.IO.File.Delete(avatarPath + "_60X60.png");
+                        }
+                    }
+                }
+            }
+            catch { result = "1500"; }
+            return result;
+        }
     }
 }
