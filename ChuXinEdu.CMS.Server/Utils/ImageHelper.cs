@@ -131,6 +131,30 @@ namespace ChuXinEdu.CMS.Server.Utils
             }
         }
 
+
+        /// <summary>
+        /// 保存缩略图(为微信小程序特殊处理压缩率)
+        /// </summary>
+        /// <param name="isCompress">是否压缩</param>
+        public static void SaveThumbnailImageAvatar(Bitmap originalImage, string originalPath, int width, int heigth, string ext)
+        {
+            string newPath = originalPath + "_" + width.ToString() + ext;
+
+            if (!File.Exists(newPath))
+            {
+                Bitmap thumbnailImage = new Bitmap(width, heigth);
+                Graphics graphics = Graphics.FromImage(thumbnailImage);
+                graphics.InterpolationMode = InterpolationMode.High;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.Clear(System.Drawing.Color.Transparent);
+                graphics.DrawImage(originalImage, new Rectangle(0, 0, width, heigth), new Rectangle(0, 0, originalImage.Width, originalImage.Height), GraphicsUnit.Pixel);
+
+                Compress(thumbnailImage, newPath, 90);
+                graphics.Dispose();
+            }
+        }
+
+
         public static void ChangeImageSize(string path, int width, int heigth)
         {
             if (File.Exists(path))

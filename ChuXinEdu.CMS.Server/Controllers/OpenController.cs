@@ -176,6 +176,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [BlockFilter]
         public string RestoreAvatar()
         {
             string result = "1200";
@@ -221,7 +222,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                             using (Stream sm = System.IO.File.OpenRead(avatarPath))
                             {
                                 bitmap = new Bitmap(Bitmap.FromStream(sm));
-                                ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60, true, ".png");
+                                ImageHelper.SaveThumbnailImageAvatar(bitmap, avatarPath, 60, 60, ".png");
                             }
                         }
                         if (System.IO.File.Exists(avatarPath + "_60X60.png"))

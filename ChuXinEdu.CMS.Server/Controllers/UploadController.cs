@@ -348,6 +348,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpPost]
         public string UploadAvatar()
         {
+            // 头像不压缩
             string result = "1600";
             string code = string.Empty;
             string name = string.Empty;
@@ -374,48 +375,22 @@ namespace ChuXinEdu.CMS.Server.Controllers
             var file = HttpContext.Request.Form.Files.FirstOrDefault();
             if (file != null)
             {
-                int imageCompressLevel = 100; // max
-                string strImageCompressLevel = CustomConfig.GetSetting("ImageCompressLevel");
-                if (!String.IsNullOrEmpty(strImageCompressLevel))
-                {
-                    imageCompressLevel = Convert.ToInt32(strImageCompressLevel);
-                }
-
                 string ext = Path.GetExtension(file.FileName);
                 string newName = string.Format("{0}_{1}{2}", name, code, ext);
                 documentPath = documentPath + newName;
                 string savePath = contentRootPath + documentPath;
 
-                // 压缩上传图片
-                if (imageCompressLevel < 100)
+                // 存储原图
+                using (var stream = System.IO.File.Create(savePath))
                 {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        using (Stream s = new FileStream(savePath, FileMode.Create))
-                        {
-                            Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
-                            ImageHelper.Compress(bitmap, s, imageCompressLevel);
-
-                            // 存储微信小程序缩略图头像 60X60
-                            Bitmap bm = new Bitmap(Bitmap.FromStream(s));
-                            ImageHelper.SaveThumbnailImage(bitmap, savePath, 60, 60, false, ext);
-                        }
-                    }
+                    file.CopyTo(stream);
                 }
-                else
-                {
-                    // 存储原图
-                    using (var stream = System.IO.File.Create(savePath))
-                    {
-                        file.CopyTo(stream);
-                    }
 
-                    // 存储微信小程序缩略图头像 60X60
-                    using (var stream = file.OpenReadStream())
-                    {
-                        Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
-                        ImageHelper.SaveThumbnailImage(bitmap, savePath, 60, 60, false, ext);
-                    }
+                // 存储微信小程序缩略图头像 60X60
+                using (var stream = file.OpenReadStream())
+                {
+                    Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
+                    ImageHelper.SaveThumbnailImageAvatar(bitmap, savePath, 60, 60, ext);
                 }
 
                 result = _chuxinWorkFlow.UploadAvatar(code, documentPath, type);
