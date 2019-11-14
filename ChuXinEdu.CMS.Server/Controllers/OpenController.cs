@@ -203,6 +203,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [BlockFilter]
         public string CompressAvatar()
         {
             string result = "1200";

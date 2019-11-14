@@ -123,6 +123,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public int GetActiveStudentCount()
+        {
+            int rtn = 0;
+            DataTable dt = ADOContext.GetDataTable(@"select count(1) from student where student_status = '01'");
+            if (dt.Rows.Count > 0)
+            {
+                rtn = Convert.ToInt32(dt.Rows[0][0].ToString());
+            }
+            return rtn;
+        }
+
         public IEnumerable<DIC_R_KEY_VALUE> GetAllActiveStudents()
         {
             using (BaseContext context = new BaseContext())
@@ -575,6 +586,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 courseCount = context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
                                                             && s.CourseDate <= DateTime.Now.Date)
+                                                .Count();
+            }
+            return courseCount;
+        }
+
+        public int GetTodayCourseCount()
+        {
+            int courseCount = 0;
+            using (BaseContext context = new BaseContext())
+            {
+                courseCount = context.StudentCourseList.Where(s => s.CourseDate == DateTime.Today)
                                                 .Count();
             }
             return courseCount;

@@ -25,6 +25,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<SysCourseArrangeTemplateDetail> GetArrangeTemplateDetail(string templateCode);
 
+        int GetActiveStudentCount();
+
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount);
 
         IEnumerable<Student> GetStudentList2Export(QUERY_STUDENT query);
@@ -94,6 +96,9 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // 获取待签到课程数目
         int GetCoursesToSignInCount();
+
+        // 获取今日排课数目
+        int GetTodayCourseCount();
 
         // 获取课程套餐将要结束（5 节课）的学生列表
         DataTable GetCourseToFinishList();

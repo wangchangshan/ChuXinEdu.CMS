@@ -6,6 +6,8 @@ using ChuXinEdu.CMS.Server.Utils;
 using ChuXinEdu.CMS.Server.Model;
 using ChuXinEdu.CMS.Server.BLL;
 using System.Net.Http;
+using System.Data;
+using ChuXinEdu.CMS.Server.ViewModel;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -34,6 +36,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string sKey = string.Empty;
             string innerPersonCode = string.Empty;
             string innerPersonName = string.Empty;
+            WX_MINE_OVERVIEW overView = null;
 
             // 1. 获取当前用户的openid
             WXTicket ticket = GetWxTicket(code);
@@ -53,6 +56,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 innerPersonCode = wxUser.InnerPersonCode;
                 innerPersonName = wxUser.InnerPersonName;
                 _chuxinWorkFlow.UpdateWxSKey(ticket.OpenId, sKey);
+                overView = GetOverview(wxUser.wxUserType);
             }
 
             dynamic obj = new
@@ -60,7 +64,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 stateCode = stateCode,
                 sessionKey = sKey,
                 innerPersonCode = innerPersonCode,
-                innerPersonName = innerPersonName
+                innerPersonName = innerPersonName,
+                overView = overView
             };
             string resultJson = JsonConvert.SerializeObject(obj);
             return resultJson;
@@ -76,6 +81,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string stateCode = string.Empty;
             string innerPersonCode = string.Empty;
             string innerPersonName = string.Empty;
+            WX_MINE_OVERVIEW overView = null;
 
             SysWxUser wxUser = _chuxinQuery.GetWxUserBySKey(sKey);
             if (wxUser == null)
@@ -88,16 +94,50 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 stateCode = "1200";
                 innerPersonCode = wxUser.InnerPersonCode;
                 innerPersonName = wxUser.InnerPersonName;
+                overView = GetOverview(wxUser.wxUserType);
             }
 
             dynamic obj = new
             {
                 stateCode = stateCode,
                 innerPersonCode = innerPersonCode,
-                innerPersonName = innerPersonName
+                innerPersonName = innerPersonName,
+                overView = overView
             };
             string resultJson = JsonConvert.SerializeObject(obj);
             return resultJson;
+        }
+
+        private WX_MINE_OVERVIEW GetOverview(string userType)
+        {
+            WX_MINE_OVERVIEW overView = null;
+            switch (userType)
+            {
+                case "1":
+                    // 家长
+                    break;
+                case "2":
+                    // 教师
+                    int studentCount = _chuxinQuery.GetActiveStudentCount();
+                    int todayCourseCount = _chuxinQuery.GetTodayCourseCount();
+                    DataTable dt = _chuxinQuery.GetBirthdayIn7Days();
+                    int birthCount = dt.Rows.Count;
+                    dt = _chuxinQuery.GetCourseToFinishList();
+                    int expirationCount = dt.Rows.Count;
+
+                    overView = new WX_MINE_OVERVIEW
+                    {
+                        tStudentCount = studentCount,
+                        tTodayCourseCount = todayCourseCount,
+                        tStudentBirthCount = birthCount,
+                        tExpirationCount = expirationCount
+                    };
+                    break;
+                default:
+                    break;
+            }
+
+            return overView;
         }
 
         /// <summary>
@@ -126,8 +166,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 stateCode = "1404"; //找不到学生
             }
-            
-            
+
+
             dynamic obj = new
             {
                 stateCode = stateCode,
@@ -163,7 +203,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 stateCode = "1404"; //找不到教师，即注册码错误
             }
-            
+
             dynamic obj = new
             {
                 stateCode = stateCode,
@@ -196,7 +236,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
     }
 
-    public class WXTicket{
+    public class WXTicket
+    {
         public string OpenId { get; set; }
         public string SessionKey { get; set; }
     }
