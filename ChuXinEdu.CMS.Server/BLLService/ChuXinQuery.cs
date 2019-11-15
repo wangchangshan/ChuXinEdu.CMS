@@ -134,6 +134,15 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return rtn;
         }
 
+        public int getStudentRestCourseCount(string studentCode)
+        {
+            int courseCount = 0;
+            DataTable dt = ADOContext.GetDataTable(@"select sum(rest_course_count) as course_count from student_course_package where scp_status='00' and student_code=@1", studentCode);
+            courseCount = Convert.ToInt32(dt.Rows[0][0] ?? "0");
+
+            return courseCount;
+        }
+
         public IEnumerable<DIC_R_KEY_VALUE> GetAllActiveStudents()
         {
             using (BaseContext context = new BaseContext())
@@ -406,6 +415,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
 	                                                            and DATE_FORMAT(student_birthday,'%m-%d') <= DATE_FORMAT(date_add(now(), interval 7 day),'%m-%d')
 	                                                            and DATE_FORMAT(student_birthday,'%m-%d') >= DATE_FORMAT(date_sub(now(), interval 3 day),'%m-%d') 
                                                             order by DATE_FORMAT(student_birthday,'%m-%d')");
+
+            return dtStudent;
+        }
+
+        public DataTable GetBirthdayIn7Days(int pageIndex, int pageSize)
+        {
+            int start = (pageIndex - 1) * pageSize;
+            int end = pageSize;
+            DataTable dtStudent = ADOContext.GetDataTable(@"select id, student_code, student_name, DATE_FORMAT(student_birthday,'%m-%d') as student_birthday, student_phone, student_avatar_path, 0 as rest_course_count from student 
+                                                            where student_status = '01'
+	                                                            and DATE_FORMAT(student_birthday,'%m-%d') <= DATE_FORMAT(date_add(now(), interval 7 day),'%m-%d')
+	                                                            and DATE_FORMAT(student_birthday,'%m-%d') >= DATE_FORMAT(date_sub(now(), interval 3 day),'%m-%d') 
+                                                            order by DATE_FORMAT(student_birthday,'%m-%d') limit @1, @2", start, end);
 
             return dtStudent;
         }

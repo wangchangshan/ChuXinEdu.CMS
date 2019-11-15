@@ -51,7 +51,7 @@ namespace ChuXinEdu.CMS.Server.Context
             // Construct SQL parameters
             for (int i = 0; i < args.Length; i++)
             {
-                if (args[i] is string && i <= (args.Length - 1))
+                if ((args[i] is string || args[i] is int) && i <= (args.Length - 1))
                 {
                     MySqlParameter parm = new MySqlParameter
                     {

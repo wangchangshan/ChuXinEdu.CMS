@@ -27,6 +27,9 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         int GetActiveStudentCount();
 
+        // 获取学员剩余课时数
+        int getStudentRestCourseCount(string studentCode);
+
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount);
 
         IEnumerable<Student> GetStudentList2Export(QUERY_STUDENT query);
@@ -87,6 +90,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod);
 
         DataTable GetBirthdayIn7Days();
+
+        DataTable GetBirthdayIn7Days(int pageIndex, int pageSize);
 
         // 获取假期列表
         IEnumerable<SysHoliday> GetHolidayList();

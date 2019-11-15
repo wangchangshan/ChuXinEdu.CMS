@@ -219,5 +219,37 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 Data = studentList
             }, settings);
         }
+
+        /// <summary>
+        /// [本周过生日的学生列表] GET api/wxopen/getstudentstobirth
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public ActionResult<string> GetStudentsToBirth(int pageIndex, int pageSize)
+        {
+            DataTable dt = _chuxinQuery.GetBirthdayIn7Days(pageIndex, pageSize);
+
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+            foreach (DataRow dr in dt.Rows)
+            {
+                string id = dr["id"].ToString();
+                string studentCode = dr["student_code"].ToString();
+                if (dr["student_avatar_path"] != null)
+                {
+                    dr["student_avatar_path"] = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s-wx";
+                }
+                dr["rest_course_count"] = _chuxinQuery.getStudentRestCourseCount(studentCode);
+            }
+
+            int totalCount = dt.Rows.Count;
+            string strStudentList = JsonConvert.SerializeObject(dt);
+
+            return new JsonResult(new
+            {
+                TotalCount = totalCount,
+                Data = strStudentList
+            });
+        }
     }
 }
