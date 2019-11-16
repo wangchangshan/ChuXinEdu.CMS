@@ -32,6 +32,11 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<Student> GetStudentList(int pageIndex, int pageSize, QUERY_STUDENT query, out int totalCount);
 
+        DataTable GetStudentList(int pageIndex, int pageSize, WX_QUERY_STUDENT query);
+
+        // 按照学科大类获取学员的剩余课时数
+        DataTable GetRestCourseCountByCategorty(string studentCode);
+
         IEnumerable<Student> GetStudentList2Export(QUERY_STUDENT query);
 
         DataTable GetStudentForRecommend(string studentName);
@@ -106,7 +111,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         int GetTodayCourseCount();
 
         // 获取课程套餐将要结束（5 节课）的学生列表
-        DataTable GetCourseToFinishList();
+        DataTable GetExpirationStudents();
+
+        DataTable GetExpirationStudents(int pageIndex, int pageSize);
 
         IEnumerable<StudentArtwork> GetArkworkByCourse(int courseId);
 

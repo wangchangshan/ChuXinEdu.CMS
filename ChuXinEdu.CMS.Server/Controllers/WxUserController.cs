@@ -122,7 +122,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     int todayCourseCount = _chuxinQuery.GetTodayCourseCount();
                     DataTable dt = _chuxinQuery.GetBirthdayIn7Days();
                     int birthCount = dt.Rows.Count;
-                    dt = _chuxinQuery.GetCourseToFinishList();
+                    dt = _chuxinQuery.GetExpirationStudents();
                     int expirationCount = dt.Rows.Count;
 
                     overView = new WX_MINE_OVERVIEW

@@ -221,6 +221,43 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// [本周过生日的学生列表] GET api/wxopen/getallstudents
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public ActionResult<string>  GetAllStudents(int pageIndex, int pageSize, string q)
+        {
+            WX_QUERY_STUDENT query = JsonConvert.DeserializeObject<WX_QUERY_STUDENT>(q);
+            DataTable dtStudents = _chuxinQuery.GetStudentList(pageIndex, pageSize, query);
+            
+            int totalCount = dtStudents.Rows.Count;
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+            foreach (DataRow dr in dtStudents.Rows)
+            {
+                string id = dr["id"].ToString();
+                string studentCode = dr["student_code"].ToString();
+                if (dr["student_avatar_path"] != null)
+                {
+                    dr["student_avatar_path"] = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s-wx";
+                }
+
+                DataTable dtRestCourseCount = _chuxinQuery.GetRestCourseCountByCategorty(studentCode);
+                
+                string strCourseInfo = JsonConvert.SerializeObject(dtRestCourseCount);
+                dr["rest_course_info"] = strCourseInfo;
+            }
+
+            string strStudents = JsonConvert.SerializeObject(dtStudents);
+
+            return new JsonResult(new
+            {
+                TotalCount = totalCount,
+                Data = strStudents
+            });
+        }
+
+        /// <summary>
         /// [本周过生日的学生列表] GET api/wxopen/getstudentstobirth
         /// </summary>
         /// <returns></returns>
@@ -245,6 +282,31 @@ namespace ChuXinEdu.CMS.Server.Controllers
             int totalCount = dt.Rows.Count;
             string strStudentList = JsonConvert.SerializeObject(dt);
 
+            return new JsonResult(new
+            {
+                TotalCount = totalCount,
+                Data = strStudentList
+            });
+        }
+        
+        /// <summary>
+        /// [套餐即将到期的学生列表（学员+套餐））] GET api/wxopen/getstudentstoexpiration
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public ActionResult<string> GetStudentsToExpiration(int pageIndex, int pageSize)
+        {
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+
+            DataTable dt = _chuxinQuery.GetExpirationStudents(pageIndex, pageSize);
+            foreach (DataRow dr in dt.Rows)
+            {
+                string id = dr["id"].ToString();
+                dr["student_avatar_path"] = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s-wx";
+            }
+            int totalCount = dt.Rows.Count;
+            string strStudentList = JsonConvert.SerializeObject(dt);
             return new JsonResult(new
             {
                 TotalCount = totalCount,

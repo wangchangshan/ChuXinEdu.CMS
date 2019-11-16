@@ -1640,7 +1640,23 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         {
                             scp.ScpStatus = "02";
                             scp.FeeBackAmount = package.FeeBackAmount;
+                            scp.FlexCourseCount = scp.RestCourseCount;
                         }
+                    }
+
+                    var courseArrange = context.StudentCourseArrange.Where(s => s.StudentCode == studentCode).ToList();
+                    foreach (var arrange in courseArrange)
+                    {
+                        context.StudentCourseArrange.Remove(arrange);
+                    }
+
+                    var courseList = context.StudentCourseList.Where(s => s.StudentCode == studentCode
+                                                                    && s.AttendanceStatusCode == "09")
+                                                            .ToList();
+
+                    foreach (var course in courseList)
+                    {
+                        context.StudentCourseList.Remove(course);
                     }
 
                     context.SaveChanges();
@@ -1678,6 +1694,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         {
                             scp.ScpStatus = "02";
                             scp.FeeBackAmount = package.FeeBackAmount;
+                            scp.FlexCourseCount = scp.RestCourseCount;
+                        }
+
+                        var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == scp.Id).ToList();
+                        foreach (var arrange in sca)
+                        {
+                            context.StudentCourseArrange.Remove(arrange);
+                        }
+
+                        var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == scp.Id
+                                                                && s.AttendanceStatusCode == "09").ToList();
+                        foreach (var course in scl)
+                        {
+                            context.StudentCourseList.Remove(course);
                         }
                     }
 

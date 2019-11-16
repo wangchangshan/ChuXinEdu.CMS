@@ -123,6 +123,29 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public DataTable GetStudentList(int pageIndex, int pageSize, WX_QUERY_STUDENT query)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                int s = (pageIndex - 1) * pageSize;
+                int e = pageSize;
+                string sql = string.Empty;
+                DataTable dt = null;
+                if(!String.IsNullOrEmpty(query.studentName.Trim()))
+                {
+                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' and student_name like '%@1%' limit @2, @3";
+                    dt = ADOContext.GetDataTable(sql, query.studentName.Trim() , s, e);
+                }
+                else 
+                {
+                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' limit @1, @2";
+                    dt = ADOContext.GetDataTable(sql, s, e);
+                }
+                
+                return dt;
+            }
+        }
+
         public int GetActiveStudentCount()
         {
             int rtn = 0;
@@ -267,6 +290,18 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 DataTable dt = ADOContext.GetDataTable(@"select distinct student_code,course_category_code,course_category_name from student_course_package");
+
+                return dt;
+            }
+        }
+
+        public DataTable GetRestCourseCountByCategorty(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                DataTable dt = ADOContext.GetDataTable($@"select course_category_name, sum(rest_course_count) as rest_course_count from student_course_package 
+                                                        where student_code ='{studentCode}'  and scp_status = '00'
+                                                        group by course_category_name");
 
                 return dt;
             }
@@ -624,13 +659,27 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return courseCount;
         }
 
-        public DataTable GetCourseToFinishList()
+        public DataTable GetExpirationStudents()
         {
             // 当前学生是正常在学的。如果当前套餐剩余0课时， 但是学生状态依然是正常，说明还有其他课程套餐。这种情况不提醒了。
             DataTable dt = ADOContext.GetDataTable(@"select scp.student_code, scp.student_name, scp.package_name, scp.rest_course_count 
                                                         from student_course_package scp
                                                         left join student s on scp.student_code = s.student_code
-                                                        where s.student_status='01' and scp.rest_course_count <= 5 and scp.scp_status = '00'");
+                                                        where s.student_status='01' and scp.scp_status = '00' and scp.rest_course_count <= 5");
+
+            return dt;
+        }
+
+        public DataTable GetExpirationStudents(int pageIndex, int pageSize)
+        {
+            int s = (pageIndex - 1) * pageSize;
+            int e = pageSize;
+            // 当前学生是正常在学的。如果当前套餐剩余0课时， 但是学生状态依然是正常，说明还有其他课程套餐。这种情况不提醒了。
+            DataTable dt = ADOContext.GetDataTable(@"select s.id, scp.student_code, scp.student_name, scp.package_name, scp.rest_course_count, s.student_phone, s.student_avatar_path 
+                                                    from student_course_package scp
+                                                    left join student s on scp.student_code = s.student_code
+                                                    where s.student_status='01' and scp.scp_status = '00' and scp.rest_course_count <= 5
+                                                    limit @1,@2", s, e);
 
             return dt;
         }
