@@ -133,8 +133,8 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 DataTable dt = null;
                 if(!String.IsNullOrEmpty(query.studentName.Trim()))
                 {
-                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' and student_name like '%@1%' limit @2, @3";
-                    dt = ADOContext.GetDataTable(sql, query.studentName.Trim() , s, e);
+                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' and student_name like '%" + query.studentName.Trim() +"%' limit @1, @2";
+                    dt = ADOContext.GetDataTable(sql, s, e);
                 }
                 else 
                 {
