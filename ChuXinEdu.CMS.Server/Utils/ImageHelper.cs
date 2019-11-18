@@ -133,7 +133,7 @@ namespace ChuXinEdu.CMS.Server.Utils
 
 
         /// <summary>
-        /// 保存缩略图(为微信小程序特殊处理压缩率)
+        /// 保存缩略图(为微信小程序特殊处理压缩率) （不在压缩，即便是90 也不清楚）
         /// </summary>
         /// <param name="isCompress">是否压缩</param>
         public static void SaveThumbnailImageAvatar(Bitmap originalImage, string originalPath, int width, int heigth, string ext)

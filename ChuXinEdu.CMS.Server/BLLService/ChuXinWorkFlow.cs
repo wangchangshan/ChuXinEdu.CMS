@@ -1695,19 +1695,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             scp.ScpStatus = "02";
                             scp.FeeBackAmount = package.FeeBackAmount;
                             scp.FlexCourseCount = scp.RestCourseCount;
-                        }
 
-                        var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == scp.Id).ToList();
-                        foreach (var arrange in sca)
-                        {
-                            context.StudentCourseArrange.Remove(arrange);
-                        }
+                            var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == scp.Id).ToList();
+                            foreach (var arrange in sca)
+                            {
+                                context.StudentCourseArrange.Remove(arrange);
+                            }
 
-                        var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == scp.Id
-                                                                && s.AttendanceStatusCode == "09").ToList();
-                        foreach (var course in scl)
-                        {
-                            context.StudentCourseList.Remove(course);
+                            var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == scp.Id
+                                                                    && s.AttendanceStatusCode == "09").ToList();
+                            foreach (var course in scl)
+                            {
+                                context.StudentCourseList.Remove(course);
+                            }
                         }
                     }
 

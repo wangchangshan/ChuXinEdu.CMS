@@ -63,7 +63,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     docPath = _chuxinQuery.GetAvatarTruePath(id, "student");
                     if (!String.IsNullOrEmpty(docPath))
                     {
-                        docPath += "_60.png";
+                        docPath += "_80.png";
                     }
                     break;
 
@@ -348,7 +348,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [HttpPost]
         public string UploadAvatar()
         {
-            // 头像不压缩
             string result = "1600";
             string code = string.Empty;
             string name = string.Empty;
@@ -386,11 +385,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     file.CopyTo(stream);
                 }
 
-                // 存储微信小程序缩略图头像 60X60
+                // 存储微信小程序缩略图头像 80X80
                 using (var stream = file.OpenReadStream())
                 {
                     Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
-                    ImageHelper.SaveThumbnailImageAvatar(bitmap, savePath, 60, 60, ext);
+                    ImageHelper.SaveThumbnailImageAvatar(bitmap, savePath, 80, 80, ext);
                 }
 
                 result = _chuxinWorkFlow.UploadAvatar(code, documentPath, type);

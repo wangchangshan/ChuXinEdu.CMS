@@ -89,7 +89,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [BlockFilter]
         public string GenerateWeiXinAvatar()
         {
             string result = "1200";
@@ -101,33 +100,41 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     foreach (Student student in students)
                     {
                         string avatarPath = _hostingEnvironment.ContentRootPath + student.StudentAvatarPath;
+
+
+                        if (System.IO.File.Exists(avatarPath + "_60.png"))
+                        {
+                            System.IO.File.Delete(avatarPath + "_60.png");
+                        }
+
                         if (System.IO.File.Exists(avatarPath))
                         {
                             using (Stream sm = System.IO.File.OpenRead(avatarPath))
                             {
                                 Bitmap bitmap = new Bitmap(Bitmap.FromStream(sm));
-                                ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60, false, ".png");
+                                //ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 80, 80, false, ".png");
+                                ImageHelper.SaveThumbnailImageAvatar(bitmap, avatarPath, 80, 80, ".png");
                             }
                             // 原来上传的图片为300X300，现在修改为200X200
-                            ImageHelper.ChangeImageSize(avatarPath, 200, 200);
+                            //ImageHelper.ChangeImageSize(avatarPath, 200, 200);
                         }
                     }
 
-                    var teachers = context.Teacher.Where(t => t.TeacherAvatarPath != null).ToList();
-                    foreach (Teacher teacher in teachers)
-                    {
-                        string avatarPath = _hostingEnvironment.ContentRootPath + teacher.TeacherAvatarPath;
-                        if (System.IO.File.Exists(avatarPath))
-                        {
-                            using (Stream sm = System.IO.File.OpenRead(avatarPath))
-                            {
-                                Bitmap bitmap = new Bitmap(Bitmap.FromStream(sm));
-                                ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60, false, ".png");
-                            }
-                            // 原来上传的图片为300X300，现在修改为200X200
-                            ImageHelper.ChangeImageSize(avatarPath, 200, 200);
-                        }
-                    }
+                    // var teachers = context.Teacher.Where(t => t.TeacherAvatarPath != null).ToList();
+                    // foreach (Teacher teacher in teachers)
+                    // {
+                    //     string avatarPath = _hostingEnvironment.ContentRootPath + teacher.TeacherAvatarPath;
+                    //     if (System.IO.File.Exists(avatarPath))
+                    //     {
+                    //         using (Stream sm = System.IO.File.OpenRead(avatarPath))
+                    //         {
+                    //             Bitmap bitmap = new Bitmap(Bitmap.FromStream(sm));
+                    //             ImageHelper.SaveThumbnailImage(bitmap, avatarPath, 60, 60, false, ".png");
+                    //         }
+                    //         // 原来上传的图片为300X300，现在修改为200X200
+                    //         ImageHelper.ChangeImageSize(avatarPath, 200, 200);
+                    //     }
+                    // }
                 }
             }
             catch { result = "1500"; }
