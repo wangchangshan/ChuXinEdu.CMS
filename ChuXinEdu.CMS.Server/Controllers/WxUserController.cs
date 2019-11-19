@@ -8,6 +8,7 @@ using ChuXinEdu.CMS.Server.BLL;
 using System.Net.Http;
 using System.Data;
 using ChuXinEdu.CMS.Server.ViewModel;
+using System.Collections.Generic;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -56,7 +57,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 innerPersonCode = wxUser.InnerPersonCode;
                 innerPersonName = wxUser.InnerPersonName;
                 _chuxinWorkFlow.UpdateWxSKey(ticket.OpenId, sKey);
-                overView = GetOverview(wxUser.wxUserType);
+                overView = GetOverview(wxUser.wxUserType, innerPersonCode);
             }
 
             dynamic obj = new
@@ -94,7 +95,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 stateCode = "1200";
                 innerPersonCode = wxUser.InnerPersonCode;
                 innerPersonName = wxUser.InnerPersonName;
-                overView = GetOverview(wxUser.wxUserType);
+                overView = GetOverview(wxUser.wxUserType, innerPersonCode);
             }
 
             dynamic obj = new
@@ -108,13 +109,33 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return resultJson;
         }
 
-        private WX_MINE_OVERVIEW GetOverview(string userType)
+        private WX_MINE_OVERVIEW GetOverview(string userType, string personCode)
         {
             WX_MINE_OVERVIEW overView = null;
             switch (userType)
             {
                 case "1":
-                    // 家长
+                    // 家长学员
+                    Student student = _chuxinQuery.GetStudentByCode(personCode);
+                    if (student != null)
+                    {
+                        DataTable dtRestCourseCount = _chuxinQuery.GetRestCourseCountByCategorty(personCode);
+                        foreach (DataRow dr in dtRestCourseCount.Rows)
+                        {
+                            dr["course_category_name"] = dr["course_category_name"].ToString() + "剩余课时";
+                        }
+                        string strCourseInfo = JsonConvert.SerializeObject(dtRestCourseCount);
+                        int artWorkCount = _chuxinQuery.GetStudentArkworkCount(personCode);
+                        overView = new WX_MINE_OVERVIEW
+                        {
+                            studentBirthday = student.StudentBirthday,
+                            studentSex = student.StudentSex,
+                            studentPhone = student.StudentPhone,
+                            studentAddress = student.StudentAddress,
+                            studentArtworkCount = artWorkCount,
+                            studentCourseOverview = strCourseInfo
+                        };
+                    }
                     break;
                 case "2":
                     // 教师

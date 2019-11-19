@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 
 namespace ChuXinEdu.CMS.Server.ViewModel
 {
@@ -12,5 +13,15 @@ namespace ChuXinEdu.CMS.Server.ViewModel
         public int? tStudentBirthCount { get; set; }
 
         public int? tExpirationCount { get; set; }
+
+        public DateTime? studentBirthday { get; set; }
+        public string studentPhone { get; set; }
+        public string studentSex { get; set; }
+        public string studentAddress { get; set; }
+
+        public int? studentArtworkCount { get; set; }
+
+        // string 存储 json格式
+        public string studentCourseOverview { get; set; }
     }
 }

@@ -131,17 +131,17 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 int e = pageSize;
                 string sql = string.Empty;
                 DataTable dt = null;
-                if(!String.IsNullOrEmpty(query.studentName.Trim()))
+                if (!String.IsNullOrEmpty(query.studentName.Trim()))
                 {
-                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' and student_name like '%" + query.studentName.Trim() +"%' limit @1, @2";
+                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' and student_name like '%" + query.studentName.Trim() + "%' limit @1, @2";
                     dt = ADOContext.GetDataTable(sql, s, e);
                 }
-                else 
+                else
                 {
                     sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' limit @1, @2";
                     dt = ADOContext.GetDataTable(sql, s, e);
                 }
-                
+
                 return dt;
             }
         }
@@ -328,7 +328,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         {
             using (BaseContext context = new BaseContext())
             {
-                return context.StudentCoursePackage.Where(s => s.StudentCode == studentCode).ToList();
+                return context.StudentCoursePackage.Where(s => s.StudentCode == studentCode).OrderByDescending(s => s.Id).ToList();
             }
         }
 
@@ -702,8 +702,18 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 return context.StudentArtwork.Where(s => s.StudentCode == studentCode
                                                             && s.ArtworkStatus == "01")
-                                            .OrderBy(s => s.FinishDate)
+                                            .OrderByDescending(s => s.FinishDate)
                                             .ToList();
+            }
+        }
+
+        public int GetStudentArkworkCount(string studentCode)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentArtwork.Where(s => s.StudentCode == studentCode
+                                                            && s.ArtworkStatus == "01")
+                                            .Count();
             }
         }
 

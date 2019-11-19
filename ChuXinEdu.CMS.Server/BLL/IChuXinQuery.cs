@@ -117,6 +117,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentArtwork> GetArkworkByCourse(int courseId);
 
+        int GetStudentArkworkCount(string studentCode);
+
         IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode);
 
         IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode, int pageIndex, int pageSize);

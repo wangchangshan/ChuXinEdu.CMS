@@ -162,7 +162,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// [学生列表] 获取所有学生list GET api/wxopen/getstudentlist
+        /// [弃用][学生列表] 获取所有学生list GET api/wxopen/getstudentlist 
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -226,11 +226,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// <returns></returns>
         [HttpGet]
         [WxAuthenFilter]
-        public ActionResult<string>  GetAllStudents(int pageIndex, int pageSize, string q)
+        public ActionResult<string> GetAllStudents(int pageIndex, int pageSize, string q)
         {
             WX_QUERY_STUDENT query = JsonConvert.DeserializeObject<WX_QUERY_STUDENT>(q);
             DataTable dtStudents = _chuxinQuery.GetStudentList(pageIndex, pageSize, query);
-            
+
             int totalCount = dtStudents.Rows.Count;
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (DataRow dr in dtStudents.Rows)
@@ -243,7 +243,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 }
 
                 DataTable dtRestCourseCount = _chuxinQuery.GetRestCourseCountByCategorty(studentCode);
-                
+
                 string strCourseInfo = JsonConvert.SerializeObject(dtRestCourseCount);
                 dr["rest_course_info"] = strCourseInfo;
             }
@@ -288,7 +288,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 Data = strStudentList
             });
         }
-        
+
         /// <summary>
         /// [套餐即将到期的学生列表（学员+套餐））] GET api/wxopen/getstudentstoexpiration
         /// </summary>
@@ -312,6 +312,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 TotalCount = totalCount,
                 Data = strStudentList
             });
+        }
+
+        /// <summary>
+        /// [获取学员所有套餐] GET api/wxopen/getstudentpackages
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public IEnumerable<StudentCoursePackage> GetStudentPackages(string studentCode)
+        {
+            return _chuxinQuery.GetStudentCoursePackage(studentCode);
         }
     }
 }
