@@ -14,6 +14,9 @@ namespace ChuXinEdu.CMS.Server.ViewModel
 
         public int? tExpirationCount { get; set; }
 
+        public string studentName { get; set; }
+
+        public string studentAvatarPath { get; set; }
         public DateTime? studentBirthday { get; set; }
         public string studentPhone { get; set; }
         public string studentSex { get; set; }

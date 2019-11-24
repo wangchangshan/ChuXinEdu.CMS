@@ -104,20 +104,6 @@ namespace ChuXinEdu.CMS.Server.Controllers
             return scls;
         }
 
-
-        /// <summary>   
-        /// 获取学员本周的课程安排 GET api/wxopen/getstudentweekcourse
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [WxAuthenFilter]
-        public List<StudentCourseList> GetStudentWeekCourse(string studentCode)
-        {
-            DateTime weekLastDay = DateTime.Now.AddDays(7 - Convert.ToInt16(DateTime.Now.DayOfWeek));
-            List<StudentCourseList> scls = _chuxinQuery.GetStudentWeekCourse(studentCode, weekLastDay);
-            return scls;
-        }
-
         /// <summary>
         /// 获取学生上课列表 GET api/wxopen/getcourselist
         /// </summary>
@@ -162,62 +148,50 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// [弃用][学生列表] 获取所有学生list GET api/wxopen/getstudentlist 
+        /// [微信学员详细信息主页面] GET api/wxopen/getstudenthomepage
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [WxAuthenFilter]
-        public ActionResult<string> GetStudentList(int pageIndex, int pageSize, string q)
+        public ActionResult<string> getStudentDetail(string studentCode)
         {
-            QUERY_STUDENT query = JsonConvert.DeserializeObject<QUERY_STUDENT>(q);
+            WX_MINE_OVERVIEW overView = null;
+            IEnumerable<StudentCourseList> myWeekCourse = null;
+            IEnumerable<StudentCoursePackage> myPackage = null;
 
-            var config = new MapperConfiguration(cfg =>
+            Student student = _chuxinQuery.GetStudentByCode(studentCode);
+            if (student != null)
             {
-                cfg.CreateMap<Student, STUDENT_R_LIST>();
-            });
-            IMapper mapper = config.CreateMapper();
-
-            int totalCount = 0;
-            IEnumerable<Student> students = _chuxinQuery.GetStudentList(pageIndex, pageSize, query, out totalCount);
-            List<STUDENT_R_LIST> studentList = new List<STUDENT_R_LIST>();
-            DataTable dtScpSimplify = _chuxinQuery.GetScpSimplify();
-
-            STUDENT_R_LIST studentVM = null;
-            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-            foreach (Student student in students)
-            {
-                var studentCode = student.StudentCode;
-                studentVM = mapper.Map<Student, STUDENT_R_LIST>(student);
-
-                DataRow[] drArr = dtScpSimplify.Select("student_code = '" + studentCode + "'");
-                List<Simplify_StudentCourse> ssList = new List<Simplify_StudentCourse>();
-                foreach (DataRow dr in drArr)
+                DataTable dtRestCourseCount = _chuxinQuery.GetRestCourseCountByCategorty(studentCode);
+                foreach (DataRow dr in dtRestCourseCount.Rows)
                 {
-                    Simplify_StudentCourse ss = new Simplify_StudentCourse
-                    {
-                        StudentCode = studentCode,
-                        Code = dr["course_category_code"].ToString(),
-                        Name = dr["course_category_name"].ToString()
-                    };
-                    dtScpSimplify.Rows.Remove(dr);
-                    ssList.Add(ss);
+                    dr["course_category_name"] = dr["course_category_name"].ToString() + "剩余课时";
                 }
-                studentVM.StudentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + student.Id + "&type=avatar-s-wx";
-                studentVM.StudentCourseCategory = ssList;
-                studentList.Add(studentVM);
+                string strCourseInfo = JsonConvert.SerializeObject(dtRestCourseCount);
+                int artWorkCount = _chuxinQuery.GetStudentArkworkCount(studentCode);
+
+                string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+                overView = new WX_MINE_OVERVIEW
+                {
+                    studentName = student.StudentName,
+                    studentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + student.Id + "&type=avatar-s-wx",
+                    studentBirthday = student.StudentBirthday,
+                    studentSex = student.StudentSex,
+                    studentPhone = student.StudentPhone,
+                    studentAddress = student.StudentAddress,
+                    studentArtworkCount = artWorkCount,
+                    studentCourseOverview = strCourseInfo
+                };
+
+                myWeekCourse = GetStudentWeekCourse(studentCode);
+                myPackage = GetStudentPackages(studentCode);
             }
-
-            var settings = new JsonSerializerSettings()
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                DateFormatString = "yyyy-MM-dd"
-            };
-
             return new JsonResult(new
             {
-                TotalCount = totalCount,
-                Data = studentList
-            }, settings);
+                overView = overView,
+                weekCourse = myWeekCourse,
+                allPackage = myPackage
+            });
         }
 
         /// <summary>
@@ -312,6 +286,19 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 TotalCount = totalCount,
                 Data = strStudentList
             });
+        }
+
+        /// <summary>   
+        /// 获取学员本周的课程安排 GET api/wxopen/getstudentweekcourse
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public List<StudentCourseList> GetStudentWeekCourse(string studentCode)
+        {
+            DateTime weekLastDay = DateTime.Now.AddDays(7 - Convert.ToInt16(DateTime.Now.DayOfWeek));
+            List<StudentCourseList> scls = _chuxinQuery.GetStudentWeekCourse(studentCode, weekLastDay);
+            return scls;
         }
 
         /// <summary>
