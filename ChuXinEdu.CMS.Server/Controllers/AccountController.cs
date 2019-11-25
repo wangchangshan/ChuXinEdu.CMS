@@ -35,59 +35,59 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string result = string.Empty;
             string loginCode = loginForm.username.ToString().ToUpper();
             string pwd = loginForm.password.ToString();
-            
-            string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(); 
-            var rsa = new RSAHelper(RSAType.RSA2,Encoding.UTF8, privateKey, publicKey);
+
+            string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            var rsa = new RSAHelper(RSAType.RSA2, Encoding.UTF8, privateKey, publicKey);
 
             try
             {
                 pwd = rsa.Decrypt(pwd);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result = "1700";
                 _logger.LogError(ex, "公钥秘钥不匹配导致登陆错误，访问来自IP：{0}", ip);
             }
-            if(result == "1700")
+            if (result == "1700")
             {
                 return new JsonResult(new { code = result });
             }
-            
-            string signToken = ""; 
+
+            string signToken = "";
             string teacherCode = "";
             result = _chuxinWorkFlow.LoginVerify(loginCode, pwd, ip, out signToken, out teacherCode);
 
             string roles = string.Empty;
             // 当前用户名签名
-            if(result == "1200")
+            if (result == "1200")
             {
-                if(teacherCode == "0")
+                if (teacherCode == "0")
                 {
                     roles = "1007";
-                    if(loginCode == "CSWANG")
+                    if (loginCode == "CSWANG")
                     {
                         roles = "1007,99999"; // super
                     }
                 }
-                else 
+                else
                 {
                     roles = _chuxinQuery.GetRoles(teacherCode);
                 }
                 signToken = Guid.NewGuid().ToString("N");
                 result = _chuxinWorkFlow.SaveUserLoginInfo(loginCode, ip, signToken);
             }
-            else if(result == "1201") // 同一局域网内的登陆
+            else if (result == "1201") // 同一局域网内的登陆
             {
-                if(teacherCode == "0")
+                if (teacherCode == "0")
                 {
                     roles = "1007";
                 }
-                else 
+                else
                 {
                     roles = _chuxinQuery.GetRoles(teacherCode);
                 }
             }
-            
+
             return new JsonResult(new { code = result, data = signToken, roles = roles });
         }
 
@@ -99,29 +99,29 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string result = string.Empty;
             string loginCode = loginForm.username.ToString();
             string pwd = loginForm.password.ToString();
-            string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(); 
+            string ip = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
 
-            var rsa = new RSAHelper(RSAType.RSA2,Encoding.UTF8, privateKey, publicKey);
+            var rsa = new RSAHelper(RSAType.RSA2, Encoding.UTF8, privateKey, publicKey);
 
             try
             {
                 pwd = rsa.Decrypt(pwd);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result = "1700";
                 _logger.LogError(ex, "公钥秘钥不匹配导致登陆错误，访问来自IP：{0}", ip);
             }
-            if(result == "1700")
+            if (result == "1700")
             {
                 return new JsonResult(new { code = result });
             }
-            
+
             result = _chuxinWorkFlow.PwdVerify(loginCode, pwd);
             return new JsonResult(new { code = result });
         }
 
-          // POST api/account/changepwd
+        // POST api/account/changepwd
         [HttpPost]
         [MyAuthenFilter]
         public ActionResult<string> ChangePwd([FromBody] dynamic pwdForm)
@@ -130,26 +130,26 @@ namespace ChuXinEdu.CMS.Server.Controllers
             string loginCode = pwdForm.username.ToString();
             string newPwd = pwdForm.newpwd.ToString();
 
-            var rsa = new RSAHelper(RSAType.RSA2,Encoding.UTF8, privateKey, publicKey);
+            var rsa = new RSAHelper(RSAType.RSA2, Encoding.UTF8, privateKey, publicKey);
 
             try
             {
                 newPwd = rsa.Decrypt(newPwd);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result = "1700";
                 _logger.LogError(ex, "公钥秘钥不匹配导致修改密码错误，访问来自IP：{0}", HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString());
             }
-            if(result == "1700")
+            if (result == "1700")
             {
                 return new JsonResult(new { code = result });
             }
-             
-            result = _chuxinWorkFlow.ChangePassword(loginCode, newPwd);            
+
+            result = _chuxinWorkFlow.ChangePassword(loginCode, newPwd);
             return new JsonResult(new { code = result });
         }
-        
+
         // POST api/account/logout
         [HttpPost("{logincode}")]
         [MyAuthenFilter]
@@ -157,8 +157,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         {
             string result = string.Empty;
             result = _chuxinWorkFlow.LogOut(loginCode);
-            
-            return new JsonResult(new { code = result});
+
+            return new JsonResult(new { code = result });
         }
-    }   
+    }
 }
