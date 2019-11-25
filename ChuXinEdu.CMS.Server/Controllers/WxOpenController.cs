@@ -105,7 +105,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取学生上课列表 GET api/wxopen/getcourselist
+        /// 【弃用】获取学生上课列表 GET api/wxopen/getcourselist
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -117,7 +117,107 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取学生的课程作品 GET api/wxopen/getartworklist
+        /// 获取学生套餐内的上课记录 GET api/wxopen/getcoursesbypackage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public ActionResult<string> GetCoursesByPackage(int sPackageId, int pageIndex, int pageSize)
+        {
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+            List<StudentCourseList> courseList = _chuxinQuery.GetCoursesByPackage(sPackageId, pageIndex, pageSize);
+            int courseCount = courseList.Count;
+
+            List<WX_COURSE_HISTORY> courseHistoryList = new List<WX_COURSE_HISTORY>();
+            WX_COURSE_HISTORY courseHistory = null;
+
+            List<WX_COURSE_HISTORY_MM> courseHistoryMonthList = new List<WX_COURSE_HISTORY_MM>();
+            WX_COURSE_HISTORY_MM courseHistoryMonth = null;
+
+            string lastMonth = string.Empty;
+            for (int i = 0; i < courseCount; i++)
+            {
+                var myCourse = courseList[i];
+                // 按月分组
+                string curMonth = myCourse.CourseDate.ToString("yyyy-MM");
+                if (lastMonth != curMonth)
+                {
+                    if (!String.IsNullOrEmpty(lastMonth))
+                    {
+                        // 不是第一条数据。  将上一月的数据存入list
+                        courseHistoryMonthList.Add(courseHistoryMonth);
+                        courseHistory = new WX_COURSE_HISTORY
+                        {
+                            yyyymm = lastMonth,
+                            courses = courseHistoryMonthList
+                        };
+                        courseHistoryMonthList = new List<WX_COURSE_HISTORY_MM>();
+                        courseHistoryList.Add(courseHistory);
+                    }
+                    else
+                    {
+                        // 第一条数据  do nothing
+                    }
+                }
+                else
+                {
+                    // 相同月
+                    courseHistoryMonthList.Add(courseHistoryMonth);
+                }
+
+                // 获取作品
+                #region
+                IEnumerable<StudentArtwork> artworkList = _chuxinQuery.GetArtworkByCourse(myCourse.StudentCourseId);
+                List<WX_COURSE_HISTORY_ARTWORK> realArtworks = new List<WX_COURSE_HISTORY_ARTWORK>();
+                foreach (var myArtwork in artworkList)
+                {
+                    WX_COURSE_HISTORY_ARTWORK art = new WX_COURSE_HISTORY_ARTWORK
+                    {
+                        artworkUrl = accessUrlHost + "api/upload/getimage?id=" + myArtwork.ArtworkId + "&type=artwork-wx"
+                    };
+                    realArtworks.Add(art);
+                }
+                #endregion
+
+                if (String.IsNullOrEmpty(myCourse.CourseSubject))
+                {
+                    myCourse.CourseSubject = "暂未填写";
+                }
+                // 构造上课记录
+                courseHistoryMonth = new WX_COURSE_HISTORY_MM
+                {
+                    courseDay = myCourse.CourseDate.ToString("dd") + "号",
+                    courseWeekday = myCourse.CourseWeekDay,
+                    courseSubject = myCourse.CourseSubject,
+                    coursePeriod = myCourse.CoursePeriod,
+                    courseArtworks = realArtworks
+                };
+
+
+                if (i == courseList.Count - 1)
+                {
+                    courseHistoryMonthList.Add(courseHistoryMonth);
+                    courseHistory = new WX_COURSE_HISTORY
+                    {
+                        yyyymm = curMonth,
+                        courses = courseHistoryMonthList
+                    };
+                    courseHistoryMonthList = new List<WX_COURSE_HISTORY_MM>();
+                    courseHistoryList.Add(courseHistory);
+                }
+
+                lastMonth = curMonth;
+            }
+
+            return new JsonResult(new
+            {
+                totalCount = courseCount,
+                courseList = courseHistoryList
+            });
+        }
+
+        /// <summary>
+        /// 【弃用】获取学生的课程作品 GET api/wxopen/getartworklist
         /// </summary>
         /// <returns></returns>
         [HttpGet]

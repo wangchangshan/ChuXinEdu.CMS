@@ -55,6 +55,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentCoursePackage> GetNoFinishPackage(string studentCode);
 
+        List<StudentCourseList> GetCoursesByPackage(int scpId, int pageIndex, int pageSize);
+
         IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode, int pageIndex, int pageSize);
 
         IEnumerable<StudentCourseList> GetStudentCourseList(int pageIndex, int pageSize, QUERY_STUDENT_COURSE_LIST query, out int totalCount);
@@ -115,7 +117,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         DataTable GetExpirationStudents(int pageIndex, int pageSize);
 
-        IEnumerable<StudentArtwork> GetArkworkByCourse(int courseId);
+        IEnumerable<StudentArtwork> GetArtworkByCourse(int courseId);
 
         int GetStudentArkworkCount(string studentCode);
 

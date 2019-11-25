@@ -355,6 +355,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public List<StudentCourseList> GetCoursesByPackage(int scpId, int pageIndex, int pageSize)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseList.Where(s => s.StudentCoursePackageId == scpId
+                                                            && (s.AttendanceStatusCode == "01" || s.AttendanceStatusCode == "02"))
+                                                .OrderBy(s => s.CoursePeriod)
+                                                .OrderBy(s => s.CourseDate)
+                                                .Skip(pageSize * (pageIndex - 1))
+                                                .Take(pageSize).ToList();
+            }
+        }
+
         public IEnumerable<StudentCourseList> GetStudentCourseList(string studentCode, int pageIndex, int pageSize)
         {
             using (BaseContext context = new BaseContext())
@@ -686,7 +699,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
         #endregion
 
         #region  作品
-        public IEnumerable<StudentArtwork> GetArkworkByCourse(int courseId)
+        public IEnumerable<StudentArtwork> GetArtworkByCourse(int courseId)
         {
             using (BaseContext context = new BaseContext())
             {

@@ -34,7 +34,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取学生排课列表 GET api/course/getarrangedcourselist
         /// </summary>
         /// <returns></returns>
-        [HttpGet]        
+        [HttpGet]
         public IEnumerable<Simplify_StudentCourseList> GetArrangedCourseList(string studentCode, string dayCode, string coursePeriod)
         {
             IEnumerable<Simplify_StudentCourseList> courseList = _chuxinQuery.GetArrangedCourseList(studentCode, dayCode, coursePeriod);
@@ -45,7 +45,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取学生待签到列表 GET api/course/getattendancelist
         /// </summary>
         /// <returns></returns>
-        [HttpGet]        
+        [HttpGet]
         public IEnumerable<StudentCourseList> GetAttendanceList()
         {
             IEnumerable<StudentCourseList> courseList = _chuxinQuery.GetCoursesToSignIn();
@@ -56,7 +56,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取待签到数目 GET api/course/gettorecordcount
         /// </summary>
         /// <returns></returns>
-        [HttpGet]        
+        [HttpGet]
         public int GetToRecordCount()
         {
             int count = _chuxinQuery.GetCoursesToSignInCount();
@@ -67,31 +67,32 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取课时套餐将要结束（5节课）并且没有报新套餐的学生 GET api/course/gettofinish
         /// </summary>
         /// <returns></returns>
-        [HttpGet]        
+        [HttpGet]
         public ActionResult<string> GetToFinish()
         {
             // 只显示 当前学生正常在学的，课时数1到5节的学生。（课时数为0，并且没有其他可用套餐，则学生状态会在签到的时候修改为03 结束未续费）
             DataTable dt = _chuxinQuery.GetExpirationStudents();
-            string resultJson = JsonConvert.SerializeObject(dt);        
-            return resultJson;   
+            string resultJson = JsonConvert.SerializeObject(dt);
+            return resultJson;
         }
 
         /// <summary>
         /// 获取课程作品 GET api/course/getcourseartwork
         /// </summary>
         /// <returns></returns>
-        [HttpGet]        
+        [HttpGet]
         public IEnumerable<ART_WORK_R_LIST> GetCourseArtwork(int courseId)
         {
-            var config = new MapperConfiguration(cfg => {
+            var config = new MapperConfiguration(cfg =>
+            {
                 cfg.CreateMap<StudentArtwork, ART_WORK_R_LIST>();
             });
             IMapper mapper = config.CreateMapper();
 
-            IEnumerable<StudentArtwork> artworks = _chuxinQuery.GetArkworkByCourse(courseId);
+            IEnumerable<StudentArtwork> artworks = _chuxinQuery.GetArtworkByCourse(courseId);
 
             List<ART_WORK_R_LIST> artWorkList = new List<ART_WORK_R_LIST>();
-            ART_WORK_R_LIST  aw = null;
+            ART_WORK_R_LIST aw = null;
 
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
             foreach (var artwork in artworks)
@@ -109,7 +110,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取课程作品 GET api/course/removecourse
         /// </summary>
         /// <returns></returns>
-        [HttpDelete]        
+        [HttpDelete]
         public string RemoveCourse(int courseId)
         {
             string result = _chuxinWorkFlow.RemoveStudentCourse(courseId);
@@ -162,5 +163,5 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             return result;
         }
-    }   
+    }
 }
