@@ -19,11 +19,13 @@ namespace ChuXinEdu.CMS.Server.Controllers
     [ApiController]
     public class WxOpenController : ControllerBase
     {
+        private readonly IConfigQuery _configQuery;
         private readonly IChuXinQuery _chuxinQuery;
         private readonly IChuXinWorkFlow _chuxinWorkFlow;
 
-        public WxOpenController(IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow)
+        public WxOpenController(IConfigQuery configQuery, IChuXinQuery chuxinQuery, IChuXinWorkFlow chuxinWorkFlow)
         {
+            _configQuery = configQuery;
             _chuxinQuery = chuxinQuery;
             _chuxinWorkFlow = chuxinWorkFlow;
         }
@@ -486,6 +488,17 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public IEnumerable<StudentCoursePackage> GetStudentPackages(string studentCode)
         {
             return _chuxinQuery.GetStudentCoursePackage(studentCode);
+        }
+
+        /// <summary>
+        /// [获取所有的班级] GET api/wxopen/getclassrooms
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public IEnumerable<DIC_R_KEY_VALUE> GetClassrooms()
+        {
+            return _configQuery.GetDicByCode("classroom");
         }
     }
 }
