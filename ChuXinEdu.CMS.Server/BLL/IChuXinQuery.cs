@@ -123,7 +123,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode);
 
-        IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode, int pageIndex, int pageSize);
+        List<StudentArtwork> GetArkworkByStudent(string studentCode, int pageIndex, int pageSize);
 
         string GetArtWorkTruePath(int artworkId);
 

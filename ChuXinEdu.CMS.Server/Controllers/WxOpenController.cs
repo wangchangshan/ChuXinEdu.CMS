@@ -217,6 +217,82 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 获取学员的课程作品 GET api/wxopen/getstudentartworks
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public ActionResult<string> GetStudentArtworks(string studentCode, int pageIndex, int pageSize)
+        {
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+            List<StudentArtwork> myArtworks = _chuxinQuery.GetArkworkByStudent(studentCode, pageIndex, pageSize);
+            int myArtworkCount = myArtworks.Count;
+
+            List<WX_ARTWORK_HISTORY> artWorkList = new List<WX_ARTWORK_HISTORY>();
+            WX_ARTWORK_HISTORY artWork = null;
+
+            List<WX_ARTWORK_HISTORY_DETAIL> artWorkDetailList = new List<WX_ARTWORK_HISTORY_DETAIL>();
+            WX_ARTWORK_HISTORY_DETAIL artWorkDetail = null;
+
+            string lastMonth = string.Empty;
+            for (int i = 0; i < myArtworkCount; i++)
+            {
+                StudentArtwork myArtwork = myArtworks[i];
+                // 按月分组
+                string curMonth = myArtwork.CreateDate.ToString("yyyy-MM");
+                if (lastMonth != curMonth)
+                {
+                    if (!String.IsNullOrEmpty(lastMonth))
+                    {
+                        // 不是第一条数据。  将上一月的数据存入list
+                        artWorkDetailList.Add(artWorkDetail);
+                        artWork = new WX_ARTWORK_HISTORY
+                        {
+                            yyyymm = lastMonth,
+                            artworks = artWorkDetailList
+                        };
+                        artWorkDetailList = new List<WX_ARTWORK_HISTORY_DETAIL>();
+                        artWorkList.Add(artWork);
+                    }
+                    else
+                    {
+                        // 第一条数据  do nothing
+                    }
+                }
+                else
+                {
+                    // 相同月
+                    artWorkDetailList.Add(artWorkDetail);
+                }
+
+                artWorkDetail = new WX_ARTWORK_HISTORY_DETAIL
+                {
+                    artworkTitle = myArtwork.ArtworkTitle,
+                    artworkUrl = accessUrlHost + "api/upload/getimage?id=" + myArtwork.ArtworkId + "&type=artwork-wx"
+                };
+
+                if (i == myArtworks.Count - 1)
+                {
+                    artWorkDetailList.Add(artWorkDetail);
+                    artWork = new WX_ARTWORK_HISTORY
+                    {
+                        yyyymm = curMonth,
+                        artworks = artWorkDetailList
+                    };
+                    artWorkList.Add(artWork);
+                }
+
+                lastMonth = curMonth;
+            }
+
+            return new JsonResult(new
+            {
+                totalCount = myArtworkCount,
+                artworkList = artWorkList
+            });
+        }
+
+        /// <summary>
         /// 【弃用】获取学生的课程作品 GET api/wxopen/getartworklist
         /// </summary>
         /// <returns></returns>

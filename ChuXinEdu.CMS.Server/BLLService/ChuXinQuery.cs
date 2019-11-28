@@ -730,13 +730,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
-        public IEnumerable<StudentArtwork> GetArkworkByStudent(string studentCode, int pageIndex, int pageSize)
+        public List<StudentArtwork> GetArkworkByStudent(string studentCode, int pageIndex, int pageSize)
         {
             using (BaseContext context = new BaseContext())
             {
                 return context.StudentArtwork.Where(s => s.StudentCode == studentCode
                                                             && s.ArtworkStatus == "01")
-                                            .OrderBy(s => s.FinishDate)
+                                            .OrderByDescending(s => s.FinishDate)
                                             .Skip(pageSize * (pageIndex - 1))
                                             .Take(pageSize)
                                             .ToList();
