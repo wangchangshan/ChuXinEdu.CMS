@@ -661,6 +661,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return courseCount;
         }
 
+        public int GetCoursesToSignInCount(string classroomCode)
+        {
+            int courseCount = -1;
+            using (BaseContext context = new BaseContext())
+            {
+                courseCount = context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
+                                                            && s.Classroom == classroomCode
+                                                            && s.CourseDate <= DateTime.Now.Date)
+                                                .Count();
+            }
+            return courseCount;
+        }
+
         public int GetTodayCourseCount()
         {
             int courseCount = 0;

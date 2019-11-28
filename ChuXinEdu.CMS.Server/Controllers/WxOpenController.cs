@@ -466,6 +466,31 @@ namespace ChuXinEdu.CMS.Server.Controllers
             });
         }
 
+        /// <summary>
+        /// [获取待签到的学员列表] GET api/wxopen/getstudentstosignin
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public ActionResult<string> getstudentstosignin(int pageIndex, int pageSize)
+        {
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+            _chuxinQuery.GetCoursesToSignIn();
+            DataTable dt = _chuxinQuery.GetExpirationStudents(pageIndex, pageSize);
+            foreach (DataRow dr in dt.Rows)
+            {
+                string id = dr["id"].ToString();
+                dr["student_avatar_path"] = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s-wx";
+            }
+            int totalCount = dt.Rows.Count;
+            string strStudentList = JsonConvert.SerializeObject(dt);
+            return new JsonResult(new
+            {
+                TotalCount = totalCount,
+                Data = strStudentList
+            });
+        }
+
         /// <summary>   
         /// 获取学员本周的课程安排 GET api/wxopen/getstudentweekcourse
         /// </summary>
@@ -498,7 +523,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
         [WxAuthenFilter]
         public IEnumerable<DIC_R_KEY_VALUE> GetClassrooms()
         {
-            return _configQuery.GetDicByCode("classroom");
+            var classrooms = _configQuery.GetDicByCode("classroom");
+            foreach (var room in classrooms)
+            {
+                room.Label = _chuxinQuery.GetCoursesToSignInCount(room.Value).ToString();
+            }
+            return classrooms;
         }
     }
 }

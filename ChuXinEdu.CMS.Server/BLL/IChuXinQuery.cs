@@ -109,6 +109,9 @@ namespace ChuXinEdu.CMS.Server.BLL
         // 获取待签到课程数目
         int GetCoursesToSignInCount();
 
+        // 按班级获取待签到课程数
+        int GetCoursesToSignInCount(string classroomCode);
+
         // 获取今日排课数目
         int GetTodayCourseCount();
 
