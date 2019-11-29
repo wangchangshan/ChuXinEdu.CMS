@@ -11,6 +11,7 @@ using ChuXinEdu.CMS.Server.BLL;
 using ChuXinEdu.CMS.Server.ViewModel;
 using Newtonsoft.Json.Serialization;
 using ChuXinEdu.CMS.Server.Filters;
+using System.Linq;
 
 namespace ChuXinEdu.CMS.Server.Controllers
 {
@@ -373,7 +374,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// [本周过生日的学生列表] GET api/wxopen/getallstudents
+        /// [所有学员列表] GET api/wxopen/getallstudents
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -400,12 +401,11 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 dr["rest_course_info"] = strCourseInfo;
             }
 
-            string strStudents = JsonConvert.SerializeObject(dtStudents);
-
+            //string strStudents = JsonConvert.SerializeObject(dtStudents);
             return new JsonResult(new
             {
                 TotalCount = totalCount,
-                Data = strStudents
+                Data = dtStudents
             });
         }
 
@@ -432,12 +432,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
 
             int totalCount = dt.Rows.Count;
-            string strStudentList = JsonConvert.SerializeObject(dt);
-
             return new JsonResult(new
             {
                 TotalCount = totalCount,
-                Data = strStudentList
+                Data = dt
             });
         }
 
@@ -458,36 +456,10 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 dr["student_avatar_path"] = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s-wx";
             }
             int totalCount = dt.Rows.Count;
-            string strStudentList = JsonConvert.SerializeObject(dt);
             return new JsonResult(new
             {
                 TotalCount = totalCount,
-                Data = strStudentList
-            });
-        }
-
-        /// <summary>
-        /// [获取待签到的学员列表] GET api/wxopen/getstudentstosignin
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [WxAuthenFilter]
-        public ActionResult<string> getstudentstosignin(int pageIndex, int pageSize)
-        {
-            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-            _chuxinQuery.GetCoursesToSignIn();
-            DataTable dt = _chuxinQuery.GetExpirationStudents(pageIndex, pageSize);
-            foreach (DataRow dr in dt.Rows)
-            {
-                string id = dr["id"].ToString();
-                dr["student_avatar_path"] = accessUrlHost + "api/upload/getimage?id=" + id + "&type=avatar-s-wx";
-            }
-            int totalCount = dt.Rows.Count;
-            string strStudentList = JsonConvert.SerializeObject(dt);
-            return new JsonResult(new
-            {
-                TotalCount = totalCount,
-                Data = strStudentList
+                Data = dt
             });
         }
 
@@ -529,6 +501,46 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 room.Label = _chuxinQuery.GetCoursesToSignInCount(room.Value).ToString();
             }
             return classrooms;
+        }
+
+        /// <summary>
+        /// [获取待签到的学员列表] GET api/wxopen/getcoursestosignin
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public ActionResult<string> GetCoursesToSignin(string roomCode, int pageIndex, int pageSize)
+        {
+            List<WX_SIGNIN_LIST> wxSignInList = new List<WX_SIGNIN_LIST>();
+            var signCourses = _chuxinQuery.GetCoursesToSignIn(roomCode, pageIndex, pageSize);
+
+            int totalCount = signCourses.ToList().Count;
+            DataTable dt = _chuxinQuery.GetSignTimeCategory(roomCode);
+            foreach (DataRow dr in dt.Rows)
+            {
+                var tempCourses = signCourses.Where(s => s.CourseDate == Convert.ToDateTime(dr["course_date"])
+                                        && s.CoursePeriod == dr["course_period"].ToString()
+                ).ToList();
+
+                if (tempCourses.Count == 0)
+                {
+                    continue;
+                }
+                WX_SIGNIN_LIST wxSign = new WX_SIGNIN_LIST
+                {
+                    courseDate = Convert.ToDateTime(dr["course_date"]),
+                    coursePeriod = dr["course_period"].ToString(),
+                    courseWeekday = tempCourses[0].CourseWeekDay,
+                    signCourses = tempCourses
+                };
+                wxSignInList.Add(wxSign);
+            }
+
+            return new JsonResult(new
+            {
+                TotalCount = totalCount,
+                Data = wxSignInList
+            });
         }
     }
 }

@@ -649,6 +649,33 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public IEnumerable<StudentCourseList> GetCoursesToSignIn(string classroomCode, int pageIndex, int pageSize)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                return context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
+                                                            && s.Classroom == classroomCode
+                                                            && s.CourseDate <= DateTime.Now.Date)
+                                                .OrderBy(s => s.CoursePeriod)
+                                                .OrderBy(s => s.CourseDate)
+                                                .Skip((pageIndex - 1) * pageSize)
+                                                .Take(pageSize)
+                                                .ToList();
+            }
+        }
+
+        public DataTable GetSignTimeCategory(string classroomCode)
+        {
+            DataTable dt = ADOContext.GetDataTable(@"select course_date, course_period  
+                                                    from student_course_list
+                                                    where classroom=@1 and attendance_status_code='09'
+                                                    and DATE_FORMAT(course_date,'%y-%m-%d') <= DATE_FORMAT(now(),'%y-%m-%d')
+                                                    group by course_date, course_period  
+                                                    order by course_date, course_period", classroomCode);
+
+            return dt;
+        }
+
         public int GetCoursesToSignInCount()
         {
             int courseCount = -1;

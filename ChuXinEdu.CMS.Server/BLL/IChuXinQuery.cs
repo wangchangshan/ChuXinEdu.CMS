@@ -106,6 +106,11 @@ namespace ChuXinEdu.CMS.Server.BLL
         // 获取待签到课程列表
         IEnumerable<StudentCourseList> GetCoursesToSignIn();
 
+        // 获取待签到课程的时间分组
+        DataTable GetSignTimeCategory(string classroomCode);
+
+        IEnumerable<StudentCourseList> GetCoursesToSignIn(string classroomCode, int pageIndex, int pageSize);
+
         // 获取待签到课程数目
         int GetCoursesToSignInCount();
 
