@@ -194,7 +194,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
                             Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
                             ImageHelper.Compress(bitmap, s, imageCompressLevel);
-                            fileSize = (s.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                            fileSize = (s.Length / 1024.0).ToString("0.00") + " KB";
                         }
                     }
                 }
@@ -205,7 +205,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     {
                         file.CopyTo(stream);
                     }
-                    fileSize = System.Math.Ceiling(file.Length / 1024.0 / 1024.0) + " MB";
+                    fileSize = System.Math.Ceiling(file.Length / 1024.0) + " KB";
                 }
 
                 // 数据入库
@@ -288,7 +288,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
                                 Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
                                 ImageHelper.Compress(bitmap, s, imageCompressLevel);
-                                fileSize = (s.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                                fileSize = (s.Length / 1024.0).ToString("0.00") + " KB";
                             }
                         }
                     }
@@ -298,7 +298,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                         {
                             file.CopyTo(stream);
                         }
-                        fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                        fileSize = (file.Length / 1024.0).ToString("0.00") + " KB";
                     }
 
                     // 数据入库
@@ -444,7 +444,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
                             Bitmap bitmap = new Bitmap(Bitmap.FromStream(stream));
                             ImageHelper.Compress(bitmap, s, imageCompressLevel);
-                            fileSize = (s.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                            fileSize = (s.Length / 1024.0).ToString("0.00") + " KB";
                         }
                     }
                 }
@@ -454,7 +454,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     {
                         file.CopyTo(stream);
                     }
-                    fileSize = (file.Length / 1024.0 / 1024.0).ToString("0.00") + " MB";
+                    fileSize = (file.Length / 1024.0).ToString("0.00") + " KB";
                 }
 
                 // 数据入库
