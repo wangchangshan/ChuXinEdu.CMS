@@ -549,6 +549,20 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
+        /// 微信课程请假 POST api/wxopen/wxcourseqingjia
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [WxAuthenFilter]
+        public string WxCourseQingJia(dynamic obj)
+        {
+            int studentCourseId = obj.StudentCourseId;
+            string result = _chuxinWorkFlow.SingleQingJia(studentCourseId);
+
+            return result;
+        }
+
+        /// <summary>
         /// 微信学员签到 Post api/wxopen/wxstudentsignin
         /// 微信销课 不修改当前课程的课程小类
         /// </summary>
