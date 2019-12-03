@@ -1176,6 +1176,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                 package.FlexCourseCount = 0;
                                 package.RestCourseCount = 0;
                                 package.ScpStatus = "01";
+
+                                // 2.3 判断该学生是否还有其他没有完成的套餐
+                                var otherNormalScpCount = context.StudentCoursePackage.Where(s => s.StudentCode == package.StudentCode
+                                                                                       && s.ScpStatus == "00"
+                                                                                       && s.Id != studentCoursePackageId)
+                                                                                    .Count();
+                                if (otherNormalScpCount == 0)
+                                {
+                                    // 2.4 没有其他上课的套餐， 修改学生状态为 ‘03 结束未续费’
+                                    var student = context.Student.Where(s => s.StudentCode == package.StudentCode).First();
+                                    student.StudentStatus = "03";
+                                    _logger.LogInformation("当前是最后一节课，没有其他上课的套餐，修改学生[{0}]状态为 ‘03 结束未续费", package.StudentName);
+                                }
                             }
                             else if (package.RestCourseCount - i > 0)
                             {
@@ -2221,11 +2234,11 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                                                 && d.ItemEnabled == "Y")
                                                     .First();
                     string roleDesc = string.Empty;
-                    if(role.TypeCode == "sys_roles")
+                    if (role.TypeCode == "sys_roles")
                     {
                         roleDesc = "sys";
                     }
-                    else if(role.TypeCode == "biz_roles")
+                    else if (role.TypeCode == "biz_roles")
                     {
                         roleDesc = "course";
                     }
@@ -2479,12 +2492,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             bool isExist = false;
                             foreach (var d in dicList)
                             {
-                                if(item.Id == d.Id)
+                                if (item.Id == d.Id)
                                 {
                                     isExist = true;
                                 }
                             }
-                            if(!isExist)
+                            if (!isExist)
                             {
                                 context.Remove(item);
                                 context.SaveChanges();
@@ -2507,12 +2520,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             {
                                 // add new dic item
                                 string parentCode = string.Empty;
-                                if(simpleDic[0].TypeCode == "course_folder") //特殊处理一下课程小类
+                                if (simpleDic[0].TypeCode == "course_folder") //特殊处理一下课程小类
                                 {
                                     parentCode = changedDic.ItemCode.Split("_")[0];
                                 }
 
-                                SysDictionary newDicItem = new SysDictionary{
+                                SysDictionary newDicItem = new SysDictionary
+                                {
                                     TypeCode = simpleDic[0].TypeCode,
                                     TypeName = simpleDic[0].TypeName,
                                     ItemDesc = simpleDic[0].ItemDesc,
