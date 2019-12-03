@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using ChuXinEdu.CMS.Server.Middlewares;
 using ChuXinEdu.CMS.Server.Filters;
+using ChuXinEdu.CMS.Server.Provider;
 
 namespace ChuXinEdu.CMS.Server
 {
@@ -32,8 +33,10 @@ namespace ChuXinEdu.CMS.Server
             #endregion
 
             #region 支持跨域处理 Cors
-            services.AddCors(Options=> {
-                Options.AddPolicy("any", builder => {
+            services.AddCors(Options =>
+            {
+                Options.AddPolicy("any", builder =>
+                {
                     builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
@@ -43,7 +46,7 @@ namespace ChuXinEdu.CMS.Server
             #endregion
 
             // 添加mvc需要的服务（全局）
-            services.AddMvc(options => 
+            services.AddMvc(options =>
             {
                 // 实例注册
                 // options.Filters.Add(new MyAuthenFilter());
@@ -58,7 +61,7 @@ namespace ChuXinEdu.CMS.Server
             services.AddTransient<IChuXinWorkFlow, ChuXinWorkFlow>(); //每一次GetService都会创建一个新的实例
             services.AddTransient<IConfigQuery, ConfigQuery>(); //每一次GetService都会创建一个新的实例
             services.AddTransient<IChuXinStatistics, ChuXinStatistics>(); //每一次GetService都会创建一个新的实例
-            
+
             // 注入NLog.Web需要的服务
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -87,9 +90,12 @@ namespace ChuXinEdu.CMS.Server
             app.UseMvc();
 
             // 配置支持反向代理nginx. 配置中间件以转接 X-Forwarded-For 和 X-Forwarded-Proto 标头,防止转接的默认表头为none
-            app.UseForwardedHeaders(new ForwardedHeadersOptions{
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+
+            MyServiceProvider.ServiceProvider = app.ApplicationServices;
         }
     }
 }

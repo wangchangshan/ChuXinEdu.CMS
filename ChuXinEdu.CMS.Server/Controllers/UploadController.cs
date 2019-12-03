@@ -107,7 +107,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     }
 
                     string ext = Path.GetExtension(truePath);
-                    string thumbPath = truePath + "_" + wxImageWidth + ext;
+                    string thumbPath = truePath + "_" + wxWidth.ToString() + ext;
                     if (!System.IO.File.Exists(thumbPath))
                     {
                         using (var stream = System.IO.File.OpenRead(truePath))

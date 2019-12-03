@@ -7,6 +7,10 @@ using ChuXinEdu.CMS.Server.Utils;
 using ChuXinEdu.CMS.Server.Context;
 using ChuXinEdu.CMS.Server.ViewModel;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
+using ChuXinEdu.CMS.Server.Provider;
+using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace ChuXinEdu.CMS.Server.BLLService
 {
@@ -455,6 +459,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        // 排课课程表
         public string SingleRemoveCourse(int studentCourseId)
         {
             string result = "1200";
@@ -575,9 +580,42 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             coursePackage.RestCourseCount += 1;
                             coursePackage.ScpStatus = "00";
                         }
+
+                        // 3. 删除相关的作品照片
+                        var artworks = context.StudentArtwork.Where(s => s.StudentCourseId == courseId).ToList();
+                        foreach (StudentArtwork art in artworks)
+                        {
+                            int achievementId = art.ArtworkId;
+                            string contentRootPath = MyServiceProvider.ServiceProvider.GetRequiredService<IHostingEnvironment>().ContentRootPath;
+
+                            // 3.1 删除原图
+                            string savePath = contentRootPath + art.DocumentPath;
+                            if (System.IO.File.Exists(savePath))
+                            {
+                                System.IO.File.Delete(savePath);
+                            }
+
+                            // 3.2 删除微信小程序用到的缩略图
+                            int wxWidth = 750;
+                            string wxImageWidth = CustomConfig.GetSetting("WeiXinImageWidth");
+                            if (!String.IsNullOrEmpty(wxImageWidth))
+                            {
+                                wxWidth = Convert.ToInt32(wxImageWidth);
+                            }
+
+                            string ext = Path.GetExtension(savePath);
+                            string thumbPath = savePath + "_" + wxWidth.ToString() + ext;
+                            if (System.IO.File.Exists(thumbPath))
+                            {
+                                System.IO.File.Delete(thumbPath);
+                            }
+
+                            context.StudentArtwork.Remove(art);
+                        }
+
                     }
                     context.StudentCourseList.Remove(studentCourse);
-                    // 3. 提交事务
+                    // 4. 提交事务
                     context.SaveChanges();
                 }
             }
@@ -940,8 +978,12 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     scl.TeacherCode = course.TeacherCode;
                     scl.TeacherName = course.TeacherName;
                     scl.CourseSubject = course.Title;
-                    scl.CourseFolderCode = course.CourseFolderCode;
-                    scl.CourseFolderName = course.CourseFolderName;
+                    if (!String.IsNullOrEmpty(course.CourseFolderCode))
+                    {
+                        // 微信小程序销课时 不传递课程小类
+                        scl.CourseFolderCode = course.CourseFolderCode;
+                        scl.CourseFolderName = course.CourseFolderName;
+                    }
 
                     // 2. 判断是否为试听
                     if (scl.CourseType == "试听")
@@ -1379,11 +1421,28 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     var artWork = context.StudentArtwork.Where(s => s.ArtworkId == id).FirstOrDefault();
                     if (artWork != null)
                     {
+                        // 删除原图
                         string savePath = rootPath + artWork.DocumentPath;
                         if (System.IO.File.Exists(savePath))
                         {
                             System.IO.File.Delete(savePath);
                         }
+
+                        // 删除微信小程序用到的缩略图
+                        int wxWidth = 750;
+                        string wxImageWidth = CustomConfig.GetSetting("WeiXinImageWidth");
+                        if (!String.IsNullOrEmpty(wxImageWidth))
+                        {
+                            wxWidth = Convert.ToInt32(wxImageWidth);
+                        }
+
+                        string ext = Path.GetExtension(savePath);
+                        string thumbPath = savePath + "_" + wxWidth.ToString() + ext;
+                        if (System.IO.File.Exists(thumbPath))
+                        {
+                            System.IO.File.Delete(thumbPath);
+                        }
+
                         context.Remove(artWork);
                         context.SaveChanges();
                     }
