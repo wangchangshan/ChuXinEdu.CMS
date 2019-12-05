@@ -100,16 +100,68 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>   
-        /// 获取某天排课信息 GET api/wxopen/getcoursearrangedbyday
+        /// 获取某天排课信息 GET api/wxopen/getwxschedule
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [WxAuthenFilter]
-        public List<StudentCourseList> GetCourseArrangedbyDay(string day)
+        public List<WX_SCHEDULE> GetWxSchedule(string day)
         {
             DateTime theDay = Convert.ToDateTime(day).Date;
-            List<StudentCourseList> scls = _chuxinQuery.GetCoursesByday(theDay);
-            return scls;
+            DataTable dt = _chuxinQuery.GetScheduleByDay(theDay);
+
+            List<WX_SCHEDULE> scheduleList = new List<WX_SCHEDULE>();
+            WX_SCHEDULE schedule = null;
+            List<WX_SCHEDULE_ROOM> scheduleRoomList = new List<WX_SCHEDULE_ROOM>();
+            WX_SCHEDULE_ROOM scheduleRoom = null;
+            List<WX_SCHEDULE_DETAIL> scheduleDetailList = new List<WX_SCHEDULE_DETAIL>();
+            WX_SCHEDULE_DETAIL scheduleDetail = null;
+
+            DataView view = new DataView(dt);
+            DataTable distinctPeriod = view.ToTable(true, "course_period");
+            DataTable distinctRoom = view.ToTable(true, "course_period", "classroom_name");
+
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+            foreach (DataRow drPeriod in distinctPeriod.Rows)
+            {
+                string period = drPeriod["course_period"].ToString();
+                DataRow[] drRooms = distinctRoom.Select("course_period = '" + period + "'");
+                foreach (DataRow drRoom in drRooms)
+                {
+                    string room = drRoom["classroom_name"].ToString();
+                    DataRow[] temps = dt.Select("course_period = '" + period + "' and classroom_name='" + room + "'");
+                    foreach (DataRow temp in temps)
+                    {
+                        scheduleDetail = new WX_SCHEDULE_DETAIL
+                        {
+                            id = Int32.Parse(temp["id"].ToString()),
+                            studentCode = temp["student_code"].ToString(),
+                            studentName = temp["student_name"].ToString(),
+                            studentAvatarPath = accessUrlHost + "api/upload/getimage?id=" + temp["id"].ToString() + "&type=avatar-s-wx",
+                            courseWeekDay = temp["course_week_day"].ToString(),
+                            attendanceCode = temp["attendance_status_code"].ToString(),
+                            attendanceName = temp["attendance_status_name"].ToString()
+                        };
+                        scheduleDetailList.Add(scheduleDetail);
+                    }
+                    scheduleRoom = new WX_SCHEDULE_ROOM
+                    {
+                        classroom = room,
+                        scheduleDetail = scheduleDetailList
+                    };
+                    scheduleDetailList = new List<WX_SCHEDULE_DETAIL>();
+                    scheduleRoomList.Add(scheduleRoom);
+                }
+                schedule = new WX_SCHEDULE
+                {
+                    coursePeriod = period,
+                    roomSchedule = scheduleRoomList
+                };
+                scheduleRoomList = new List<WX_SCHEDULE_ROOM>();
+                scheduleList.Add(schedule);
+            }
+
+            return scheduleList;
         }
 
         /// <summary>

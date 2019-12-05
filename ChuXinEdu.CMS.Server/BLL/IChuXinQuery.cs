@@ -84,6 +84,8 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         List<StudentCourseList> GetCoursesByday(DateTime theDay);
 
+        DataTable GetScheduleByDay(DateTime theDay);
+
         // 获取学员本周未上的课程
         List<StudentCourseList> GetStudentWeekCourse(string studentCode, DateTime weekLastDay);
 

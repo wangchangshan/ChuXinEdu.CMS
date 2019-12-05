@@ -287,33 +287,23 @@ namespace ChuXinEdu.CMS.Server.BLLService
         // 所有学生的课程大类
         public DataTable GetScpSimplify()
         {
-            using (BaseContext context = new BaseContext())
-            {
-                DataTable dt = ADOContext.GetDataTable(@"select distinct student_code,course_category_code,course_category_name from student_course_package");
-
-                return dt;
-            }
+            DataTable dt = ADOContext.GetDataTable(@"select distinct student_code,course_category_code,course_category_name from student_course_package");
+            return dt;
         }
 
         public DataTable GetRestCourseCountByCategorty(string studentCode)
         {
-            using (BaseContext context = new BaseContext())
-            {
-                DataTable dt = ADOContext.GetDataTable($@"select course_category_name, sum(rest_course_count) as rest_course_count from student_course_package 
+            DataTable dt = ADOContext.GetDataTable($@"select course_category_name, sum(rest_course_count) as rest_course_count from student_course_package 
                                                         where student_code ='{studentCode}'  and scp_status = '00'
                                                         group by course_category_name");
 
-                return dt;
-            }
+            return dt;
         }
 
         public DataTable GetStudentPayRank()
         {
-            using (BaseContext context = new BaseContext())
-            {
-                DataTable dt = ADOContext.GetDataTable(@"select student_name, sum(actual_price - fee_back_amount) as amount from student_course_package group by student_name order by sum(actual_price - fee_back_amount) desc limit 0, 100");
-                return dt;
-            }
+            DataTable dt = ADOContext.GetDataTable(@"select student_name, sum(actual_price - fee_back_amount) as amount from student_course_package group by student_name order by sum(actual_price - fee_back_amount) desc limit 0, 100");
+            return dt;
         }
 
         public Student GetStudentByCode(string studentCode)
@@ -505,6 +495,20 @@ namespace ChuXinEdu.CMS.Server.BLLService
             }
         }
 
+        public DataTable GetScheduleByDay(DateTime theDay)
+        {
+            string strDay = theDay.ToString("yyyy-MM-dd");
+            DataTable dt = ADOContext.GetDataTable($@"select scl.course_period, sd.item_name as classroom_name,s.id,s.student_avatar_path,scl.course_week_day,scl.student_code,scl.student_name,scl.attendance_status_code,scl.attendance_status_name
+                                                    from student_course_list scl 
+                                                    left join student s on scl.student_code = s.student_code
+                                                    left join sys_dictionary sd on scl.classroom = item_code
+                                                    where sd.type_code='classroom'
+                                                    and scl.course_date = @1
+                                                    order by scl.course_period, classroom_name", strDay);
+
+            return dt;
+        }
+
         public List<StudentCourseList> GetStudentWeekCourse(string studentCode, DateTime weekLastDay)
         {
             using (BaseContext context = new BaseContext())
@@ -669,7 +673,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             DataTable dt = ADOContext.GetDataTable(@"select course_date, course_period  
                                                     from student_course_list
                                                     where classroom=@1 and attendance_status_code='09'
-                                                    and DATE_FORMAT(course_date,'%y-%m-%d') <= DATE_FORMAT(now(),'%y-%m-%d')
+                                                    and course_date <= DATE_FORMAT(now(),'%y-%m-%d')
                                                     group by course_date, course_period  
                                                     order by course_date, course_period", classroomCode);
 
