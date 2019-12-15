@@ -161,6 +161,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 scheduleList.Add(schedule);
             }
 
+            // 审核测试
+            scheduleList = new List<WX_SCHEDULE>();
             return scheduleList;
         }
 

@@ -133,12 +133,13 @@ namespace ChuXinEdu.CMS.Server.BLLService
                 DataTable dt = null;
                 if (!String.IsNullOrEmpty(query.studentName.Trim()))
                 {
-                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' and student_name like '%" + query.studentName.Trim() + "%' limit @1, @2";
+                    // for 测试审核
+                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' and student_name='测试学员' and student_name like '%" + query.studentName.Trim() + "%' limit @1, @2";
                     dt = ADOContext.GetDataTable(sql, s, e);
                 }
                 else
                 {
-                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' limit @1, @2";
+                    sql = "select id, student_code, student_name, student_phone,student_avatar_path, '' as rest_course_info from student where student_status='01' and student_name='测试学员' limit @1, @2";
                     dt = ADOContext.GetDataTable(sql, s, e);
                 }
 
@@ -463,6 +464,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             int end = pageSize;
             DataTable dtStudent = ADOContext.GetDataTable(@"select id, student_code, student_name, DATE_FORMAT(student_birthday,'%m-%d') as student_birthday, student_phone, student_avatar_path, 0 as rest_course_count from student 
                                                             where student_status = '01'
+                                                                and student_name = '测试学员' 
 	                                                            and DATE_FORMAT(student_birthday,'%m-%d') <= DATE_FORMAT(date_add(now(), interval 7 day),'%m-%d')
 	                                                            and DATE_FORMAT(student_birthday,'%m-%d') >= DATE_FORMAT(date_sub(now(), interval 3 day),'%m-%d') 
                                                             order by DATE_FORMAT(student_birthday,'%m-%d') limit @1, @2", start, end);
@@ -658,6 +660,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             using (BaseContext context = new BaseContext())
             {
                 return context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
+                                                            && s.StudentName == "测试学员"
                                                             && s.Classroom == classroomCode
                                                             && s.CourseDate <= DateTime.Now.Date)
                                                 .OrderBy(s => s.CoursePeriod)
@@ -699,6 +702,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 courseCount = context.StudentCourseList.Where(s => s.AttendanceStatusCode == "09"
                                                             && s.Classroom == classroomCode
+                                                            && s.StudentName == "测试学员"
                                                             && s.CourseDate <= DateTime.Now.Date)
                                                 .Count();
             }
@@ -710,7 +714,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             int courseCount = 0;
             using (BaseContext context = new BaseContext())
             {
-                courseCount = context.StudentCourseList.Where(s => s.CourseDate == DateTime.Today)
+                courseCount = context.StudentCourseList.Where(s => s.CourseDate == DateTime.Today && s.StudentName == "测试学员")
                                                 .Count();
             }
             return courseCount;
@@ -735,7 +739,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             DataTable dt = ADOContext.GetDataTable(@"select s.id, scp.student_code, scp.student_name, scp.package_name, scp.rest_course_count, s.student_phone, s.student_avatar_path 
                                                     from student_course_package scp
                                                     left join student s on scp.student_code = s.student_code
-                                                    where s.student_status='01' and scp.scp_status = '00' and scp.rest_course_count <= 5
+                                                    where s.student_status='01' and s.student_name='测试学员' and scp.scp_status = '00' and scp.rest_course_count <= 5
                                                     limit @1,@2", s, e);
 
             return dt;

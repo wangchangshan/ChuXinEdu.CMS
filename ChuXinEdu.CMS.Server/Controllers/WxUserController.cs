@@ -139,12 +139,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     break;
                 case "2":
                     // 教师
-                    int studentCount = _chuxinQuery.GetActiveStudentCount();
+                    int studentCount = 1; //_chuxinQuery.GetActiveStudentCount();
                     int todayCourseCount = _chuxinQuery.GetTodayCourseCount();
                     DataTable dt = _chuxinQuery.GetBirthdayIn7Days();
-                    int birthCount = dt.Rows.Count;
+                    int birthCount = 0;//dt.Rows.Count;
                     dt = _chuxinQuery.GetExpirationStudents();
-                    int expirationCount = dt.Rows.Count;
+                    int expirationCount = 0;//dt.Rows.Count;
 
                     overView = new WX_MINE_OVERVIEW
                     {
