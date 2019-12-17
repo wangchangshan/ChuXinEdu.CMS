@@ -728,5 +728,22 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
             return result;
         }
+
+        /// <summary>
+        /// [获取教师作品用于教师简历] GET api/wxopen/getteacherartwork
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [WxAuthenFilter]
+        public ActionResult<string> GetTeacherArtwork(string teacherCode)
+        {
+            string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
+
+            List<string> list = new List<string>();
+            return new JsonResult(new
+            {
+                Data = list
+            });
+        }
     }
 }
