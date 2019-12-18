@@ -734,16 +734,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [WxAuthenFilter]
-        public ActionResult<string> GetTeacherArtwork(string teacherCode)
+        public List<string> GetTeacherArtwork(string teacherCode)
         {
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
 
             List<string> list = new List<string>();
-            return new JsonResult(new
-            {
-                Data = list
-            });
+            return list;
         }
     }
 }
