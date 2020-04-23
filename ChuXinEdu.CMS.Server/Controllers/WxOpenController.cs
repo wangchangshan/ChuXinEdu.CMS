@@ -162,7 +162,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             }
 
             // 审核测试
-            scheduleList = new List<WX_SCHEDULE>();
+            // scheduleList = new List<WX_SCHEDULE>();
             return scheduleList;
         }
 

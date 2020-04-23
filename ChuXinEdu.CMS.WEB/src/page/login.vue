@@ -19,9 +19,7 @@
                         <el-button type="primary" @click="submitForm(loginForm)" class="submit_btn">登录</el-button>
                     </el-form-item>
                     <div class="tiparea">
-                        <!-- <p class="wxtip">内部开发版</p>
-                    <p class="tip"></p> -->
-                        <!-- <p class="tip">测试</p> -->
+                        <!-- <p class="wxtip">内部开发版</p>-->
                     </div>
                 </el-form>
             </section>

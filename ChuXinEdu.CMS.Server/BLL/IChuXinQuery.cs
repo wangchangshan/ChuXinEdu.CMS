@@ -181,7 +181,7 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         string GetWeiXinPicTruePath(int id);
 
-        // 这是一个测试
+        // 这是一个test
         StudentDescTest GetStudentDescTest(string studentCode);
 
     }
