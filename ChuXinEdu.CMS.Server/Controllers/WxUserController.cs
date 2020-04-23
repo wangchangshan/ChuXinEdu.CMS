@@ -239,8 +239,8 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public WXTicket GetWxTicket(string code)
         {
             WXTicket wxticket = new WXTicket();
-            string appid = "wxbc88d5a1f9bda2ec";
-            string appsecret = "4a70f1859bc22f0a5caaf7e771bad42c";
+            string appid = CustomConfig.GetSetting("WeiXinAppId");
+            string appsecret = CustomConfig.GetSetting("WeiXinAppSecret");
 
             // 1. 获取当前用户的openid
             using (HttpClient client = new HttpClient())
