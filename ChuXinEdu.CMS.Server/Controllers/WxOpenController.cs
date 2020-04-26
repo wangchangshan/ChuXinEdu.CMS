@@ -76,17 +76,26 @@ namespace ChuXinEdu.CMS.Server.Controllers
         /// 获取微信小程序用到的宣传图片——作品展示（带屏幕上拉分页） GET api/wxopen/getwxbestdraw
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<WxPicture> GetWxBestDraw(string wxPicCode, int pageIndex, int pageSize)
+        public ActionResult<string> GetWxBestDraw(string wxPicCode, int pageIndex, int pageSize)
         {
-            IEnumerable<WxPicture> wxPics = _chuxinQuery.GetWxPicture(wxPicCode, pageIndex, pageSize);
+            DataTable dt = _chuxinQuery.GetWxPictureDT(wxPicCode, pageIndex, pageSize);
 
             string accessUrlHost = CustomConfig.GetSetting("AccessUrl");
-            foreach (var pic in wxPics)
+            foreach (DataRow dr in dt.Rows)
             {
-                pic.PicturePath = accessUrlHost + "api/upload/getimage?id=" + pic.Id + "&type=ad-wx";
+                if (dr["studentId"] != null && dr["studentId"] != DBNull.Value)
+                {
+                    dr["avatarPath"] = accessUrlHost + "api/upload/getimage?id=" + dr["studentId"].ToString() + "&type=avatar-s-wx";
+                }
+                else
+                {
+                    // 取默认头像
+                    dr["avatarPath"] = accessUrlHost + "api/upload/getimage?id=0&type=avatar-s-wx";
+                }
+                dr["picturePath"] = accessUrlHost + "api/upload/getimage?id=" + dr["id"].ToString() + "&type=ad-wx";
             }
 
-            return wxPics;
+            return JsonConvert.SerializeObject(dt);
         }
 
         // GET api/wxopen/getpackages

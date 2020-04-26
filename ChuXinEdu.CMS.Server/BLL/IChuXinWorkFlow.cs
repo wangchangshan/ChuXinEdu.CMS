@@ -18,7 +18,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [修改密码]
         string ChangePassword(string loginCode, string newPwd);
 
-         // [登出]
+        // [登出]
         string LogOut(string loginCode);
 
         // [登陆 签名]
@@ -68,6 +68,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [上传微信小程序用到的图片]
         string UploadWxPicture(WxPicture picture);
 
+        void SetWxPictureRateLevel(int id, int level);
+
         // [删除临时作品]
         string RemoveTempArtWork(int courseId, string uid, string rootPath);
 
@@ -77,7 +79,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         // [删除微信小程序图片]
         string RemoveWxPicture(int id, string rootPath);
 
-         // [添加学生选课套餐]
+        // [添加学生选课套餐]
         string AddStudentCoursePackage(StudentCoursePackage scp);
 
         // [添加新的推荐学员]
@@ -108,7 +110,7 @@ namespace ChuXinEdu.CMS.Server.BLL
         string SetStudentFeeBack(string studentCode, List<StudentCoursePackage> packageList);
 
         // [学生套餐退费]
-        string SetStudentPackageFeeBack(string studentCode, int packageId, List<StudentCoursePackage> packageList);   
+        string SetStudentPackageFeeBack(string studentCode, int packageId, List<StudentCoursePackage> packageList);
 
         // [更新试听学生]  
         string UpdateTempStudent(int id, StudentTemp student);
@@ -197,5 +199,5 @@ namespace ChuXinEdu.CMS.Server.BLL
 
         // [脏数据处理]
         string ClearDirtyForArrange(int id);
-    } 
+    }
 }

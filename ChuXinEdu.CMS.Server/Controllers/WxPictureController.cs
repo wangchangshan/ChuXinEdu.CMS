@@ -40,5 +40,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
             return wxPics;
         }
+
+        [HttpPost("{id}")]
+        public IActionResult UpdateRateLevel(int id, [FromQuery] int level)
+        {
+            _chuxinWorkFlow.SetWxPictureRateLevel(id, level);
+            return Ok();
+        }
     }
 }

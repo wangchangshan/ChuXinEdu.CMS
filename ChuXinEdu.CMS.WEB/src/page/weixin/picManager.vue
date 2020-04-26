@@ -32,7 +32,12 @@
                                 class="button"
                                 @click="removeAchievement(picure.id)"
                             ></el-button>
-                            <!-- <el-rate v-model="picure.achievement_rate" :allow-half = "true" class="right"></el-rate> -->
+                            <el-rate
+                                v-model="picure.rateLevel"
+                                :allow-half="false"
+                                @change="setRateLevel(picure.id, picure.rateLevel)"
+                                class="right"
+                            ></el-rate>
                         </div>
                     </div>
                 </el-card>
@@ -62,6 +67,12 @@
                                 class="button"
                                 @click="removeAchievement(picure.id)"
                             ></el-button>
+                            <el-rate
+                                v-model="picure.rateLevel"
+                                :allow-half="false"
+                                @change="setRateLevel(picure.id, picure.rateLevel)"
+                                class="right"
+                            ></el-rate>
                         </div>
                     </div>
                 </el-card>
@@ -91,6 +102,12 @@
                                 class="button"
                                 @click="removeAchievement(picure.id)"
                             ></el-button>
+                            <el-rate
+                                v-model="picure.rateLevel"
+                                :allow-half="false"
+                                @change="setRateLevel(picure.id, picure.rateLevel)"
+                                class="right"
+                            ></el-rate>
                         </div>
                     </div>
                 </el-card>
@@ -120,6 +137,12 @@
                                 class="button"
                                 @click="removeAchievement(picure.id)"
                             ></el-button>
+                            <el-rate
+                                v-model="picure.rateLevel"
+                                :allow-half="false"
+                                @change="setRateLevel(picure.id, picure.rateLevel)"
+                                class="right"
+                            ></el-rate>
                         </div>
                     </div>
                 </el-card>
@@ -152,14 +175,24 @@
                     label-suffix="："
                     style="margin-right:20px"
                 >
-                    <el-form-item label="姓名">
-                        <el-input v-model="uploadDialog.params.studentName"></el-input>
-                    </el-form-item>
-                    <el-form-item label="性别">
-                        <el-radio-group v-model="uploadDialog.params.studentSex">
-                            <el-radio label="男"></el-radio>
-                            <el-radio label="女"></el-radio>
-                        </el-radio-group>
+                    <el-form-item label="学员">
+                        <el-select
+                            v-model="selStudent.selected"
+                            collapse-tags
+                            @change="selectStudentChanged"
+                            filterable
+                            remote
+                            reserve-keyword
+                            placeholder="请输入学生姓名"
+                            :remote-method="getRemoteStudent"
+                        >
+                            <el-option
+                                v-for="item in selStudent.options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            ></el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item label="绘画年龄">
                         <el-input v-model="uploadDialog.params.studentAge"></el-input>
@@ -181,17 +214,7 @@
                     :on-success="uploadSuccess"
                     list-type="picture"
                 >
-                    <el-button slot="trigger" size="mini" type="primary">选取</el-button>
-                    <el-button
-                        style="margin-left: 10px;"
-                        size="mini"
-                        type="success"
-                        @click="btnUpload"
-                    >
-                        上传
-                        <i class="el-icon-upload el-icon--right"></i>
-                    </el-button>
-
+                    <el-button slot="trigger" size="mini" type="primary">选择图片</el-button>
                     <!-- <el-button size="mini" type="primary">
                         选择上传
                         <i class="el-icon-upload el-icon--right"></i>
@@ -205,6 +228,7 @@
                             type="primary"
                             @click="btnSubmitUpload()"
                         >确 定</el-button>
+                        <el-button @click="uploadDialog.isShow = false" size="small">取 消</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -227,6 +251,11 @@ export default {
             picList2: [],
             picList3: [],
             picList4: [],
+            selStudent: {
+                rawList: [],
+                options: [],
+                selected: []
+            },
 
             uploadDialog: {
                 title: "上传图片",
@@ -239,7 +268,6 @@ export default {
                     studentCode: "",
                     studentName: "",
                     studentAge: 0,
-                    studentSex: "",
                     teacherCode: "",
                     subject: "",
                     wxPictureType: ""
@@ -286,10 +314,53 @@ export default {
         },
 
         showUploadDialog() {
+            if (this.selStudent.rawList.length == 0) {
+                this.getAllStudents();
+            }
             this.uploadDialog.params.wxPictureType = this.wx_pic_code;
             this.uploadDialog.thumbnailList = [];
             this.uploadDialog.fileCount = 0;
             this.uploadDialog.isShow = true;
+        },
+
+        getAllStudents() {
+            axios({
+                type: "get",
+                path: "/api/config/getallstudent",
+                fn: result => {
+                    this.selStudent.rawList = result;
+                }
+            });
+        },
+
+        selectStudentChanged() {
+            let code = this.selStudent.selected;
+            let name = "";
+            for (let i = 0; i < this.selStudent.rawList.length; i++) {
+                if (code == this.selStudent.rawList[i].value) {
+                    name = this.selStudent.rawList[i].label;
+                }
+            }
+            this.uploadDialog.params.studentCode = code;
+            this.uploadDialog.params.studentName = name;
+        },
+
+        getRemoteStudent(query) {
+            if (query !== "") {
+                setTimeout(() => {
+                    this.selStudent.options = this.selStudent.rawList.filter(
+                        item => {
+                            return (
+                                item.label
+                                    .toLowerCase()
+                                    .indexOf(query.toLowerCase()) > -1
+                            );
+                        }
+                    );
+                }, 200);
+            } else {
+                this.selStudent.options = [];
+            }
         },
 
         handleError(err, file, fileList) {
@@ -317,7 +388,7 @@ export default {
             }
         },
 
-        btnUpload() {
+        btnSubmitUpload() {
             let formData = new FormData();
             this.uploadDialog.thumbnailList.forEach(item => {
                 formData.append("files", item.raw);
@@ -326,7 +397,6 @@ export default {
             for (let key in this.uploadDialog.params) {
                 formData.append(key, this.uploadDialog.params[key]);
             }
-
             axios({
                 type: "post",
                 path: this.uploadDialog.actionUrl,
@@ -337,24 +407,37 @@ export default {
                             message: "上传成功！",
                             type: "success"
                         });
+                        this.getAllPictures();
+                        this.uploadDialog.thumbnailList = [];
+                        this.uploadDialog.isShow = false;
+                        this.uploadDialog.params = {
+                            studentCode: "",
+                            studentName: "",
+                            studentAge: 0,
+                            teacherCode: "",
+                            subject: "",
+                            wxPictureType: ""
+                        };
+                    } else {
+                        this.$message({
+                            message: "上传失败！",
+                            type: "erro"
+                        });
                     }
                 }
             });
         },
 
-        btnSubmitUpload() {
-            this.getAllPictures();
-            this.uploadDialog.thumbnailList = [];
-            this.uploadDialog.isShow = false;
-            this.uploadDialog.params = {
-                studentCode: "",
-                studentName: "",
-                studentAge: 0,
-                studentSex: "",
-                teacherCode: "",
-                subject: "",
-                wxPictureType: ""
-            };
+        setRateLevel(id, rateLevel) {
+            axios({
+                type: "post",
+                path:
+                    "/api/wxpicture/updateratelevel/" +
+                    id +
+                    "?level=" +
+                    rateLevel,
+                fn: result => {}
+            });
         },
 
         removeAchievement(id) {

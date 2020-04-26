@@ -13,6 +13,8 @@ namespace ChuXinEdu.CMS.Server.BLL
     {
         IEnumerable<DIC_R_KEY_VALUE> GetTeacherToCharge();
 
+        IEnumerable<DIC_R_KEY_VALUE> GetAllStudents();
+
         IEnumerable<DIC_R_KEY_VALUE> GetAllActiveStudents();
 
         string GetRoles(string teacherCode);
@@ -172,6 +174,8 @@ namespace ChuXinEdu.CMS.Server.BLL
         IEnumerable<WxPicture> GetWxPicture(string picTypeCode);
 
         IEnumerable<WxPicture> GetWxPicture(string picTypeCode, int pageIndex, int pageSize);
+
+        DataTable GetWxPictureDT(string picTypeCode, int pageIndex, int pageSize);
 
         IEnumerable<WxPicture> GetWxHomePicture();
 

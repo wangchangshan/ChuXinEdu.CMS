@@ -540,9 +540,9 @@ namespace ChuXinEdu.CMS.Server.Controllers
                     WxPicture wxPicture = new WxPicture
                     {
                         subject = HttpContext.Request.Form["subject"] + "",
+                        StudentCode = HttpContext.Request.Form["studentCode"] + "",
                         StudentName = HttpContext.Request.Form["studentName"] + "",
                         StudentAge = age,
-                        StudentSex = HttpContext.Request.Form["studentSex"] + "",
                         TeacherCode = HttpContext.Request.Form["teacherCode"] + "",
                         PicturePath = documentPath,
                         WxPictureType = picTypCode

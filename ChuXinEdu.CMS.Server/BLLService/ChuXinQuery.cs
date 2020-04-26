@@ -169,6 +169,19 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return courseCount;
         }
 
+        public IEnumerable<DIC_R_KEY_VALUE> GetAllStudents()
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                var students = context.DIC_R_KEY_VALUE.FromSql($@"select s.student_code as item_code, s.student_name as item_name
+                                                                    from student s
+                                                                    order by s.student_name")
+                                                        .ToList();
+
+                return students;
+            }
+        }
+
         public IEnumerable<DIC_R_KEY_VALUE> GetAllActiveStudents()
         {
             using (BaseContext context = new BaseContext())
@@ -1129,6 +1142,24 @@ namespace ChuXinEdu.CMS.Server.BLLService
                                         .Skip((pageIndex - 1) * pageSize)
                                         .Take(pageSize)
                                         .ToList();
+            }
+        }
+
+        public DataTable GetWxPictureDT(string picTypeCode, int pageIndex, int pageSize)
+        {
+            using (BaseContext context = new BaseContext())
+            {
+                int s = (pageIndex - 1) * pageSize;
+                int e = pageSize;
+
+                string sql = @"select wp.id, wp.subject, wp.student_name as studentName, wp.student_age as studentAge, wp.picture_path as picturePath,wp.rate_level, s.id as studentId,s.student_avatar_path as avatarPath
+                                from wx_picture wp 
+                                left join student s on wp.student_code = s.student_code
+                                where wp.wx_picture_type = @1 
+                                order by wp.rate_level desc, wp.id desc limit @2, @3";
+                DataTable dt = ADOContext.GetDataTable(sql, picTypeCode, s, e);
+
+                return dt;
             }
         }
 

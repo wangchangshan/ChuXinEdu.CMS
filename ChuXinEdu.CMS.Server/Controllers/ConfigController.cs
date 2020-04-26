@@ -50,12 +50,12 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 var dicList = _configQuery.GetDicByCode(dicCode).ToList();
                 var strJson = JsonConvert.SerializeObject(dicList, settings);
-                if(dicList != null)
+                if (dicList != null)
                 {
                     sb.AppendFormat("\"{0}\": {1},", dicCode, strJson);
                 }
             }
-            if(sb.Length > 1)
+            if (sb.Length > 1)
             {
                 sb.Remove(sb.Length - 1, 1);
             }
@@ -113,7 +113,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 DIC_R_PACKAGE package = new DIC_R_PACKAGE();
                 package.Label = item.Label;
                 package.Value = item.Value;
-                package.children = _configQuery.GetChildrenDicByCode("course_folder" ,item.Value);
+                package.children = _configQuery.GetChildrenDicByCode("course_folder", item.Value);
 
                 courseClassify.Add(package);
             }
@@ -129,6 +129,16 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public IEnumerable<DIC_R_KEY_VALUE> GetFinancer()
         {
             return _chuxinQuery.GetTeacherToCharge();
+        }
+
+        /// <summary>
+        /// 获取所有学生键值对 list GET api/config/getallstudent
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IEnumerable<DIC_R_KEY_VALUE> GetAllStudent()
+        {
+            return _chuxinQuery.GetAllStudents();
         }
 
         /// <summary>
@@ -194,7 +204,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
             dt.Columns.Add("studentname");
             dt.Columns.Add("restcoursecount", typeof(Int32));
 
-            var packages =_configQuery.GetPackageDirty();
+            var packages = _configQuery.GetPackageDirty();
             foreach (var package in packages)
             {
                 DataRow dr = dt.NewRow();
@@ -206,7 +216,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
                 dr["restcoursecount"] = 0;
                 dt.Rows.Add(dr);
             }
-            
+
             var arranges = _configQuery.GetArrangeDirty();
             foreach (var arrange in arranges)
             {
@@ -222,7 +232,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
 
 
             string result = string.Empty;
-            if(dt != null)
+            if (dt != null)
             {
                 result = JsonConvert.SerializeObject(dt);
             }
@@ -234,7 +244,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         public string ClearDirty([FromBody] dynamic dirtyData)
         {
             string result = string.Empty;
-            
+
             string tableName = dirtyData.tablename.ToString();
             int id = Convert.ToInt32(dirtyData.id.ToString());
 
@@ -242,14 +252,14 @@ namespace ChuXinEdu.CMS.Server.Controllers
             {
                 case "package":
                     result = _chuxinWorkflow.ClearDirtyForPackage(id);
-                break;
+                    break;
 
                 case "arrange":
                     result = _chuxinWorkflow.ClearDirtyForArrange(id);
-                break;
+                    break;
 
                 default:
-                break;
+                    break;
             }
             return result;
         }

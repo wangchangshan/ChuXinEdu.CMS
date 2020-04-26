@@ -22,14 +22,14 @@ namespace ChuXinEdu.CMS.Server.Model
         [Column("student_age")]
         public int? StudentAge { get; set; }
 
-        [Column("student_sex")]
-        public string StudentSex { get; set; }
-
         [Column("teacher_code")]
         public string TeacherCode { get; set; }
 
         [Column("picture_path")]
         public string PicturePath { get; set; }
+
+        [Column("rate_level")]
+        public int RateLevel { get; set; } = 0;
 
         [Column("wx_picture_type")]
         public string WxPictureType { get; set; }

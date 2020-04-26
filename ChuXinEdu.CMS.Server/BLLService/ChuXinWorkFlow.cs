@@ -2711,6 +2711,26 @@ namespace ChuXinEdu.CMS.Server.BLLService
             return result;
         }
 
+        public void SetWxPictureRateLevel(int id, int level)
+        {
+            try
+            {
+                using (BaseContext context = new BaseContext())
+                {
+                    var pic = context.WxPicture.Where(s => s.Id == id).FirstOrDefault();
+                    if (pic != null)
+                    {
+                        pic.RateLevel = level;
+                        context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "设置作品等级错误！");
+            }
+        }
+
         public string RemoveWxPicture(int id, string rootPath)
         {
             string result = "1200";
