@@ -1139,6 +1139,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
             {
                 return context.WxPicture.Where(s => s.WxPictureType == picTypeCode)
                                         .OrderByDescending(s => s.Id)
+                                        .OrderByDescending(x => x.RateLevel)
                                         .Skip((pageIndex - 1) * pageSize)
                                         .Take(pageSize)
                                         .ToList();
