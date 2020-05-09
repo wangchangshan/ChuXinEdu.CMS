@@ -1758,32 +1758,35 @@ namespace ChuXinEdu.CMS.Server.BLLService
                         }
                     }
 
-                    foreach (var package in packageList)
-                    {
-                        var scp = context.StudentCoursePackage.Where(s => s.Id == packageId && s.ScpStatus == "00")
+                    var scp = context.StudentCoursePackage.Where(s => s.Id == packageId && s.ScpStatus == "00")
                                                             .FirstOrDefault();
-                        if (scp != null)
+
+                    if (scp != null)
+                    {
+                        foreach (var package in packageList)
                         {
-                            scp.ScpStatus = "02";
-                            scp.FeeBackAmount = package.FeeBackAmount;
-                            scp.FlexCourseCount = scp.RestCourseCount;
-
-                            var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == scp.Id).ToList();
-                            foreach (var arrange in sca)
+                            if (package.Id == packageId)
                             {
-                                context.StudentCourseArrange.Remove(arrange);
-                            }
+                                scp.ScpStatus = "02";
+                                scp.FeeBackAmount = package.FeeBackAmount;
+                                scp.FlexCourseCount = scp.RestCourseCount;
 
-                            var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == scp.Id
-                                                                    && s.AttendanceStatusCode == "09").ToList();
-                            foreach (var course in scl)
-                            {
-                                context.StudentCourseList.Remove(course);
+                                var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == scp.Id).ToList();
+                                foreach (var arrange in sca)
+                                {
+                                    context.StudentCourseArrange.Remove(arrange);
+                                }
+
+                                var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == scp.Id
+                                                                        && s.AttendanceStatusCode == "09").ToList();
+                                foreach (var course in scl)
+                                {
+                                    context.StudentCourseList.Remove(course);
+                                }
                             }
                         }
+                        context.SaveChanges();
                     }
-
-                    context.SaveChanges();
                 }
             }
             catch (Exception ex)

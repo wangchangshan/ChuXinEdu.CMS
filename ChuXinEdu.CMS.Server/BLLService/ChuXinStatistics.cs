@@ -128,14 +128,24 @@ namespace ChuXinEdu.CMS.Server.BLLService
             Dictionary<string, decimal> actualIncome = new Dictionary<string, decimal>();
             try
             {
-                DataTable dtPackage = ADOContext.GetDataTable(@"select id, actual_course_count,actual_price 
+                DataTable dtPackage = ADOContext.GetDataTable(@"select id,actual_course_count,rest_course_count,actual_price,fee_back_amount,scp_status 
                                                 from student_course_package 
                                                 where is_payed='Y'");
                 foreach (DataRow dr in dtPackage.Rows)
                 {
                     string packageId = dr["id"].ToString();
-                    decimal amount = Convert.ToDecimal(dr["actual_price"].ToString());
                     int courseCount = Convert.ToInt32(dr["actual_course_count"].ToString());
+                    decimal amount = Convert.ToDecimal(dr["actual_price"].ToString());
+                    if (dr["scp_status"].ToString() == "02")
+                    {
+                        //退费
+                        amount = amount - Convert.ToDecimal(dr["fee_back_amount"].ToString());
+                        courseCount = courseCount - Convert.ToInt32(dr["rest_course_count"].ToString());
+                        if (courseCount == 0)
+                        {
+                            continue;
+                        }
+                    }
                     decimal unitPrice = amount / courseCount;
 
                     DataTable dtCourse = ADOContext.GetDataTable(@"select course_folder_name, count(1) as course_count 
@@ -145,7 +155,7 @@ namespace ChuXinEdu.CMS.Server.BLLService
                     foreach (DataRow drCourse in dtCourse.Rows)
                     {
                         string folderName = drCourse["course_folder_name"].ToString();
-                        if(!actualIncome.ContainsKey(folderName))
+                        if (!actualIncome.ContainsKey(folderName))
                         {
                             actualIncome.Add(folderName, 0.00m);
                         }
