@@ -107,7 +107,7 @@ namespace ChuXinEdu.CMS.Server.Controllers
         }
 
         /// <summary>
-        /// 获取课程作品 GET api/course/removecourse
+        /// 删除课程 GET api/course/removecourse
         /// </summary>
         /// <returns></returns>
         [HttpDelete]
