@@ -15,25 +15,29 @@ namespace ChuXinEdu.CMS.Server.Filters
         {
             string token = filterContext.HttpContext.Request.Headers["token"] + "";
             string loginCode = filterContext.HttpContext.Request.Headers["logincode"] + "";
-            if(string.IsNullOrEmpty(token) || string.IsNullOrEmpty(loginCode))
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(loginCode))
             {
                 filterContext.Result = new JsonResult(new { code = "1401" });
                 return;
             }
             else
             {
-                string ip = filterContext.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(); 
-                
+                string ip = filterContext.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+
                 loginCode = HttpUtility.UrlDecode(loginCode);
                 using (BaseContext context = new BaseContext())
                 {
+                    // var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode
+                    //                                         && u.Token == token
+                    //                                         && u.LastLoginIP == ip
+                    //                                         && u.TokenExpireTime > DateTime.Now)
+                    //                             .FirstOrDefault();
                     var sysUser = context.SysUser.Where(u => u.LoginCode == loginCode
                                                             && u.Token == token
-                                                            && u.LastLoginIP == ip
                                                             && u.TokenExpireTime > DateTime.Now)
                                                 .FirstOrDefault();
-                    if(sysUser != null)
-                    {  
+                    if (sysUser != null)
+                    {
                         string strExpireMinu = CustomConfig.GetSetting("UserExpireTime");
                         if (string.IsNullOrEmpty(strExpireMinu))
                         {
@@ -42,13 +46,18 @@ namespace ChuXinEdu.CMS.Server.Filters
                         int expireMinu = Int32.Parse(strExpireMinu);
                         sysUser.TokenExpireTime = DateTime.Now.AddMinutes(expireMinu);
                         context.SaveChanges();
+
+                        if (loginCode.ToLower() == "admin")
+                        {
+                            System.Threading.Thread.Sleep(1500);
+                        }
                     }
-                    else 
+                    else
                     {
                         filterContext.Result = new JsonResult(new { code = "1401" });
                     }
                 }
-            }    
+            }
         }
     }
 }
