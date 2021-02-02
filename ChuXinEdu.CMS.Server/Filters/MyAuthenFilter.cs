@@ -49,7 +49,7 @@ namespace ChuXinEdu.CMS.Server.Filters
 
                         if (loginCode.ToLower() == "admin")
                         {
-                            System.Threading.Thread.Sleep(1500);
+                            System.Threading.Thread.Sleep(2000);
                         }
                     }
                     else

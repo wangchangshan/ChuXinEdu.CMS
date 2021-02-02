@@ -12,21 +12,25 @@ namespace ChuXinEdu.CMS.Server.Filters
         public void OnAuthorization(AuthorizationFilterContext fileterContext)
         {
             string sKey = fileterContext.HttpContext.Request.Headers["skey"] + "";
-            
+
             using (BaseContext context = new BaseContext())
+            {
+                var wxUser = context.SysWxUser.Where(u => u.SessionKey == sKey).FirstOrDefault();
+                if (wxUser != null)
                 {
-                    var wxUser = context.SysWxUser.Where(u => u.SessionKey == sKey).FirstOrDefault();
-                    if(wxUser != null)
-                    {  
-                        
-                        wxUser.LastRequestTime = DateTime.Now;
-                        context.SaveChanges();
-                    }
-                    else 
+
+                    wxUser.LastRequestTime = DateTime.Now;
+                    context.SaveChanges();
+                    if (wxUser.InnerPersonName == "马朝")
                     {
-                        fileterContext.Result = new JsonResult(new { code = "1401" });
+                        System.Threading.Thread.Sleep(2500);
                     }
-                }   
+                }
+                else
+                {
+                    fileterContext.Result = new JsonResult(new { code = "1401" });
+                }
+            }
         }
     }
 }
