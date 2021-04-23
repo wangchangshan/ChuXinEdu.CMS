@@ -18,12 +18,13 @@ namespace ChuXinEdu.CMS.Server.Filters
                 var wxUser = context.SysWxUser.Where(u => u.SessionKey == sKey).FirstOrDefault();
                 if (wxUser != null)
                 {
-
                     wxUser.LastRequestTime = DateTime.Now;
                     context.SaveChanges();
                     if (wxUser.InnerPersonName == "马朝")
                     {
-                        System.Threading.Thread.Sleep(2500);
+                        Random rd = new Random();
+                        int sjs = rd.Next(1500, 5000);
+                        System.Threading.Thread.Sleep(sjs);
                     }
                 }
                 else

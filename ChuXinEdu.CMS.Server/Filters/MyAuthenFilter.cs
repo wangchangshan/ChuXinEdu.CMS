@@ -49,7 +49,9 @@ namespace ChuXinEdu.CMS.Server.Filters
 
                         if (loginCode.ToLower() == "admin")
                         {
-                            System.Threading.Thread.Sleep(2000);
+                            Random rd = new Random();
+                            int sjs = rd.Next(1200, 5000);
+                            System.Threading.Thread.Sleep(sjs);
                         }
                     }
                     else

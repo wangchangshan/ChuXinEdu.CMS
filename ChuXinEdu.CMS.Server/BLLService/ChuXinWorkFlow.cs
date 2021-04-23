@@ -1498,16 +1498,22 @@ namespace ChuXinEdu.CMS.Server.BLLService
                             context.StudentCoursePackage.Remove(package);
                         }
 
-                        var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId).FirstOrDefault();
+                        var sca = context.StudentCourseArrange.Where(s => s.StudentCoursePackageId == studentCoursePackageId).ToList();
                         if (sca != null)
                         {
-                            context.StudentCourseArrange.Remove(sca);
+                            foreach (var temp in sca)
+                            {
+                                context.StudentCourseArrange.Remove(temp);
+                            }
                         }
 
-                        var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == studentCoursePackageId).FirstOrDefault();
+                        var scl = context.StudentCourseList.Where(s => s.StudentCoursePackageId == studentCoursePackageId).ToList();
                         if (scl != null)
                         {
-                            context.StudentCourseList.Remove(scl);
+                            foreach (var temp in scl)
+                            {
+                                context.StudentCourseList.Remove(temp);
+                            }
                         }
 
                         context.SaveChanges();
